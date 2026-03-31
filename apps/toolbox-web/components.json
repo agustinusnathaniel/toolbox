@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/lib/components",
+    "utils": "@/lib/styles/utils",
+    "ui": "@/lib/components/ui",
+    "lib": "@/lib/styles",
+    "hooks": "@/lib/hooks"
+  },
+  "iconLibrary": "@intentui/icons",
+  "registries": {
+    "@intentui": "https://intentui.com/r/{name}"
+  }
+}

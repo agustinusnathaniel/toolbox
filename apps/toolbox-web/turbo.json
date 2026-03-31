@@ -1,0 +1,23 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "typecheck": {
+      "inputs": ["tsconfig.json", "src/**"],
+      "outputs": ["*.tsbuildinfo"],
+      "env": ["VITE_API_BASE_URL"]
+    },
+    "lint": {
+      "outputs": [],
+      "inputs": ["biome.jsonc", "src/**"]
+    },
+    "build": {
+      "outputs": ["dist/**", "public/**"],
+      "env": ["VITE_API_BASE_URL"]
+    },
+    "test": {
+      "outputs": ["node_modules/.vite/vitest/**/results.json"],
+      "inputs": ["vitest.config.ts", "src/**"]
+    }
+  }
+}
