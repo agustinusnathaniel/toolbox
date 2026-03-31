@@ -78,16 +78,17 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 
 ### Option A: quickjs-emscripten (Chosen)
 
-| Dimension | Assessment |
-|-----------|------------|
+| Dimension       | Assessment                                    |
+| --------------- | --------------------------------------------- |
 | Browser support | Excellent — WASM works in all modern browsers |
-| Security | Excellent — Complete isolation in Worker |
-| Offline support | Excellent — WASM cached after first load |
-| Bundle size | ~800KB WASM (acceptable for this tool) |
-| Latency | Excellent — No network round-trip |
-| Maintenance | Good — Active upstream project |
+| Security        | Excellent — Complete isolation in Worker      |
+| Offline support | Excellent — WASM cached after first load      |
+| Bundle size     | ~800KB WASM (acceptable for this tool)        |
+| Latency         | Excellent — No network round-trip             |
+| Maintenance     | Good — Active upstream project                |
 
 **Pros:**
+
 - True sandboxed execution with no DOM/network access
 - Runs entirely client-side, no backend needed
 - Works offline after initial load
@@ -95,26 +96,29 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 - Active maintenance and good documentation
 
 **Cons:**
+
 - ~800KB bundle size for WASM binary
 - Learning curve for Web Worker message passing
 - StrictMode requires worker ID tracking
 
 ### Option B: quickjs (Node.js native binding)
 
-| Dimension | Assessment |
-|-----------|------------|
-| Browser support | None — requires Node.js runtime |
-| Security | Good — but requires backend API |
-| Offline support | None — requires server connection |
-| Bundle size | N/A (server-side) |
-| Latency | Poor — network round-trip per execution |
-| Maintenance | Good — actively maintained |
+| Dimension       | Assessment                              |
+| --------------- | --------------------------------------- |
+| Browser support | None — requires Node.js runtime         |
+| Security        | Good — but requires backend API         |
+| Offline support | None — requires server connection       |
+| Bundle size     | N/A (server-side)                       |
+| Latency         | Poor — network round-trip per execution |
+| Maintenance     | Good — actively maintained              |
 
 **Pros:**
+
 - Simpler API (direct execution, no Worker complexity)
 - Native performance
 
 **Cons:**
+
 - Requires backend server
 - Network latency for every execution
 - Infrastructure costs
@@ -123,38 +127,42 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 
 ### Option C: quickjs-ng (Node.js native binding, fork of quickjs)
 
-| Dimension | Assessment |
-|-----------|------------|
-| Browser support | None — requires Node.js runtime |
-| Security | Good — but requires backend API |
-| Offline support | None — requires server connection |
-| Bundle size | N/A (server-side) |
-| Latency | Poor — network round-trip per execution |
-| Maintenance | Good — newer fork with improvements |
+| Dimension       | Assessment                              |
+| --------------- | --------------------------------------- |
+| Browser support | None — requires Node.js runtime         |
+| Security        | Good — but requires backend API         |
+| Offline support | None — requires server connection       |
+| Bundle size     | N/A (server-side)                       |
+| Latency         | Poor — network round-trip per execution |
+| Maintenance     | Good — newer fork with improvements     |
 
 **Pros:**
+
 - Performance improvements over original quickjs
 - Simpler API than Worker-based solution
 
 **Cons:**
+
 - Same as Option B — requires backend server
 - Network latency and infrastructure complexity
 
 ### Option D: eval() or new Function()
 
-| Dimension | Assessment |
-|-----------|------------|
-| Browser support | Excellent — native JavaScript |
-| Security | **Critical failure** — full page access |
-| Offline support | Excellent |
-| Bundle size | 0KB |
-| Latency | Excellent |
+| Dimension       | Assessment                              |
+| --------------- | --------------------------------------- |
+| Browser support | Excellent — native JavaScript           |
+| Security        | **Critical failure** — full page access |
+| Offline support | Excellent                               |
+| Bundle size     | 0KB                                     |
+| Latency         | Excellent                               |
 
 **Pros:**
+
 - No bundle size overhead
 - Instant execution
 
 **Cons:**
+
 - **CRITICAL SECURITY ISSUE**: Full access to cookies, localStorage, DOM, fetch
 - Cannot prevent malicious code
 - Shared memory with main thread
@@ -162,19 +170,21 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 
 ### Option E: iframe sandbox
 
-| Dimension | Assessment |
-|-----------|------------|
-| Browser support | Good |
-| Security | Moderate — depends on sandbox attributes |
-| Offline support | Excellent |
-| Bundle size | Minimal |
-| Latency | Moderate — iframe creation overhead |
+| Dimension       | Assessment                               |
+| --------------- | ---------------------------------------- |
+| Browser support | Good                                     |
+| Security        | Moderate — depends on sandbox attributes |
+| Offline support | Excellent                                |
+| Bundle size     | Minimal                                  |
+| Latency         | Moderate — iframe creation overhead      |
 
 **Pros:**
+
 - Native browser isolation
 - Can use `sandbox` attribute for restrictions
 
 **Cons:**
+
 - Still has some DOM access within iframe
 - Complex message passing
 - Less control over execution deadline
@@ -183,12 +193,12 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 
 ## Trade-off Analysis
 
-| Trade-off | Decision | Reasoning |
-|-----------|----------|-----------|
-| Bundle size vs. Security | Security | 800KB is acceptable for a developer tool; user security is non-negotiable |
-| Client-side vs. Server-side | Client-side | Eliminates latency, infrastructure costs, and enables offline use |
-| Simplicity vs. Isolation | Isolation | Worker complexity is worth the guaranteed sandbox isolation |
-| Native vs. WASM | WASM | WASM runs everywhere browsers run; native requires specific runtimes |
+| Trade-off                   | Decision    | Reasoning                                                                 |
+| --------------------------- | ----------- | ------------------------------------------------------------------------- |
+| Bundle size vs. Security    | Security    | 800KB is acceptable for a developer tool; user security is non-negotiable |
+| Client-side vs. Server-side | Client-side | Eliminates latency, infrastructure costs, and enables offline use         |
+| Simplicity vs. Isolation    | Isolation   | Worker complexity is worth the guaranteed sandbox isolation               |
+| Native vs. WASM             | WASM        | WASM runs everywhere browsers run; native requires specific runtimes      |
 
 ## Consequences
 
@@ -222,14 +232,14 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 
 ## Security Considerations
 
-| Threat | Mitigation |
-|--------|------------|
-| Access to cookies/localStorage | Worker has no DOM access; WASM runtime is isolated |
-| `fetch()` requests | No `fetch` in Worker scope by default |
-| DOM manipulation | No DOM in Worker |
-| Infinite loops | `shouldInterruptAfterDeadline()` terminates after 5 seconds |
-| Memory exhaustion | Deadline also limits execution time, preventing memory bomb |
-| Main thread blocking | Worker runs in separate thread |
+| Threat                         | Mitigation                                                  |
+| ------------------------------ | ----------------------------------------------------------- |
+| Access to cookies/localStorage | Worker has no DOM access; WASM runtime is isolated          |
+| `fetch()` requests             | No `fetch` in Worker scope by default                       |
+| DOM manipulation               | No DOM in Worker                                            |
+| Infinite loops                 | `shouldInterruptAfterDeadline()` terminates after 5 seconds |
+| Memory exhaustion              | Deadline also limits execution time, preventing memory bomb |
+| Main thread blocking           | Worker runs in separate thread                              |
 
 ## References
 

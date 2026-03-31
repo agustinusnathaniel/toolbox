@@ -1,4 +1,5 @@
 import type { ExecutionRequest, ExecutionResult } from "./models";
+import { DEFAULT_RUN_POLICY } from "./models";
 
 export type WorkerInboundMessage =
   | { type: "execute"; payload: ExecutionRequest }
@@ -8,11 +9,20 @@ export type WorkerOutboundMessage =
   | { type: "result"; payload: ExecutionResult }
   | { type: "ready" };
 
-export function createExecutionRequest(code: string, deadlineMs: number): ExecutionRequest {
+export function createExecutionRequest(
+  code: string,
+  deadlineMs: number,
+  iterations: number = DEFAULT_RUN_POLICY.defaultIterations,
+  setup: string = "",
+  teardown: string = "",
+): ExecutionRequest {
   return {
     id: crypto.randomUUID(),
     code,
     deadlineMs,
+    iterations,
+    setup,
+    teardown,
   };
 }
 

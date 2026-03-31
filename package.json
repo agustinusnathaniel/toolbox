@@ -26,8 +26,8 @@
     "ultracite": "catalog:",
     "vite-plus": "catalog:"
   },
-  "packageManager": "pnpm@10.6.5",
   "engines": {
     "node": ">=22.0.0"
-  }
+  },
+  "packageManager": "pnpm@10.6.5"
 }

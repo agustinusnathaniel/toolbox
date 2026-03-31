@@ -1,12 +1,15 @@
 export type {
   ExecutionRequest,
   ExecutionResult,
+  ExecutionStatistics,
   ExecutionStatus,
   RunPolicy,
 } from "./models";
 export {
+  calculateStatistics,
   DEFAULT_RUN_POLICY,
   formatDuration,
+  formatStatistics,
   isRunable,
   normalizeResult,
 } from "./models";

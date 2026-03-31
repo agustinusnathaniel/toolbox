@@ -7,6 +7,7 @@ import {
   DEFAULT_RUN_POLICY,
   type ExecutionResult,
   formatDuration,
+  formatStatistics,
   isRunable,
   parseWorkerMessage,
   type WorkerInboundMessage,
@@ -29,6 +30,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import { Input } from '@/lib/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -277,6 +279,11 @@ function ResultCard({
               <span className="font-mono text-muted-fg text-sm">
                 {formatDuration(result.durationMs)}
               </span>
+              {result.statistics && (
+                <span className="text-muted-fg text-xs">
+                  ({formatStatistics(result.statistics)})
+                </span>
+              )}
             </div>
             {result.errorMessage && (
               <div className="rounded-md border border-danger/30 bg-danger/5 p-2 font-mono text-danger text-xs">
@@ -358,6 +365,14 @@ function JsPerfComparatorPage() {
   const [resultB, setResultB] = useState<ExecutionResult | null>(null);
   const [workerAReady, setWorkerAReady] = useState(false);
   const [workerBReady, setWorkerBReady] = useState(false);
+  const [iterations, setIterations] = useState(
+    DEFAULT_RUN_POLICY.defaultIterations
+  );
+  const [setupA, setSetupA] = useState('');
+  const [teardownA, setTeardownA] = useState('');
+  const [setupB, setSetupB] = useState('');
+  const [teardownB, setTeardownB] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const workerARef = useRef<Worker | null>(null);
   const workerBRef = useRef<Worker | null>(null);
@@ -445,9 +460,21 @@ function JsPerfComparatorPage() {
     setRunState('running');
 
     const deadline = deadlineRef.current;
-    const reqA = createExecutionRequest(codeA, deadline);
+    const reqA = createExecutionRequest(
+      codeA,
+      deadline,
+      iterations,
+      setupA,
+      teardownA
+    );
     reqA.id = `a-${reqA.id}`;
-    const reqB = createExecutionRequest(codeB, deadline);
+    const reqB = createExecutionRequest(
+      codeB,
+      deadline,
+      iterations,
+      setupB,
+      teardownB
+    );
     reqB.id = `b-${reqB.id}`;
 
     pendingRef.current = new Set([reqA.id, reqB.id]);
@@ -457,7 +484,17 @@ function JsPerfComparatorPage() {
 
     workerARef.current.postMessage(msgA);
     workerBRef.current.postMessage(msgB);
-  }, [runState, isReady, codeA, codeB]);
+  }, [
+    runState,
+    isReady,
+    codeA,
+    codeB,
+    iterations,
+    setupA,
+    teardownA,
+    setupB,
+    teardownB,
+  ]);
 
   const handleTerminate = useCallback(() => {
     workerAIdRef.current += 1;
@@ -555,6 +592,28 @@ function JsPerfComparatorPage() {
                 )}
               </SelectContent>
             </Select>
+            <div className="flex items-center gap-2">
+              <label
+                className="text-muted-fg text-sm"
+                htmlFor="iterations-input"
+              >
+                Iterations:
+              </label>
+              <Input
+                className="w-[80px]"
+                id="iterations-input"
+                max={1000}
+                min={1}
+                onChange={(e) => {
+                  const val = Number.parseInt(e.target.value, 10);
+                  if (!Number.isNaN(val) && val > 0) {
+                    setIterations(Math.min(val, 1000));
+                  }
+                }}
+                type="number"
+                value={iterations}
+              />
+            </div>
             {selectedPreset !== 'Custom' && (
               <Button
                 intent="secondary"
@@ -599,6 +658,94 @@ function JsPerfComparatorPage() {
                 />
               </div>
             </div>
+          </div>
+
+          <div className="mt-2">
+            <button
+              className="flex items-center gap-2 text-muted-fg text-sm hover:text-fg"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              type="button"
+            >
+              <span
+                className={`inline-block transition-transform ${showAdvanced ? 'rotate-90' : ''}`}
+              >
+                &#9654;
+              </span>
+              {showAdvanced ? 'Hide' : 'Show'} Advanced (Setup / Teardown)
+            </button>
+
+            {showAdvanced && (
+              <div className="mt-4 flex flex-col gap-6">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <div className="flex flex-col gap-2">
+                    <span className="font-medium text-sm">
+                      Setup A (optional)
+                    </span>
+                    <span className="text-muted-fg text-xs">
+                      Runs once before iterations (not timed)
+                    </span>
+                    <div className="overflow-hidden rounded-md border">
+                      <MonacoEditor
+                        height="100px"
+                        language="javascript"
+                        onChange={(v) => setSetupA(v ?? '')}
+                        value={setupA}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <span className="font-medium text-sm">
+                      Setup B (optional)
+                    </span>
+                    <span className="text-muted-fg text-xs">
+                      Runs once before iterations (not timed)
+                    </span>
+                    <div className="overflow-hidden rounded-md border">
+                      <MonacoEditor
+                        height="100px"
+                        language="javascript"
+                        onChange={(v) => setSetupB(v ?? '')}
+                        value={setupB}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <div className="flex flex-col gap-2">
+                    <span className="font-medium text-sm">
+                      Teardown A (optional)
+                    </span>
+                    <span className="text-muted-fg text-xs">
+                      Runs once after iterations (not timed)
+                    </span>
+                    <div className="overflow-hidden rounded-md border">
+                      <MonacoEditor
+                        height="100px"
+                        language="javascript"
+                        onChange={(v) => setTeardownA(v ?? '')}
+                        value={teardownA}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <span className="font-medium text-sm">
+                      Teardown B (optional)
+                    </span>
+                    <span className="text-muted-fg text-xs">
+                      Runs once after iterations (not timed)
+                    </span>
+                    <div className="overflow-hidden rounded-md border">
+                      <MonacoEditor
+                        height="100px"
+                        language="javascript"
+                        onChange={(v) => setTeardownB(v ?? '')}
+                        value={teardownB}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <Separator />
