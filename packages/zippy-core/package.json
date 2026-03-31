@@ -1,0 +1,27 @@
+{
+  "name": "@toolbox/zippy-core",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vp test run",
+    "test:watch": "vp test"
+  },
+  "dependencies": {
+    "browser-image-compression": "^2.0.2",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "radashi": "^12.5.1"
+  },
+  "devDependencies": {
+    "@toolbox/config-biome": "workspace:*",
+    "@toolbox/config-typescript": "workspace:*",
+    "@types/file-saver": "^2.0.7",
+    "typescript": "^6.0.2",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+  }
+}

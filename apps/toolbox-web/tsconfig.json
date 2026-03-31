@@ -19,7 +19,8 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"],
-      "@toolbox/wa-link-core": ["../../packages/wa-link-core/src"]
+      "@toolbox/wa-link-core": ["../../packages/wa-link-core/src"],
+      "@toolbox/zippy-core": ["../../packages/zippy-core/src"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,

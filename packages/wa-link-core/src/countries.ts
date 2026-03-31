@@ -9,15 +9,17 @@ export interface CountryOption {
 
 export type CountryCode = keyof typeof countryCodes;
 
-export const getPhoneCountryCode = (countryCode: string): string | undefined => {
+export const getPhoneCountryCode = (
+  countryCode: string,
+): string | undefined => {
   return countryCodes[countryCode as keyof typeof countryCodes];
 };
 
-export const countryCodeOptions: CountryOption[] = Object.keys(countryCodes).map(
-  (countryCode) => {
+export const countryCodeOptions: CountryOption[] = Object.keys(countryCodes)
+  .map((countryCode) => {
     const countryFlag = getUnicodeFlagIcon(countryCode);
     const regionName = new Intl.DisplayNames(["en"], { type: "region" }).of(
-      countryCode
+      countryCode,
     );
     const phoneCountryCode = getPhoneCountryCode(countryCode);
 
@@ -25,7 +27,6 @@ export const countryCodeOptions: CountryOption[] = Object.keys(countryCodes).map
       label: `${countryFlag} ${regionName} - ${phoneCountryCode}`,
       value: countryCode,
     };
-  }
-);
+  });
 
 export const getCountryOptions = (): CountryOption[] => countryCodeOptions;
