@@ -1,30 +1,235 @@
+'use client';
+
 import { createFileRoute } from '@tanstack/react-router';
+import { compressImage, downloadFiles } from '@toolbox/zippy-core';
+import { Download, LockIcon, UploadIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Badge } from '@/lib/components/ui/badge';
+import { Button } from '@/lib/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import { DropZone } from '@/lib/components/ui/drop-zone';
+import { FileTrigger } from '@/lib/components/ui/file-trigger';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/lib/components/ui/card';
+  ProgressBar,
+  ProgressBarTrack,
+  ProgressBarValue,
+} from '@/lib/components/ui/progress-bar';
 
 export const Route = createFileRoute('/tools/zippy-img/')({
-  component: RouteComponent,
+  component: ZippyImgPage,
+  staticData: {
+    pageTitle: 'zippy — Image Compressor',
+  },
 });
 
-function RouteComponent() {
+const MAX_FILES = 2;
+const MAX_SIZE_MB = 15;
+const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+interface ImageFile {
+  compressed?: File;
+  file: File;
+  progress: number;
+}
+
+function ZippyImgPage() {
+  const [inputs, setInputs] = useState<Array<ImageFile>>([]);
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  const handleFilesSelected = useCallback((files: Array<File>) => {
+    const validFiles = files.filter((f) => {
+      if (f.size > MAX_SIZE_BYTES) {
+        toast.error(`"${f.name}" exceeds ${MAX_SIZE_MB}MB limit`);
+        return false;
+      }
+      return f.type.startsWith('image/');
+    });
+
+    const accepted = validFiles.slice(0, MAX_FILES);
+    if (validFiles.length > MAX_FILES) {
+      toast.info(`Only first ${MAX_FILES} files accepted`);
+    }
+
+    setInputs((prev) => {
+      const existing = prev.map((p) => p.file.name);
+      const newFiles = accepted.filter((f) => !existing.includes(f.name));
+      return [
+        ...prev.map((p) => ({ ...p, progress: 0 })),
+        ...newFiles.map((file) => ({ file, progress: 0 })),
+      ].slice(0, MAX_FILES);
+    });
+  }, []);
+
+  const executeCompress = useCallback(async () => {
+    if (!inputs.length) {
+      return;
+    }
+
+    setIsCompressing(true);
+    setInputs((prev) =>
+      prev.map((p) => ({ ...p, progress: 0, compressed: undefined }))
+    );
+
+    const updated: Array<ImageFile> = [];
+
+    for (const [index, item] of inputs.entries()) {
+      try {
+        const compressed = await compressImage(item.file, {
+          onProgress: (progress) => {
+            setInputs((prev) =>
+              prev.map((p, i) => (i === index ? { ...p, progress } : p))
+            );
+          },
+        });
+        updated.push({ file: item.file, progress: 100, compressed });
+      } catch {
+        toast.error(`Failed to compress "${item.file.name}"`);
+        updated.push({ file: item.file, progress: 0, compressed: undefined });
+      }
+    }
+
+    setInputs(updated);
+    setIsCompressing(false);
+    toast.success('Compression complete');
+  }, [inputs]);
+
+  const handleDownload = useCallback(() => {
+    const compressed = inputs
+      .map((i) => i.compressed)
+      .filter((f): f is File => f !== undefined);
+    if (!compressed.length) {
+      return;
+    }
+    downloadFiles(compressed);
+  }, [inputs]);
+
+  const handleRemove = useCallback((name: string) => {
+    setInputs((prev) => prev.filter((p) => p.file.name !== name));
+  }, []);
+
+  const allDone = inputs.length > 0 && inputs.every((i) => i.progress >= 100);
+  const hasCompressed = inputs.some((i) => i.compressed !== undefined);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Zippy Image</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <Badge intent="info">Phase 4 Migration Target</Badge>
-        <p className="text-muted-fg text-sm">
-          This placeholder route is ready for zippy-img integration in the
-          unified app shell.
-        </p>
-      </CardContent>
-    </Card>
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
+      <Card>
+        <CardHeader />
+        <CardContent className="flex flex-col gap-4">
+          <p className="text-muted-fg text-sm">
+            Compress images securely in your browser. No files are uploaded to
+            any server.
+          </p>
+
+          <DropZone
+            className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-6"
+            onDrop={async (e) => {
+              const files: Array<File> = [];
+              for (const item of e.items) {
+                if (item.kind === 'file') {
+                  const file = await item.getFile();
+                  if (file) {
+                    files.push(file);
+                  }
+                }
+              }
+              handleFilesSelected(files);
+            }}
+          >
+            <div className="flex flex-col items-center gap-1 text-center">
+              <div className="flex size-10 items-center justify-center rounded-full border">
+                <UploadIcon className="size-5 text-muted-fg" />
+              </div>
+              <p className="font-medium text-sm">Drag & drop images here</p>
+              <p className="text-muted-fg text-xs">
+                Or click Browse to select (max {MAX_FILES} files, up to{' '}
+                {MAX_SIZE_MB}MB each)
+              </p>
+            </div>
+            <FileTrigger
+              acceptedFileTypes={['image/*']}
+              allowsMultiple
+              onSelect={(e) => {
+                if (e) {
+                  handleFilesSelected(Array.from(e));
+                }
+              }}
+            >
+              <Button intent="outline" size="sm">
+                Browse files
+              </Button>
+            </FileTrigger>
+          </DropZone>
+
+          {inputs.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {inputs.map((item) => (
+                <div
+                  className="flex items-center gap-3 rounded-md border p-3"
+                  key={item.file.name}
+                >
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="truncate font-medium text-sm">
+                      {item.file.name}
+                    </span>
+                    <ProgressBar className="w-full" value={item.progress}>
+                      <ProgressBarTrack />
+                      <ProgressBarValue />
+                    </ProgressBar>
+                  </div>
+                  <Button
+                    intent="plain"
+                    isDisabled={isCompressing}
+                    onPress={() => handleRemove(item.file.name)}
+                    size="sm"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <Button
+              intent="primary"
+              isDisabled={!inputs.length || isCompressing}
+              onPress={executeCompress}
+              size="lg"
+            >
+              {isCompressing ? 'Compressing...' : 'Compress Now'}
+            </Button>
+
+            {allDone && hasCompressed && (
+              <Button intent="outline" onPress={handleDownload} size="lg">
+                <Download />
+                Download Outputs
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader title="Features" />
+        <CardContent>
+          <ul className="flex flex-col gap-2 text-sm">
+            <li className="flex items-center gap-2">
+              <Badge intent="success">Image Compression</Badge>
+            </li>
+            <li className="flex items-center gap-2">
+              <Badge intent="info">Browser-Based Technology</Badge>
+            </li>
+            <li className="flex items-center gap-2">
+              <LockIcon className="size-4 text-muted-fg" />
+              <span className="text-muted-fg text-xs">
+                No files or images are sent to any server
+              </span>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

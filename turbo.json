@@ -9,10 +9,13 @@
       "cache": false,
       "persistent": true
     },
-    "typecheck": {
+    "type:check": {
       "outputs": []
     },
-    "lint": {
+    "ultracite:check": {
+      "outputs": []
+    },
+    "ultracite:fix": {
       "outputs": []
     },
     "format": {

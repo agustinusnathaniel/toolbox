@@ -6,14 +6,25 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "typecheck": "turbo run typecheck",
-    "lint": "turbo run lint",
-    "format": "biome format --write .",
-    "format:check": "biome format ."
+    "type:check": "turbo run type:check",
+    "test": "turbo run test",
+    "ultracite:check": "turbo run ultracite:check",
+    "release": "cross-env HUSKY=0 commit-and-tag-version",
+    "up-interactive": "pnpm up -i",
+    "up-latest": "pnpm up-interactive -L",
+    "prepare": "vp config"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "turbo": "^2.4.4"
+    "@biomejs/biome": "catalog:",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@commitlint/types": "^20.5.0",
+    "commit-and-tag-version": "^12.7.1",
+    "cross-env": "^10.1.0",
+    "turbo": "^2.6.1",
+    "typescript": "catalog:",
+    "ultracite": "catalog:",
+    "vite-plus": "catalog:"
   },
   "packageManager": "pnpm@10.6.5",
   "engines": {
