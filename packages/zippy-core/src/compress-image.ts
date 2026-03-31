@@ -42,16 +42,10 @@ async function getImageDimensions(
   });
 }
 
-export async function compressImage(
-  file: File,
-  options: CompressionOptions = {},
-): Promise<File> {
+export async function compressImage(file: File, options: CompressionOptions = {}): Promise<File> {
   const imageData = await getImageDimensions(file);
   const maxMeasure = max([imageData.height, imageData.width]);
-  const maxSizeMB = min([
-    Math.ceil(((imageData.size || 0) / SINGLE_MB) * 0.35),
-    5,
-  ]);
+  const maxSizeMB = min([Math.ceil(((imageData.size || 0) / SINGLE_MB) * 0.35), 5]);
   const maxWidthOrHeight = max([Math.ceil(maxMeasure * 0.75), 2400]);
 
   const compressed = await imageCompression(file, {

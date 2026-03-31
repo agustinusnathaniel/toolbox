@@ -1,12 +1,12 @@
 [[redirects]]
-  from="/*"
-  to="/index.html"
-  status=200
+from = "/*"
+to = "/index.html"
+status = 200
 
 [build]
-  command = 'pnpm build'
-  publish = 'dist'
+command = 'pnpm build'
+publish = 'dist'
 
 [build.environment]
-  NODE_VERSION="22"
-  COREPACK_INTEGRITY_KEYS="0"
+NODE_VERSION = "22"
+COREPACK_INTEGRITY_KEYS = "0"
