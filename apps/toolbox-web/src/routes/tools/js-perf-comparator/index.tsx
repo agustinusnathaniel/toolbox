@@ -318,6 +318,8 @@ function ResultCard({
   );
 }
 
+import JsPerfWorker from './-worker/js-perf.worker.ts?worker';
+
 function buildWorker(
   workerRef: React.RefObject<Worker | null>,
   workerIdRef: React.RefObject<number>,
@@ -326,8 +328,7 @@ function buildWorker(
   onError: () => void
 ) {
   const currentId = ++workerIdRef.current;
-  const workerUrl = new URL('./-worker/js-perf.worker.ts', import.meta.url);
-  const worker = new Worker(workerUrl, { type: 'module' });
+  const worker = new JsPerfWorker();
 
   worker.onmessage = (event: MessageEvent<WorkerOutboundMessage>) => {
     if (workerIdRef.current !== currentId) {
