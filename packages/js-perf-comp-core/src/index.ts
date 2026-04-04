@@ -6,6 +6,7 @@ export type {
   RunPolicy,
 } from "./models";
 export {
+  calculateRobustStatistics,
   calculateStatistics,
   DEFAULT_RUN_POLICY,
   formatDuration,
