@@ -1,8 +1,8 @@
 {
-  "extends": "@toolbox/config-typescript/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src"
-  },
-  "include": ["src"]
+	"extends": "@toolbox/config-typescript/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src"
+	},
+	"include": ["src"]
 }

@@ -4,7 +4,7 @@ import type {
   WorkerInboundMessage,
   WorkerOutboundMessage,
 } from '@toolbox/js-perf-comp-core';
-import { calculateStatistics } from '@toolbox/js-perf-comp-core';
+import { calculateRobustStatistics } from '@toolbox/js-perf-comp-core';
 import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten';
 
 let quickjsModule: Awaited<ReturnType<typeof getQuickJS>> | null = null;
@@ -36,6 +36,8 @@ function runCode(code: string, deadlineMs: number): 'interrupted' | null {
   return result === 'interrupted' ? 'interrupted' : null;
 }
 
+const WARMUP_ITERATIONS = 5;
+
 function runBenchmarkIterations(
   code: string,
   iterations: number,
@@ -45,6 +47,18 @@ function runBenchmarkIterations(
   let hasTimeout = false;
   let lastError: string | null = null;
 
+  // Warmup phase - let the JIT compiler optimize the code
+  // These runs are NOT included in the final statistics
+  for (let i = 0; i < WARMUP_ITERATIONS && !hasTimeout; i++) {
+    const result = runCode(code, deadlineMs);
+    if (result === 'interrupted') {
+      hasTimeout = true;
+      lastError = `Execution timed out after ${deadlineMs}ms`;
+      break;
+    }
+  }
+
+  // Timed iterations - these ARE included in statistics
   for (let i = 0; i < iterations && !hasTimeout; i++) {
     const iterStart = performance.now();
     const result = runCode(code, deadlineMs);
@@ -125,7 +139,8 @@ function execute(payload: ExecutionRequest): void {
     durationMs: totalDurationMs,
     perIterationMs:
       durations.length > 0 ? totalDurationMs / durations.length : null,
-    statistics: durations.length > 0 ? calculateStatistics(durations) : null,
+    statistics:
+      durations.length > 0 ? calculateRobustStatistics(durations) : null,
     errorMessage: errorMsg,
     output,
   });

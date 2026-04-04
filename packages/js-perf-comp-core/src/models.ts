@@ -53,7 +53,7 @@ export interface RunPolicy {
 export const DEFAULT_RUN_POLICY: RunPolicy = {
   deadlineMs: 5000,
   maxOutputLines: 100,
-  defaultIterations: 10,
+  defaultIterations: 30, // 30 timed iterations + 5 warmup = 35 total runs
 };
 
 export function normalizeResult(
@@ -130,4 +130,80 @@ export function calculateStatistics(durations: number[]): ExecutionStatistics {
   const marginMs = (zValue * stddevMs) / Math.sqrt(n);
 
   return { iterations: n, minMs, maxMs, meanMs, stddevMs, marginMs };
+}
+
+/**
+ * Calculate robust statistics by:
+ * 1. Removing outliers using IQR method (values outside 1.5 * IQR)
+ * 2. Using median instead of mean (more robust to skewed distributions)
+ *
+ * This provides more stable results for performance benchmarking.
+ */
+export function calculateRobustStatistics(durations: number[]): ExecutionStatistics {
+  const n = durations.length;
+  if (n === 0) {
+    return {
+      iterations: 0,
+      minMs: 0,
+      maxMs: 0,
+      meanMs: 0,
+      stddevMs: 0,
+      marginMs: 0,
+    };
+  }
+
+  if (n === 1) {
+    return {
+      iterations: 1,
+      minMs: durations[0],
+      maxMs: durations[0],
+      meanMs: durations[0],
+      stddevMs: 0,
+      marginMs: 0,
+    };
+  }
+
+  // Sort for percentile calculations
+  const sorted = [...durations].sort((a, b) => a - b);
+
+  // Calculate Q1 (25th percentile) and Q3 (75th percentile)
+  const q1Index = Math.floor(sorted.length * 0.25);
+  const q3Index = Math.floor(sorted.length * 0.75);
+  const q1 = sorted[q1Index];
+  const q3 = sorted[q3Index];
+
+  // Calculate IQR and outlier bounds
+  const iqr = q3 - q1;
+  const lowerBound = q1 - 1.5 * iqr;
+  const upperBound = q3 + 1.5 * iqr;
+
+  // Filter outliers
+  const filtered = sorted.filter((d) => d >= lowerBound && d <= upperBound);
+
+  // Calculate median
+  const mid = Math.floor(filtered.length / 2);
+  const medianMs =
+    filtered.length % 2 === 0 ? (filtered[mid - 1] + filtered[mid]) / 2 : filtered[mid];
+
+  // Use median as the "mean" for display purposes
+  const meanMs = medianMs;
+  const minMs = filtered[0];
+  const maxMs = filtered[filtered.length - 1];
+
+  // Calculate standard deviation on filtered data
+  const variance = filtered.reduce((sum, d) => sum + (d - meanMs) ** 2, 0) / filtered.length;
+  const stddevMs = Math.sqrt(variance);
+
+  // Calculate margin of error on filtered data
+  const zValue = filtered.length > 30 ? 1.96 : 2.0;
+  const marginMs = (zValue * stddevMs) / Math.sqrt(filtered.length);
+
+  return {
+    iterations: n, // Keep original iteration count for display
+    minMs,
+    maxMs,
+    meanMs,
+    stddevMs,
+    marginMs,
+  };
 }

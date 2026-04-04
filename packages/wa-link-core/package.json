@@ -1,25 +1,25 @@
 {
-  "name": "@toolbox/wa-link-core",
-  "version": "0.0.1",
-  "private": true,
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vp test run",
-    "test:watch": "vp test"
-  },
-  "dependencies": {
-    "awesome-phonenumber": "^7.8.0",
-    "country-flag-icons": "^1.6.15"
-  },
-  "devDependencies": {
-    "@toolbox/config-biome": "workspace:*",
-    "@toolbox/config-typescript": "workspace:*",
-    "@types/country-flag-icons": "^1.2.2",
-    "typescript": "^6.0.2",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
-  }
+	"name": "@toolbox/wa-link-core",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"test": "vp test run",
+		"test:watch": "vp test"
+	},
+	"dependencies": {
+		"awesome-phonenumber": "^7.8.0",
+		"country-flag-icons": "^1.6.15"
+	},
+	"devDependencies": {
+		"@toolbox/config-biome": "workspace:*",
+		"@toolbox/config-typescript": "workspace:*",
+		"@types/country-flag-icons": "^1.2.2",
+		"typescript": "^6.0.2",
+		"vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+	}
 }

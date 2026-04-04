@@ -1,11 +1,11 @@
 {
-  "root": false,
-  "linter": {
-    "rules": {
-      "correctness": {
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error"
-      }
-    }
-  }
+	"root": false,
+	"linter": {
+		"rules": {
+			"correctness": {
+				"noUnusedImports": "error",
+				"noUnusedVariables": "error"
+			}
+		}
+	}
 }
