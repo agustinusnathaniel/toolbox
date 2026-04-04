@@ -9,6 +9,7 @@
     "type:check": "turbo run type:check",
     "test": "turbo run test",
     "ultracite:check": "turbo run ultracite:check",
+    "ultracite:fix": "turbo run ultracite:fix",
     "release": "cross-env HUSKY=0 commit-and-tag-version",
     "up-interactive": "pnpm up -i",
     "up-latest": "pnpm up-interactive -L",
