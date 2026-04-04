@@ -229,6 +229,50 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 - **IMP-003**: `pendingRef` Set tracks pending executions by full ID (`a-${uuid}`, `b-${uuid}`)
 - **IMP-004**: `shouldInterruptAfterDeadline()` provides deadline-based execution interruption
 - **IMP-005**: Shared package `@toolbox/js-perf-comp-core` contains execution models and worker API
+- **IMP-006**: Use `import Worker from './path.ts?worker'` pattern for proper Vite bundling
+- **IMP-007**: Create separate worker instances for parallel execution to prevent JIT bias
+
+## Discoveries During Implementation
+
+### Discovery 1: Worker Bundling Pattern
+
+**Problem**: Using `new URL('./worker.ts', import.meta.url)` resulted in the worker being output as un-transpiled TypeScript in production builds.
+
+**Solution**: Use Vite's `?worker` import pattern:
+```typescript
+// ❌ Results in .ts file with TypeScript syntax
+const workerUrl = new URL('./-worker/js-perf.worker.ts', import.meta.url);
+const worker = new Worker(workerUrl, { type: 'module' });
+
+// ✅ Properly transpiled to JavaScript
+import JsPerfWorker from './-worker/js-perf.worker.ts?worker';
+const worker = new JsPerfWorker();
+```
+
+### Discovery 2: Parallel Execution Requires Separate Workers
+
+**Problem**: Running both snippets in a single worker resulted in sequential execution. The second snippet benefited from JIT warmup of the first, causing unfair comparisons.
+
+**Solution**: Create two independent worker instances:
+```typescript
+// Each worker has its own QuickJS runtime
+const workerA = new JsPerfWorker();
+const workerB = new JsPerfWorker();
+
+// Both execute truly in parallel with independent JIT optimization
+workerA.postMessage({ type: 'execute', payload: reqA });
+workerB.postMessage({ type: 'execute', payload: reqB });
+```
+
+**Lesson**: Worker reuse causes JIT bias. For fair comparisons, use separate workers or re-instantiate.
+
+### Discovery 3: JIT Warmup is Critical
+
+**Finding**: First 3-5 runs of any code are typically 10-100x slower than subsequent runs due to JIT compilation.
+
+**Impact**: Without warmup, benchmarks measure inconsistent optimization states.
+
+**Solution**: See ADR-0004 for detailed warmup methodology.
 
 ## Security Considerations
 
@@ -249,3 +293,5 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 - **REF-004**: `apps/toolbox-web/src/routes/tools/js-perf-comparator/-worker/` — Worker implementation
 - **REF-005**: ADR-0001 — Single-App Toolbox Web Architecture
 - **REF-006**: ADR-0002 — Vite + React + TanStack Platform Baseline
+- **REF-007**: ADR-0004 — JavaScript Benchmarking Methodology for Consistent Results
+- **REF-008**: `docs/LEARNINGS-js-perf-comparator.md` — Development log and practical lessons
