@@ -1,85 +1,106 @@
-# SPEC.md - System Specification
+# SPEC.md — Toolbox Platform
 
 ## Overview
 
-Intent Dashboard is a boilerplate for high-performance administrative and user dashboards. It prioritizes type safety, accessibility, and modern developer experience.
+Toolbox is a unified web platform that hosts multiple focused utility tools under one branded experience. The platform is built as a single-page application using TanStack Router for routing, with business logic extracted into reusable `*-core` packages.
 
-## Core Concepts
+## Architecture
 
-### 1. Functional Routing
+### Repository Structure
 
-The application uses **TanStack Router**. Routing is not just for navigation but also for:
+```
+toolbox/
+├── apps/
+│   └── toolbox-web/         # Main SPA
+├── packages/
+│   ├── wa-link-core/        # WhatsApp link generation logic
+│   ├── zippy-core/          # Image compression logic
+│   ├── ua-check-core/       # User agent parsing logic
+│   ├── qrcode-core/         # QR code generation logic
+│   ├── js-perf-comp-core/   # JS execution sandbox and result models
+│   ├── config-biome/        # Shared Biome linter config
+│   └── config-typescript/   # Shared TypeScript config
+```
 
-- Data prefetching (Loaders).
-- Authorization guards (`beforeLoad`).
-- Search parameter validation (Zod-integrated).
+### Core Concepts
 
-### 2. Atomic UI Construction
+#### 1. Route-Based Tool Composition
 
-UI components are built using a "Primitives + Variants" pattern:
+Each tool lives as a route under `src/routes/tools/<tool-name>/`. The root layout provides:
+- Global navigation sidebar
+- Tool-specific headings via `staticData.pageTitle`
+- Consistent page structure
 
-- **Primitives**: `react-aria-components` (RAC) provide the logic and accessibility.
-- **Variants**: `tailwind-variants` manages visual states (hover, pressed, disabled) and design intents (primary, danger, etc.).
-- **Consistency**: Components use a shared set of CSS variables (`--primary`, `--bg`, etc.) instead of direct utility classes where possible.
+#### 2. Core Packages
 
-### 3. State Invariants
+Business logic is extracted into `packages/<name>-core/` packages:
 
-- **Auth**: The presence of `auth.token` in the router context determines access to `/_private`.
-- **Query Cache**: The `QueryClient` is initialized once and passed through the router context to ensure consistency across the component tree.
-- **Persistence**: Auth tokens and user preferences (like theme) are persisted in `localStorage` via Zustand middleware.
+- **Pure logic only**: No UI imports, no route-specific state
+- **Browser-safe**: No server-only APIs
+- **Testable independently**: Can be unit tested without the full app
 
-## Technical Architecture
+#### 3. Metadata System
+
+Each route defines its own metadata via the `head` export. A shared helper in `src/lib/utils/metadata.ts` provides:
+- Consistent title formatting (`<title> — Toolbox`)
+- OG tags for social sharing
+- Tool-specific descriptions
+
+#### 4. Analytics Instrumentation
+
+The `src/lib/analytics/` module provides:
+- Event tracking (`track`, `page`)
+- Tool-specific helpers (`trackToolEntry`, `trackToolCompletion`, `trackAction`)
+- Development-mode logging (enable with `VITE_ANALYTICS_DEBUG=true`)
+- Extensible tracker interface for future analytics provider integration
+
+### State Management
+
+- **Server state**: TanStack Query (not currently used for data fetching, but available)
+- **Client state**: Zustand for preferences, component state for UI
+
+### Design System
+
+Built on:
+- **React Aria Components**: Accessible UI primitives
+- **Tailwind CSS 4**: Styling via `@theme` tokens
+- **Tailwind Variants**: Component-level variant logic
+
+## Data Flow
 
 ```mermaid
 graph TD
     A[Entry: main.tsx] --> B[TanStack Router]
-    B --> C{Auth Check via beforeLoad}
-    C -- Valid --> D[Layout: _private]
-    C -- Invalid --> E[Login: _restricted]
+    B --> C[Root Layout]
+    C --> D[Tool Layout]
+    D --> E[Tool Route Component]
 
-    D --> F[Sidebar / Nav]
-    D --> G[Page Content Outlet]
+    E --> F[Core Package]
+    F --> G[Pure Business Logic]
 
-    G --> H[Zustand Stores]
-    G --> I[TanStack Query]
-    G --> J[UI Components]
-
-    I --> K[Ky API Client]
-    K --> L[Backend / Mock API]
+    E --> H[Analytics]
+    H --> I[Console in Dev]
+    H --> J[Tracker Interface]
 ```
 
-## Data Lifecycle
+## Tool Addition Workflow
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant R as Router
-    participant Q as Query Client
-    participant A as API
+1. Create route at `src/routes/tools/<tool-name>/index.tsx`
+2. Add metadata entry in `src/lib/utils/metadata.ts`
+3. (Recommended) Extract logic to `packages/<tool-name>-core/`
+4. Add tool card to homepage catalog in `src/routes/index.tsx`
+5. (Optional) Add analytics tracking with `useToolTracking`
 
-    U->>R: Navigates to /dashboard
-    R->>R: check beforeLoad (Auth)
-    R->>Q: Prefetch data (if configured)
-    Q->>A: Fetch resource
-    A-->>Q: JSON Response
-    Q-->>R: Data Ready
-    R->>U: Render Page with Data
-```
-
-## Constraints & Rules
-
-1. **Accessibility (A11y)**: Every interactive element must be keyboard navigable and have appropriate ARIA labels (enforced by `react-aria-components`).
-2. **Type Safety**: No `any`. All API responses must have interfaces in `src/lib/services/api/types.ts`.
-3. **Styling**: strictly follow the Tailwind 4 `@theme` tokens in `src/lib/styles/globals.css`.
-4. **Performance**: Use SPA navigation. Avoid full page reloads.
+See **CONTRIBUTING.md** for detailed instructions.
 
 ## Non-Goals
 
-- **Multi-tenant isolation**: This boilerplate assumes a single organization/user context per session.
 - **SSR**: This is a client-side only (Vite) application.
-- **Heavy state in URL**: Keep search params minimal and validated. Use Zustand for large client-side state.
+- **Multi-tenant**: Assumes single organization context.
+- **Backend API**: All tools are browser-based with no server dependency.
 
 ## Known Limitations
 
-- **Mock Data**: Currently uses static mock data for demos (e.g., `products` in `table-demo.tsx`).
-- **Auth Storage**: `localStorage` is used for tokens, which may have security implications in high-security environments (prefer secure cookies if a backend supports it).
+- PWA service worker is disabled by default.
+- Auth is not implemented (no user accounts or personalization).
+- All tools are client-side only; no data persists across sessions.

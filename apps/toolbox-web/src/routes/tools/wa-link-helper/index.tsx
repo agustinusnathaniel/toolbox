@@ -21,6 +21,7 @@ import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { TOOL_META } from '@/lib/utils/metadata';
 
 const formSchema = z.object({
   country_code: z.string().min(1, 'Please select a country'),
@@ -30,11 +31,22 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>;
 
+const meta = TOOL_META['wa-link-helper'];
+
 export const Route = createFileRoute('/tools/wa-link-helper/')({
   component: WALinkHelperPage,
   staticData: {
-    pageTitle: 'WhatsApp Link Helper',
+    pageTitle: meta.title,
   },
+  head: () => ({
+    meta: [
+      { title: meta.title },
+      { name: 'description', content: meta.description },
+      { property: 'og:title', content: meta.title },
+      { property: 'og:description', content: meta.description },
+      { property: 'og:type', content: 'website' },
+    ],
+  }),
 });
 
 function WALinkHelperPage() {

@@ -1,71 +1,26 @@
-# Intent Dashboard
+# Toolbox
 
-A premium, high-performance dashboard template built with **React 19**, **TanStack Router**, and **React Aria Components**. Designed for speed, accessibility, and exceptional developer experience.
+A unified web platform for focused utility tools. Compress images, generate QR codes, check user agents, and more — all in one place, all browser-based.
 
 ---
 
-## ✨ Features
+## Features
 
-- **🚀 React 19 + Vite**: Cutting-edge performance and latest React features.
-- **🛣️ TanStack Router**: Fully type-safe routing with data prefetching and auth guards.
-- **🎨 Tailwind CSS 4**: Modern styling with native OKLCH support and streamlined `@theme` tokens.
-- **♿ Accessible UI**: Built on `react-aria-components` for rock-solid accessibility out of the box.
-- **📦 State Management**: Hybrid approach with `Zustand` (client) and `TanStack Query` (server).
-- **⚡ PWA Ready**: Optimized for offline use and mobile installation.
-- **🛠️ Developer First**: Biome for linting, Turbo for builds, Vitest for testing.
+- **WA Link Helper** — Generate WhatsApp links with pre-filled messages
+- **zippy** — Compress images securely in-browser with no server upload
+- **UA Check** — Inspect your browser and device user agent
+- **QR Code Generator** — Create QR codes for URLs or vCard contact info
+- **JS Performance Comparator** — Compare JavaScript snippet execution in sandboxed runtimes
 
-## 🏗️ Architecture Overview
+## Tech Stack
 
-The system is designed as a modular SPA where business logic (Routes) and UI Primitives (Components) are strictly separated.
+- **React 19** + **Vite** — Cutting-edge performance and latest React features
+- **TanStack Router** — Fully type-safe file-based routing
+- **Tailwind CSS 4** — Modern styling with native OKLCH support
+- **React Aria Components** — Accessible UI primitives out of the box
+- **pnpm** + **Turborepo** — Efficient monorepo management
 
-```mermaid
-graph LR
-    subgraph "Framework"
-        V[Vite]
-        R[TanStack Router]
-    end
-
-    subgraph "Core Logic"
-        Q[TanStack Query]
-        Z[Zustand Store]
-    end
-
-    subgraph "UI System"
-        RAC[React Aria Components]
-        TV[Tailwind Variants]
-        Icon[IntentUI Icons]
-    end
-
-    R --> Layout
-    Layout --> Pages
-    Pages --> RAC
-    Pages --> Q
-    Pages --> Z
-    RAC --> TV
-    TV --> Icon
-```
-
-## 📂 Repository Structure
-
-```text
-.
-├── src/
-│   ├── lib/
-│   │   ├── components/       # UI Primitives & Providers
-│   │   ├── services/         # API Clients (Ky) & Query Keys
-│   │   ├── stores/           # Zustand Auth & Preferences
-│   │   ├── styles/           # Tailwind 4 Globals
-│   │   └── utils/            # Shared Helper Functions
-│   ├── routes/               # File-based Routes (TanStack)
-│   │   ├── _private/         # Authenticated Dashboard Area
-│   │   └── _restricted/      # Login/Signup Pages
-│   └── main.tsx              # App Initialization
-├── public/                   # Static Assets & Manifest
-├── package.json              # Dependency Manifest
-└── biome.json                # Linter & Formatter Config
-```
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -84,7 +39,7 @@ pnpm install
 pnpm dev
 ```
 
-The application will be available at `http://localhost:3000`.
+The app will be available at `http://localhost:3000`.
 
 ### Building
 
@@ -99,12 +54,39 @@ pnpm test          # Run all tests
 pnpm test:ui       # Run tests with UI
 ```
 
-## 📖 Related Documentation
+## Project Structure
 
-- [**SPEC.md**](./SPEC.md) - Deep dive into system specification and data flow.
-- [**CONTRIBUTING.md**](./CONTRIBUTING.md) - Guidelines for code style, branching, and PRs.
-- [**AGENTS.md**](./AGENTS.md) - Specialized context and guidance for AI coding agents.
+```
+toolbox/
+├── apps/
+│   └── toolbox-web/         # Main SPA
+│       └── src/
+│           ├── routes/      # TanStack Router file-based routes
+│           │   └── tools/   # Individual tool routes
+│           └── lib/
+│               ├── components/  # UI primitives
+│               ├── analytics/  # Event tracking
+│               └── utils/      # Shared utilities
+├── packages/
+│   └── *-core/              # Business logic packages
+└── docs/
+    └── adr/                # Architecture decision records
+```
 
-## 📄 License
+## Documentation
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- [**SPEC.md**](./SPEC.md) — System specification and architecture
+- [**CONTRIBUTING.md**](./CONTRIBUTING.md) — How to add new tools and code guidelines
+- [**AGENTS.md**](./AGENTS.md) — Guidance for AI coding agents
+
+## Deployment
+
+The app can be deployed to any static hosting:
+
+- **Vercel**: Zero-config via `vercel.json`
+- **Netlify**: Configured via `netlify.toml`
+- **Other**: Build output in `dist/` can be served statically
+
+## License
+
+MIT

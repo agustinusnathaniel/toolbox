@@ -12,12 +12,24 @@ import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { TOOL_META } from '@/lib/utils/metadata';
+
+const meta = TOOL_META['qrcode-generator'];
 
 export const Route = createFileRoute('/tools/qrcode-generator/')({
   component: QRCodeGeneratorPage,
   staticData: {
-    pageTitle: 'QR Code Generator',
+    pageTitle: meta.title,
   },
+  head: () => ({
+    meta: [
+      { title: meta.title },
+      { name: 'description', content: meta.description },
+      { property: 'og:title', content: meta.title },
+      { property: 'og:description', content: meta.description },
+      { property: 'og:type', content: 'website' },
+    ],
+  }),
 });
 
 type QRMode = 'url' | 'vcard';
