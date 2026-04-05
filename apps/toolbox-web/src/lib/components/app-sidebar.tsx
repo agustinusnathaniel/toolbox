@@ -48,6 +48,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
         <Link
           className="flex items-center gap-x-2 group-data-[collapsible=dock]:size-10 group-data-[collapsible=dock]:justify-center"
           href="/"
+          onClick={handleMobileClose}
         >
           <IconGlobe className="size-5" />
           <SidebarLabel className="font-medium">Toolbox</SidebarLabel>
