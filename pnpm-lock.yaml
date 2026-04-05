@@ -108,6 +108,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@toolbox/calendar-core':
+        specifier: workspace:*
+        version: link:../../packages/calendar-core
       '@toolbox/js-perf-comp-core':
         specifier: workspace:*
         version: link:../../packages/js-perf-comp-core
@@ -180,9 +183,6 @@ importers:
       react-hook-form:
         specifier: ^7.72.0
         version: 7.72.0(react@19.2.4)
-      react-qrcode-logo:
-        specifier: ^2.8.0
-        version: 2.10.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       recharts:
         specifier: 3.8.1
         version: 3.8.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@17.0.2)(react@19.2.4)(redux@5.0.1)
@@ -264,16 +264,31 @@ importers:
         version: 1.2.0(@vite-pwa/assets-generator@1.0.2)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3))(workbox-build@7.4.0)(workbox-window@7.4.0)
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3)
+        version: 0.1.15(@types/node@25.5.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3))(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)
       vitest:
         specifier: npm:@voidzero-dev/vite-plus-test@latest
-        version: '@voidzero-dev/vite-plus-test@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3)'
+        version: '@voidzero-dev/vite-plus-test@0.1.15(@types/node@25.5.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3))(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)'
       web-vitals:
         specifier: ^5.2.0
         version: 5.2.0
       workbox-window:
         specifier: ^7.4.0
         version: 7.4.0
+
+  packages/calendar-core:
+    devDependencies:
+      '@toolbox/config-biome':
+        specifier: workspace:*
+        version: link:../config-biome
+      '@toolbox/config-typescript':
+        specifier: workspace:*
+        version: link:../config-typescript
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.2
+      vitest:
+        specifier: npm:@voidzero-dev/vite-plus-test@latest
+        version: '@voidzero-dev/vite-plus-test@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3)'
 
   packages/config-biome: {}
 
@@ -4715,10 +4730,6 @@ packages:
   lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
-  lodash.isequal@4.5.0:
-    resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
-    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
-
   lodash.ismatch@4.4.0:
     resolution: {integrity: sha512-fPMfXjGQEV9Xsq/8MTSgUf255gawYRbjwMyDbcvDhXgV7enSZA0hynz6vMPnpAb5iONEzBHBPsT+0zes5Z301g==}
 
@@ -5113,9 +5124,6 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qrcode-generator@1.5.2:
-    resolution: {integrity: sha512-pItrW0Z9HnDBnFmgiNrY1uxRdri32Uh9EjNYLPVC2zZ3ZRIIEqBoDgm4DkvDwNNDHTK7FNkmr8zAa77BYc9xNw==}
-
   qrcode.react@4.2.0:
     resolution: {integrity: sha512-QpgqWi8rD9DsS9EP3z7BT+5lY5SFhsqGjpgW5DY/i3mK4M9DTBNz3ErMi8BWYEfI3L0d8GIbGmcdFAS1uIRGjA==}
     peerDependencies:
@@ -5176,12 +5184,6 @@ packages:
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
-
-  react-qrcode-logo@2.10.0:
-    resolution: {integrity: sha512-Q1+jLtcyDl5rLR29YdkXVLzYk62p3+541x00HxURVBQhs6SqFyEZZVhvkU/VQ082ytXa3GdCmGWMLK5z0Vhe7g==}
-    peerDependencies:
-      react: '>=16.4.1'
-      react-dom: '>=16.4.1'
 
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
@@ -9298,6 +9300,46 @@ snapshots:
   '@voidzero-dev/vite-plus-linux-x64-musl@0.1.15':
     optional: true
 
+  '@voidzero-dev/vite-plus-test@0.1.15(@types/node@25.5.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3))(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@types/chai': 5.2.3
+      '@voidzero-dev/vite-plus-core': 0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)
+      es-module-lexer: 1.7.0
+      obug: 2.1.1
+      pixelmatch: 7.1.0
+      pngjs: 7.0.0
+      sirv: 3.0.2
+      std-env: 4.0.0
+      tinybench: 2.9.0
+      tinyexec: 1.0.4
+      tinyglobby: 0.2.15
+      vite: '@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)'
+      ws: 8.20.0
+    optionalDependencies:
+      '@types/node': 25.5.0
+      jsdom: 29.0.1
+    transitivePeerDependencies:
+      - '@arethetypeswrong/core'
+      - '@tsdown/css'
+      - '@tsdown/exe'
+      - '@vitejs/devtools'
+      - bufferutil
+      - esbuild
+      - jiti
+      - less
+      - publint
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - typescript
+      - unplugin-unused
+      - utf-8-validate
+      - yaml
+
   '@voidzero-dev/vite-plus-test@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -10783,8 +10825,6 @@ snapshots:
 
   lodash.debounce@4.0.8: {}
 
-  lodash.isequal@4.5.0: {}
-
   lodash.ismatch@4.4.0: {}
 
   lodash.kebabcase@4.1.1: {}
@@ -11211,8 +11251,6 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qrcode-generator@1.5.2: {}
-
   qrcode.react@4.2.0(react@19.2.4):
     dependencies:
       react: 19.2.4
@@ -11336,13 +11374,6 @@ snapshots:
       react: 19.2.4
 
   react-is@17.0.2: {}
-
-  react-qrcode-logo@2.10.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
-    dependencies:
-      lodash.isequal: 4.5.0
-      qrcode-generator: 1.5.2
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
 
   react-redux@9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1):
     dependencies:
@@ -12181,6 +12212,55 @@ snapshots:
       '@vite-pwa/assets-generator': 1.0.2
     transitivePeerDependencies:
       - supports-color
+
+  vite-plus@0.1.15(@types/node@25.5.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3))(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3):
+    dependencies:
+      '@oxc-project/types': 0.122.0
+      '@voidzero-dev/vite-plus-core': 0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)
+      '@voidzero-dev/vite-plus-test': 0.1.15(@types/node@25.5.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3))(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.3)
+      cac: 7.0.0
+      cross-spawn: 7.0.6
+      jsonc-parser: 3.3.1
+      oxfmt: 0.43.0
+      oxlint: 1.58.0(oxlint-tsgolint@0.18.1)
+      oxlint-tsgolint: 0.18.1
+      picocolors: 1.1.1
+    optionalDependencies:
+      '@voidzero-dev/vite-plus-darwin-arm64': 0.1.15
+      '@voidzero-dev/vite-plus-darwin-x64': 0.1.15
+      '@voidzero-dev/vite-plus-linux-arm64-gnu': 0.1.15
+      '@voidzero-dev/vite-plus-linux-arm64-musl': 0.1.15
+      '@voidzero-dev/vite-plus-linux-x64-gnu': 0.1.15
+      '@voidzero-dev/vite-plus-linux-x64-musl': 0.1.15
+      '@voidzero-dev/vite-plus-win32-arm64-msvc': 0.1.15
+      '@voidzero-dev/vite-plus-win32-x64-msvc': 0.1.15
+    transitivePeerDependencies:
+      - '@arethetypeswrong/core'
+      - '@edge-runtime/vm'
+      - '@opentelemetry/api'
+      - '@tsdown/css'
+      - '@tsdown/exe'
+      - '@types/node'
+      - '@vitejs/devtools'
+      - '@vitest/ui'
+      - bufferutil
+      - esbuild
+      - happy-dom
+      - jiti
+      - jsdom
+      - less
+      - publint
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - typescript
+      - unplugin-unused
+      - utf-8-validate
+      - vite
+      - yaml
 
   vite-plus@0.1.15(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(jsdom@29.0.1)(terser@5.46.1)(tsx@4.21.0)(typescript@6.0.2)(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3):
     dependencies:

@@ -1,4 +1,5 @@
 import {
+  IconCalendar,
   IconCamera,
   IconCodeLines,
   IconDashboard,
@@ -58,6 +59,10 @@ export const ProfileMenuContent = () => {
       <MenuItem href={'/tools/qrcode-generator' as ToOptions['to']}>
         <IconQrCode />
         QR Code Generator
+      </MenuItem>
+      <MenuItem href={'/tools/add-to-calendar' as ToOptions['to']}>
+        <IconCalendar />
+        Add to Calendar
       </MenuItem>
     </>
   );
