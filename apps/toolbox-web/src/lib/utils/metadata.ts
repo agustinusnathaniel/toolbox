@@ -55,4 +55,9 @@ export const TOOL_META = {
       'Compare JavaScript snippet execution in parallel sandboxed runtimes.',
     path: '/tools/js-perf-comparator',
   },
+  'add-to-calendar': {
+    title: 'Add to Calendar',
+    description: 'Generate Add to Calendar links for Google Calendar events.',
+    path: '/tools/add-to-calendar',
+  },
 } as const;

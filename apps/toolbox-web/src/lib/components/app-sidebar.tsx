@@ -2,6 +2,7 @@
 
 import {
   IconBrandWhatsapp,
+  IconCalendar,
   IconCamera,
   IconCodeLines,
   IconDeviceDesktop,
@@ -116,5 +117,10 @@ const navigation: Array<{
     label: 'QR Code Generator',
     href: '/tools/qrcode-generator',
     icon: <IconQrCode />,
+  },
+  {
+    label: 'Add to Calendar',
+    href: '/tools/add-to-calendar',
+    icon: <IconCalendar />,
   },
 ];

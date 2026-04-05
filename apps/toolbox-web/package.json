@@ -33,6 +33,7 @@
     "@tanstack/react-router": "^1.168.4",
     "@tanstack/react-router-devtools": "^1.166.11",
     "@tanstack/react-table": "^8.21.3",
+    "@toolbox/calendar-core": "workspace:*",
     "@toolbox/js-perf-comp-core": "workspace:*",
     "@toolbox/qrcode-core": "workspace:*",
     "@toolbox/ua-check-core": "workspace:*",

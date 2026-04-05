@@ -1,6 +1,7 @@
 import { createFileRoute, Link, type ToOptions } from '@tanstack/react-router';
 import {
   ArrowRight,
+  CalendarIcon,
   Link2Icon,
   QrCodeIcon,
   ScanIcon,
@@ -61,6 +62,12 @@ const tools: Array<ToolCard> = [
     description: 'Compare JavaScript snippets in a controlled runtime sandbox.',
     href: '/tools/js-perf-comparator',
     icon: <ZapIcon className="size-6" />,
+  },
+  {
+    name: 'Add to Calendar',
+    description: 'Generate Add to Calendar links for Google Calendar events.',
+    href: '/tools/add-to-calendar',
+    icon: <CalendarIcon className="size-6" />,
   },
 ];
 

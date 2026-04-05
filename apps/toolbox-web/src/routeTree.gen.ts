@@ -16,6 +16,7 @@ import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/tools/wa-li
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/tools/ua-check/index'
 import { Route as ToolsQrcodeGeneratorIndexRouteImport } from './routes/tools/qrcode-generator/index'
 import { Route as ToolsJsPerfComparatorIndexRouteImport } from './routes/tools/js-perf-comparator/index'
+import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/tools/add-to-calendar/index'
 
 const ToolsRouteRoute = ToolsRouteRouteImport.update({
   id: '/tools',
@@ -54,10 +55,16 @@ const ToolsJsPerfComparatorIndexRoute =
     path: '/js-perf-comparator/',
     getParentRoute: () => ToolsRouteRoute,
   } as any)
+const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
+  id: '/add-to-calendar/',
+  path: '/add-to-calendar/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tools': typeof ToolsRouteRouteWithChildren
+  '/tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
   '/tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
   '/tools/ua-check/': typeof ToolsUaCheckIndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/tools': typeof ToolsRouteRouteWithChildren
+  '/tools/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
   '/tools/js-perf-comparator': typeof ToolsJsPerfComparatorIndexRoute
   '/tools/qrcode-generator': typeof ToolsQrcodeGeneratorIndexRoute
   '/tools/ua-check': typeof ToolsUaCheckIndexRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/tools': typeof ToolsRouteRouteWithChildren
+  '/tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
   '/tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
   '/tools/ua-check/': typeof ToolsUaCheckIndexRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/tools'
+    | '/tools/add-to-calendar/'
     | '/tools/js-perf-comparator/'
     | '/tools/qrcode-generator/'
     | '/tools/ua-check/'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/tools'
+    | '/tools/add-to-calendar'
     | '/tools/js-perf-comparator'
     | '/tools/qrcode-generator'
     | '/tools/ua-check'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/tools'
+    | '/tools/add-to-calendar/'
     | '/tools/js-perf-comparator/'
     | '/tools/qrcode-generator/'
     | '/tools/ua-check/'
@@ -169,10 +181,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsJsPerfComparatorIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/tools/add-to-calendar/': {
+      id: '/tools/add-to-calendar/'
+      path: '/add-to-calendar'
+      fullPath: '/tools/add-to-calendar/'
+      preLoaderRoute: typeof ToolsAddToCalendarIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
   }
 }
 
 interface ToolsRouteRouteChildren {
+  ToolsAddToCalendarIndexRoute: typeof ToolsAddToCalendarIndexRoute
   ToolsJsPerfComparatorIndexRoute: typeof ToolsJsPerfComparatorIndexRoute
   ToolsQrcodeGeneratorIndexRoute: typeof ToolsQrcodeGeneratorIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
@@ -181,6 +201,7 @@ interface ToolsRouteRouteChildren {
 }
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
+  ToolsAddToCalendarIndexRoute: ToolsAddToCalendarIndexRoute,
   ToolsJsPerfComparatorIndexRoute: ToolsJsPerfComparatorIndexRoute,
   ToolsQrcodeGeneratorIndexRoute: ToolsQrcodeGeneratorIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
