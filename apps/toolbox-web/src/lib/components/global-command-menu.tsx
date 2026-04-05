@@ -4,7 +4,9 @@ import {
   IconBrandWhatsapp,
   IconCamera,
   IconCodeLines,
+  IconDeviceDesktop,
   IconGlobe,
+  IconQrCode,
   IconSearch,
 } from '@intentui/icons';
 import { useNavigate } from '@tanstack/react-router';
@@ -53,6 +55,20 @@ const navigationItems = [
     icon: IconCodeLines,
     href: '/tools/js-perf-comparator',
   },
+  {
+    id: 'ua-check',
+    title: 'UA Check',
+    description: 'Check your browser user agent info',
+    icon: IconDeviceDesktop,
+    href: '/tools/ua-check',
+  },
+  {
+    id: 'qrcode-generator',
+    title: 'QR Code Generator',
+    description: 'Generate QR codes for URL or vCard',
+    icon: IconQrCode,
+    href: '/tools/qrcode-generator',
+  },
 ];
 
 const quickActions = [
@@ -76,6 +92,20 @@ const quickActions = [
     description: 'Go to image compression tool',
     icon: IconCamera,
     href: '/tools/zippy-img',
+  },
+  {
+    id: 'open-ua-check',
+    title: 'Open UA Check',
+    description: 'Go to user agent check tool',
+    icon: IconDeviceDesktop,
+    href: '/tools/ua-check',
+  },
+  {
+    id: 'open-qrcode-generator',
+    title: 'Open QR Code Generator',
+    description: 'Go to QR code generator tool',
+    icon: IconQrCode,
+    href: '/tools/qrcode-generator',
   },
 ];
 

@@ -34,6 +34,18 @@ const currentTools: Array<ToolCard> = [
     href: '/tools/zippy-img',
     status: 'Current',
   },
+  {
+    name: 'UA Check',
+    description: 'Check your browser and device user agent information.',
+    href: '/tools/ua-check',
+    status: 'Current',
+  },
+  {
+    name: 'QR Code Generator',
+    description: 'Generate QR codes for URLs or vCard contact information.',
+    href: '/tools/qrcode-generator',
+    status: 'Current',
+  },
 ];
 
 const upcomingTools: Array<ToolCard> = [

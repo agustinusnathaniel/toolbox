@@ -4,8 +4,10 @@ import {
   IconBrandWhatsapp,
   IconCamera,
   IconCodeLines,
+  IconDeviceDesktop,
   IconGlobe,
   IconMoon,
+  IconQrCode,
   IconSun,
 } from '@intentui/icons';
 import { type ToOptions, useLocation } from '@tanstack/react-router';
@@ -103,5 +105,15 @@ const navigation: Array<{
     label: 'JS Perf Comparator',
     href: '/tools/js-perf-comparator',
     icon: <IconCodeLines />,
+  },
+  {
+    label: 'UA Check',
+    href: '/tools/ua-check',
+    icon: <IconDeviceDesktop />,
+  },
+  {
+    label: 'QR Code Generator',
+    href: '/tools/qrcode-generator',
+    icon: <IconQrCode />,
   },
 ];

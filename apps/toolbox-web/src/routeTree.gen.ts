@@ -13,6 +13,8 @@ import { Route as ToolsRouteRouteImport } from './routes/tools/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/tools/zippy-img/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/tools/wa-link-helper/index'
+import { Route as ToolsUaCheckIndexRouteImport } from './routes/tools/ua-check/index'
+import { Route as ToolsQrcodeGeneratorIndexRouteImport } from './routes/tools/qrcode-generator/index'
 import { Route as ToolsJsPerfComparatorIndexRouteImport } from './routes/tools/js-perf-comparator/index'
 
 const ToolsRouteRoute = ToolsRouteRouteImport.update({
@@ -35,6 +37,17 @@ const ToolsWaLinkHelperIndexRoute = ToolsWaLinkHelperIndexRouteImport.update({
   path: '/wa-link-helper/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsUaCheckIndexRoute = ToolsUaCheckIndexRouteImport.update({
+  id: '/ua-check/',
+  path: '/ua-check/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsQrcodeGeneratorIndexRoute =
+  ToolsQrcodeGeneratorIndexRouteImport.update({
+    id: '/qrcode-generator/',
+    path: '/qrcode-generator/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsJsPerfComparatorIndexRoute =
   ToolsJsPerfComparatorIndexRouteImport.update({
     id: '/js-perf-comparator/',
@@ -46,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tools': typeof ToolsRouteRouteWithChildren
   '/tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
+  '/tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
+  '/tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/tools/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
@@ -53,6 +68,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/tools': typeof ToolsRouteRouteWithChildren
   '/tools/js-perf-comparator': typeof ToolsJsPerfComparatorIndexRoute
+  '/tools/qrcode-generator': typeof ToolsQrcodeGeneratorIndexRoute
+  '/tools/ua-check': typeof ToolsUaCheckIndexRoute
   '/tools/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
   '/tools/zippy-img': typeof ToolsZippyImgIndexRoute
 }
@@ -61,6 +78,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/tools': typeof ToolsRouteRouteWithChildren
   '/tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
+  '/tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
+  '/tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/tools/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
@@ -70,6 +89,8 @@ export interface FileRouteTypes {
     | '/'
     | '/tools'
     | '/tools/js-perf-comparator/'
+    | '/tools/qrcode-generator/'
+    | '/tools/ua-check/'
     | '/tools/wa-link-helper/'
     | '/tools/zippy-img/'
   fileRoutesByTo: FileRoutesByTo
@@ -77,6 +98,8 @@ export interface FileRouteTypes {
     | '/'
     | '/tools'
     | '/tools/js-perf-comparator'
+    | '/tools/qrcode-generator'
+    | '/tools/ua-check'
     | '/tools/wa-link-helper'
     | '/tools/zippy-img'
   id:
@@ -84,6 +107,8 @@ export interface FileRouteTypes {
     | '/'
     | '/tools'
     | '/tools/js-perf-comparator/'
+    | '/tools/qrcode-generator/'
+    | '/tools/ua-check/'
     | '/tools/wa-link-helper/'
     | '/tools/zippy-img/'
   fileRoutesById: FileRoutesById
@@ -123,6 +148,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsWaLinkHelperIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/tools/ua-check/': {
+      id: '/tools/ua-check/'
+      path: '/ua-check'
+      fullPath: '/tools/ua-check/'
+      preLoaderRoute: typeof ToolsUaCheckIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/tools/qrcode-generator/': {
+      id: '/tools/qrcode-generator/'
+      path: '/qrcode-generator'
+      fullPath: '/tools/qrcode-generator/'
+      preLoaderRoute: typeof ToolsQrcodeGeneratorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/tools/js-perf-comparator/': {
       id: '/tools/js-perf-comparator/'
       path: '/js-perf-comparator'
@@ -135,12 +174,16 @@ declare module '@tanstack/react-router' {
 
 interface ToolsRouteRouteChildren {
   ToolsJsPerfComparatorIndexRoute: typeof ToolsJsPerfComparatorIndexRoute
+  ToolsQrcodeGeneratorIndexRoute: typeof ToolsQrcodeGeneratorIndexRoute
+  ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
   ToolsZippyImgIndexRoute: typeof ToolsZippyImgIndexRoute
 }
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsJsPerfComparatorIndexRoute: ToolsJsPerfComparatorIndexRoute,
+  ToolsQrcodeGeneratorIndexRoute: ToolsQrcodeGeneratorIndexRoute,
+  ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
   ToolsZippyImgIndexRoute: ToolsZippyImgIndexRoute,
 }
