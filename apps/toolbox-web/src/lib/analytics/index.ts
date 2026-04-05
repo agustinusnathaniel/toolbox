@@ -1,0 +1,95 @@
+export type AnalyticsEvent = {
+  name: string;
+  properties?: Record<string, string | number | boolean>;
+  timestamp?: number;
+};
+
+export type AnalyticsTracker = {
+  track: (event: AnalyticsEvent) => void;
+  page: (params: { name: string; path: string }) => void;
+};
+
+const listeners: Set<AnalyticsTracker> = new Set();
+
+const isDev =
+  import.meta.env.DEV || import.meta.env.VITE_ANALYTICS_DEBUG === true;
+
+export const analytics = {
+  track(event: AnalyticsEvent): void {
+    const enriched: AnalyticsEvent = {
+      ...event,
+      timestamp: event.timestamp ?? Date.now(),
+    };
+
+    if (isDev) {
+      console.log('[Analytics]', enriched);
+    }
+
+    for (const tracker of listeners) {
+      try {
+        tracker.track(enriched);
+      } catch {
+        // Silently ignore tracker errors
+      }
+    }
+  },
+
+  page(params: { name: string; path: string }): void {
+    if (isDev) {
+      console.log('[Analytics] Page', params);
+    }
+
+    for (const tracker of listeners) {
+      try {
+        tracker.page(params);
+      } catch {
+        // Silently ignore tracker errors
+      }
+    }
+  },
+
+  addTracker(tracker: AnalyticsTracker): () => void {
+    listeners.add(tracker);
+    return () => listeners.delete(tracker);
+  },
+};
+
+export function trackToolEntry(toolId: string, toolName: string): void {
+  analytics.track({
+    name: 'tool_entry',
+    properties: {
+      tool_id: toolId,
+      tool_name: toolName,
+    },
+  });
+}
+
+export function trackToolCompletion(
+  toolId: string,
+  toolName: string,
+  success: boolean
+): void {
+  analytics.track({
+    name: 'tool_completion',
+    properties: {
+      tool_id: toolId,
+      tool_name: toolName,
+      success,
+    },
+  });
+}
+
+export function trackToolAction(
+  toolId: string,
+  toolName: string,
+  action: string
+): void {
+  analytics.track({
+    name: 'tool_action',
+    properties: {
+      tool_id: toolId,
+      tool_name: toolName,
+      action,
+    },
+  });
+}

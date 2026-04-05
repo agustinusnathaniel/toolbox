@@ -9,13 +9,12 @@ import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite-plus';
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  // TODO: enable if you want to enable PWA service worker
   disable: true,
   registerType: 'autoUpdate',
   base: '/',
   manifest: {
-    short_name: 'vite-react-tailwind-starter',
-    name: 'Vite React App Template',
+    short_name: 'Toolbox',
+    name: 'Toolbox — Unified Utility Platform',
     theme_color: '#000000',
     lang: 'en',
     start_url: '/',

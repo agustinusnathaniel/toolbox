@@ -38,12 +38,24 @@ import {
   SelectTrigger,
 } from '@/lib/components/ui/select';
 import { Separator } from '@/lib/components/ui/separator';
+import { TOOL_META } from '@/lib/utils/metadata';
+
+const meta = TOOL_META['js-perf-comparator'];
 
 export const Route = createFileRoute('/tools/js-perf-comparator/')({
   component: JsPerfComparatorPage,
   staticData: {
-    pageTitle: 'JS Performance Comparator',
+    pageTitle: meta.title,
   },
+  head: () => ({
+    meta: [
+      { title: meta.title },
+      { name: 'description', content: meta.description },
+      { property: 'og:title', content: meta.title },
+      { property: 'og:description', content: meta.description },
+      { property: 'og:type', content: 'website' },
+    ],
+  }),
 });
 
 interface Preset {

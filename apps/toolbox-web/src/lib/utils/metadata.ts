@@ -1,0 +1,58 @@
+export const SITE_NAME = 'Toolbox';
+export const SITE_DESCRIPTION = 'A unified platform for useful web tools.';
+export const SITE_URL = 'https://toolbox.example.com';
+
+export type MetaParams = {
+  title: string;
+  description: string;
+  path?: string;
+  image?: string;
+};
+
+export function buildMeta({ title, description, path, image }: MetaParams): {
+  title: string;
+  description: string;
+  image?: string;
+  url?: string;
+} {
+  const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
+  const url = path ? `${SITE_URL}${path}` : undefined;
+
+  return {
+    title: fullTitle,
+    description,
+    image,
+    url,
+  };
+}
+
+export const TOOL_META = {
+  'wa-link-helper': {
+    title: 'WA Link Helper',
+    description:
+      'Generate WhatsApp links with pre-filled messages and country codes.',
+    path: '/tools/wa-link-helper',
+  },
+  'zippy-img': {
+    title: 'zippy — Image Compressor',
+    description:
+      'Compress images securely in your browser with no server upload.',
+    path: '/tools/zippy-img',
+  },
+  'ua-check': {
+    title: 'UA Check',
+    description: 'Check your browser and device user agent information.',
+    path: '/tools/ua-check',
+  },
+  'qrcode-generator': {
+    title: 'QR Code Generator',
+    description: 'Generate QR codes for URLs or vCard contact information.',
+    path: '/tools/qrcode-generator',
+  },
+  'js-perf-comparator': {
+    title: 'JS Performance Comparator',
+    description:
+      'Compare JavaScript snippet execution in parallel sandboxed runtimes.',
+    path: '/tools/js-perf-comparator',
+  },
+} as const;

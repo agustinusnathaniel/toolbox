@@ -9,9 +9,20 @@ import {
 } from '@/lib/components/ui/card';
 import { Heading } from '@/lib/components/ui/heading';
 import { Link } from '@/lib/components/ui/link';
+import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/utils/metadata';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
+  head: () => ({
+    meta: [
+      { title: SITE_NAME },
+      { name: 'description', content: SITE_DESCRIPTION },
+      { property: 'og:title', content: SITE_NAME },
+      { property: 'og:description', content: SITE_DESCRIPTION },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: '/' },
+    ],
+  }),
 });
 
 type ToolCard = {

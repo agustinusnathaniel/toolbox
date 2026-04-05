@@ -6,12 +6,24 @@ import { useMemo } from 'react';
 
 import { Badge } from '@/lib/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import { TOOL_META } from '@/lib/utils/metadata';
+
+const meta = TOOL_META['ua-check'];
 
 export const Route = createFileRoute('/tools/ua-check/')({
   component: UACheckPage,
   staticData: {
-    pageTitle: 'UA Check',
+    pageTitle: meta.title,
   },
+  head: () => ({
+    meta: [
+      { title: meta.title },
+      { name: 'description', content: meta.description },
+      { property: 'og:title', content: meta.title },
+      { property: 'og:description', content: meta.description },
+      { property: 'og:type', content: 'website' },
+    ],
+  }),
 });
 
 interface InfoRowProps {

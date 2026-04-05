@@ -10,9 +10,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Providers } from '@/lib/components/providers';
 import { Toast } from '@/lib/components/ui/toast';
 import { Layout } from '@/lib/layout';
-
-const title = 'Toolbox';
-const description = 'A unified platform for useful web tools.';
+import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/utils/metadata';
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -20,11 +18,11 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     meta: [
       {
-        title,
+        title: SITE_NAME,
       },
       {
         name: 'description',
-        content: description,
+        content: SITE_DESCRIPTION,
       },
       {
         name: 'viewport',
@@ -32,7 +30,7 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'application-name',
-        content: title,
+        content: SITE_NAME,
       },
       {
         name: 'apple-mobile-web-app-capable',
@@ -44,7 +42,7 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'apple-mobile-web-app-title',
-        content: title,
+        content: SITE_NAME,
       },
       {
         name: 'format-detection',
@@ -64,11 +62,11 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'og:title',
-        content: title,
+        content: SITE_NAME,
       },
       {
         name: 'og:description',
-        content: description,
+        content: SITE_DESCRIPTION,
       },
       {
         name: 'twitter:card',
@@ -76,11 +74,11 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'twitter:title',
-        content: title,
+        content: SITE_NAME,
       },
       {
         name: 'twitter:description',
-        content: description,
+        content: SITE_DESCRIPTION,
       },
     ],
     links: [

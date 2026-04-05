@@ -16,12 +16,24 @@ import {
   ProgressBarTrack,
   ProgressBarValue,
 } from '@/lib/components/ui/progress-bar';
+import { TOOL_META } from '@/lib/utils/metadata';
+
+const meta = TOOL_META['zippy-img'];
 
 export const Route = createFileRoute('/tools/zippy-img/')({
   component: ZippyImgPage,
   staticData: {
-    pageTitle: 'zippy — Image Compressor',
+    pageTitle: meta.title,
   },
+  head: () => ({
+    meta: [
+      { title: meta.title },
+      { name: 'description', content: meta.description },
+      { property: 'og:title', content: meta.title },
+      { property: 'og:description', content: meta.description },
+      { property: 'og:type', content: 'website' },
+    ],
+  }),
 });
 
 const MAX_FILES = 2;
