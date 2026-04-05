@@ -1,6 +1,5 @@
 'use client';
 
-import { Editor } from '@monaco-editor/react';
 import { createFileRoute } from '@tanstack/react-router';
 import {
   createExecutionRequest,
@@ -27,7 +26,14 @@ import {
   Square,
   XCircle,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
@@ -46,7 +52,12 @@ import {
   SelectTrigger,
 } from '@/lib/components/ui/select';
 import { Separator } from '@/lib/components/ui/separator';
+import { Skeleton } from '@/lib/components/ui/skeleton';
 import { TOOL_META } from '@/lib/utils/metadata';
+
+const Editor = lazy(() =>
+  import('@monaco-editor/react').then((m) => ({ default: m.Editor }))
+);
 
 const meta = TOOL_META['js-perf-comparator'];
 
@@ -654,29 +665,33 @@ function JsPerfComparatorPage() {
             <div className="flex flex-col gap-2">
               <span className="font-medium text-sm">Snippet A</span>
               <div className="overflow-hidden rounded-md border">
-                <MonacoEditor
-                  height="200px"
-                  language="javascript"
-                  onChange={(v) => {
-                    setCodeA(v ?? '');
-                    setSelectedPreset('Custom');
-                  }}
-                  value={codeA}
-                />
+                <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
+                  <MonacoEditor
+                    height="200px"
+                    language="javascript"
+                    onChange={(v) => {
+                      setCodeA(v ?? '');
+                      setSelectedPreset('Custom');
+                    }}
+                    value={codeA}
+                  />
+                </Suspense>
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <span className="font-medium text-sm">Snippet B</span>
               <div className="overflow-hidden rounded-md border">
-                <MonacoEditor
-                  height="200px"
-                  language="javascript"
-                  onChange={(v) => {
-                    setCodeB(v ?? '');
-                    setSelectedPreset('Custom');
-                  }}
-                  value={codeB}
-                />
+                <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
+                  <MonacoEditor
+                    height="200px"
+                    language="javascript"
+                    onChange={(v) => {
+                      setCodeB(v ?? '');
+                      setSelectedPreset('Custom');
+                    }}
+                    value={codeB}
+                  />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -706,12 +721,16 @@ function JsPerfComparatorPage() {
                       Runs once before iterations (not timed)
                     </span>
                     <div className="overflow-hidden rounded-md border">
-                      <MonacoEditor
-                        height="100px"
-                        language="javascript"
-                        onChange={(v) => setSetupA(v ?? '')}
-                        value={setupA}
-                      />
+                      <Suspense
+                        fallback={<Skeleton className="h-[100px] w-full" />}
+                      >
+                        <MonacoEditor
+                          height="100px"
+                          language="javascript"
+                          onChange={(v) => setSetupA(v ?? '')}
+                          value={setupA}
+                        />
+                      </Suspense>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -722,12 +741,16 @@ function JsPerfComparatorPage() {
                       Runs once before iterations (not timed)
                     </span>
                     <div className="overflow-hidden rounded-md border">
-                      <MonacoEditor
-                        height="100px"
-                        language="javascript"
-                        onChange={(v) => setSetupB(v ?? '')}
-                        value={setupB}
-                      />
+                      <Suspense
+                        fallback={<Skeleton className="h-[100px] w-full" />}
+                      >
+                        <MonacoEditor
+                          height="100px"
+                          language="javascript"
+                          onChange={(v) => setSetupB(v ?? '')}
+                          value={setupB}
+                        />
+                      </Suspense>
                     </div>
                   </div>
                 </div>
@@ -740,12 +763,16 @@ function JsPerfComparatorPage() {
                       Runs once after iterations (not timed)
                     </span>
                     <div className="overflow-hidden rounded-md border">
-                      <MonacoEditor
-                        height="100px"
-                        language="javascript"
-                        onChange={(v) => setTeardownA(v ?? '')}
-                        value={teardownA}
-                      />
+                      <Suspense
+                        fallback={<Skeleton className="h-[100px] w-full" />}
+                      >
+                        <MonacoEditor
+                          height="100px"
+                          language="javascript"
+                          onChange={(v) => setTeardownA(v ?? '')}
+                          value={teardownA}
+                        />
+                      </Suspense>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -756,12 +783,16 @@ function JsPerfComparatorPage() {
                       Runs once after iterations (not timed)
                     </span>
                     <div className="overflow-hidden rounded-md border">
-                      <MonacoEditor
-                        height="100px"
-                        language="javascript"
-                        onChange={(v) => setTeardownB(v ?? '')}
-                        value={teardownB}
-                      />
+                      <Suspense
+                        fallback={<Skeleton className="h-[100px] w-full" />}
+                      >
+                        <MonacoEditor
+                          height="100px"
+                          language="javascript"
+                          onChange={(v) => setTeardownB(v ?? '')}
+                          value={teardownB}
+                        />
+                      </Suspense>
                     </div>
                   </div>
                 </div>

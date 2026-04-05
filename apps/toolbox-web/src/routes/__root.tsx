@@ -1,16 +1,26 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
 } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { lazy, Suspense } from 'react';
 
 import { Providers } from '@/lib/components/providers';
 import { Toast } from '@/lib/components/ui/toast';
 import { Layout } from '@/lib/layout';
 import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/utils/metadata';
+
+const TanStackRouterDevtools = lazy(() =>
+  import('@tanstack/react-router-devtools').then((m) => ({
+    default: m.TanStackRouterDevtools,
+  }))
+);
+const ReactQueryDevtools = lazy(() =>
+  import('@tanstack/react-query-devtools').then((m) => ({
+    default: m.ReactQueryDevtools,
+  }))
+);
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -105,8 +115,12 @@ export const Route = createRootRouteWithContext<{
           <Outlet />
         </Layout>
       </Providers>
-      <TanStackRouterDevtools position="bottom-right" />
-      <ReactQueryDevtools />
+      <Suspense>
+        <TanStackRouterDevtools position="bottom-right" />
+      </Suspense>
+      <Suspense>
+        <ReactQueryDevtools />
+      </Suspense>
     </>
   ),
 });

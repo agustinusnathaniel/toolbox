@@ -43,7 +43,16 @@
     "actions": {
       "source": {
         "organizeImports": {
-          "level": "on"
+          "level": "on",
+          "options": {
+            "groups": [
+              [":URL:", ":NODE:", ":PACKAGE:"],
+              ":BLANK_LINE:",
+              [":ALIAS:"],
+              ":BLANK_LINE:",
+              [":PATH:"]
+            ]
+          }
         }
       }
     }

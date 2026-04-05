@@ -6,11 +6,15 @@ export const useMediaQuery = (query: string) => {
   const [value, setValue] = useState<boolean | undefined>();
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const onChange = (event: MediaQueryListEvent) => {
       setValue(event.matches);
     };
 
-    const result = matchMedia(query);
+    const result = window.matchMedia(query);
     setValue(result.matches);
     result.addEventListener('change', onChange);
 

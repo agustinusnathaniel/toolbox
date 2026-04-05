@@ -25,6 +25,10 @@ export const analytics = {
       console.log('[Analytics]', enriched);
     }
 
+    if (listeners.size === 0) {
+      return;
+    }
+
     for (const tracker of listeners) {
       try {
         tracker.track(enriched);
@@ -37,6 +41,10 @@ export const analytics = {
   page(params: { name: string; path: string }): void {
     if (isDev) {
       console.log('[Analytics] Page', params);
+    }
+
+    if (listeners.size === 0) {
+      return;
     }
 
     for (const tracker of listeners) {

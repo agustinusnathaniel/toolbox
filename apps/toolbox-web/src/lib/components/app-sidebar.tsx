@@ -12,7 +12,7 @@ import {
   IconSun,
 } from '@intentui/icons';
 import { type ToOptions, useLocation } from '@tanstack/react-router';
-import type { ReactNode } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import { useTheme } from '@/lib/components/theme-provider';
 import { Button } from '@/lib/components/ui/button';
@@ -31,17 +31,54 @@ import {
 } from '@/lib/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 
+const navigation: Array<{
+  label: string;
+  icon?: ReactNode;
+  href?: ToOptions['to'];
+}> = [
+  {
+    label: 'WA Link Helper',
+    href: '/tools/wa-link-helper',
+    icon: <IconBrandWhatsapp />,
+  },
+  {
+    label: 'Zippy Image',
+    href: '/tools/zippy-img',
+    icon: <IconCamera />,
+  },
+  {
+    label: 'JS Perf Comparator',
+    href: '/tools/js-perf-comparator',
+    icon: <IconCodeLines />,
+  },
+  {
+    label: 'UA Check',
+    href: '/tools/ua-check',
+    icon: <IconDeviceDesktop />,
+  },
+  {
+    label: 'QR Code Generator',
+    href: '/tools/qrcode-generator',
+    icon: <IconQrCode />,
+  },
+  {
+    label: 'Add to Calendar',
+    href: '/tools/add-to-calendar',
+    icon: <IconCalendar />,
+  },
+];
+
 export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { setIsOpenOnMobile } = useSidebar();
   const isMobile = useIsMobile();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
 
-  const handleMobileClose = () => {
+  const handleMobileClose = useCallback(() => {
     if (isMobile) {
       setIsOpenOnMobile(false);
     }
-  };
+  }, [isMobile, setIsOpenOnMobile]);
 
   return (
     <Sidebar {...props}>
@@ -87,40 +124,3 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
     </Sidebar>
   );
 };
-
-const navigation: Array<{
-  label: string;
-  icon?: ReactNode;
-  href?: ToOptions['to'];
-}> = [
-  {
-    label: 'WA Link Helper',
-    href: '/tools/wa-link-helper',
-    icon: <IconBrandWhatsapp />,
-  },
-  {
-    label: 'Zippy Image',
-    href: '/tools/zippy-img',
-    icon: <IconCamera />,
-  },
-  {
-    label: 'JS Perf Comparator',
-    href: '/tools/js-perf-comparator',
-    icon: <IconCodeLines />,
-  },
-  {
-    label: 'UA Check',
-    href: '/tools/ua-check',
-    icon: <IconDeviceDesktop />,
-  },
-  {
-    label: 'QR Code Generator',
-    href: '/tools/qrcode-generator',
-    icon: <IconQrCode />,
-  },
-  {
-    label: 'Add to Calendar',
-    href: '/tools/add-to-calendar',
-    icon: <IconCalendar />,
-  },
-];

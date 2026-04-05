@@ -27,6 +27,7 @@ toolbox/
 #### 1. Route-Based Tool Composition
 
 Each tool lives as a route under `src/routes/tools/<tool-name>/`. The root layout provides:
+
 - Global navigation sidebar
 - Tool-specific headings via `staticData.pageTitle`
 - Consistent page structure
@@ -42,6 +43,7 @@ Business logic is extracted into `packages/<name>-core/` packages:
 #### 3. Metadata System
 
 Each route defines its own metadata via the `head` export. A shared helper in `src/lib/utils/metadata.ts` provides:
+
 - Consistent title formatting (`<title> — Toolbox`)
 - OG tags for social sharing
 - Tool-specific descriptions
@@ -49,6 +51,7 @@ Each route defines its own metadata via the `head` export. A shared helper in `s
 #### 4. Analytics Instrumentation
 
 The `src/lib/analytics/` module provides:
+
 - Event tracking (`track`, `page`)
 - Tool-specific helpers (`trackToolEntry`, `trackToolCompletion`, `trackAction`)
 - Development-mode logging (enable with `VITE_ANALYTICS_DEBUG=true`)
@@ -62,6 +65,7 @@ The `src/lib/analytics/` module provides:
 ### Design System
 
 Built on:
+
 - **React Aria Components**: Accessible UI primitives
 - **Tailwind CSS 4**: Styling via `@theme` tokens
 - **Tailwind Variants**: Component-level variant logic
