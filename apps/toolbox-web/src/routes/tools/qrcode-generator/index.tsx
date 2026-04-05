@@ -3,12 +3,18 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { VCardFormData } from '@toolbox/qrcode-core';
 import { generateVCardString } from '@toolbox/qrcode-core';
+import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useRef, useState } from 'react';
 
-import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Disclosure,
+  DisclosureGroup,
+  DisclosurePanel,
+  DisclosureTrigger,
+} from '@/lib/components/ui/disclosure-group';
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { Textarea } from '@/lib/components/ui/textarea';
@@ -395,24 +401,59 @@ function QRCodeGeneratorPage() {
         </Card>
       )}
 
-      <Card>
-        <CardHeader title="Features" />
-        <CardContent>
-          <ul className="flex flex-col gap-2 text-sm">
-            <li className="flex items-center gap-2">
-              <Badge intent="success">URL & VCard QR Generation</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <Badge intent="info">Customizable Colors</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-muted-fg text-xs">
-                No data is sent to any server
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <DisclosureGroup>
+        <Disclosure>
+          <DisclosureTrigger>
+            <span className="flex items-center gap-2">
+              <InfoIcon className="size-4" />
+              How it works
+            </span>
+          </DisclosureTrigger>
+          <DisclosurePanel>
+            <div className="flex flex-col gap-3 text-muted-fg text-sm">
+              <p>
+                Generate QR codes for URLs or vCard contact information. Scan
+                with any QR code reader app.
+              </p>
+              <ul className="list-inside list-disc">
+                <li>URL mode: Enter any URL or text</li>
+                <li>
+                  VCard mode: Create contact cards with name, phone, email, etc.
+                </li>
+                <li>Customize the QR code foreground color</li>
+                <li>Download as high-resolution PNG</li>
+              </ul>
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+        <Disclosure>
+          <DisclosureTrigger>
+            <span className="flex items-center gap-2">
+              <HelpCircleIcon className="size-4" />
+              FAQ
+            </span>
+          </DisclosureTrigger>
+          <DisclosurePanel>
+            <div className="flex flex-col gap-3 text-muted-fg text-sm">
+              <div className="flex flex-col gap-1">
+                <p className="font-medium text-fg">Is my data safe?</p>
+                <p>
+                  Yes. All QR code generation happens in your browser. No data
+                  is sent to any server.
+                </p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="font-medium text-fg">What is VCard?</p>
+                <p>
+                  VCard is a standard file format for electronic business cards.
+                  The QR code contains your contact information that can be
+                  saved directly to a phone&apos;s contacts.
+                </p>
+              </div>
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+      </DisclosureGroup>
     </div>
   );
 }

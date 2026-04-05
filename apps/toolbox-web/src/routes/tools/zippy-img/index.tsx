@@ -2,13 +2,18 @@
 
 import { createFileRoute } from '@tanstack/react-router';
 import { compressImage, downloadFiles } from '@toolbox/zippy-core';
-import { Download, LockIcon, UploadIcon } from 'lucide-react';
+import { Download, HelpCircleIcon, InfoIcon, UploadIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Disclosure,
+  DisclosureGroup,
+  DisclosurePanel,
+  DisclosureTrigger,
+} from '@/lib/components/ui/disclosure-group';
 import { DropZone } from '@/lib/components/ui/drop-zone';
 import { FileTrigger } from '@/lib/components/ui/file-trigger';
 import {
@@ -223,25 +228,58 @@ function ZippyImgPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader title="Features" />
-        <CardContent>
-          <ul className="flex flex-col gap-2 text-sm">
-            <li className="flex items-center gap-2">
-              <Badge intent="success">Image Compression</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <Badge intent="info">Browser-Based Technology</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <LockIcon className="size-4 text-muted-fg" />
-              <span className="text-muted-fg text-xs">
-                No files or images are sent to any server
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <DisclosureGroup>
+        <Disclosure>
+          <DisclosureTrigger>
+            <span className="flex items-center gap-2">
+              <InfoIcon className="size-4" />
+              How it works
+            </span>
+          </DisclosureTrigger>
+          <DisclosurePanel>
+            <div className="flex flex-col gap-3 text-muted-fg text-sm">
+              <p>
+                This tool compresses images directly in your browser. Your files
+                are never uploaded to any server.
+              </p>
+              <ul className="list-inside list-disc">
+                <li>Drag and drop or click Browse to select images</li>
+                <li>
+                  Maximum {MAX_FILES} files at a time, up to {MAX_SIZE_MB}MB
+                  each
+                </li>
+                <li>Click Compress Now to reduce file sizes</li>
+                <li>Download individual files or all at once as a ZIP</li>
+              </ul>
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+        <Disclosure>
+          <DisclosureTrigger>
+            <span className="flex items-center gap-2">
+              <HelpCircleIcon className="size-4" />
+              FAQ
+            </span>
+          </DisclosureTrigger>
+          <DisclosurePanel>
+            <div className="flex flex-col gap-3 text-muted-fg text-sm">
+              <div className="flex flex-col gap-1">
+                <p className="font-medium text-fg">Is my data safe?</p>
+                <p>
+                  Yes. All processing happens in your browser. No files or
+                  images are sent to any server.
+                </p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="font-medium text-fg">
+                  What formats are supported?
+                </p>
+                <p>Most common image formats including PNG, JPEG, and WebP.</p>
+              </div>
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+      </DisclosureGroup>
     </div>
   );
 }

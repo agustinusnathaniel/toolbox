@@ -2,10 +2,16 @@
 
 import { createFileRoute } from '@tanstack/react-router';
 import { parseUserAgent } from '@toolbox/ua-check-core';
+import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { Badge } from '@/lib/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Disclosure,
+  DisclosureGroup,
+  DisclosurePanel,
+  DisclosureTrigger,
+} from '@/lib/components/ui/disclosure-group';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['ua-check'];
@@ -50,7 +56,7 @@ function UACheckPage() {
   const result = useMemo(() => parseUserAgent(), []);
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] lg:grid lg:grid-cols-2">
       <Card>
         <CardHeader title="Browser" />
         <CardContent className="flex flex-col">
@@ -101,27 +107,56 @@ function UACheckPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader title="Features" />
-        <CardContent>
-          <ul className="flex flex-col gap-2 text-sm">
-            <li className="flex items-center gap-2">
-              <Badge intent="success">User Agent Parsing</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <Badge intent="info">Browser & OS Detection</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <Badge intent="secondary">Engine & CPU Info</Badge>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-muted-fg text-xs">
-                No data is sent to any server
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <DisclosureGroup>
+        <Disclosure>
+          <DisclosureTrigger>
+            <span className="flex items-center gap-2">
+              <InfoIcon className="size-4" />
+              How it works
+            </span>
+          </DisclosureTrigger>
+          <DisclosurePanel>
+            <div className="flex flex-col gap-3 text-muted-fg text-sm">
+              <p>
+                This tool analyzes your browser&apos;s user agent string to
+                identify your browser, operating system, and device information.
+              </p>
+              <ul className="list-inside list-disc">
+                <li>Browser name and version</li>
+                <li>Operating system details</li>
+                <li>Device type and model</li>
+                <li>CPU architecture</li>
+              </ul>
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+        <Disclosure>
+          <DisclosureTrigger>
+            <span className="flex items-center gap-2">
+              <HelpCircleIcon className="size-4" />
+              FAQ
+            </span>
+          </DisclosureTrigger>
+          <DisclosurePanel>
+            <div className="flex flex-col gap-3 text-muted-fg text-sm">
+              <div className="flex flex-col gap-1">
+                <p className="font-medium text-fg">Is my data safe?</p>
+                <p>
+                  Yes. All analysis happens locally in your browser. No data is
+                  sent to any server.
+                </p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="font-medium text-fg">What is a user agent?</p>
+                <p>
+                  A user agent is a string that your browser sends to websites
+                  identifying itself. This tool parses that string for you.
+                </p>
+              </div>
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+      </DisclosureGroup>
     </div>
   );
 }
