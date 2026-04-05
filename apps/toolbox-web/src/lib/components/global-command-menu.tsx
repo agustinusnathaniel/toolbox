@@ -2,7 +2,6 @@
 
 import {
   IconBrandWhatsapp,
-  IconCalendar,
   IconCamera,
   IconCodeLines,
   IconDeviceDesktop,
@@ -70,58 +69,6 @@ const navigationItems = [
     icon: IconQrCode,
     href: '/tools/qrcode-generator',
   },
-  {
-    id: 'add-to-calendar',
-    title: 'Add to Calendar',
-    description: 'Generate calendar event links',
-    icon: IconCalendar,
-    href: '/tools/add-to-calendar',
-  },
-];
-
-const quickActions = [
-  {
-    id: 'open-home',
-    title: 'Open Catalog',
-    description: 'Go to homepage catalog',
-    icon: IconGlobe,
-    href: '/',
-  },
-  {
-    id: 'open-wa-link-helper',
-    title: 'Open WA Link Helper',
-    description: 'Go to WhatsApp link tool',
-    icon: IconBrandWhatsapp,
-    href: '/tools/wa-link-helper',
-  },
-  {
-    id: 'open-zippy-img',
-    title: 'Open Zippy Image',
-    description: 'Go to image compression tool',
-    icon: IconCamera,
-    href: '/tools/zippy-img',
-  },
-  {
-    id: 'open-ua-check',
-    title: 'Open UA Check',
-    description: 'Go to user agent check tool',
-    icon: IconDeviceDesktop,
-    href: '/tools/ua-check',
-  },
-  {
-    id: 'open-qrcode-generator',
-    title: 'Open QR Code Generator',
-    description: 'Go to QR code generator tool',
-    icon: IconQrCode,
-    href: '/tools/qrcode-generator',
-  },
-  {
-    id: 'open-add-to-calendar',
-    title: 'Open Add to Calendar',
-    description: 'Go to calendar link generator tool',
-    icon: IconCalendar,
-    href: '/tools/add-to-calendar',
-  },
 ];
 
 interface GlobalCommandMenuProps {
@@ -169,19 +116,6 @@ export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
                 <CommandMenuDescription>
                   {item.description}
                 </CommandMenuDescription>
-              </CommandMenuItem>
-            ))}
-          </CommandMenuSection>
-
-          <CommandMenuSection label="Quick Actions">
-            {quickActions.map((item) => (
-              <CommandMenuItem
-                key={item.id}
-                onAction={() => handleNavigate(item.href)}
-                textValue={item.title}
-              >
-                <item.icon />
-                <CommandMenuLabel>{item.title}</CommandMenuLabel>
               </CommandMenuItem>
             ))}
           </CommandMenuSection>
