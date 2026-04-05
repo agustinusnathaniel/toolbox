@@ -10,7 +10,7 @@ import {
   IconSearch,
 } from '@intentui/icons';
 import { useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   CommandMenu,
@@ -80,10 +80,13 @@ export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const handleNavigate = (href: string) => {
-    setIsOpen(false);
-    navigate({ to: href });
-  };
+  const handleNavigate = useCallback(
+    (href: string) => {
+      setIsOpen(false);
+      navigate({ to: href });
+    },
+    [navigate]
+  );
 
   return (
     <>

@@ -9,7 +9,9 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"test": "vp test run",
-		"test:watch": "vp test"
+		"test:watch": "vp test",
+		"ultracite:check": "ultracite check",
+		"ultracite:fix": "ultracite fix"
 	},
 	"dependencies": {
 		"awesome-phonenumber": "^7.8.0",

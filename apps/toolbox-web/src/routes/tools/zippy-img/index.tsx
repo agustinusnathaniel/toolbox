@@ -89,25 +89,25 @@ function ZippyImgPage() {
       prev.map((p) => ({ ...p, progress: 0, compressed: undefined }))
     );
 
-    const updated: Array<ImageFile> = [];
+    const results = await Promise.all(
+      inputs.map(async (item, index) => {
+        try {
+          const compressed = await compressImage(item.file, {
+            onProgress: (progress) => {
+              setInputs((prev) =>
+                prev.map((p, i) => (i === index ? { ...p, progress } : p))
+              );
+            },
+          });
+          return { file: item.file, progress: 100, compressed };
+        } catch {
+          toast.error(`Failed to compress "${item.file.name}"`);
+          return { file: item.file, progress: 0, compressed: undefined };
+        }
+      })
+    );
 
-    for (const [index, item] of inputs.entries()) {
-      try {
-        const compressed = await compressImage(item.file, {
-          onProgress: (progress) => {
-            setInputs((prev) =>
-              prev.map((p, i) => (i === index ? { ...p, progress } : p))
-            );
-          },
-        });
-        updated.push({ file: item.file, progress: 100, compressed });
-      } catch {
-        toast.error(`Failed to compress "${item.file.name}"`);
-        updated.push({ file: item.file, progress: 0, compressed: undefined });
-      }
-    }
-
-    setInputs(updated);
+    setInputs(results);
     setIsCompressing(false);
     toast.success('Compression complete');
   }, [inputs]);

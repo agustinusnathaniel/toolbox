@@ -5,7 +5,7 @@ import type { VCardFormData } from '@toolbox/qrcode-core';
 import { generateVCardString } from '@toolbox/qrcode-core';
 import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
@@ -90,7 +90,10 @@ function QRCodeGeneratorPage() {
 
   const qrSize = 220;
 
-  const vcardString = generateVCardString(vcardState as VCardFormData);
+  const vcardString = useMemo(
+    () => generateVCardString(vcardState as VCardFormData),
+    [vcardState]
+  );
 
   const handleSaveQR = () => {
     const canvas = qrRef.current;

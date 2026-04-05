@@ -19,6 +19,13 @@ type AuthStoreActions = {
 
 type AuthStore = AuthStoreState & AuthStoreActions;
 
+const safeLocalStorage = {
+  getItem: () =>
+    typeof window === 'undefined' ? null : localStorage.getItem(authSessionKey),
+  setItem: () => undefined,
+  removeItem: () => undefined,
+};
+
 export const useAuth = create<AuthStore>()(
   persist(
     (set) => ({
@@ -28,7 +35,7 @@ export const useAuth = create<AuthStore>()(
     }),
     {
       name: authSessionKey,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => safeLocalStorage as unknown as Storage),
     }
   )
 );

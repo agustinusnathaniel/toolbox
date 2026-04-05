@@ -177,7 +177,7 @@ function WALinkHelperPage() {
             <Button type="submit">Copy Link</Button>
           </Form>
 
-          {link && isValid && (
+          {link && isValid ? (
             <div className="mt-6 flex flex-col gap-2">
               <Label>Generated Link</Label>
               <Button
@@ -189,7 +189,7 @@ function WALinkHelperPage() {
                 </a>
               </Button>
             </div>
-          )}
+          ) : null}
         </CardContent>
       </Card>
 
