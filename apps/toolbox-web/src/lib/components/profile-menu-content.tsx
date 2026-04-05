@@ -2,8 +2,10 @@ import {
   IconCamera,
   IconCodeLines,
   IconDashboard,
+  IconDeviceDesktop,
   IconMessage,
   IconMoon,
+  IconQrCode,
   IconSun,
 } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
@@ -48,6 +50,14 @@ export const ProfileMenuContent = () => {
       <MenuItem href={'/tools/js-perf-comparator' as ToOptions['to']}>
         <IconCodeLines />
         JS Perf Comparator
+      </MenuItem>
+      <MenuItem href={'/tools/ua-check' as ToOptions['to']}>
+        <IconDeviceDesktop />
+        UA Check
+      </MenuItem>
+      <MenuItem href={'/tools/qrcode-generator' as ToOptions['to']}>
+        <IconQrCode />
+        QR Code Generator
       </MenuItem>
     </>
   );

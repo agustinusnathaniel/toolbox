@@ -1,0 +1,24 @@
+{
+  "name": "@toolbox/ua-check-core",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vp test run",
+    "test:watch": "vp test"
+  },
+  "dependencies": {
+    "ua-parser-js": "^1.0.38"
+  },
+  "devDependencies": {
+    "@toolbox/config-biome": "workspace:*",
+    "@toolbox/config-typescript": "workspace:*",
+    "@types/ua-parser-js": "^0.7.39",
+    "typescript": "catalog:",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+  }
+}
