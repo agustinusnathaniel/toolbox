@@ -351,12 +351,42 @@ function ResultCard({
 
 import JsPerfWorker from './-worker/js-perf.worker.ts?worker';
 
+interface ActiveRunEntry {
+  code: string;
+  id: string;
+}
+
+interface ActiveRunState {
+  a: ActiveRunEntry | null;
+  b: ActiveRunEntry | null;
+}
+
+function createWorkerErrorResult(
+  runEntry: ActiveRunEntry | null,
+  errorMessage: string | null
+): ExecutionResult | null {
+  if (!runEntry) {
+    return null;
+  }
+
+  return {
+    id: runEntry.id,
+    code: runEntry.code,
+    status: 'worker_error',
+    durationMs: null,
+    perIterationMs: null,
+    statistics: null,
+    errorMessage: errorMessage ?? 'Worker crashed unexpectedly',
+    output: [],
+  };
+}
+
 function buildWorker(
   workerRef: React.RefObject<Worker | null>,
   workerIdRef: React.RefObject<number>,
   onReady: () => void,
   onResult: (id: string, result: ExecutionResult) => void,
-  onError: () => void
+  onError: (errorMessage: string | null) => void
 ) {
   const currentId = ++workerIdRef.current;
   const worker = new JsPerfWorker();
@@ -378,11 +408,11 @@ function buildWorker(
     }
   };
 
-  worker.onerror = () => {
+  worker.onerror = (event: ErrorEvent) => {
     if (workerIdRef.current !== currentId) {
       return;
     }
-    onError();
+    onError(event.message || null);
   };
 
   workerRef.current = worker;
@@ -413,6 +443,7 @@ function JsPerfComparatorPage() {
   const deadlineRef = useRef<number>(DEFAULT_RUN_POLICY.deadlineMs);
 
   const pendingRef = useRef<Set<string>>(new Set());
+  const activeRunRef = useRef<ActiveRunState>({ a: null, b: null });
 
   const isReady = workerAReady && workerBReady;
 
@@ -421,23 +452,57 @@ function JsPerfComparatorPage() {
     const handleWorkerBReady = () => setWorkerBReady(true);
 
     const handleWorkerAResult = (id: string, result: ExecutionResult) => {
+      if (!pendingRef.current.has(id)) {
+        return;
+      }
       pendingRef.current.delete(id);
       setResultA(result);
+      activeRunRef.current.a = null;
       if (pendingRef.current.size === 0) {
         setRunState('done');
       }
     };
 
     const handleWorkerBResult = (id: string, result: ExecutionResult) => {
+      if (!pendingRef.current.has(id)) {
+        return;
+      }
       pendingRef.current.delete(id);
       setResultB(result);
+      activeRunRef.current.b = null;
       if (pendingRef.current.size === 0) {
         setRunState('done');
       }
     };
 
-    const handleError = () => {
-      setRunState('done');
+    const handleWorkerAError = (errorMessage: string | null) => {
+      const runEntry = activeRunRef.current.a;
+      if (runEntry && pendingRef.current.has(runEntry.id)) {
+        pendingRef.current.delete(runEntry.id);
+        const fallback = createWorkerErrorResult(runEntry, errorMessage);
+        if (fallback) {
+          setResultA(fallback);
+        }
+      }
+      activeRunRef.current.a = null;
+      if (pendingRef.current.size === 0) {
+        setRunState('done');
+      }
+    };
+
+    const handleWorkerBError = (errorMessage: string | null) => {
+      const runEntry = activeRunRef.current.b;
+      if (runEntry && pendingRef.current.has(runEntry.id)) {
+        pendingRef.current.delete(runEntry.id);
+        const fallback = createWorkerErrorResult(runEntry, errorMessage);
+        if (fallback) {
+          setResultB(fallback);
+        }
+      }
+      activeRunRef.current.b = null;
+      if (pendingRef.current.size === 0) {
+        setRunState('done');
+      }
     };
 
     buildWorker(
@@ -445,7 +510,7 @@ function JsPerfComparatorPage() {
       workerAIdRef,
       handleWorkerAReady,
       handleWorkerAResult,
-      handleError
+      handleWorkerAError
     );
 
     buildWorker(
@@ -453,7 +518,7 @@ function JsPerfComparatorPage() {
       workerBIdRef,
       handleWorkerBReady,
       handleWorkerBResult,
-      handleError
+      handleWorkerBError
     );
 
     return () => {
@@ -463,6 +528,8 @@ function JsPerfComparatorPage() {
       workerBRef.current?.terminate();
       workerARef.current = null;
       workerBRef.current = null;
+      pendingRef.current.clear();
+      activeRunRef.current = { a: null, b: null };
       setWorkerAReady(false);
       setWorkerBReady(false);
     };
@@ -509,6 +576,10 @@ function JsPerfComparatorPage() {
     );
     reqB.id = `b-${reqB.id}`;
 
+    activeRunRef.current = {
+      a: { id: reqA.id, code: reqA.code },
+      b: { id: reqB.id, code: reqB.code },
+    };
     pendingRef.current = new Set([reqA.id, reqB.id]);
 
     const msgA: WorkerInboundMessage = { type: 'execute', payload: reqA };
@@ -536,6 +607,7 @@ function JsPerfComparatorPage() {
     workerARef.current = null;
     workerBRef.current = null;
     pendingRef.current.clear();
+    activeRunRef.current = { a: null, b: null };
     setRunState('idle');
     setResultA(null);
     setResultB(null);
@@ -546,23 +618,57 @@ function JsPerfComparatorPage() {
     const handleWorkerBReady = () => setWorkerBReady(true);
 
     const handleWorkerAResult = (id: string, result: ExecutionResult) => {
+      if (!pendingRef.current.has(id)) {
+        return;
+      }
       pendingRef.current.delete(id);
       setResultA(result);
+      activeRunRef.current.a = null;
       if (pendingRef.current.size === 0) {
         setRunState('done');
       }
     };
 
     const handleWorkerBResult = (id: string, result: ExecutionResult) => {
+      if (!pendingRef.current.has(id)) {
+        return;
+      }
       pendingRef.current.delete(id);
       setResultB(result);
+      activeRunRef.current.b = null;
       if (pendingRef.current.size === 0) {
         setRunState('done');
       }
     };
 
-    const handleError = () => {
-      setRunState('done');
+    const handleWorkerAError = (errorMessage: string | null) => {
+      const runEntry = activeRunRef.current.a;
+      if (runEntry && pendingRef.current.has(runEntry.id)) {
+        pendingRef.current.delete(runEntry.id);
+        const fallback = createWorkerErrorResult(runEntry, errorMessage);
+        if (fallback) {
+          setResultA(fallback);
+        }
+      }
+      activeRunRef.current.a = null;
+      if (pendingRef.current.size === 0) {
+        setRunState('done');
+      }
+    };
+
+    const handleWorkerBError = (errorMessage: string | null) => {
+      const runEntry = activeRunRef.current.b;
+      if (runEntry && pendingRef.current.has(runEntry.id)) {
+        pendingRef.current.delete(runEntry.id);
+        const fallback = createWorkerErrorResult(runEntry, errorMessage);
+        if (fallback) {
+          setResultB(fallback);
+        }
+      }
+      activeRunRef.current.b = null;
+      if (pendingRef.current.size === 0) {
+        setRunState('done');
+      }
     };
 
     buildWorker(
@@ -570,7 +676,7 @@ function JsPerfComparatorPage() {
       workerAIdRef,
       handleWorkerAReady,
       handleWorkerAResult,
-      handleError
+      handleWorkerAError
     );
 
     buildWorker(
@@ -578,11 +684,13 @@ function JsPerfComparatorPage() {
       workerBIdRef,
       handleWorkerBReady,
       handleWorkerBResult,
-      handleError
+      handleWorkerBError
     );
   }, []);
 
   const handleReset = useCallback(() => {
+    pendingRef.current.clear();
+    activeRunRef.current = { a: null, b: null };
     setRunState('idle');
     setResultA(null);
     setResultB(null);
@@ -594,6 +702,8 @@ function JsPerfComparatorPage() {
       setCodeA(preset.codeA);
       setCodeB(preset.codeB);
     }
+    pendingRef.current.clear();
+    activeRunRef.current = { a: null, b: null };
     setRunState('idle');
     setResultA(null);
     setResultB(null);

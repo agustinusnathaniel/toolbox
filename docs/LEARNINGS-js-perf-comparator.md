@@ -1,14 +1,14 @@
 # Development Log: JS Performance Comparator
 
-**Date**: April 5, 2026  
+**Date**: April 6, 2026  
 **Component**: JS Performance Comparator Tool  
-**Status**: Completed
+**Status**: Updated (Reliability Hardening)
 
 ---
 
 ## Executive Summary
 
-Built Phase 5 of the toolbox platform: a JS Performance Comparator that benchmarks JavaScript code snippets using sandboxed QuickJS runtimes in Web Workers. Key innovations include robust statistical methodology (warmup + outlier filtering) and true parallel execution.
+Built Phase 5 of the toolbox platform: a JS Performance Comparator that benchmarks JavaScript code snippets using sandboxed QuickJS runtimes in Web Workers. The latest update improves reliability and accountability with phase-aware execution (`setup` → `compile` → `warmup` → `timed` → `teardown`), deterministic worker error reporting, and clearer runtime failure messages.
 
 ---
 
@@ -36,11 +36,11 @@ Built Phase 5 of the toolbox platform: a JS Performance Comparator that benchmar
 
 ## Key Discoveries & Solutions
 
-### 1. JIT Warmup Problem
+### 1. Warmup Stabilization Problem
 
 **Discovery**: First benchmark runs showed wildly inconsistent results - the same code would be "faster" or "slower" randomly between runs.
 
-**Root Cause**: JavaScript engines use JIT compilation. First runs are interpreted (slow), later runs are optimized (fast). Without warmup, we were measuring inconsistent states.
+**Root Cause**: Early runs include one-time runtime effects (initial execution path setup, memory behavior, and transient worker/runtime state). Without warmup, those transient effects leak into measured samples.
 
 **Solution**:
 ```typescript
@@ -48,7 +48,7 @@ const WARMUP_ITERATIONS = 5;
 
 // Warmup - NOT included in statistics
 for (let i = 0; i < WARMUP_ITERATIONS; i++) {
-  runCode(code); // Let JIT optimize
+  runCode(code); // Stabilize runtime state
 }
 
 // THEN measure
@@ -63,9 +63,9 @@ for (let i = 0; i < iterations; i++) {
 
 ### 2. Sequential vs Parallel Execution
 
-**Discovery**: Initially used one worker for both snippets. Code B always appeared faster because the JIT was "warmed up" from running Code A first.
+**Discovery**: Initially used one worker for both snippets. Code B often appeared faster because it inherited runtime state from Code A.
 
-**Root Cause**: Single worker = sequential execution. The second snippet benefits from the first snippet's JIT warmup.
+**Root Cause**: Single worker = sequential execution with shared runtime/session effects. That creates cross-snippet contamination.
 
 **Solution**: Use **two separate workers** with independent QuickJS instances:
 
@@ -161,8 +161,8 @@ export function formatDuration(ms: number | null): string {
 
 ### Why Two Workers?
 
-- **Single worker**: Sequential execution, JIT bias
-- **Two workers**: True parallel, independent JIT warmup, fair comparison
+- **Single worker**: Sequential execution with shared runtime effects
+- **Two workers**: True parallel, isolated runtime contexts, fairer comparison
 
 ### Why Robust Statistics?
 
@@ -196,14 +196,33 @@ Main Thread                              Worker
    │                                        │
    │── postMessage({type: 'execute'})────→│
    │                                        │
-   │   (Warmup iterations)                  │
+   │   (Setup + compile function)           │
+   │                                        │
+   │   (Warmup iterations - untimed)        │
    │                                        │
    │   (Timed iterations)                   │
+   │                                        │
+   │   (Optional teardown)                  │
    │                                        │
    │   (Calculate statistics)               │
    │                                        │
    │←── postMessage({type: 'result'})──────│
 ```
+
+---
+
+## Reliability Hardening (April 6, 2026)
+
+1. **Phase-aware execution errors**
+   - Errors now include execution phase context (`setup`, `compile`, `warmup`, `timed`, `teardown`) to make failures actionable.
+2. **Deterministic worker crash handling**
+   - If a worker crashes, UI now receives an explicit `worker_error` result instead of ending silently.
+3. **Accurate duration accounting**
+   - `durationMs` is now computed from timed iteration samples only (no fallback clock values).
+4. **Readable/scalable worker pipeline**
+   - Worker refactored into focused helpers (`createVmSession`, `runSnippet`, `runMainIteration`, `executeBenchmark`, `buildResult`).
+5. **Bounded output capture**
+   - Console output capture is capped by policy and marked as truncated when limits are hit.
 
 ### Statistics Pipeline
 
@@ -262,7 +281,7 @@ Built-in comparison presets:
 1. **Always use warmup** - 3-5 iterations minimum
 2. **Filter outliers** - GC pauses are not representative
 3. **Use median** - More robust than mean for performance data
-4. **Run parallel** - Separate workers prevent JIT bias
+4. **Run parallel** - Separate workers prevent cross-snippet runtime contamination
 5. **Show confidence intervals** - Margin of error indicates reliability
 6. **Use microsecond precision** - Many operations are sub-millisecond
 

@@ -69,10 +69,10 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 
 ### Key Implementation Details
 
-1. **Worker URL Pattern**: `new URL('./-worker/js-perf.worker.ts', import.meta.url)` with TanStack Router's `-` prefix to exclude from routing
+1. **Worker URL Pattern**: `import JsPerfWorker from './-worker/js-perf.worker.ts?worker'` with TanStack Router's `-` prefix to exclude from routing
 2. **Worker ID Tracking**: `workerIdRef` counter to ignore stale messages from terminated workers (StrictMode compatibility)
 3. **Deadline Enforcement**: `shouldInterruptAfterDeadline(Date.now() + 5000)` for 5-second timeout
-4. **Code Wrapping**: User code wrapped in a console-capturing function to capture `console.log` output
+4. **Console Bridge**: `console.log` is explicitly bridged from QuickJS context to host output buffer
 
 ## Options Considered
 
@@ -230,7 +230,7 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 - **IMP-004**: `shouldInterruptAfterDeadline()` provides deadline-based execution interruption
 - **IMP-005**: Shared package `@toolbox/js-perf-comp-core` contains execution models and worker API
 - **IMP-006**: Use `import Worker from './path.ts?worker'` pattern for proper Vite bundling
-- **IMP-007**: Create separate worker instances for parallel execution to prevent JIT bias
+- **IMP-007**: Create separate worker instances for parallel execution and avoid cross-snippet runtime contamination
 
 ## Discoveries During Implementation
 
@@ -251,7 +251,7 @@ const worker = new JsPerfWorker();
 
 ### Discovery 2: Parallel Execution Requires Separate Workers
 
-**Problem**: Running both snippets in a single worker resulted in sequential execution. The second snippet benefited from JIT warmup of the first, causing unfair comparisons.
+**Problem**: Running both snippets in a single worker resulted in sequential execution. The second snippet inherited runtime state from the first, causing unfair comparisons.
 
 **Solution**: Create two independent worker instances:
 ```typescript
@@ -259,18 +259,18 @@ const worker = new JsPerfWorker();
 const workerA = new JsPerfWorker();
 const workerB = new JsPerfWorker();
 
-// Both execute truly in parallel with independent JIT optimization
+// Both execute truly in parallel with isolated runtime state
 workerA.postMessage({ type: 'execute', payload: reqA });
 workerB.postMessage({ type: 'execute', payload: reqB });
 ```
 
-**Lesson**: Worker reuse causes JIT bias. For fair comparisons, use separate workers or re-instantiate.
+**Lesson**: Worker reuse causes state contamination. For fair comparisons, use separate workers or re-instantiate.
 
-### Discovery 3: JIT Warmup is Critical
+### Discovery 3: Warmup is Critical
 
-**Finding**: First 3-5 runs of any code are typically 10-100x slower than subsequent runs due to JIT compilation.
+**Finding**: First runs are less stable because of transient runtime effects. Warmup reduces variance in timed samples.
 
-**Impact**: Without warmup, benchmarks measure inconsistent optimization states.
+**Impact**: Without warmup, benchmarks include startup/transient noise and produce inconsistent results.
 
 **Solution**: See ADR-0004 for detailed warmup methodology.
 
@@ -279,7 +279,7 @@ workerB.postMessage({ type: 'execute', payload: reqB });
 | Threat                         | Mitigation                                                  |
 | ------------------------------ | ----------------------------------------------------------- |
 | Access to cookies/localStorage | Worker has no DOM access; WASM runtime is isolated          |
-| `fetch()` requests             | No `fetch` in Worker scope by default                       |
+| `fetch()` requests             | QuickJS guest runtime has no host `fetch` exposed by default |
 | DOM manipulation               | No DOM in Worker                                            |
 | Infinite loops                 | `shouldInterruptAfterDeadline()` terminates after 5 seconds |
 | Memory exhaustion              | Deadline also limits execution time, preventing memory bomb |
@@ -287,7 +287,7 @@ workerB.postMessage({ type: 'execute', payload: reqB });
 
 ## References
 
-- **REF-001**: [quickjs-emscripten](https://github.com/nickolasb-lab/quickjs-emscripten)
+- **REF-001**: [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
 - **REF-002**: [QuickJS](https://bellard.org/quickjs/)
 - **REF-003**: `packages/js-perf-comp-core/` — Execution models and worker API
 - **REF-004**: `apps/toolbox-web/src/routes/tools/js-perf-comparator/-worker/` — Worker implementation
