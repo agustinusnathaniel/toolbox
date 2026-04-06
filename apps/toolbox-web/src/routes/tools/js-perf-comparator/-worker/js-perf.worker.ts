@@ -4,10 +4,54 @@ import type {
   WorkerInboundMessage,
   WorkerOutboundMessage,
 } from '@toolbox/js-perf-comp-core';
-import { calculateRobustStatistics } from '@toolbox/js-perf-comp-core';
+import {
+  calculateRobustStatistics,
+  DEFAULT_RUN_POLICY,
+} from '@toolbox/js-perf-comp-core';
+import type { QuickJSContext, QuickJSRuntime } from 'quickjs-emscripten';
 import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten';
 
 let quickjsModule: Awaited<ReturnType<typeof getQuickJS>> | null = null;
+
+const WARMUP_ITERATIONS = 5;
+const BENCHMARK_FUNCTION_NAME = '__toolboxPerfMain__';
+const VM_MEMORY_LIMIT_BYTES = 64 * 1024 * 1024;
+const VM_MAX_STACK_SIZE_BYTES = 2 * 1024 * 1024;
+
+type BenchmarkPhase = 'setup' | 'compile' | 'warmup' | 'timed' | 'teardown';
+
+interface PhaseFailure {
+  message: string;
+  phase: BenchmarkPhase;
+  status: Extract<
+    ExecutionResult['status'],
+    'runtime_error' | 'timeout' | 'worker_error'
+  >;
+}
+
+interface PhaseSuccess {
+  ok: true;
+}
+
+interface PhaseFailureResult {
+  failure: PhaseFailure;
+  ok: false;
+}
+
+type PhaseOutcome = PhaseSuccess | PhaseFailureResult;
+
+interface VmSession {
+  context: QuickJSContext;
+  output: Array<string>;
+  outputTruncated: boolean;
+  runtime: QuickJSRuntime;
+}
+
+interface BenchmarkRunOutcome {
+  durations: Array<number>;
+  failure: PhaseFailure | null;
+  output: Array<string>;
+}
 
 async function initRuntime() {
   quickjsModule = await getQuickJS();
@@ -15,158 +59,359 @@ async function initRuntime() {
   self.postMessage(msg);
 }
 
-function createWrappedCode(code: string): string {
-  return `(function(console) {
-  var _c = { log: function() { var a = Array.prototype.slice.call(arguments); console.log(a.map(function(v) { return String(v); }).join(' ')); } };
+function formatUnknownError(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
   try {
-    ${code}
-  } catch(e) {
-    console.log('__ERROR__: ' + String(e));
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
   }
-})`;
 }
 
-function runCode(code: string, deadlineMs: number): 'interrupted' | null {
+function isInterruptedError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return (
+      error.message.includes('interrupted') ||
+      error.name === 'InternalError' ||
+      error.name.includes('Interrupt')
+    );
+  }
+
+  const errorText = formatUnknownError(error);
+  return errorText.includes('interrupted');
+}
+
+function describePhase(phase: BenchmarkPhase): string {
+  switch (phase) {
+    case 'setup':
+      return 'setup';
+    case 'compile':
+      return 'snippet compile';
+    case 'warmup':
+      return 'warmup';
+    case 'timed':
+      return 'timed iteration';
+    case 'teardown':
+      return 'teardown';
+    default:
+      return phase;
+  }
+}
+
+function createVmSession(maxOutputLines: number): VmSession | null {
   if (!quickjsModule) {
-    return 'interrupted';
-  }
-  const result = quickjsModule.evalCode(code, {
-    shouldInterrupt: shouldInterruptAfterDeadline(Date.now() + deadlineMs),
-  });
-  return result === 'interrupted' ? 'interrupted' : null;
-}
-
-const WARMUP_ITERATIONS = 5;
-
-function runBenchmarkIterations(
-  code: string,
-  iterations: number,
-  deadlineMs: number
-): { durations: Array<number>; hasTimeout: boolean; lastError: string | null } {
-  const durations: Array<number> = [];
-  let hasTimeout = false;
-  let lastError: string | null = null;
-
-  // Warmup phase - let the JIT compiler optimize the code
-  // These runs are NOT included in the final statistics
-  for (let i = 0; i < WARMUP_ITERATIONS && !hasTimeout; i++) {
-    const result = runCode(code, deadlineMs);
-    if (result === 'interrupted') {
-      hasTimeout = true;
-      lastError = `Execution timed out after ${deadlineMs}ms`;
-      break;
-    }
+    return null;
   }
 
-  // Timed iterations - these ARE included in statistics
-  for (let i = 0; i < iterations && !hasTimeout; i++) {
-    const iterStart = performance.now();
-    const result = runCode(code, deadlineMs);
+  const runtime = quickjsModule.newRuntime();
+  runtime.setMemoryLimit(VM_MEMORY_LIMIT_BYTES);
+  runtime.setMaxStackSize(VM_MAX_STACK_SIZE_BYTES);
 
-    if (result === 'interrupted') {
-      hasTimeout = true;
-      lastError = `Execution timed out after ${deadlineMs}ms`;
-      break;
-    }
-
-    const iterDuration = performance.now() - iterStart;
-    durations.push(iterDuration);
-  }
-
-  return { durations, hasTimeout, lastError };
-}
-
-function execute(payload: ExecutionRequest): void {
-  if (!quickjsModule) {
-    const result: ExecutionResult = {
-      id: payload.id,
-      code: payload.code,
-      status: 'worker_error',
-      durationMs: null,
-      perIterationMs: null,
-      statistics: null,
-      errorMessage: 'Runtime not initialized',
-      output: [],
-    };
-    const msg: WorkerOutboundMessage = { type: 'result', payload: result };
-    self.postMessage(msg);
-    return;
-  }
-
-  const { code, iterations, setup, teardown, deadlineMs } = payload;
-  const wrappedSetup = setup ? createWrappedCode(setup) : null;
-  const wrappedTeardown = teardown ? createWrappedCode(teardown) : null;
-  const wrappedCode = createWrappedCode(code);
+  const context = runtime.newContext();
   const output: Array<string> = [];
+  let outputTruncated = false;
 
-  // Run setup once (not counted in timing)
-  if (wrappedSetup) {
-    try {
-      runCode(wrappedSetup, deadlineMs);
-    } catch {
-      // Setup errors are ignored
+  const logHandle = context.newFunction('log', (...args) => {
+    if (output.length >= maxOutputLines) {
+      outputTruncated = true;
+      return;
     }
-  }
 
-  // Run main code iterations times
-  const { durations, hasTimeout, lastError } = runBenchmarkIterations(
-    wrappedCode,
-    iterations,
-    deadlineMs
+    const line = args
+      .map((arg) => {
+        const dumped = context.dump(arg);
+        if (typeof dumped === 'string') {
+          return dumped;
+        }
+        try {
+          return JSON.stringify(dumped);
+        } catch {
+          return String(dumped);
+        }
+      })
+      .join(' ');
+
+    output.push(line);
+  });
+
+  const consoleHandle = context.newObject();
+  context.setProp(consoleHandle, 'log', logHandle);
+  context.setProp(context.global, 'console', consoleHandle);
+
+  logHandle.dispose();
+  consoleHandle.dispose();
+
+  return { context, runtime, output, outputTruncated };
+}
+
+function disposeVmSession(session: VmSession): void {
+  session.context.dispose();
+  session.runtime.dispose();
+}
+
+function createBenchmarkFunctionSource(code: string): string {
+  return `globalThis.${BENCHMARK_FUNCTION_NAME} = function toolboxPerfMain() {\n${code}\n};`;
+}
+
+function runSnippet(
+  session: VmSession,
+  code: string,
+  deadlineMs: number,
+  phase: BenchmarkPhase,
+  fileName: string
+): PhaseOutcome {
+  try {
+    session.runtime.setInterruptHandler(
+      shouldInterruptAfterDeadline(Date.now() + deadlineMs)
+    );
+    const resultHandle = session.context.unwrapResult(
+      session.context.evalCode(code, fileName)
+    );
+    resultHandle.dispose();
+    return { ok: true };
+  } catch (error) {
+    const status: PhaseFailure['status'] = isInterruptedError(error)
+      ? 'timeout'
+      : 'runtime_error';
+    const phaseLabel = describePhase(phase);
+    return {
+      ok: false,
+      failure: {
+        phase,
+        status,
+        message:
+          status === 'timeout'
+            ? `Execution timed out during ${phaseLabel} (>${deadlineMs}ms)`
+            : `Execution failed during ${phaseLabel}: ${formatUnknownError(error)}`,
+      },
+    };
+  }
+}
+
+function runMainIteration(
+  session: VmSession,
+  deadlineMs: number,
+  phase: BenchmarkPhase,
+  iteration: number,
+  totalIterations: number
+): PhaseOutcome {
+  const fnHandle = session.context.getProp(
+    session.context.global,
+    BENCHMARK_FUNCTION_NAME
   );
 
-  // Run teardown once (not counted in timing)
-  if (wrappedTeardown && !hasTimeout) {
-    try {
-      runCode(wrappedTeardown, deadlineMs);
-    } catch {
-      // Teardown errors are ignored
-    }
+  try {
+    session.runtime.setInterruptHandler(
+      shouldInterruptAfterDeadline(Date.now() + deadlineMs)
+    );
+    const resultHandle = session.context.unwrapResult(
+      session.context.callFunction(fnHandle, session.context.undefined)
+    );
+    resultHandle.dispose();
+    return { ok: true };
+  } catch (error) {
+    const status: PhaseFailure['status'] = isInterruptedError(error)
+      ? 'timeout'
+      : 'runtime_error';
+    const phaseLabel = describePhase(phase);
+    const iterationLabel = `${iteration}/${totalIterations}`;
+
+    return {
+      ok: false,
+      failure: {
+        phase,
+        status,
+        message:
+          status === 'timeout'
+            ? `Execution timed out during ${phaseLabel} ${iterationLabel} (>${deadlineMs}ms)`
+            : `Execution failed during ${phaseLabel} ${iterationLabel}: ${formatUnknownError(error)}`,
+      },
+    };
+  } finally {
+    fnHandle.dispose();
+  }
+}
+
+function executeBenchmark(payload: ExecutionRequest): BenchmarkRunOutcome {
+  const session = createVmSession(DEFAULT_RUN_POLICY.maxOutputLines);
+
+  if (!session) {
+    return {
+      durations: [],
+      failure: {
+        phase: 'setup',
+        status: 'worker_error',
+        message: 'Runtime not initialized',
+      },
+      output: [],
+    };
   }
 
+  try {
+    const { code, deadlineMs, iterations, setup, teardown } = payload;
+
+    if (setup.trim()) {
+      const setupResult = runSnippet(
+        session,
+        setup,
+        deadlineMs,
+        'setup',
+        'benchmark-setup.js'
+      );
+      if (!setupResult.ok) {
+        return {
+          durations: [],
+          failure: setupResult.failure,
+          output: session.output,
+        };
+      }
+    }
+
+    const compileResult = runSnippet(
+      session,
+      createBenchmarkFunctionSource(code),
+      deadlineMs,
+      'compile',
+      'benchmark-main.js'
+    );
+    if (!compileResult.ok) {
+      return {
+        durations: [],
+        failure: compileResult.failure,
+        output: session.output,
+      };
+    }
+
+    for (let i = 0; i < WARMUP_ITERATIONS; i += 1) {
+      const warmupResult = runMainIteration(
+        session,
+        deadlineMs,
+        'warmup',
+        i + 1,
+        WARMUP_ITERATIONS
+      );
+      if (!warmupResult.ok) {
+        return {
+          durations: [],
+          failure: warmupResult.failure,
+          output: session.output,
+        };
+      }
+    }
+
+    const durations: Array<number> = [];
+    for (let i = 0; i < iterations; i += 1) {
+      const start = performance.now();
+      const timedResult = runMainIteration(
+        session,
+        deadlineMs,
+        'timed',
+        i + 1,
+        iterations
+      );
+
+      if (!timedResult.ok) {
+        return {
+          durations,
+          failure: timedResult.failure,
+          output: session.output,
+        };
+      }
+
+      durations.push(performance.now() - start);
+    }
+
+    if (teardown.trim()) {
+      const teardownResult = runSnippet(
+        session,
+        teardown,
+        deadlineMs,
+        'teardown',
+        'benchmark-teardown.js'
+      );
+      if (!teardownResult.ok) {
+        return {
+          durations,
+          failure: teardownResult.failure,
+          output: session.output,
+        };
+      }
+    }
+
+    if (session.outputTruncated) {
+      session.output.push(
+        `... output truncated at ${DEFAULT_RUN_POLICY.maxOutputLines} lines`
+      );
+    }
+
+    return { durations, failure: null, output: session.output };
+  } finally {
+    disposeVmSession(session);
+  }
+}
+
+function buildResult(
+  payload: ExecutionRequest,
+  status: ExecutionResult['status'],
+  durations: Array<number>,
+  output: Array<string>,
+  errorMessage: string | null
+): ExecutionResult {
   const totalDurationMs =
     durations.length > 0
-      ? durations.reduce((a, b) => a + b, 0)
-      : performance.now();
+      ? durations.reduce((sum, duration) => sum + duration, 0)
+      : null;
 
-  const buildResultPayload = (
-    status: ExecutionResult['status'],
-    errorMsg: string | null
-  ): ExecutionResult => ({
+  return {
     id: payload.id,
     code: payload.code,
     status,
     durationMs: totalDurationMs,
     perIterationMs:
-      durations.length > 0 ? totalDurationMs / durations.length : null,
+      durations.length > 0 && totalDurationMs !== null
+        ? totalDurationMs / durations.length
+        : null,
     statistics:
       durations.length > 0 ? calculateRobustStatistics(durations) : null,
-    errorMessage: errorMsg,
+    errorMessage,
     output,
-  });
-
-  if (hasTimeout) {
-    const msg: WorkerOutboundMessage = {
-      type: 'result',
-      payload: buildResultPayload('timeout', lastError),
-    };
-    self.postMessage(msg);
-    return;
-  }
-
-  if (lastError) {
-    const msg: WorkerOutboundMessage = {
-      type: 'result',
-      payload: buildResultPayload('runtime_error', lastError),
-    };
-    self.postMessage(msg);
-    return;
-  }
-
-  const msg: WorkerOutboundMessage = {
-    type: 'result',
-    payload: buildResultPayload('success', null),
   };
+}
+
+function execute(payload: ExecutionRequest): void {
+  if (!quickjsModule) {
+    const result = buildResult(
+      payload,
+      'worker_error',
+      [],
+      [],
+      'Runtime not initialized'
+    );
+    const msg: WorkerOutboundMessage = { type: 'result', payload: result };
+    self.postMessage(msg);
+    return;
+  }
+
+  const { durations, failure, output } = executeBenchmark(payload);
+
+  const status: ExecutionResult['status'] = failure
+    ? failure.status
+    : 'success';
+  const result = buildResult(
+    payload,
+    status,
+    durations,
+    output,
+    failure?.message ?? null
+  );
+  const msg: WorkerOutboundMessage = { type: 'result', payload: result };
   self.postMessage(msg);
 }
 
