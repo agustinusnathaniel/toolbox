@@ -27,22 +27,17 @@ This inconsistency makes the tool unreliable for performance comparison decision
 
 ## Root Cause Analysis
 
-### JIT Compilation Effects
+### Transient Runtime Effects
 
-JavaScript engines (V8, SpiderMonkey, JavaScriptCore) use **Just-In-Time (JIT) compilation**:
+QuickJS in this tool runs inside isolated worker contexts. Even without browser-engine JIT effects, early executions can still contain transient behavior (initial runtime path setup, memory pressure patterns, and one-time environment state), which skews early samples.
 
-1. **Interpretation Phase** (first few runs): Code runs in the interpreter — slow
-2. **Baseline Compilation**: Simple JIT compilation — moderate speed
-3. **Optimized Compilation**: Aggressive optimizations based on runtime profiling — fastest
-4. **Deoptimization**: If assumptions fail, falls back to slower tiers
-
-Without accounting for JIT warmup, benchmarks measure inconsistent optimization states.
+Without a warmup phase, benchmarks include this transient startup noise and become inconsistent across runs.
 
 ### Sources of Measurement Noise
 
 | Source | Impact | Mitigation |
 |--------|--------|------------|
-| **JIT Warmup** | High (10-100x difference) | Warmup iterations before timing |
+| **Transient startup effects** | High | Warmup iterations before timing |
 | **Garbage Collection** | Medium (spikes in timing) | Outlier filtering (IQR method) |
 | **Background Tasks** | Low-Medium | Multiple iterations, median calculation |
 | **CPU Throttling** | Medium | Run on stable power, avoid thermal limits |
@@ -66,7 +61,7 @@ const WARMUP_ITERATIONS = 5;
 
 // Phase 1: Warmup (NOT included in statistics)
 for (let i = 0; i < WARMUP_ITERATIONS; i++) {
-  runCode(code); // Let JIT optimize
+  runCode(code); // Stabilize runtime state
 }
 
 // Phase 2: Timed iterations (included in statistics)
@@ -174,6 +169,23 @@ function runBenchmarkIterations(code: string, iterations: number) {
 }
 ```
 
+### Reliability & Accountability Hardening
+
+The execution pipeline now runs explicitly in this order:
+
+1. `setup` (optional, untimed)
+2. `compile` benchmark function once
+3. `warmup` iterations (untimed)
+4. `timed` iterations (sampled with `performance.now()`)
+5. `teardown` (optional, untimed)
+
+Additional reliability improvements:
+
+- Phase-aware runtime errors (`setup`, `compile`, `warmup`, `timed`, `teardown`)
+- Deterministic worker crash fallback to `worker_error` result in UI
+- Capped and explicitly truncated output buffering
+- Duration accounting based only on timed iteration samples
+
 ## Configuration
 
 ```typescript
@@ -215,14 +227,14 @@ Run 4: A=10.5ms ±0.3, B=11.8ms ±0.5 → A is 11% faster
 
 ## Lessons Learned
 
-### JIT Warmup is Critical
-- First 3-5 runs are typically 10-100x slower than optimized runs
+### Warmup is Critical
+- First runs can be unstable because of transient runtime effects
 - Must discard warmup runs before measurement
 - Each code snippet needs its own warmup (cannot share)
 
 ### Parallel Execution Requires Separate Workers
 - Running both snippets in one worker = sequential execution
-- Second snippet benefits from JIT warmup of first
+- Second snippet can inherit runtime state from first
 - Use **two separate workers** for true parallel execution
 
 ### Statistics Matter
@@ -249,5 +261,5 @@ Run 4: A=10.5ms ±0.3, B=11.8ms ±0.5 → A is 11% faster
 - **REF-002**: `packages/js-perf-comp-core/src/models.ts` — `calculateRobustStatistics()`
 - **REF-003**: `apps/toolbox-web/src/routes/tools/js-perf-comparator/-worker/` — Worker implementation
 - **REF-004**: Benchmark.js — Industry-standard benchmarking library
-- **REF-005**: WebKit blog on JIT compilation
-- **REF-006**: V8 blog: TurboFan compilation pipeline
+- **REF-005**: quickjs-emscripten docs (runtime/context patterns, interrupts)
+- **REF-006**: MDN `performance.now()` timing guidance
