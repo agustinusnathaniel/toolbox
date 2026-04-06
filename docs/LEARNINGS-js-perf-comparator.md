@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Built Phase 5 of the toolbox platform: a JS Performance Comparator that benchmarks JavaScript code snippets using sandboxed QuickJS runtimes in Web Workers. The latest update improves reliability and accountability with phase-aware execution (`setup` → `compile` → `warmup` → `timed` → `teardown`), deterministic worker error reporting, and clearer runtime failure messages.
+Built Phase 5 of the toolbox platform: a JS Performance Comparator that benchmarks JavaScript code snippets using sandboxed QuickJS runtimes in Web Workers. The latest update improves reliability and accountability with phase-aware execution (`setup` → `compile` → `warmup` → `timed` → `teardown`), deterministic worker error reporting, multi-round Stability mode aggregation, and clearer runtime failure messages.
 
 ---
 
@@ -223,6 +223,40 @@ Main Thread                              Worker
    - Worker refactored into focused helpers (`createVmSession`, `runSnippet`, `runMainIteration`, `executeBenchmark`, `buildResult`).
 5. **Bounded output capture**
    - Console output capture is capped by policy and marked as truncated when limits are hit.
+6. **Stability mode aggregation**
+   - Optional multi-round execution aggregates per-iteration medians across rounds to reduce winner flip noise in close comparisons.
+
+### UI Modularization Follow-up
+
+To make the route easier to maintain and scale, `index.tsx` was decomposed into focused view components:
+
+- `comparator-config-bar.tsx` - preset/iterations/stability controls
+- `snippet-editors.tsx` - paired Monaco editors for A/B snippets
+- `advanced-scripts-section.tsx` - setup/teardown editors
+- `run-action-bar.tsx` - run/stop/reset controls and runtime status
+- `comparator-help.tsx` - how-it-works + FAQ disclosure content
+
+`index.tsx` now primarily owns orchestration state and worker/session lifecycle, while rendering details live in `-components/`.
+
+### Result Interpretation Upgrade
+
+The result area now emphasizes accountability and confidence, not just raw timing:
+
+- `ResultCard` shows richer per-snippet diagnostics:
+  - per-iteration timing
+  - min-max range
+  - stddev
+  - relative margin of error
+  - variability percentage
+  - run count
+- `Comparison Insights` now reports:
+  - winner and estimated speedup (`x` multiplier)
+  - absolute/percent delta
+  - delta vs combined uncertainty ratio
+  - per-side 95% intervals (when available)
+  - interval overlap hint and confidence narrative
+
+This helps avoid over-interpreting tiny deltas and makes close races visibly inconclusive.
 
 ### Statistics Pipeline
 
