@@ -5,59 +5,36 @@ import {
   createExecutionRequest,
   DEFAULT_RUN_POLICY,
   type ExecutionResult,
-  formatDuration,
-  formatStatistics,
   isRunable,
-  parseWorkerMessage,
   type WorkerInboundMessage,
-  type WorkerOutboundMessage,
 } from '@toolbox/js-perf-comp-core';
-import {
-  AlertCircle,
-  BadgeCheck,
-  BadgeX,
-  CheckCircle2,
-  Clock,
-  HelpCircleIcon,
-  InfoIcon,
-  Play,
-  RotateCcw,
-  ShieldAlert,
-  Square,
-  XCircle,
-} from 'lucide-react';
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Badge } from '@/lib/components/ui/badge';
-import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
-import { Input } from '@/lib/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/lib/components/ui/select';
 import { Separator } from '@/lib/components/ui/separator';
-import { Skeleton } from '@/lib/components/ui/skeleton';
 import { TOOL_META } from '@/lib/utils/metadata';
 
-const Editor = lazy(() =>
-  import('@monaco-editor/react').then((m) => ({ default: m.Editor }))
-);
+import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
+import { ComparatorConfigBar } from './-components/comparator-config-bar';
+import { ComparatorHelp } from './-components/comparator-help';
+import { ComparisonResults } from './-components/comparison-results';
+import {
+  DEFAULT_PRESET,
+  PRESETS,
+  STABILITY_DEFAULT_ROUNDS,
+} from './-components/presets';
+import { RunActionBar } from './-components/run-action-bar';
+import {
+  buildStabilitySummaryResult,
+  buildWorker,
+  createWorkerErrorResult,
+} from './-components/runner-utils';
+import { SnippetEditors } from './-components/snippet-editors';
+import type {
+  ActiveRunState,
+  RunState,
+  StabilitySession,
+} from './-components/types';
 
 const meta = TOOL_META['js-perf-comparator'];
 
@@ -77,347 +54,6 @@ export const Route = createFileRoute('/tools/js-perf-comparator/')({
   }),
 });
 
-interface Preset {
-  codeA: string;
-  codeB: string;
-  description: string;
-  name: string;
-}
-
-const PRESETS: Array<Preset> = [
-  {
-    name: 'Object Creation',
-    description: 'Object literal vs new Object()',
-    codeA: `// Object literal
-const COUNT = 100000;
-for (let i = 0; i < COUNT; i++) {
-  const obj = { id: i, value: i * 2, active: i % 2 === 0 };
-}
-console.log('done');`,
-    codeB: `// new Object()
-const COUNT = 100000;
-for (let i = 0; i < COUNT; i++) {
-  const obj = new Object();
-  obj.id = i;
-  obj.value = i * 2;
-  obj.active = i % 2 === 0;
-}
-console.log('done');`,
-  },
-  {
-    name: 'Array Lookup',
-    description: 'Set.has() vs Array.includes()',
-    codeA: `// Set.has()
-const items = new Set(['a', 'b', 'c', 'd', 'e']);
-const COUNT = 100000;
-let found = 0;
-for (let i = 0; i < COUNT; i++) {
-  if (items.has('c')) found++;
-}
-console.log('found:', found);`,
-    codeB: `// Array.includes()
-const items = ['a', 'b', 'c', 'd', 'e'];
-const COUNT = 100000;
-let found = 0;
-for (let i = 0; i < COUNT; i++) {
-  if (items.includes('c')) found++;
-}
-console.log('found:', found);`,
-  },
-  {
-    name: 'Object Spread',
-    description: 'Object spread vs Object.assign',
-    codeA: `// Object spread
-const base = { a: 1, b: 2 };
-const COUNT = 100000;
-for (let i = 0; i < COUNT; i++) {
-  const copy = { ...base, c: 3 };
-}
-console.log('done');`,
-    codeB: `// Object.assign
-const base = { a: 1, b: 2 };
-const COUNT = 100000;
-for (let i = 0; i < COUNT; i++) {
-  const copy = Object.assign({}, base, { c: 3 });
-}
-console.log('done');`,
-  },
-  {
-    name: 'String Concat',
-    description: 'Template literal vs string concatenation',
-    codeA: `// Template literal
-const COUNT = 100000;
-for (let i = 0; i < COUNT; i++) {
-  const str = \`value: \${i}, doubled: \${i * 2}\`;
-}
-console.log('done');`,
-    codeB: `// String concatenation
-const COUNT = 100000;
-for (let i = 0; i < COUNT; i++) {
-  const str = 'value: ' + i + ', doubled: ' + (i * 2);
-}
-console.log('done');`,
-  },
-  {
-    name: 'Array Methods',
-    description: 'for...of vs forEach',
-    codeA: `// for...of
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const COUNT = 100000;
-let sum = 0;
-for (let i = 0; i < COUNT; i++) {
-  for (const val of arr) {
-    sum += val;
-  }
-}
-console.log('sum:', sum);`,
-    codeB: `// forEach
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const COUNT = 100000;
-let sum = 0;
-for (let i = 0; i < COUNT; i++) {
-  arr.forEach(val => { sum += val; });
-}
-console.log('sum:', sum);`,
-  },
-  {
-    name: 'Custom',
-    description: 'Write your own code',
-    codeA: '// Code A - write your comparison',
-    codeB: '// Code B - write your comparison',
-  },
-];
-
-const DEFAULT_PRESET = PRESETS[0];
-
-type RunState = 'idle' | 'running' | 'done';
-
-function getDurationIndicator(
-  msA: number | null,
-  msB: number | null,
-  which: 'a' | 'b'
-): React.ReactNode {
-  if (msA === null || msB === null) {
-    return null;
-  }
-  const faster = which === 'a' ? msA < msB : msB < msA;
-  const slower = which === 'a' ? msA > msB : msB > msA;
-  if (faster) {
-    return <BadgeCheck className="inline size-3 text-success" />;
-  }
-  if (slower) {
-    return <BadgeX className="inline size-3 text-danger" />;
-  }
-  return <span>≈</span>;
-}
-
-function ComparisonEntry({
-  result,
-  other,
-  which,
-}: {
-  result: ExecutionResult;
-  other: ExecutionResult;
-  which: 'a' | 'b';
-}) {
-  const showIndicator =
-    result.status === 'success' &&
-    other.status === 'success' &&
-    result.durationMs !== null &&
-    other.durationMs !== null;
-
-  return (
-    <div className="flex items-center gap-2">
-      <StatusBadge result={result} />
-      <span className="font-mono text-sm">
-        {formatDuration(result.durationMs)}
-      </span>
-      {showIndicator ? (
-        <span className="text-muted-fg text-xs">
-          {getDurationIndicator(result.durationMs, other.durationMs, which)}
-        </span>
-      ) : null}
-    </div>
-  );
-}
-
-function StatusBadge({ result }: { result: ExecutionResult | null }) {
-  if (!result) {
-    return null;
-  }
-  switch (result.status) {
-    case 'success':
-      return (
-        <Badge intent="success" isCircle={false}>
-          <CheckCircle2 className="size-3" />
-          Success
-        </Badge>
-      );
-    case 'runtime_error':
-      return (
-        <Badge intent="danger" isCircle={false}>
-          <XCircle className="size-3" />
-          Runtime Error
-        </Badge>
-      );
-    case 'timeout':
-      return (
-        <Badge intent="warning" isCircle={false}>
-          <Clock className="size-3" />
-          Timeout
-        </Badge>
-      );
-    case 'terminated':
-      return (
-        <Badge intent="warning" isCircle={false}>
-          <ShieldAlert className="size-3" />
-          Terminated
-        </Badge>
-      );
-    case 'worker_error':
-      return (
-        <Badge intent="danger" isCircle={false}>
-          <AlertCircle className="size-3" />
-          Worker Error
-        </Badge>
-      );
-    default: {
-      return (
-        <Badge intent="secondary" isCircle={false}>
-          <AlertCircle className="size-3" />
-          Unknown
-        </Badge>
-      );
-    }
-  }
-}
-
-function ResultCard({
-  label,
-  result,
-}: {
-  label: string;
-  result: ExecutionResult | null;
-}) {
-  return (
-    <Card>
-      <CardHeader title={label} />
-      <CardContent className="flex flex-col gap-3">
-        {result ? (
-          <>
-            <div className="flex items-center gap-2">
-              <StatusBadge result={result} />
-              <span className="font-mono text-muted-fg text-sm">
-                {formatDuration(result.durationMs)}
-              </span>
-              {result.statistics && (
-                <span className="text-muted-fg text-xs">
-                  ({formatStatistics(result.statistics)})
-                </span>
-              )}
-            </div>
-            {result.errorMessage && (
-              <div className="rounded-md border border-danger/30 bg-danger/5 p-2 font-mono text-danger text-xs">
-                {result.errorMessage}
-              </div>
-            )}
-            {result.output.length > 0 && (
-              <div className="flex flex-col gap-1">
-                <span className="font-medium text-muted-fg text-xs">
-                  Output:
-                </span>
-                <div className="flex flex-col gap-0.5 rounded-md bg-muted/50 p-2 font-mono text-xs">
-                  {result.output.slice(0, 20).map((line) => (
-                    <span className="text-fg" key={line}>
-                      {line}
-                    </span>
-                  ))}
-                  {result.output.length > 20 && (
-                    <span className="text-muted-fg">
-                      ... +{result.output.length - 20} more lines
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          <span className="text-muted-fg text-sm">No result yet</span>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-import JsPerfWorker from './-worker/js-perf.worker.ts?worker';
-
-interface ActiveRunEntry {
-  code: string;
-  id: string;
-}
-
-interface ActiveRunState {
-  a: ActiveRunEntry | null;
-  b: ActiveRunEntry | null;
-}
-
-function createWorkerErrorResult(
-  runEntry: ActiveRunEntry | null,
-  errorMessage: string | null
-): ExecutionResult | null {
-  if (!runEntry) {
-    return null;
-  }
-
-  return {
-    id: runEntry.id,
-    code: runEntry.code,
-    status: 'worker_error',
-    durationMs: null,
-    perIterationMs: null,
-    statistics: null,
-    errorMessage: errorMessage ?? 'Worker crashed unexpectedly',
-    output: [],
-  };
-}
-
-function buildWorker(
-  workerRef: React.RefObject<Worker | null>,
-  workerIdRef: React.RefObject<number>,
-  onReady: () => void,
-  onResult: (id: string, result: ExecutionResult) => void,
-  onError: (errorMessage: string | null) => void
-) {
-  const currentId = ++workerIdRef.current;
-  const worker = new JsPerfWorker();
-
-  worker.onmessage = (event: MessageEvent<WorkerOutboundMessage>) => {
-    if (workerIdRef.current !== currentId) {
-      return;
-    }
-    const msg = parseWorkerMessage(event.data);
-    if (!msg) {
-      return;
-    }
-    if (msg.type === 'ready') {
-      onReady();
-      return;
-    }
-    if (msg.type === 'result') {
-      onResult(msg.payload.id, msg.payload);
-    }
-  };
-
-  worker.onerror = (event: ErrorEvent) => {
-    if (workerIdRef.current !== currentId) {
-      return;
-    }
-    onError(event.message || null);
-  };
-
-  workerRef.current = worker;
-}
-
 function JsPerfComparatorPage() {
   const [selectedPreset, setSelectedPreset] = useState(DEFAULT_PRESET.name);
   const [codeA, setCodeA] = useState(DEFAULT_PRESET.codeA);
@@ -430,6 +66,14 @@ function JsPerfComparatorPage() {
   const [iterations, setIterations] = useState(
     DEFAULT_RUN_POLICY.defaultIterations
   );
+  const [stabilityModeEnabled, setStabilityModeEnabled] = useState(false);
+  const [stabilityRounds, setStabilityRounds] = useState(
+    STABILITY_DEFAULT_ROUNDS
+  );
+  const [stabilityProgress, setStabilityProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
   const [setupA, setSetupA] = useState('');
   const [teardownA, setTeardownA] = useState('');
   const [setupB, setSetupB] = useState('');
@@ -444,10 +88,120 @@ function JsPerfComparatorPage() {
 
   const pendingRef = useRef<Set<string>>(new Set());
   const activeRunRef = useRef<ActiveRunState>({ a: null, b: null });
+  const sessionRef = useRef<StabilitySession | null>(null);
 
   const isReady = workerAReady && workerBReady;
 
-  useEffect(() => {
+  const finalizeSession = useCallback(() => {
+    const session = sessionRef.current;
+    if (!session) {
+      setRunState('done');
+      setStabilityProgress(null);
+      return;
+    }
+
+    if (session.mode === 'single') {
+      setRunState('done');
+      setStabilityProgress(null);
+      sessionRef.current = null;
+      return;
+    }
+
+    const summaryA = buildStabilitySummaryResult(
+      session.codeA,
+      session.iterations,
+      session.roundsTotal,
+      session.resultsA,
+      'A'
+    );
+    const summaryB = buildStabilitySummaryResult(
+      session.codeB,
+      session.iterations,
+      session.roundsTotal,
+      session.resultsB,
+      'B'
+    );
+
+    setResultA(summaryA);
+    setResultB(summaryB);
+    setRunState('done');
+    setStabilityProgress(null);
+    sessionRef.current = null;
+  }, []);
+
+  const startSessionRound = useCallback(() => {
+    const session = sessionRef.current;
+    if (!session) {
+      return;
+    }
+
+    if (!(workerARef.current && workerBRef.current)) {
+      return;
+    }
+
+    const nextRound = session.roundsCompleted + 1;
+    session.roundsCompleted = nextRound;
+
+    if (session.mode === 'stability') {
+      setStabilityProgress({
+        current: nextRound,
+        total: session.roundsTotal,
+      });
+    } else {
+      setStabilityProgress(null);
+    }
+
+    const reqA = createExecutionRequest(
+      session.codeA,
+      session.deadlineMs,
+      session.iterations,
+      session.setupA,
+      session.teardownA
+    );
+    reqA.id = `a-r${nextRound}-${reqA.id}`;
+
+    const reqB = createExecutionRequest(
+      session.codeB,
+      session.deadlineMs,
+      session.iterations,
+      session.setupB,
+      session.teardownB
+    );
+    reqB.id = `b-r${nextRound}-${reqB.id}`;
+
+    activeRunRef.current = {
+      a: { id: reqA.id, code: reqA.code },
+      b: { id: reqB.id, code: reqB.code },
+    };
+    pendingRef.current = new Set([reqA.id, reqB.id]);
+
+    const msgA: WorkerInboundMessage = { type: 'execute', payload: reqA };
+    const msgB: WorkerInboundMessage = { type: 'execute', payload: reqB };
+
+    workerARef.current.postMessage(msgA);
+    workerBRef.current.postMessage(msgB);
+  }, []);
+
+  const handleRoundFinished = useCallback(() => {
+    const session = sessionRef.current;
+    if (!session) {
+      setRunState('done');
+      setStabilityProgress(null);
+      return;
+    }
+
+    if (
+      session.mode === 'stability' &&
+      session.roundsCompleted < session.roundsTotal
+    ) {
+      startSessionRound();
+      return;
+    }
+
+    finalizeSession();
+  }, [finalizeSession, startSessionRound]);
+
+  const setupWorkers = useCallback(() => {
     const handleWorkerAReady = () => setWorkerAReady(true);
     const handleWorkerBReady = () => setWorkerBReady(true);
 
@@ -456,10 +210,15 @@ function JsPerfComparatorPage() {
         return;
       }
       pendingRef.current.delete(id);
-      setResultA(result);
       activeRunRef.current.a = null;
+      const session = sessionRef.current;
+      if (session?.mode === 'stability') {
+        session.resultsA.push(result);
+      } else {
+        setResultA(result);
+      }
       if (pendingRef.current.size === 0) {
-        setRunState('done');
+        handleRoundFinished();
       }
     };
 
@@ -468,10 +227,15 @@ function JsPerfComparatorPage() {
         return;
       }
       pendingRef.current.delete(id);
-      setResultB(result);
       activeRunRef.current.b = null;
+      const session = sessionRef.current;
+      if (session?.mode === 'stability') {
+        session.resultsB.push(result);
+      } else {
+        setResultB(result);
+      }
       if (pendingRef.current.size === 0) {
-        setRunState('done');
+        handleRoundFinished();
       }
     };
 
@@ -481,12 +245,17 @@ function JsPerfComparatorPage() {
         pendingRef.current.delete(runEntry.id);
         const fallback = createWorkerErrorResult(runEntry, errorMessage);
         if (fallback) {
-          setResultA(fallback);
+          const session = sessionRef.current;
+          if (session?.mode === 'stability') {
+            session.resultsA.push(fallback);
+          } else {
+            setResultA(fallback);
+          }
         }
       }
       activeRunRef.current.a = null;
       if (pendingRef.current.size === 0) {
-        setRunState('done');
+        handleRoundFinished();
       }
     };
 
@@ -496,12 +265,17 @@ function JsPerfComparatorPage() {
         pendingRef.current.delete(runEntry.id);
         const fallback = createWorkerErrorResult(runEntry, errorMessage);
         if (fallback) {
-          setResultB(fallback);
+          const session = sessionRef.current;
+          if (session?.mode === 'stability') {
+            session.resultsB.push(fallback);
+          } else {
+            setResultB(fallback);
+          }
         }
       }
       activeRunRef.current.b = null;
       if (pendingRef.current.size === 0) {
-        setRunState('done');
+        handleRoundFinished();
       }
     };
 
@@ -520,7 +294,10 @@ function JsPerfComparatorPage() {
       handleWorkerBResult,
       handleWorkerBError
     );
+  }, [handleRoundFinished]);
 
+  useEffect(() => {
+    setupWorkers();
     return () => {
       workerAIdRef.current += 1;
       workerBIdRef.current += 1;
@@ -530,10 +307,12 @@ function JsPerfComparatorPage() {
       workerBRef.current = null;
       pendingRef.current.clear();
       activeRunRef.current = { a: null, b: null };
+      sessionRef.current = null;
+      setStabilityProgress(null);
       setWorkerAReady(false);
       setWorkerBReady(false);
     };
-  }, []);
+  }, [setupWorkers]);
 
   const handlePresetChange = useCallback((presetName: string) => {
     const preset = PRESETS.find((p) => p.name === presetName);
@@ -559,34 +338,23 @@ function JsPerfComparatorPage() {
     setRunState('running');
 
     const deadline = deadlineRef.current;
-    const reqA = createExecutionRequest(
+    const rounds = stabilityModeEnabled ? stabilityRounds : 1;
+    sessionRef.current = {
+      mode: stabilityModeEnabled ? 'stability' : 'single',
+      roundsTotal: rounds,
+      roundsCompleted: 0,
+      iterations,
+      deadlineMs: deadline,
       codeA,
-      deadline,
-      iterations,
-      setupA,
-      teardownA
-    );
-    reqA.id = `a-${reqA.id}`;
-    const reqB = createExecutionRequest(
       codeB,
-      deadline,
-      iterations,
+      setupA,
+      teardownA,
       setupB,
-      teardownB
-    );
-    reqB.id = `b-${reqB.id}`;
-
-    activeRunRef.current = {
-      a: { id: reqA.id, code: reqA.code },
-      b: { id: reqB.id, code: reqB.code },
+      teardownB,
+      resultsA: [],
+      resultsB: [],
     };
-    pendingRef.current = new Set([reqA.id, reqB.id]);
-
-    const msgA: WorkerInboundMessage = { type: 'execute', payload: reqA };
-    const msgB: WorkerInboundMessage = { type: 'execute', payload: reqB };
-
-    workerARef.current.postMessage(msgA);
-    workerBRef.current.postMessage(msgB);
+    startSessionRound();
   }, [
     runState,
     isReady,
@@ -597,6 +365,9 @@ function JsPerfComparatorPage() {
     teardownA,
     setupB,
     teardownB,
+    stabilityModeEnabled,
+    stabilityRounds,
+    startSessionRound,
   ]);
 
   const handleTerminate = useCallback(() => {
@@ -608,89 +379,21 @@ function JsPerfComparatorPage() {
     workerBRef.current = null;
     pendingRef.current.clear();
     activeRunRef.current = { a: null, b: null };
+    sessionRef.current = null;
+    setStabilityProgress(null);
     setRunState('idle');
     setResultA(null);
     setResultB(null);
     setWorkerAReady(false);
     setWorkerBReady(false);
-
-    const handleWorkerAReady = () => setWorkerAReady(true);
-    const handleWorkerBReady = () => setWorkerBReady(true);
-
-    const handleWorkerAResult = (id: string, result: ExecutionResult) => {
-      if (!pendingRef.current.has(id)) {
-        return;
-      }
-      pendingRef.current.delete(id);
-      setResultA(result);
-      activeRunRef.current.a = null;
-      if (pendingRef.current.size === 0) {
-        setRunState('done');
-      }
-    };
-
-    const handleWorkerBResult = (id: string, result: ExecutionResult) => {
-      if (!pendingRef.current.has(id)) {
-        return;
-      }
-      pendingRef.current.delete(id);
-      setResultB(result);
-      activeRunRef.current.b = null;
-      if (pendingRef.current.size === 0) {
-        setRunState('done');
-      }
-    };
-
-    const handleWorkerAError = (errorMessage: string | null) => {
-      const runEntry = activeRunRef.current.a;
-      if (runEntry && pendingRef.current.has(runEntry.id)) {
-        pendingRef.current.delete(runEntry.id);
-        const fallback = createWorkerErrorResult(runEntry, errorMessage);
-        if (fallback) {
-          setResultA(fallback);
-        }
-      }
-      activeRunRef.current.a = null;
-      if (pendingRef.current.size === 0) {
-        setRunState('done');
-      }
-    };
-
-    const handleWorkerBError = (errorMessage: string | null) => {
-      const runEntry = activeRunRef.current.b;
-      if (runEntry && pendingRef.current.has(runEntry.id)) {
-        pendingRef.current.delete(runEntry.id);
-        const fallback = createWorkerErrorResult(runEntry, errorMessage);
-        if (fallback) {
-          setResultB(fallback);
-        }
-      }
-      activeRunRef.current.b = null;
-      if (pendingRef.current.size === 0) {
-        setRunState('done');
-      }
-    };
-
-    buildWorker(
-      workerARef,
-      workerAIdRef,
-      handleWorkerAReady,
-      handleWorkerAResult,
-      handleWorkerAError
-    );
-
-    buildWorker(
-      workerBRef,
-      workerBIdRef,
-      handleWorkerBReady,
-      handleWorkerBResult,
-      handleWorkerBError
-    );
-  }, []);
+    setupWorkers();
+  }, [setupWorkers]);
 
   const handleReset = useCallback(() => {
     pendingRef.current.clear();
     activeRunRef.current = { a: null, b: null };
+    sessionRef.current = null;
+    setStabilityProgress(null);
     setRunState('idle');
     setResultA(null);
     setResultB(null);
@@ -704,6 +407,8 @@ function JsPerfComparatorPage() {
     }
     pendingRef.current.clear();
     activeRunRef.current = { a: null, b: null };
+    sessionRef.current = null;
+    setStabilityProgress(null);
     setRunState('idle');
     setResultA(null);
     setResultB(null);
@@ -720,346 +425,71 @@ function JsPerfComparatorPage() {
           title="JS Performance Comparator"
         />
         <CardContent className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <Select
-              onSelectionChange={(key) => handlePresetChange(key as string)}
-              selectedKey={selectedPreset}
-            >
-              <SelectTrigger className="w-[200px]">
-                {selectedPreset}
-              </SelectTrigger>
-              <SelectContent items={PRESETS}>
-                {(preset) => (
-                  <SelectItem id={preset.name}>{preset.name}</SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-            <div className="flex items-center gap-2">
-              <label
-                className="text-muted-fg text-sm"
-                htmlFor="iterations-input"
-              >
-                Iterations:
-              </label>
-              <Input
-                className="w-[80px]"
-                id="iterations-input"
-                max={1000}
-                min={1}
-                onChange={(e) => {
-                  const val = Number.parseInt(e.target.value, 10);
-                  if (!Number.isNaN(val) && val > 0) {
-                    setIterations(Math.min(val, 1000));
-                  }
-                }}
-                type="number"
-                value={iterations}
-              />
-            </div>
-            {selectedPreset !== 'Custom' && (
-              <Button
-                intent="secondary"
-                isDisabled={runState === 'running'}
-                onPress={handleResetToPreset}
-                size="sm"
-              >
-                <RotateCcw className="size-4" />
-                Reset to Preset
-              </Button>
-            )}
-          </div>
+          <ComparatorConfigBar
+            iterations={iterations}
+            onIterationsChange={setIterations}
+            onPresetChange={handlePresetChange}
+            onResetToPreset={handleResetToPreset}
+            onStabilityModeChange={setStabilityModeEnabled}
+            onStabilityRoundsChange={setStabilityRounds}
+            presets={PRESETS}
+            runState={runState}
+            selectedPreset={selectedPreset}
+            showResetToPreset={selectedPreset !== 'Custom'}
+            stabilityModeEnabled={stabilityModeEnabled}
+            stabilityRounds={stabilityRounds}
+          />
 
           <Separator />
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <span className="font-medium text-sm">Snippet A</span>
-              <div className="overflow-hidden rounded-md border">
-                <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-                  <MonacoEditor
-                    height="200px"
-                    language="javascript"
-                    onChange={(v) => {
-                      setCodeA(v ?? '');
-                      setSelectedPreset('Custom');
-                    }}
-                    value={codeA}
-                  />
-                </Suspense>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="font-medium text-sm">Snippet B</span>
-              <div className="overflow-hidden rounded-md border">
-                <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
-                  <MonacoEditor
-                    height="200px"
-                    language="javascript"
-                    onChange={(v) => {
-                      setCodeB(v ?? '');
-                      setSelectedPreset('Custom');
-                    }}
-                    value={codeB}
-                  />
-                </Suspense>
-              </div>
-            </div>
-          </div>
+          <SnippetEditors
+            codeA={codeA}
+            codeB={codeB}
+            onCodeAChange={(value) => {
+              setCodeA(value);
+              setSelectedPreset('Custom');
+            }}
+            onCodeBChange={(value) => {
+              setCodeB(value);
+              setSelectedPreset('Custom');
+            }}
+          />
 
-          <div className="mt-2">
-            <button
-              className="flex items-center gap-2 text-muted-fg text-sm hover:text-fg"
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              type="button"
-            >
-              <span
-                className={`inline-block transition-transform ${showAdvanced ? 'rotate-90' : ''}`}
-              >
-                &#9654;
-              </span>
-              {showAdvanced ? 'Hide' : 'Show'} Advanced (Setup / Teardown)
-            </button>
-
-            {showAdvanced && (
-              <div className="mt-4 flex flex-col gap-6">
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <span className="font-medium text-sm">
-                      Setup A (optional)
-                    </span>
-                    <span className="text-muted-fg text-xs">
-                      Runs once before iterations (not timed)
-                    </span>
-                    <div className="overflow-hidden rounded-md border">
-                      <Suspense
-                        fallback={<Skeleton className="h-[100px] w-full" />}
-                      >
-                        <MonacoEditor
-                          height="100px"
-                          language="javascript"
-                          onChange={(v) => setSetupA(v ?? '')}
-                          value={setupA}
-                        />
-                      </Suspense>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="font-medium text-sm">
-                      Setup B (optional)
-                    </span>
-                    <span className="text-muted-fg text-xs">
-                      Runs once before iterations (not timed)
-                    </span>
-                    <div className="overflow-hidden rounded-md border">
-                      <Suspense
-                        fallback={<Skeleton className="h-[100px] w-full" />}
-                      >
-                        <MonacoEditor
-                          height="100px"
-                          language="javascript"
-                          onChange={(v) => setSetupB(v ?? '')}
-                          value={setupB}
-                        />
-                      </Suspense>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <span className="font-medium text-sm">
-                      Teardown A (optional)
-                    </span>
-                    <span className="text-muted-fg text-xs">
-                      Runs once after iterations (not timed)
-                    </span>
-                    <div className="overflow-hidden rounded-md border">
-                      <Suspense
-                        fallback={<Skeleton className="h-[100px] w-full" />}
-                      >
-                        <MonacoEditor
-                          height="100px"
-                          language="javascript"
-                          onChange={(v) => setTeardownA(v ?? '')}
-                          value={teardownA}
-                        />
-                      </Suspense>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="font-medium text-sm">
-                      Teardown B (optional)
-                    </span>
-                    <span className="text-muted-fg text-xs">
-                      Runs once after iterations (not timed)
-                    </span>
-                    <div className="overflow-hidden rounded-md border">
-                      <Suspense
-                        fallback={<Skeleton className="h-[100px] w-full" />}
-                      >
-                        <MonacoEditor
-                          height="100px"
-                          language="javascript"
-                          onChange={(v) => setTeardownB(v ?? '')}
-                          value={teardownB}
-                        />
-                      </Suspense>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <AdvancedScriptsSection
+            onSetupAChange={setSetupA}
+            onSetupBChange={setSetupB}
+            onTeardownAChange={setTeardownA}
+            onTeardownBChange={setTeardownB}
+            onToggle={() => setShowAdvanced((prev) => !prev)}
+            setupA={setupA}
+            setupB={setupB}
+            showAdvanced={showAdvanced}
+            teardownA={teardownA}
+            teardownB={teardownB}
+          />
 
           <Separator />
 
-          <div className="flex flex-col gap-2">
-            <p className="text-muted-fg text-xs">
-              <ShieldAlert className="mr-1 inline size-3" />
-              Code runs in parallel sandboxed QuickJS runtimes with a{' '}
-              {DEFAULT_RUN_POLICY.deadlineMs}ms deadline per snippet. Infinite
-              loops will be terminated.
-            </p>
-            <div className="flex items-center gap-3">
-              {runState === 'running' ? (
-                <Button intent="danger" onPress={handleTerminate}>
-                  <Square className="size-4" />
-                  Stop
-                </Button>
-              ) : null}
-              {runState === 'done' ? (
-                <Button intent="secondary" onPress={handleReset}>
-                  Reset
-                </Button>
-              ) : null}
-              {runState === 'idle' ? (
-                <Button
-                  intent="primary"
-                  isDisabled={!canRun}
-                  onPress={handleRun}
-                >
-                  <Play className="size-4" />
-                  Run Both
-                </Button>
-              ) : null}
-              {runState === 'running' && (
-                <span className="text-muted-fg text-sm">Running...</span>
-              )}
-              {!isReady && runState === 'idle' && (
-                <span className="text-muted-fg text-sm">
-                  Loading runtimes...
-                </span>
-              )}
-            </div>
-          </div>
+          <RunActionBar
+            canRun={canRun}
+            deadlineMs={DEFAULT_RUN_POLICY.deadlineMs}
+            isReady={isReady}
+            onReset={handleReset}
+            onRun={handleRun}
+            onStop={handleTerminate}
+            runState={runState}
+            stabilityProgress={stabilityProgress}
+          />
         </CardContent>
       </Card>
 
-      {resultA || resultB || runState === 'running' ? (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <ResultCard label="Result A" result={resultA} />
-          <ResultCard label="Result B" result={resultB} />
-        </div>
-      ) : null}
+      <ComparisonResults
+        resultA={resultA}
+        resultB={resultB}
+        runState={runState}
+      />
 
-      {runState === 'done' && resultA && resultB ? (
-        <Card>
-          <CardContent className="flex flex-col gap-3">
-            <span className="font-medium text-sm">Comparison Summary</span>
-            <div className="flex items-center gap-6">
-              <ComparisonEntry other={resultB} result={resultA} which="a" />
-              <span className="text-muted-fg text-sm">vs</span>
-              <ComparisonEntry other={resultA} result={resultB} which="b" />
-            </div>
-          </CardContent>
-        </Card>
-      ) : null}
-
-      <DisclosureGroup>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <InfoIcon className="size-4" />
-              How it works
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <p>
-                Compare JavaScript snippet execution in parallel sandboxed
-                QuickJS runtimes. Both snippets run the same number of
-                iterations and the results are compared.
-              </p>
-              <ul className="list-inside list-disc">
-                <li>Write code in both editors</li>
-                <li>Select a preset or write custom code</li>
-                <li>Click Run Both to execute</li>
-                <li>View execution time and output comparison</li>
-              </ul>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <HelpCircleIcon className="size-4" />
-              FAQ
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">
-                  Is the comparison accurate?
-                </p>
-                <p>
-                  This tool compares controlled runtime execution, not native
-                  browser engine performance. Use it to understand code behavior
-                  differences, not benchmark browser engines.
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">What is QuickJS?</p>
-                <p>
-                  QuickJS is a small JavaScript engine that runs in a Web
-                  Worker. Code is sandboxed and cannot access host APIs.
-                </p>
-              </div>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-      </DisclosureGroup>
+      <ComparatorHelp />
     </div>
-  );
-}
-
-function MonacoEditor({
-  value,
-  onChange,
-  language,
-  height,
-}: {
-  value: string;
-  onChange: (value: string | undefined) => void;
-  language: string;
-  height: string;
-}) {
-  return (
-    <Editor
-      height={height}
-      language={language}
-      onChange={onChange}
-      options={{
-        minimap: { enabled: false },
-        fontSize: 13,
-        lineNumbers: 'on',
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-        tabSize: 2,
-        wordWrap: 'on',
-        padding: { top: 8 },
-      }}
-      theme="vs-dark"
-      value={value}
-    />
   );
 }

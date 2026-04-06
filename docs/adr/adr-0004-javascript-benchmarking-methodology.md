@@ -51,6 +51,7 @@ Implement a **robust benchmarking methodology** with:
 2. **Outlier Removal**: IQR-based filtering of GC spikes and anomalies
 3. **Median Calculation**: More robust than mean for skewed distributions
 4. **Increased Sample Size**: 30+ iterations for statistical significance
+5. **Stability Mode**: Optional multi-round aggregation to smooth run-to-run variance
 
 ## Methodology
 
@@ -186,6 +187,39 @@ Additional reliability improvements:
 - Capped and explicitly truncated output buffering
 - Duration accounting based only on timed iteration samples
 
+### Stability Mode (Multi-Round Aggregation)
+
+Stability mode repeats the same benchmark configuration for multiple rounds (default: 6), then aggregates per-round `perIterationMs` values using robust statistics.
+
+Benefits:
+
+- Reduces winner flips when A and B are very close
+- Makes single-run scheduling noise less influential
+- Preserves failure accountability by reporting round-level failure counts
+
+Interpretation guidance:
+
+- If A/B difference is smaller than combined uncertainty, winner flips are expected.
+- Stability mode reduces this effect but cannot eliminate all system/runtime noise.
+
+### Result Interpretation Contract (UI Accountability)
+
+To improve decision quality in close benchmarks, the UI now presents explicit interpretation metrics in addition to raw durations:
+
+1. Winner and estimated speedup (`x` multiplier)
+2. Absolute and percent per-iteration delta
+3. Delta-to-uncertainty ratio (`delta / (marginA + marginB)`)
+4. Per-side 95% intervals (`mean ± margin`)
+5. Interval overlap indicator and confidence narrative
+
+Verdict thresholds are treated as **heuristics**, not formal hypothesis testing:
+
+- `ratio <= 1.0` → Inconclusive
+- `ratio <= 1.5` → Likely winner
+- `ratio > 1.5` → Confident winner
+
+This aligns with the benchmark behavior observed in practice: near-parity snippets can flip winner run-to-run, and the tool should surface that uncertainty directly.
+
 ## Configuration
 
 ```typescript
@@ -237,6 +271,11 @@ Run 4: A=10.5ms ±0.3, B=11.8ms ±0.5 → A is 11% faster
 - Second snippet can inherit runtime state from first
 - Use **two separate workers** for true parallel execution
 
+### Winner Flips Are Normal Near Parity
+- Close benchmarks can swap winner between runs due to scheduler and GC noise
+- Treat small deltas as inconclusive
+- Prefer Stability mode for tighter confidence on close comparisons
+
 ### Statistics Matter
 - Simple mean is misleading with performance data
 - Outliers from GC and background tasks are common
@@ -251,15 +290,16 @@ Run 4: A=10.5ms ±0.3, B=11.8ms ±0.5 → A is 11% faster
 
 1. **Close other browser tabs** - Reduce background noise
 2. **Run on stable power** - Avoid CPU throttling on battery
-3. **Use reasonable workload sizes** - Too small = high error, too large = timeout
-4. **Look for consistent patterns** - Single run is never enough
-5. **Check the margin of error** - Large margins indicate unreliable results
+3. **Use Stability mode for close races** - Aggregate multiple rounds
+4. **Use reasonable workload sizes** - Too small = high error, too large = timeout
+5. **Look for consistent patterns** - Single run is never enough
+6. **Check the margin of error** - Large margins indicate unreliable results
 
 ## References
 
 - **REF-001**: ADR-0003 — Sandboxed JavaScript Execution
 - **REF-002**: `packages/js-perf-comp-core/src/models.ts` — `calculateRobustStatistics()`
 - **REF-003**: `apps/toolbox-web/src/routes/tools/js-perf-comparator/-worker/` — Worker implementation
-- **REF-004**: Benchmark.js — Industry-standard benchmarking library
-- **REF-005**: quickjs-emscripten docs (runtime/context patterns, interrupts)
-- **REF-006**: MDN `performance.now()` timing guidance
+- **REF-004**: Benchmark.js docs — https://benchmarkjs.com/docs/
+- **REF-005**: quickjs-emscripten docs — https://github.com/justjake/quickjs-emscripten
+- **REF-006**: MDN `performance.now()` timing guidance — https://developer.mozilla.org/en-US/docs/Web/API/Performance/now

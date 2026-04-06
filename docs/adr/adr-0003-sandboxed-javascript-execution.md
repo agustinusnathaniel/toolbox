@@ -231,6 +231,8 @@ Use **`quickjs-emscripten`** running in a **Web Worker** with deadline-based int
 - **IMP-005**: Shared package `@toolbox/js-perf-comp-core` contains execution models and worker API
 - **IMP-006**: Use `import Worker from './path.ts?worker'` pattern for proper Vite bundling
 - **IMP-007**: Create separate worker instances for parallel execution and avoid cross-snippet runtime contamination
+- **IMP-008**: Route creates explicit `worker_error` fallback results when a worker crashes mid-run
+- **IMP-009**: Optional Stability mode repeats rounds and aggregates results to reduce scheduler noise
 
 ## Discoveries During Implementation
 
