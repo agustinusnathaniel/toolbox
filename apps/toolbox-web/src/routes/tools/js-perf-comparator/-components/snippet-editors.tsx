@@ -18,13 +18,13 @@ export function SnippetEditors({
   onCodeBChange,
 }: SnippetEditorsProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="flex flex-col gap-2">
         <span className="font-medium text-sm">Snippet A</span>
         <div className="overflow-hidden rounded-md border">
           <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
             <MonacoEditor
-              height="200px"
+              height="220px"
               language="javascript"
               onChange={(value) => onCodeAChange(value ?? '')}
               value={codeA}
@@ -38,7 +38,7 @@ export function SnippetEditors({
         <div className="overflow-hidden rounded-md border">
           <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
             <MonacoEditor
-              height="200px"
+              height="220px"
               language="javascript"
               onChange={(value) => onCodeBChange(value ?? '')}
               value={codeB}

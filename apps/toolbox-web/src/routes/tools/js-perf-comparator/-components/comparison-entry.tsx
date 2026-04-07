@@ -39,7 +39,7 @@ export function ComparisonEntry({
     other.durationMs !== null;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <StatusBadge result={result} />
       <span className="font-mono text-sm">
         {formatDuration(result.durationMs)}

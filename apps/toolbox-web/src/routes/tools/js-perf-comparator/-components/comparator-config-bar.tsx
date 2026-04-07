@@ -45,12 +45,14 @@ export function ComparatorConfigBar({
   onResetToPreset,
 }: ComparatorConfigBarProps) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       <Select
         onSelectionChange={(key) => onPresetChange(String(key))}
         selectedKey={selectedPreset}
       >
-        <SelectTrigger className="w-[200px]">{selectedPreset}</SelectTrigger>
+        <SelectTrigger className="min-w-[160px] flex-1 sm:w-[200px] sm:min-w-[200px] sm:flex-none">
+          {selectedPreset}
+        </SelectTrigger>
         <SelectContent items={presets}>
           {(preset) => <SelectItem id={preset.name}>{preset.name}</SelectItem>}
         </SelectContent>
@@ -61,7 +63,7 @@ export function ComparatorConfigBar({
           Iterations:
         </label>
         <Input
-          className="w-[80px]"
+          className="w-[72px]"
           id="iterations-input"
           max={MAX_ITERATIONS}
           min={MIN_ITERATIONS}
@@ -102,7 +104,7 @@ export function ComparatorConfigBar({
             Rounds:
           </label>
           <Input
-            className="w-[80px]"
+            className="w-[72px]"
             id="stability-rounds-input"
             max={STABILITY_MAX_ROUNDS}
             min={STABILITY_MIN_ROUNDS}
@@ -125,6 +127,7 @@ export function ComparatorConfigBar({
 
       {showResetToPreset ? (
         <Button
+          className="ml-auto sm:ml-0"
           intent="secondary"
           isDisabled={runState === 'running'}
           onPress={onResetToPreset}

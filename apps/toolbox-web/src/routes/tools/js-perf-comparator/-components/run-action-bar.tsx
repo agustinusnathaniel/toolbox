@@ -36,7 +36,7 @@ export function RunActionBar({
         deadline per snippet. Infinite loops will be terminated.
       </p>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {runState === 'running' ? (
           <Button intent="danger" onPress={onStop}>
             <Square className="size-4" />
