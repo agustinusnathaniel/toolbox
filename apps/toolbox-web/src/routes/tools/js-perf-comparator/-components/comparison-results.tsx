@@ -122,7 +122,7 @@ export function ComparisonResults({
   return (
     <>
       {resultA || resultB || runState === 'running' ? (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <ResultCard label="Result A" result={resultA} />
           <ResultCard label="Result B" result={resultB} />
         </div>
@@ -133,7 +133,7 @@ export function ComparisonResults({
           <Card>
             <CardContent className="flex flex-col gap-3">
               <span className="font-medium text-sm">Comparison Summary</span>
-              <div className="flex items-center gap-6">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <ComparisonEntry other={resultB} result={resultA} which="a" />
                 <span className="text-muted-fg text-sm">vs</span>
                 <ComparisonEntry other={resultA} result={resultB} which="b" />

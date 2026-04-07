@@ -418,13 +418,13 @@ function JsPerfComparatorPage() {
     isRunable(codeA) && isRunable(codeB) && runState === 'idle' && isReady;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <Card>
         <CardHeader
           description="Compare execution behavior of two JavaScript snippets using parallel sandboxed QuickJS runtimes."
           title="JS Performance Comparator"
         />
-        <CardContent className="flex flex-col gap-4">
+        <CardContent className="flex flex-col gap-3 md:gap-4">
           <ComparatorConfigBar
             iterations={iterations}
             onIterationsChange={setIterations}
