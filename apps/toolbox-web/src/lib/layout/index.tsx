@@ -6,6 +6,8 @@ import { AppSidebarNav } from '@/lib/components/app-sidebar-nav';
 import { SidebarInset, SidebarProvider } from '@/lib/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 
+import { Footer } from './components/footer';
+
 type LayoutProps = {
   children: ReactNode;
 };
@@ -18,10 +20,15 @@ export const Layout = ({ children }: LayoutProps) => {
       <SidebarInset>
         <AppSidebarNav />
         <div
-          className={twMerge(isMobile ? '' : 'route-transition', 'p-4 lg:p-6')}
+          className={twMerge(
+            isMobile ? '' : 'route-transition',
+            'p-4 lg:p-6',
+            'min-h-[85dvh]'
+          )}
         >
           {children}
         </div>
+        <Footer />
       </SidebarInset>
     </SidebarProvider>
   );
