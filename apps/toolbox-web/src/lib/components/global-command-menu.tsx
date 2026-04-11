@@ -9,8 +9,8 @@ import {
   IconQrCode,
   IconSearch,
 } from '@intentui/icons';
-import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useState } from 'react';
+import { type ToOptions, useNavigate } from '@tanstack/react-router';
+import { type FC, type SVGProps, useCallback, useState } from 'react';
 
 import {
   CommandMenu,
@@ -26,7 +26,13 @@ import { Input, InputGroup } from '@/lib/components/ui/input';
 import { Text } from '@/lib/components/ui/text';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 
-const navigationItems = [
+const navigationItems: Array<{
+  id: string;
+  title: string;
+  description: string;
+  icon: FC<SVGProps<SVGSVGElement>>;
+  href: ToOptions['to'];
+}> = [
   {
     id: 'home',
     title: 'Home',
@@ -39,35 +45,35 @@ const navigationItems = [
     title: 'WA Link Helper',
     description: 'Generate WhatsApp links quickly',
     icon: IconBrandWhatsapp,
-    href: '/tools/wa-link-helper',
+    href: '/wa-link-helper',
   },
   {
     id: 'zippy-img',
     title: 'Zippy Image',
     description: 'Compress images in browser',
     icon: IconCamera,
-    href: '/tools/zippy-img',
+    href: '/zippy-img',
   },
   {
     id: 'js-perf-comparator',
     title: 'JS Perf Comparator',
     description: 'Compare script runtime behavior',
     icon: IconCodeLines,
-    href: '/tools/js-perf-comparator',
+    href: '/js-perf-comparator',
   },
   {
     id: 'ua-check',
     title: 'UA Check',
     description: 'Check your browser user agent info',
     icon: IconDeviceDesktop,
-    href: '/tools/ua-check',
+    href: '/ua-check',
   },
   {
     id: 'qrcode-generator',
     title: 'QR Code Generator',
     description: 'Generate QR codes for URL or vCard',
     icon: IconQrCode,
-    href: '/tools/qrcode-generator',
+    href: '/qrcode-generator',
   },
 ];
 
@@ -81,7 +87,7 @@ export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   const isMobile = useIsMobile();
 
   const handleNavigate = useCallback(
-    (href: string) => {
+    (href: ToOptions['to']) => {
       setIsOpen(false);
       navigate({ to: href });
     },
