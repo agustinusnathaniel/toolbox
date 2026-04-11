@@ -49,7 +49,7 @@ type FormType = z.infer<typeof formSchema>;
 
 const meta = TOOL_META['add-to-calendar'];
 
-export const Route = createFileRoute('/tools/add-to-calendar/')({
+export const Route = createFileRoute('/_tools/add-to-calendar/')({
   component: AddToCalendarPage,
   staticData: {
     pageTitle: meta.title,

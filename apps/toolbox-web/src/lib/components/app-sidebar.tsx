@@ -38,32 +38,32 @@ const navigation: Array<{
 }> = [
   {
     label: 'WA Link Helper',
-    href: '/tools/wa-link-helper',
+    href: '/wa-link-helper',
     icon: <IconBrandWhatsapp />,
   },
   {
     label: 'Zippy Image',
-    href: '/tools/zippy-img',
+    href: '/zippy-img',
     icon: <IconCamera />,
   },
   {
     label: 'JS Perf Comparator',
-    href: '/tools/js-perf-comparator',
+    href: '/js-perf-comparator',
     icon: <IconCodeLines />,
   },
   {
     label: 'UA Check',
-    href: '/tools/ua-check',
+    href: '/ua-check',
     icon: <IconDeviceDesktop />,
   },
   {
     label: 'QR Code Generator',
-    href: '/tools/qrcode-generator',
+    href: '/qrcode-generator',
     icon: <IconQrCode />,
   },
   {
     label: 'Add to Calendar',
-    href: '/tools/add-to-calendar',
+    href: '/add-to-calendar',
     icon: <IconCalendar />,
   },
 ];

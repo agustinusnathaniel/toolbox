@@ -36,37 +36,37 @@ const tools: Array<ToolCard> = [
   {
     name: 'WA Link Helper',
     description: 'Generate WhatsApp links with pre-filled messages.',
-    href: '/tools/wa-link-helper',
+    href: '/wa-link-helper',
     icon: <Link2Icon className="size-6" />,
   },
   {
     name: 'Zippy Image',
     description: 'Compress images securely in-browser with no server upload.',
-    href: '/tools/zippy-img',
+    href: '/zippy-img',
     icon: <ScanIcon className="size-6" />,
   },
   {
     name: 'UA Check',
     description: 'Check your browser and device user agent information.',
-    href: '/tools/ua-check',
+    href: '/ua-check',
     icon: <QrCodeIcon className="size-6" />,
   },
   {
     name: 'QR Code Generator',
     description: 'Generate QR codes for URLs or vCard contact information.',
-    href: '/tools/qrcode-generator',
+    href: '/qrcode-generator',
     icon: <QrCodeIcon className="size-6" />,
   },
   {
     name: 'JS Perf Comparator',
     description: 'Compare JavaScript snippets in a controlled runtime sandbox.',
-    href: '/tools/js-perf-comparator',
+    href: '/js-perf-comparator',
     icon: <ZapIcon className="size-6" />,
   },
   {
     name: 'Add to Calendar',
     description: 'Generate Add to Calendar links for Google Calendar events.',
-    href: '/tools/add-to-calendar',
+    href: '/add-to-calendar',
     icon: <CalendarIcon className="size-6" />,
   },
 ];

@@ -38,7 +38,7 @@ import type {
 
 const meta = TOOL_META['js-perf-comparator'];
 
-export const Route = createFileRoute('/tools/js-perf-comparator/')({
+export const Route = createFileRoute('/_tools/js-perf-comparator/')({
   component: JsPerfComparatorPage,
   staticData: {
     pageTitle: meta.title,

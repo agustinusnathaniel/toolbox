@@ -22,7 +22,7 @@ import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['qrcode-generator'];
 
-export const Route = createFileRoute('/tools/qrcode-generator/')({
+export const Route = createFileRoute('/_tools/qrcode-generator/')({
   component: QRCodeGeneratorPage,
   staticData: {
     pageTitle: meta.title,

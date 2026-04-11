@@ -25,7 +25,7 @@ import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['zippy-img'];
 
-export const Route = createFileRoute('/tools/zippy-img/')({
+export const Route = createFileRoute('/_tools/zippy-img/')({
   component: ZippyImgPage,
   staticData: {
     pageTitle: meta.title,
