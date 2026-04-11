@@ -16,7 +16,7 @@ import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['ua-check'];
 
-export const Route = createFileRoute('/tools/ua-check/')({
+export const Route = createFileRoute('/_tools/ua-check/')({
   component: UACheckPage,
   staticData: {
     pageTitle: meta.title,

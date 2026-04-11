@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, useMatches } from '@tanstack/react-router';
 
 import { Heading } from '@/lib/components/ui/heading';
 
-export const Route = createFileRoute('/tools')({
+export const Route = createFileRoute('/_tools')({
   component: ToolLayout,
 });
 

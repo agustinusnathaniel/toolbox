@@ -40,7 +40,7 @@ type FormType = z.infer<typeof formSchema>;
 
 const meta = TOOL_META['wa-link-helper'];
 
-export const Route = createFileRoute('/tools/wa-link-helper/')({
+export const Route = createFileRoute('/_tools/wa-link-helper/')({
   component: WALinkHelperPage,
   staticData: {
     pageTitle: meta.title,

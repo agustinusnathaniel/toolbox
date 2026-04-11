@@ -9,18 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ToolsRouteRouteImport } from './routes/tools/route'
+import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ToolsZippyImgIndexRouteImport } from './routes/tools/zippy-img/index'
-import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/tools/wa-link-helper/index'
-import { Route as ToolsUaCheckIndexRouteImport } from './routes/tools/ua-check/index'
-import { Route as ToolsQrcodeGeneratorIndexRouteImport } from './routes/tools/qrcode-generator/index'
-import { Route as ToolsJsPerfComparatorIndexRouteImport } from './routes/tools/js-perf-comparator/index'
-import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/tools/add-to-calendar/index'
+import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
+import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
+import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
+import { Route as ToolsQrcodeGeneratorIndexRouteImport } from './routes/_tools/qrcode-generator/index'
+import { Route as ToolsJsPerfComparatorIndexRouteImport } from './routes/_tools/js-perf-comparator/index'
+import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
 
 const ToolsRouteRoute = ToolsRouteRouteImport.update({
-  id: '/tools',
-  path: '/tools',
+  id: '/_tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -63,66 +62,62 @@ const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/tools': typeof ToolsRouteRouteWithChildren
-  '/tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
-  '/tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
-  '/tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
-  '/tools/ua-check/': typeof ToolsUaCheckIndexRoute
-  '/tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
-  '/tools/zippy-img/': typeof ToolsZippyImgIndexRoute
+  '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
+  '/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
+  '/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
+  '/ua-check/': typeof ToolsUaCheckIndexRoute
+  '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
+  '/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/tools': typeof ToolsRouteRouteWithChildren
-  '/tools/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
-  '/tools/js-perf-comparator': typeof ToolsJsPerfComparatorIndexRoute
-  '/tools/qrcode-generator': typeof ToolsQrcodeGeneratorIndexRoute
-  '/tools/ua-check': typeof ToolsUaCheckIndexRoute
-  '/tools/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
-  '/tools/zippy-img': typeof ToolsZippyImgIndexRoute
+  '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
+  '/js-perf-comparator': typeof ToolsJsPerfComparatorIndexRoute
+  '/qrcode-generator': typeof ToolsQrcodeGeneratorIndexRoute
+  '/ua-check': typeof ToolsUaCheckIndexRoute
+  '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
+  '/zippy-img': typeof ToolsZippyImgIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/tools': typeof ToolsRouteRouteWithChildren
-  '/tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
-  '/tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
-  '/tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
-  '/tools/ua-check/': typeof ToolsUaCheckIndexRoute
-  '/tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
-  '/tools/zippy-img/': typeof ToolsZippyImgIndexRoute
+  '/_tools': typeof ToolsRouteRouteWithChildren
+  '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
+  '/_tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
+  '/_tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
+  '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
+  '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
+  '/_tools/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/tools'
-    | '/tools/add-to-calendar/'
-    | '/tools/js-perf-comparator/'
-    | '/tools/qrcode-generator/'
-    | '/tools/ua-check/'
-    | '/tools/wa-link-helper/'
-    | '/tools/zippy-img/'
+    | '/add-to-calendar/'
+    | '/js-perf-comparator/'
+    | '/qrcode-generator/'
+    | '/ua-check/'
+    | '/wa-link-helper/'
+    | '/zippy-img/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/tools'
-    | '/tools/add-to-calendar'
-    | '/tools/js-perf-comparator'
-    | '/tools/qrcode-generator'
-    | '/tools/ua-check'
-    | '/tools/wa-link-helper'
-    | '/tools/zippy-img'
+    | '/add-to-calendar'
+    | '/js-perf-comparator'
+    | '/qrcode-generator'
+    | '/ua-check'
+    | '/wa-link-helper'
+    | '/zippy-img'
   id:
     | '__root__'
     | '/'
-    | '/tools'
-    | '/tools/add-to-calendar/'
-    | '/tools/js-perf-comparator/'
-    | '/tools/qrcode-generator/'
-    | '/tools/ua-check/'
-    | '/tools/wa-link-helper/'
-    | '/tools/zippy-img/'
+    | '/_tools'
+    | '/_tools/add-to-calendar/'
+    | '/_tools/js-perf-comparator/'
+    | '/_tools/qrcode-generator/'
+    | '/_tools/ua-check/'
+    | '/_tools/wa-link-helper/'
+    | '/_tools/zippy-img/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,10 +127,10 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tools': {
-      id: '/tools'
-      path: '/tools'
-      fullPath: '/tools'
+    '/_tools': {
+      id: '/_tools'
+      path: ''
+      fullPath: '/'
       preLoaderRoute: typeof ToolsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -146,45 +141,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tools/zippy-img/': {
-      id: '/tools/zippy-img/'
+    '/_tools/zippy-img/': {
+      id: '/_tools/zippy-img/'
       path: '/zippy-img'
-      fullPath: '/tools/zippy-img/'
+      fullPath: '/zippy-img/'
       preLoaderRoute: typeof ToolsZippyImgIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/tools/wa-link-helper/': {
-      id: '/tools/wa-link-helper/'
+    '/_tools/wa-link-helper/': {
+      id: '/_tools/wa-link-helper/'
       path: '/wa-link-helper'
-      fullPath: '/tools/wa-link-helper/'
+      fullPath: '/wa-link-helper/'
       preLoaderRoute: typeof ToolsWaLinkHelperIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/tools/ua-check/': {
-      id: '/tools/ua-check/'
+    '/_tools/ua-check/': {
+      id: '/_tools/ua-check/'
       path: '/ua-check'
-      fullPath: '/tools/ua-check/'
+      fullPath: '/ua-check/'
       preLoaderRoute: typeof ToolsUaCheckIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/tools/qrcode-generator/': {
-      id: '/tools/qrcode-generator/'
+    '/_tools/qrcode-generator/': {
+      id: '/_tools/qrcode-generator/'
       path: '/qrcode-generator'
-      fullPath: '/tools/qrcode-generator/'
+      fullPath: '/qrcode-generator/'
       preLoaderRoute: typeof ToolsQrcodeGeneratorIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/tools/js-perf-comparator/': {
-      id: '/tools/js-perf-comparator/'
+    '/_tools/js-perf-comparator/': {
+      id: '/_tools/js-perf-comparator/'
       path: '/js-perf-comparator'
-      fullPath: '/tools/js-perf-comparator/'
+      fullPath: '/js-perf-comparator/'
       preLoaderRoute: typeof ToolsJsPerfComparatorIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/tools/add-to-calendar/': {
-      id: '/tools/add-to-calendar/'
+    '/_tools/add-to-calendar/': {
+      id: '/_tools/add-to-calendar/'
       path: '/add-to-calendar'
-      fullPath: '/tools/add-to-calendar/'
+      fullPath: '/add-to-calendar/'
       preLoaderRoute: typeof ToolsAddToCalendarIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
