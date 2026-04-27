@@ -7,6 +7,7 @@
     "start": "vp dev --port 3000",
     "build": "vp build",
     "serve": "vp preview",
+    "generate-pwa-assets": "pwa-assets-generator",
     "type:check": "tsc",
     "test": "vp test run",
     "test:ui": "vp test --ui --coverage",

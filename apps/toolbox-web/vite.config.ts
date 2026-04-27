@@ -9,11 +9,11 @@ import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 import { defineConfig, loadEnv } from 'vite-plus';
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  disable: true,
+  // disable: true,
   registerType: 'autoUpdate',
   base: '/',
   manifest: {
-    short_name: 'Toolbox',
+    short_name: 'Tools',
     name: 'Toolbox — Unified Utility Platform',
     theme_color: '#000000',
     lang: 'en',
