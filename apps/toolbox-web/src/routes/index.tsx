@@ -8,6 +8,7 @@ import {
   ZapIcon,
 } from 'lucide-react';
 
+import { StaggerChildren } from '@/lib/components/animations/stagger-children';
 import { CardContent, CardHeader } from '@/lib/components/ui/card';
 import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/utils/metadata';
 
@@ -82,7 +83,7 @@ function HomePage() {
       </section>
 
       <section className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <StaggerChildren className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <Link
               className="group/card flex flex-col rounded-lg border p-6 no-underline transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -105,7 +106,7 @@ function HomePage() {
               </CardContent>
             </Link>
           ))}
-        </div>
+        </StaggerChildren>
       </section>
     </div>
   );
