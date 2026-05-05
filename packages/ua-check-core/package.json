@@ -7,9 +7,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vp test run",
-    "test:watch": "vp test"
+    "type:check": "tsc --noEmit",
+    "ultracite:check": "ultracite check",
+    "ultracite:fix": "ultracite fix"
   },
   "dependencies": {
     "ua-parser-js": "^2.0.9"
@@ -19,6 +19,6 @@
     "@toolbox/config-typescript": "workspace:*",
     "@types/ua-parser-js": "^0.7.39",
     "typescript": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    "vitest": "catalog:"
   }
 }
