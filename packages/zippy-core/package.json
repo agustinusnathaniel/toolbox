@@ -21,7 +21,7 @@
     "@toolbox/config-biome": "workspace:*",
     "@toolbox/config-typescript": "workspace:*",
     "@types/file-saver": "^2.0.7",
-    "typescript": "^6.0.2",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+    "typescript": "catalog:",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   }
 }

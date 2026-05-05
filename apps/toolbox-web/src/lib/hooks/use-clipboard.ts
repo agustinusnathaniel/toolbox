@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function useClipboard() {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
-  const copy = useCallback(async (value: string) => {
+  const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
@@ -21,7 +21,7 @@ export function useClipboard() {
       setCopied(false);
       return false;
     }
-  }, []);
+  };
 
   useEffect(() => {
     return () => {

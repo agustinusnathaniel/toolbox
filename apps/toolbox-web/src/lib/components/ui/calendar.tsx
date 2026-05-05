@@ -4,6 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid"
 import { type CalendarDate, getLocalTimeZone, today } from "@internationalized/date"
 import { useDateFormatter } from "@react-aria/i18n"
 import { use } from "react"
+import type { CalendarProps as CalendarPrimitiveProps } from "react-aria-components/Calendar"
 import {
   CalendarCell,
   CalendarGrid,
@@ -11,14 +12,13 @@ import {
   CalendarGridHeader as CalendarGridHeaderPrimitive,
   CalendarHeaderCell,
   Calendar as CalendarPrimitive,
-  type CalendarProps as CalendarPrimitiveProps,
   CalendarStateContext,
-  composeRenderProps,
-  type DateValue,
-  Heading,
-  RangeCalendarStateContext,
-  useLocale,
-} from "react-aria-components"
+} from "react-aria-components/Calendar"
+import { composeRenderProps } from "react-aria-components/composeRenderProps"
+import type { DateValue } from "react-aria-components/DateField"
+import { Heading } from "react-aria-components/Heading"
+import { useLocale } from "react-aria-components/I18nProvider"
+import { RangeCalendarStateContext } from "react-aria-components/RangeCalendar"
 import { twMerge } from "tailwind-merge"
 import { Button } from "./button"
 import { Select, SelectContent, SelectItem, SelectLabel, SelectTrigger } from "./select"
@@ -144,7 +144,7 @@ const SelectMonth = () => {
       <SelectTrigger className="w-22 text-sm/5 **:data-[slot=select-value]:inline-block **:data-[slot=select-value]:truncate sm:px-2.5 sm:py-1.5 sm:*:text-sm/5" />
       <SelectContent className="min-w-0" items={months}>
         {(item) => (
-          <SelectItem>
+          <SelectItem textValue={item.formatted}>
             <SelectLabel>{item.formatted}</SelectLabel>
           </SelectItem>
         )}
@@ -184,7 +184,7 @@ const SelectYear = () => {
       <SelectTrigger className="text-sm/5 sm:px-2.5 sm:py-1.5 sm:*:text-sm/5" />
       <SelectContent items={years}>
         {(item) => (
-          <SelectItem>
+          <SelectItem textValue={item.formatted}>
             <SelectLabel>{item.formatted}</SelectLabel>
           </SelectItem>
         )}
@@ -206,4 +206,4 @@ const CalendarGridHeader = () => {
 }
 
 export type { CalendarProps }
-export { Calendar, SelectMonth, SelectYear, CalendarHeader, CalendarGridHeader }
+export { Calendar, CalendarGridHeader, CalendarHeader, SelectMonth, SelectYear }

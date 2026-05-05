@@ -1,11 +1,16 @@
 "use client"
 
-import type { DialogProps, DialogTriggerProps, ModalOverlayProps } from "react-aria-components"
 import {
+  type DialogProps,
   DialogTrigger as DialogTriggerPrimitive,
+  type DialogTriggerProps,
+} from "react-aria-components/Dialog"
+
+import {
   ModalOverlay,
+  type ModalOverlayProps,
   Modal as ModalPrimitive,
-} from "react-aria-components"
+} from "react-aria-components/Modal"
 import { cx } from "@/lib/styles/primitive"
 import {
   Dialog,
@@ -62,7 +67,7 @@ const ModalContent = ({
       isDismissable={isDismissable}
       className={cx(
         "fixed start-0 top-0 z-50 h-(--visual-viewport-height,100vh) w-screen",
-        "bg-bg/15 backdrop-blur-xs motion-reduce:backdrop-blur-none",
+        "bg-bg/15 backdrop-blur-[1px] motion-reduce:backdrop-blur-none",
         "grid grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr]",
         "entering:fade-in entering:animate-in entering:duration-300 entering:ease-out",
         "exiting:fade-out exiting:animate-out exiting:ease-in",
@@ -110,12 +115,12 @@ const ModalClose = DialogClose
 
 export {
   Modal,
-  ModalTrigger,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  ModalFooter,
   ModalBody,
   ModalClose,
   ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
 }

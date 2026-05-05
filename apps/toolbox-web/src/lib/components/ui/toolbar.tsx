@@ -1,13 +1,13 @@
 "use client"
 
 import { createContext, use } from "react"
-
-import type {
-  GroupProps,
-  SeparatorProps,
-  ToolbarProps as ToolbarPrimitiveProps,
-} from "react-aria-components"
-import { composeRenderProps, Group, Toolbar as ToolbarPrimitive } from "react-aria-components"
+import { composeRenderProps } from "react-aria-components/composeRenderProps"
+import { Group, type GroupProps } from "react-aria-components/Group"
+import type { SeparatorProps } from "react-aria-components/Separator"
+import {
+  Toolbar as ToolbarPrimitive,
+  type ToolbarProps as ToolbarPrimitiveProps,
+} from "react-aria-components/Toolbar"
 import { twMerge } from "tailwind-merge"
 import { cx } from "@/lib/styles/primitive"
 import { Separator } from "./separator"
@@ -108,5 +108,5 @@ const ToolbarSeparator = ({ className, ...props }: ToolbarSeparatorProps) => {
   )
 }
 
-export type { ToolbarGroupProps, ToolbarProps, ToggleItemProps, ToolbarSeparatorProps }
-export { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarItem }
+export type { ToggleItemProps, ToolbarGroupProps, ToolbarProps, ToolbarSeparatorProps }
+export { Toolbar, ToolbarGroup, ToolbarItem, ToolbarSeparator }

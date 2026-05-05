@@ -2,24 +2,18 @@
 
 import { AnimatePresence, motion } from "motion/react"
 import { use } from "react"
-import type {
-  DialogProps,
-  DialogTriggerProps,
-  HeadingProps,
-  ModalOverlayProps,
-  TextProps,
-} from "react-aria-components"
+import { Button as ButtonPrimitive } from "react-aria-components/Button"
+import type { DialogProps, DialogTriggerProps } from "react-aria-components/Dialog"
+import { Dialog, DialogTrigger, OverlayTriggerStateContext } from "react-aria-components/Dialog"
+import { Heading, type HeadingProps } from "react-aria-components/Heading"
 import {
-  Button as ButtonPrimitive,
-  Dialog,
-  DialogTrigger,
-  Heading,
   ModalOverlay,
+  type ModalOverlayProps,
   Modal as ModalPrimitive,
-  OverlayTriggerStateContext,
-  Text,
-} from "react-aria-components"
+} from "react-aria-components/Modal"
+import { Text, type TextProps } from "react-aria-components/Text"
 import { twJoin, twMerge } from "tailwind-merge"
+import { cx } from "@/lib/styles/primitive"
 import { Button, type ButtonProps } from "./button"
 
 const DrawerRoot = motion.create(ModalPrimitive)
@@ -31,8 +25,8 @@ interface DrawerContentProps
   extends Omit<ModalOverlayProps, "className" | "children" | "isDismissable">,
     Pick<DialogProps, "aria-label" | "aria-labelledby" | "role" | "children" | "className"> {
   isFloat?: boolean
-  isBlurred?: boolean
   className?: string
+  overlay?: Pick<ModalOverlayProps, "className">
   side?: "top" | "bottom" | "left" | "right"
   notch?: boolean
 }
@@ -40,26 +34,40 @@ interface DrawerContentProps
 const DrawerContent = ({
   side = "bottom",
   isFloat = false,
-  isBlurred = true,
   notch = true,
   children,
   className,
+  overlay,
   ...props
 }: DrawerContentProps) => {
   const state = use(OverlayTriggerStateContext)!
+  const isOpen = props.isOpen ?? state?.isOpen ?? false
+  const onOpenChange = props.onOpenChange ?? state?.setOpen
 
   return (
     <AnimatePresence>
-      {(props?.isOpen || state?.isOpen) && (
+      {isOpen && (
         <DrawerOverlay
           isDismissable
-          isOpen={props?.isOpen || state?.isOpen}
-          onOpenChange={props?.onOpenChange || state?.setOpen}
-          animate={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
-          exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
-          className={twJoin(
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          initial={{
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            backdropFilter: "blur(0px)",
+          }}
+          animate={{
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+            backdropFilter: "blur(1px)",
+          }}
+          exit={{
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            backdropFilter: "blur(0px)",
+          }}
+          transition={{ duration: 0.15, ease: "easeInOut" }}
+          className={cx(
             "fixed inset-0 z-50 will-change-auto [--visual-viewport-vertical-padding:32px]",
-            isBlurred && "backdrop-blur-[1px] backdrop-filter",
+            "motion-reduce:backdrop-blur-none",
+            overlay?.className,
           )}
         >
           {({ state }) => (
@@ -202,15 +210,15 @@ const DrawerClose = ({ className, intent = "outline", ref, ...props }: ButtonPro
 
 const DrawerTrigger = ButtonPrimitive
 
+export type { DrawerContentProps }
 export {
   Drawer,
-  DrawerTrigger,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerDescription,
-  DrawerBody,
-  DrawerContent,
-  DrawerClose,
+  DrawerTrigger,
 }
-export type { DrawerContentProps }

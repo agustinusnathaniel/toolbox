@@ -11,18 +11,19 @@
     "ultracite:check": "turbo run ultracite:check",
     "ultracite:fix": "turbo run ultracite:fix",
     "release": "cross-env HUSKY=0 commit-and-tag-version",
-    "up-interactive": "pnpm up -i",
+    "up-interactive": "pnpm up -i -r",
     "up-latest": "pnpm up-interactive -L",
+    "check:turbo": "turbo run ultracite:check test type:check",
     "prepare": "vp config"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
-    "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^20.5.0",
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
     "@commitlint/types": "^20.5.0",
     "commit-and-tag-version": "^12.7.1",
     "cross-env": "^10.1.0",
-    "turbo": "^2.6.1",
+    "turbo": "^2.9.9",
     "typescript": "catalog:",
     "ultracite": "catalog:",
     "vite-plus": "catalog:"

@@ -1,17 +1,13 @@
 "use client"
 
 import { Children, isValidElement, useMemo, useRef } from "react"
-import {
-  Autocomplete,
-  Select,
-  type SelectProps,
-  SelectValue,
-  useFilter,
-} from "react-aria-components"
+import { Autocomplete, useFilter } from "react-aria-components/Autocomplete"
+import { ListBox } from "react-aria-components/ListBox"
+import { Select, type SelectProps, SelectValue } from "react-aria-components/Select"
 import { cx } from "@/lib/styles/primitive"
 import { Button } from "./button"
 import { fieldStyles } from "./field"
-import { ListBox, ListBoxItem } from "./list-box"
+import { ListBoxItem } from "./list-box"
 import { PopoverContent } from "./popover"
 import { SearchField, SearchInput } from "./search-field"
 import { Tag, TagGroup, TagList } from "./tag-group"
@@ -27,6 +23,9 @@ interface MultipleSelectProps<T extends OptionBase>
   className?: string
   children?: React.ReactNode
   name?: string
+  searchPlaceholder?: string
+  searchValue?: string
+  onSearchChange?: (value: string) => void
 }
 
 interface MultipleSelectContentProps<T extends OptionBase> {
@@ -44,6 +43,9 @@ function MultipleSelect<T extends OptionBase>({
   className,
   children,
   name,
+  searchPlaceholder,
+  searchValue,
+  onSearchChange,
   ...props
 }: MultipleSelectProps<T>) {
   const triggerRef = useRef<HTMLDivElement | null>(null)
@@ -120,14 +122,22 @@ function MultipleSelect<T extends OptionBase>({
           <PopoverContent
             triggerRef={triggerRef}
             placement="bottom"
-            className="flex w-full flex-col"
+            className="flex w-full min-w-(--trigger-width) flex-col overflow-hidden *:data-[slot=popover-inner]:flex *:data-[slot=popover-inner]:flex-col *:data-[slot=popover-inner]:overflow-hidden"
           >
             <Autocomplete filter={contains}>
-              <SearchField autoFocus className="rounded-none outline-hidden">
-                <SearchInput className="border-none outline-hidden focus:ring-0" />
+              <SearchField
+                autoFocus
+                className="rounded-none py-0.5 outline-hidden"
+                value={searchValue}
+                onChange={onSearchChange}
+              >
+                <SearchInput
+                  className="border-none outline-hidden focus:ring-0"
+                  placeholder={searchPlaceholder}
+                />
               </SearchField>
               <ListBox
-                className="rounded-t-none border-0 border-t bg-transparent shadow-none"
+                className="grid min-h-0 w-full flex-1 grid-cols-[auto_1fr] gap-y-1 overflow-y-auto border-t p-1 outline-hidden *:[[role='group']+[role=group]]:mt-4 *:[[role='group']+[role=separator]]:mt-1"
                 items={list.items}
               >
                 {list.children}
@@ -143,4 +153,4 @@ function MultipleSelect<T extends OptionBase>({
 
 const MultipleSelectItem = ListBoxItem
 
-export { MultipleSelect, MultipleSelectItem, MultipleSelectContent }
+export { MultipleSelect, MultipleSelectContent, MultipleSelectItem }
