@@ -12,13 +12,13 @@
     "test:watch": "vp test"
   },
   "dependencies": {
-    "ua-parser-js": "^1.0.38"
+    "ua-parser-js": "^2.0.9"
   },
   "devDependencies": {
     "@toolbox/config-biome": "workspace:*",
     "@toolbox/config-typescript": "workspace:*",
     "@types/ua-parser-js": "^0.7.39",
     "typescript": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   }
 }

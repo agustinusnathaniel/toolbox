@@ -1,7 +1,11 @@
 "use client"
 
 import { createContext, type ReactElement, use, useCallback, useId, useMemo, useState } from "react"
-import { ToggleButton, ToggleButtonGroup, type ToggleButtonGroupProps } from "react-aria-components"
+import { ToggleButton } from "react-aria-components/ToggleButton"
+import {
+  ToggleButtonGroup,
+  type ToggleButtonGroupProps,
+} from "react-aria-components/ToggleButtonGroup"
 import type {
   CartesianGridProps as CartesianGridPrimitiveProps,
   CartesianGridProps,
@@ -142,8 +146,8 @@ interface BaseChartProps extends React.HTMLAttributes<HTMLDivElement> {
   layout?: ChartLayout
   valueFormatter?: (value: number) => string
 
-  tooltip?: TooltipContentType | boolean
-  tooltipProps?: Omit<ChartTooltipProps, "content"> & {
+  tooltip?: TooltipContentType<ValueType, NameType> | boolean
+  tooltipProps?: Omit<TooltipProps, "content"> & {
     hideLabel?: boolean
     labelSeparator?: boolean
     hideIndicator?: boolean
@@ -218,7 +222,7 @@ const Chart = ({
         ref={ref}
         className={twMerge(
           "z-20 flex w-full justify-center text-xs",
-          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-fg [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/80 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-layer]:outline-hidden [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-hidden [&_.recharts-surface]:outline-hidden",
+          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-fg [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/80 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-layer]:outline-hidden [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-hidden [&_.recharts-surface]:outline-hidden [&_.recharts-surface_.recharts-text.recharts-cartesian-axis-tick-value]:*:fill-muted-fg",
           "[&_.recharts-dot[fill='#fff']]:fill-(--line-color)",
           "[&_.recharts-active-dot>.recharts-dot]:stroke-fg/10",
 
@@ -267,10 +271,10 @@ ${colorConfig
   )
 }
 
-type ChartTooltipProps<
-  TValue extends ValueType = ValueType,
-  TName extends NameType = NameType,
-> = TooltipProps<TValue, TName>
+type ChartTooltipProps<TValue extends ValueType, TName extends NameType> = TooltipProps<
+  TValue,
+  TName
+>
 
 const tooltipWrapperStyle = { outline: "none" } as const
 
@@ -288,7 +292,7 @@ const cursorStyleDefault = {
   fillOpacity: 0.5,
 } as const
 
-const ChartTooltip = (props: ChartTooltipProps) => {
+const ChartTooltip = (props: TooltipProps) => {
   const { layout } = useChart()
   const cursorStyle = layout === "radial" ? cursorStyleRadial : cursorStyleDefault
 
@@ -473,9 +477,9 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
             <div
               key={key}
               className={twMerge(
-                "flex w-full flex-wrap items-stretch gap-2 *:data-[slot=icon]:text-muted-fg",
-                indicator === "dot" && "items-center *:data-[slot=icon]:size-2.5",
-                indicator === "line" && "*:data-[slot=icon]:h-full *:data-[slot=icon]:w-2.5",
+                "flex w-full flex-wrap items-stretch gap-2 *:[svg]:text-muted-fg",
+                indicator === "dot" && "items-center *:[svg]:size-2.5",
+                indicator === "line" && "*:[svg]:h-full *:[svg]:w-2.5",
               )}
             >
               {formatter && item?.value !== undefined && item.name ? (
@@ -581,18 +585,17 @@ const ChartLegendContent = ({
             key={key}
             id={key}
             className={twMerge(
-              "flex items-center gap-2 rounded-sm px-2 py-1 text-muted-fg *:data-[slot=icon]:-mx-0.5 *:data-[slot=icon]:size-2.5 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:text-muted-fg",
+              "flex items-center gap-2 rounded-sm px-2 py-1 text-muted-fg *:[svg]:-mx-0.5 *:[svg]:size-2.5 *:[svg]:shrink-0 *:[svg]:text-muted-fg",
               "selected:bg-secondary/70 selected:text-secondary-fg",
               "hover:bg-secondary/70 hover:text-secondary-fg",
             )}
             aria-label={"Legend Item"}
           >
             {itemConfig?.icon && !hideIcon ? (
-              <itemConfig.icon data-slot="icon" />
+              <itemConfig.icon />
             ) : (
               <div
-                data-slot="icon"
-                className="rounded-full"
+                className="size-2.5 rounded-full"
                 style={{
                   backgroundColor: item.color,
                 }}
@@ -607,26 +610,28 @@ const ChartLegendContent = ({
 }
 
 export type {
-  ChartConfig,
-  ChartColorKeys,
-  ChartType,
-  ChartLayout,
-  IntervalType,
   BaseChartProps,
-  ChartTooltipProps,
-  XAxisProps,
-  ChartLegendProps,
+  ChartColorKeys,
+  ChartConfig,
+  ChartLayout,
   ChartLegendContentProps,
+  ChartLegendProps,
+  ChartTooltipProps,
+  ChartType,
+  IntervalType,
+  XAxisProps,
 }
-
 export {
+  CartesianGrid,
+  CHART_COLORS,
   Chart,
   ChartLegend,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegendContent,
+  constructCategoryColors,
+  DEFAULT_COLORS,
+  getColorValue,
+  XAxis,
+  YAxis,
 }
-export { getColorValue, constructCategoryColors, DEFAULT_COLORS, CHART_COLORS }

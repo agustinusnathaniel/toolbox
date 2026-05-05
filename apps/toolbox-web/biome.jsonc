@@ -22,7 +22,9 @@
       "!src/lib/components/ui/**/*",
       "!src/lib/styles/primitive.ts",
       "!**/*.css",
-      "!node_modules"
+      "!node_modules",
+      "!.agents",
+      "!.claude"
     ]
   },
   "formatter": {

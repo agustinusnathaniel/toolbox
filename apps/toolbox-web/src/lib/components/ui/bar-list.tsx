@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { Button } from "react-aria-components"
+import { Button } from "react-aria-components/Button"
 import { twJoin, twMerge } from "tailwind-merge"
 import { Link } from "./link"
 
@@ -75,7 +75,7 @@ export function BarList<T>({
               <div className="absolute start-2 flex max-w-full pe-3 sm:pe-2">
                 {item.href ? (
                   <Link
-                    // @ts-expect-error
+                    // @ts-ignore
                     href={item.href}
                     className={twJoin(
                       "truncate whitespace-nowrap rounded-sm font-normal text-base/6 text-fg sm:text-sm/6",

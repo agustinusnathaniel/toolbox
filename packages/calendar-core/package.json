@@ -11,11 +11,10 @@
     "test": "vp test run",
     "test:watch": "vp test"
   },
-  "dependencies": {},
   "devDependencies": {
     "@toolbox/config-biome": "workspace:*",
     "@toolbox/config-typescript": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   }
 }

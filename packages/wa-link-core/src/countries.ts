@@ -3,8 +3,8 @@ import getUnicodeFlagIcon from "country-flag-icons/unicode";
 import countryCodes from "./country-codes.json";
 
 export interface CountryOption {
-	label: string;
-	value: string;
+	name: string;
+	id: string;
 }
 
 export type CountryCode = keyof typeof countryCodes;
@@ -19,14 +19,13 @@ export const countryCodeOptions: CountryOption[] = Object.keys(
 	countryCodes,
 ).map((countryCode) => {
 	const countryFlag = getUnicodeFlagIcon(countryCode);
-	const regionName = new Intl.DisplayNames(["en"], { type: "region" }).of(
-		countryCode,
-	);
+	const regionName =
+		new Intl.DisplayNames(["en"], { type: "region" }).of(countryCode) ?? "";
 	const phoneCountryCode = getPhoneCountryCode(countryCode);
 
 	return {
-		label: `${countryFlag} ${regionName} - ${phoneCountryCode}`,
-		value: countryCode,
+		name: `${countryFlag} ${regionName} - ${phoneCountryCode}`,
+		id: countryCode,
 	};
 });
 

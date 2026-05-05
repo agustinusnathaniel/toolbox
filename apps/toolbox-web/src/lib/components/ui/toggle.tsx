@@ -1,7 +1,7 @@
 "use client"
 
-import type { ToggleButtonProps } from "react-aria-components"
-import { composeRenderProps, ToggleButton } from "react-aria-components"
+import { composeRenderProps } from "react-aria-components/composeRenderProps"
+import { ToggleButton, type ToggleButtonProps } from "react-aria-components/ToggleButton"
 import { twMerge } from "tailwind-merge"
 import { tv, type VariantProps } from "tailwind-variants"
 
@@ -44,19 +44,19 @@ export const toggleStyles = tv({
         "*:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:size-4.5",
       ],
       "sq-xs": [
-        "touch-target size-8 sm:size-7",
+        "touch-target size-8 shrink-0 sm:size-7",
         "*:data-[slot=icon]:size-3.5 sm:*:data-[slot=icon]:size-3",
       ],
       "sq-sm": [
-        "touch-target size-10 sm:size-8",
+        "touch-target size-10 shrink-0 sm:size-8",
         "*:data-[slot=icon]:size-4.5 sm:*:data-[slot=icon]:size-4",
       ],
       "sq-md": [
-        "touch-target size-11 sm:size-9",
+        "touch-target size-11 shrink-0 sm:size-9",
         "*:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:size-4.5",
       ],
       "sq-lg": [
-        "touch-target size-12 sm:size-10",
+        "touch-target size-12 shrink-0 sm:size-10",
         "*:data-[slot=icon]:size-6 sm:*:data-[slot=icon]:size-5",
       ],
     },

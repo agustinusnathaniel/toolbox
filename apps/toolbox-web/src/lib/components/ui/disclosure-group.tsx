@@ -1,21 +1,22 @@
 "use client"
 
 import { use } from "react"
+import { Button, type ButtonProps } from "react-aria-components/Button"
+import { composeRenderProps } from "react-aria-components/composeRenderProps"
+import {
+  type DisclosureProps,
+  Disclosure as PrimitiveDisclosure,
+} from "react-aria-components/Disclosure"
 import type {
-  ButtonProps,
   DisclosureGroupProps,
   DisclosurePanelProps,
-  DisclosureProps,
-} from "react-aria-components"
+} from "react-aria-components/DisclosureGroup"
 import {
-  Button,
-  composeRenderProps,
   DisclosureStateContext,
-  Heading,
-  Disclosure as PrimitiveDisclosure,
   DisclosureGroup as PrimitiveDisclosureGroup,
   DisclosurePanel as PrimitiveDisclosurePanel,
-} from "react-aria-components"
+} from "react-aria-components/DisclosureGroup"
+import { Heading } from "react-aria-components/Heading"
 import { twJoin, twMerge } from "tailwind-merge"
 import { cx } from "@/lib/styles/primitive"
 
@@ -79,7 +80,7 @@ export function DisclosureTrigger({
         className={cx(
           [
             "relative isolate flex w-full cursor-default items-center justify-between px-(--disclosure-gutter-x,--spacing(0)) py-[calc(var(--disclosure-gutter-x,--spacing(0))-(--spacing(1)))] text-start font-medium text-sm/6 outline-hidden",
-            "**:data-[slot=icon]:shrink-0 [&_[data-slot='icon']:not([class*='size-'])]:size-5 sm:[&_[data-slot='icon']:not([class*='size-'])]:size-4",
+            "[&_svg:not([class*='size-'])]:size-5 sm:[&_svg:not([class*='size-'])]:size-4 **:[svg]:shrink-0",
             "disabled:opacity-50",
             state.isExpanded
               ? "rounded-t-(--disclosure-radius) rounded-b-none text-(--disclosure-expanded-fg)"

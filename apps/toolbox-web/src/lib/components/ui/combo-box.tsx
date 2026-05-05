@@ -1,21 +1,20 @@
 "use client"
 
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { Button } from "react-aria-components/Button"
 import type {
   ComboBoxProps as ComboBoxPrimitiveProps,
   ComboBoxValueProps,
-  InputProps,
-  ListBoxProps,
-  PopoverProps,
-} from "react-aria-components"
+} from "react-aria-components/ComboBox"
 import {
-  Button,
   ComboBoxContext,
   ComboBox as ComboBoxPrimitive,
   ComboBoxValue as ComboBoxValuePrimitive,
-  ListBox,
-  useSlottedContext,
-} from "react-aria-components"
+} from "react-aria-components/ComboBox"
+import type { InputProps } from "react-aria-components/Input"
+import { ListBox, type ListBoxProps } from "react-aria-components/ListBox"
+import type { PopoverProps } from "react-aria-components/Popover"
+import { useSlottedContext } from "react-aria-components/slots"
 import { fieldStyles } from "@/lib/components/ui/field"
 import { Input } from "@/lib/components/ui/input"
 import { cx } from "@/lib/styles/primitive"
@@ -53,7 +52,7 @@ const ComboBoxContent = <T extends object>({
     <PopoverContent
       placement={popover?.placement ?? "bottom"}
       className={cx(
-        "min-w-(--trigger-width) scroll-py-1 overflow-y-auto overscroll-contain",
+        "min-w-(--trigger-width) overflow-hidden *:data-[slot=popover-inner]:overflow-hidden",
         popover?.className,
       )}
       {...popover}
@@ -62,7 +61,7 @@ const ComboBoxContent = <T extends object>({
         layout="stack"
         orientation="vertical"
         className={cx(
-          "grid max-h-96 w-full grid-cols-[auto_1fr] flex-col gap-y-1 overflow-y-auto p-1 outline-hidden *:[[role='group']+[role=group]]:mt-4 *:[[role='group']+[role=separator]]:mt-1",
+          "grid max-h-[inherit] w-full grid-cols-[auto_1fr] flex-col gap-y-1 overflow-y-auto p-1 outline-hidden *:[[role='group']+[role=group]]:mt-4 *:[[role='group']+[role=separator]]:mt-1",
           className,
         )}
         items={items}
@@ -99,14 +98,14 @@ const ComboBoxValue = <T extends object>(props: ComboBoxValueProps<T>) => (
   <ComboBoxValuePrimitive data-slot="control" {...props} />
 )
 
-export type { ComboBoxProps, ComboBoxListProps }
+export type { ComboBoxListProps, ComboBoxProps }
 export {
   ComboBox,
-  ComboBoxInput,
   ComboBoxContent,
+  ComboBoxDescription,
+  ComboBoxInput,
   ComboBoxItem,
   ComboBoxLabel,
-  ComboBoxDescription,
   ComboBoxSection,
   ComboBoxValue,
 }

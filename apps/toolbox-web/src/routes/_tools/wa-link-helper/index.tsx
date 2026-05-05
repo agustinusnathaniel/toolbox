@@ -13,12 +13,6 @@ import { z } from 'zod';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import {
-  ComboBox,
-  ComboBoxContent,
-  ComboBoxInput,
-  ComboBoxItem,
-} from '@/lib/components/ui/combo-box';
-import {
   Disclosure,
   DisclosureGroup,
   DisclosurePanel,
@@ -26,6 +20,12 @@ import {
 } from '@/lib/components/ui/disclosure-group';
 import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/lib/components/ui/select';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
 import { TOOL_META } from '@/lib/utils/metadata';
@@ -107,29 +107,52 @@ function WALinkHelperPage() {
               control={form.control}
               name="country_code"
               render={({ field }) => (
-                <ComboBox
+                // <ComboBox
+                //   isInvalid={!!errors.country_code}
+                //   items={countryCodeOptions}
+                //   name={field.name}
+                //   onChange={field.onChange}
+                //   value={field.value}
+                // >
+                //   <Label htmlFor="country_code">Country Code</Label>
+                //   <ComboBoxInput placeholder="Search country..." />
+                //   <ComboBoxContent items={countryCodeOptions}>
+                //     {(option) => (
+                //       <ComboBoxItem id={option.id} textValue={option.name}>
+                //         {option.name}
+                //       </ComboBoxItem>
+                //     )}
+                //   </ComboBoxContent>
+                //   <Description>
+                //     Select the country for the phone number
+                //   </Description>
+                //   {errors.country_code && (
+                //     <FieldError>{errors.country_code.message}</FieldError>
+                //   )}
+                // </ComboBox>
+                <Select
                   isInvalid={!!errors.country_code}
-                  items={countryCodeOptions}
                   name={field.name}
                   onChange={field.onChange}
+                  placeholder="Search country..."
                   value={field.value}
                 >
                   <Label htmlFor="country_code">Country Code</Label>
-                  <ComboBoxInput placeholder="Search country..." />
-                  <ComboBoxContent items={countryCodeOptions}>
+                  <SelectTrigger />
+                  <SelectContent items={countryCodeOptions}>
                     {(option) => (
-                      <ComboBoxItem id={option.value} textValue={option.label}>
-                        {option.label}
-                      </ComboBoxItem>
+                      <SelectItem id={option.id} textValue={option.name}>
+                        {option.name}
+                      </SelectItem>
                     )}
-                  </ComboBoxContent>
+                  </SelectContent>
                   <Description>
                     Select the country for the phone number
                   </Description>
                   {errors.country_code && (
                     <FieldError>{errors.country_code.message}</FieldError>
                   )}
-                </ComboBox>
+                </Select>
               )}
             />
 
