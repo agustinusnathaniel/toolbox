@@ -1,4 +1,4 @@
-export const QRStyleOptions = ["dots", "squares"] as const;
+export const QRStyleOptions = ['dots', 'squares'] as const;
 
 export type QRStyle = (typeof QRStyleOptions)[number];
 

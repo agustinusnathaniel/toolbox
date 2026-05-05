@@ -1,5 +1,5 @@
-import { saveAs } from "file-saver";
-import JSZip from "jszip";
+import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 
 export async function downloadFiles(files: File[]): Promise<void> {
   if (!files.length) return;
@@ -15,7 +15,7 @@ export async function downloadFiles(files: File[]): Promise<void> {
       zip.file(file.name, buffer);
     }
 
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "files.zip");
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    saveAs(zipBlob, 'files.zip');
   }
 }

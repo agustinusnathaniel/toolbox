@@ -1,5 +1,5 @@
-import imageCompression from "browser-image-compression";
-import { max, min } from "radashi";
+import imageCompression from 'browser-image-compression';
+import { max, min } from 'radashi';
 
 export interface CompressionOptions {
   onProgress?: (progress: number) => void;
@@ -23,13 +23,13 @@ async function getImageDimensions(
       resolve({
         width: img.naturalWidth,
         height: img.naturalHeight,
-        size: typeof source !== "string" ? source.size : undefined,
+        size: typeof source !== 'string' ? source.size : undefined,
       });
     };
 
     img.onerror = reject;
 
-    if (typeof source === "string") {
+    if (typeof source === 'string') {
       img.src = source;
     } else {
       const reader = new FileReader();
