@@ -1,5 +1,5 @@
-import type { CalendarEvent, CalendarLinkResult } from "../types";
-import { GOOGLE_CAL_TEMPLATE_LINK, trimmedIsoString } from "../utils/iso-dates";
+import type { CalendarEvent, CalendarLinkResult } from '../types';
+import { GOOGLE_CAL_TEMPLATE_LINK, trimmedIsoString } from '../utils/iso-dates';
 
 function buildQueryString(event: CalendarEvent): string {
   const parts: string[] = [];
@@ -17,7 +17,7 @@ function buildQueryString(event: CalendarEvent): string {
   const dates = `${trimmedIsoString(event.start)}%2F${trimmedIsoString(event.end)}`;
   parts.push(`dates=${dates}`);
 
-  return parts.join("&");
+  return parts.join('&');
 }
 
 export function generateGoogleCalendarLink(event: CalendarEvent): CalendarLinkResult {
@@ -26,6 +26,6 @@ export function generateGoogleCalendarLink(event: CalendarEvent): CalendarLinkRe
 
   return {
     url,
-    provider: "google",
+    provider: 'google',
   };
 }

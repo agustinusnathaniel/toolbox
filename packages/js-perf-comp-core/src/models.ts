@@ -1,9 +1,9 @@
 export type ExecutionStatus =
-  | "success"
-  | "runtime_error"
-  | "timeout"
-  | "terminated"
-  | "worker_error";
+  | 'success'
+  | 'runtime_error'
+  | 'timeout'
+  | 'terminated'
+  | 'worker_error';
 
 export interface ExecutionStatistics {
   /** Number of iterations run */
@@ -62,7 +62,7 @@ export function normalizeResult(
   return {
     id: raw.id,
     code: raw.code,
-    status: raw.status ?? "worker_error",
+    status: raw.status ?? 'worker_error',
     durationMs: raw.durationMs ?? null,
     perIterationMs: raw.perIterationMs ?? null,
     statistics: raw.statistics ?? null,
@@ -76,7 +76,7 @@ export function isRunable(code: string): boolean {
 }
 
 export function formatDuration(ms: number | null): string {
-  if (ms === null) return "—";
+  if (ms === null) return '—';
   if (ms < 1) return `${(ms * 1000).toFixed(2)} µs`;
   if (ms < 1000) return `${ms.toFixed(2)} ms`;
   return `${(ms / 1000).toFixed(2)} s`;

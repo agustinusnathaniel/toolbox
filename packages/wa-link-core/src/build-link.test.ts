@@ -27,10 +27,10 @@ describe("country helpers", () => {
 
 	test("countryCodeOptions contains expected structure", () => {
 		const options = countryCodeOptions;
-		const usOption = options.find((o) => o.value === "US");
+		const usOption = options.find((o) => o.id === "US");
 		expect(usOption).toBeDefined();
-		expect(usOption?.label).toContain("1");
-		expect(usOption?.value).toBe("US");
+		expect(usOption?.name).toContain("1");
+		expect(usOption?.id).toBe("US");
 	});
 
 	test("getCountryOptions returns same as countryCodeOptions", () => {

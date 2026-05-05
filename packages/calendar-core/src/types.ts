@@ -6,7 +6,7 @@ export interface CalendarEvent {
   end: string;
 }
 
-export type CalendarProvider = "google";
+export type CalendarProvider = 'google';
 
 export interface CalendarLinkResult {
   url: string;
