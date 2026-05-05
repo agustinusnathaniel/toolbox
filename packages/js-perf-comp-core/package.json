@@ -8,9 +8,9 @@
     "./worker": "./src/worker-entry.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vp test run",
-    "test:watch": "vp test"
+    "type:check": "tsc --noEmit",
+    "ultracite:check": "ultracite check",
+    "ultracite:fix": "ultracite fix"
   },
   "dependencies": {
     "quickjs-emscripten": "^0.32.0"
@@ -19,6 +19,6 @@
     "@toolbox/config-biome": "workspace:*",
     "@toolbox/config-typescript": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    "vitest": "catalog:"
   }
 }

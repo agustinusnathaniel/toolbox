@@ -7,9 +7,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vp test run",
-    "test:watch": "vp test"
+    "type:check": "tsc --noEmit",
+    "ultracite:check": "ultracite check",
+    "ultracite:fix": "ultracite fix"
   },
   "dependencies": {
     "browser-image-compression": "^2.0.2",
@@ -22,6 +22,6 @@
     "@toolbox/config-typescript": "workspace:*",
     "@types/file-saver": "^2.0.7",
     "typescript": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    "vitest": "catalog:"
   }
 }

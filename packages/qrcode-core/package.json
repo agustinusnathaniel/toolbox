@@ -7,14 +7,14 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vp test run",
-    "test:watch": "vp test"
+    "type:check": "tsc --noEmit",
+    "ultracite:check": "ultracite check",
+    "ultracite:fix": "ultracite fix"
   },
   "devDependencies": {
     "@toolbox/config-biome": "workspace:*",
     "@toolbox/config-typescript": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    "vitest": "catalog:"
   }
 }
