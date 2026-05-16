@@ -139,14 +139,12 @@ export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   );
 };
 
-export const CommandMenuTrigger = () => {
-  return (
-    <GlobalCommandMenu>
-      <InputGroup className="w-40">
-        <IconSearch />
-        <Input placeholder="Search..." readOnly />
-        <Text>⌘K</Text>
-      </InputGroup>
-    </GlobalCommandMenu>
-  );
-};
+export const CommandMenuTrigger = () => (
+  <GlobalCommandMenu>
+    <InputGroup className="w-40">
+      <IconSearch />
+      <Input placeholder="Search..." readOnly />
+      <Text>⌘K</Text>
+    </InputGroup>
+  </GlobalCommandMenu>
+);

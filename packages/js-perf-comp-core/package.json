@@ -19,6 +19,6 @@
     "@toolbox/config-biome": "workspace:*",
     "@toolbox/config-typescript": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   }
 }

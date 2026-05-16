@@ -23,13 +23,14 @@ export function useClipboard() {
     }
   };
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
       }
-    };
-  }, []);
+    },
+    []
+  );
 
   return { copy, copied };
 }

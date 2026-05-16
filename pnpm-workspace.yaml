@@ -1,21 +1,44 @@
 packages:
   - apps/*
   - packages/*
+
+catalog:
+  "@biomejs/biome": "2.4.15"
+  '@commitlint/cli': ^21.0.1
+  '@commitlint/config-conventional': ^21.0.1
+  '@commitlint/types': ^21.0.1
+  '@tailwindcss/vite': ^4.3.0
+  '@tanstack/devtools-vite': ^0.7.0
+  '@tanstack/react-devtools': ^0.10.5
+  '@tanstack/react-query': ^5.100.10
+  '@tanstack/react-query-devtools': ^5.100.10
+  '@tanstack/react-router': ^1.170.1
+  '@tanstack/react-router-devtools': ^1.167.0
+  '@tanstack/router-plugin': ^1.168.2
+  '@vitejs/plugin-react': ^6.0.2
+  commit-and-tag-version: ^12.7.3
+  knip: ^6.14.1
+  lucide-react: ^1.16.0
+  radashi: ^12.9.1
+  react: ^19.2.6
+  react-dom: ^19.2.6
+  react-hook-form: ^7.76.0
+  tailwind-merge: ^3.6.0
+  tailwindcss: ^4.3.0
+  turbo: ^2.9.14
+  typescript: "^6.0.3"
+  ultracite: "7.7.0"
+  vite: npm:@voidzero-dev/vite-plus-core@latest
+  vite-plugin-pwa: ^1.3.0
+  vite-plus: ^0.1.21
+  vitest: npm:@voidzero-dev/vite-plus-test@latest
+
+catalogMode: prefer
+ignoredBuiltDependencies:
+  - esbuild
 onlyBuiltDependencies:
   - "@biomejs/biome"
   - sharp
-ignoredBuiltDependencies:
-  - esbuild
-
-catalogMode: prefer
-
-catalog:
-  "@biomejs/biome": "2.4.10"
-  typescript: "^6.0.2"
-  ultracite: "7.4.0"
-  vite: npm:@voidzero-dev/vite-plus-core@latest
-  vitest: npm:@voidzero-dev/vite-plus-test@latest
-  vite-plus: latest
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
