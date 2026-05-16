@@ -1,7 +1,6 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { compressImage, downloadFiles } from '@toolbox/zippy-core';
 import { Download, HelpCircleIcon, InfoIcon, UploadIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -21,6 +20,10 @@ import {
   ProgressBarTrack,
   ProgressBarValue,
 } from '@/lib/components/ui/progress-bar';
+import {
+  compressImage,
+  downloadFiles,
+} from '@/lib/tools/zippy-img/adapters/zippy';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['zippy-img'];

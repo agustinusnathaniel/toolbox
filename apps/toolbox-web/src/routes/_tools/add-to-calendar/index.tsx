@@ -2,10 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import {
-  formatLocalDateTimeString,
-  generateGoogleCalendarLink,
-} from '@toolbox/calendar-core';
 import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { Form } from 'react-aria-components';
@@ -30,6 +26,10 @@ import { FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
+import {
+  formatLocalDateTimeString,
+  generateGoogleCalendarLink,
+} from '@/lib/tools/add-to-calendar/adapters/calendar';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 const formSchema = z

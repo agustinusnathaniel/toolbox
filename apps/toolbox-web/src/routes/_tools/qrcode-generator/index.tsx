@@ -1,8 +1,6 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import type { VCardFormData } from '@toolbox/qrcode-core';
-import { generateVCardString } from '@toolbox/qrcode-core';
 import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useMemo, useRef, useState } from 'react';
@@ -18,6 +16,8 @@ import {
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { Textarea } from '@/lib/components/ui/textarea';
+import type { VCardFormData } from '@/lib/tools/qrcode-generator/adapters/qrcode';
+import { generateVCardString } from '@/lib/tools/qrcode-generator/adapters/qrcode';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['qrcode-generator'];

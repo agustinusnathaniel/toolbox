@@ -1,7 +1,6 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { parseUserAgent } from '@toolbox/ua-check-core';
 import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -12,6 +11,7 @@ import {
   DisclosurePanel,
   DisclosureTrigger,
 } from '@/lib/components/ui/disclosure-group';
+import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 const meta = TOOL_META['ua-check'];
