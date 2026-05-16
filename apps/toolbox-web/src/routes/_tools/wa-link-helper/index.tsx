@@ -13,6 +13,12 @@ import { z } from 'zod';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import {
+  ComboBox,
+  ComboBoxContent,
+  ComboBoxInput,
+  ComboBoxItem,
+} from '@/lib/components/ui/combo-box';
+import {
   Disclosure,
   DisclosureGroup,
   DisclosurePanel,
@@ -20,12 +26,6 @@ import {
 } from '@/lib/components/ui/disclosure-group';
 import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/lib/components/ui/select';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
 import { TOOL_META } from '@/lib/utils/metadata';
@@ -72,7 +72,7 @@ function WALinkHelperPage() {
     'text',
   ]);
 
-  const { link } = useMemo(
+  const { link, isValid: isPhoneValid } = useMemo(
     () =>
       buildWhatsAppLink({
         countryCode,
@@ -85,7 +85,11 @@ function WALinkHelperPage() {
   const { isValid, errors } = form.formState;
 
   const handleCopyLink = () => {
-    if (!link) {
+    if (!(isPhoneValid && link)) {
+      toast('Invalid Phone Number', {
+        description:
+          'The phone number is not valid for the selected country. Please check and try again.',
+      });
       return;
     }
     navigator.clipboard.writeText(link);
@@ -107,52 +111,30 @@ function WALinkHelperPage() {
               control={form.control}
               name="country_code"
               render={({ field }) => (
-                // <ComboBox
-                //   isInvalid={!!errors.country_code}
-                //   items={countryCodeOptions}
-                //   name={field.name}
-                //   onChange={field.onChange}
-                //   value={field.value}
-                // >
-                //   <Label htmlFor="country_code">Country Code</Label>
-                //   <ComboBoxInput placeholder="Search country..." />
-                //   <ComboBoxContent items={countryCodeOptions}>
-                //     {(option) => (
-                //       <ComboBoxItem id={option.id} textValue={option.name}>
-                //         {option.name}
-                //       </ComboBoxItem>
-                //     )}
-                //   </ComboBoxContent>
-                //   <Description>
-                //     Select the country for the phone number
-                //   </Description>
-                //   {errors.country_code && (
-                //     <FieldError>{errors.country_code.message}</FieldError>
-                //   )}
-                // </ComboBox>
-                <Select
+                <ComboBox
                   isInvalid={!!errors.country_code}
                   name={field.name}
                   onChange={field.onChange}
-                  placeholder="Search country..."
                   value={field.value}
+                  // onSelectionChange={(key) => field.onChange(key)}
+                  // selectedKey={field.value}
                 >
                   <Label htmlFor="country_code">Country Code</Label>
-                  <SelectTrigger />
-                  <SelectContent items={countryCodeOptions}>
+                  <ComboBoxInput placeholder="Search country..." />
+                  <ComboBoxContent items={countryCodeOptions}>
                     {(option) => (
-                      <SelectItem id={option.id} textValue={option.name}>
+                      <ComboBoxItem id={option.id} textValue={option.name}>
                         {option.name}
-                      </SelectItem>
+                      </ComboBoxItem>
                     )}
-                  </SelectContent>
+                  </ComboBoxContent>
                   <Description>
                     Select the country for the phone number
                   </Description>
                   {errors.country_code && (
                     <FieldError>{errors.country_code.message}</FieldError>
                   )}
-                </Select>
+                </ComboBox>
               )}
             />
 
