@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { buildWhatsAppLink, countryCodeOptions } from '@toolbox/wa-link-core';
 import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { Form } from 'react-aria-components';
@@ -28,6 +27,10 @@ import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
+import {
+  buildWhatsAppLink,
+  countryCodeOptions,
+} from '@/lib/tools/wa-link-helper/adapters/wa-link';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 const formSchema = z.object({

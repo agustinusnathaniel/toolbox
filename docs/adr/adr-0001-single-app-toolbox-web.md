@@ -1,11 +1,14 @@
 ---
 title: "ADR-0001: Single-App Toolbox Web Architecture"
-status: "Accepted"
+status: "Amended"
 date: "2026-03-31"
 authors: "Nathan, OpenCode"
 tags: ["architecture", "decision", "toolbox", "platform"]
 supersedes: ""
 superseded_by: ""
+amended_by:
+  - "2026-05-16: Narrowed package policy — only deep modules earn their own package. See Consequences / Package Depth Audit below."
+  - "2026-05-16: Route page deepening — extracted useJsPerfRunner hook from 495-line js-perf-comparator route. Dead API service layer removed."
 ---
 
 # ADR-0001: Single-App Toolbox Web Architecture
@@ -40,7 +43,7 @@ Two main structural options were considered:
 
 Build a single primary web application at `apps/toolbox-web` and port the existing tools into that app as first-class routes.
 
-Shared business logic should be extracted into `packages/*-core` packages, but the user-facing experience should remain centered in one app.
+Pure logic that operates at a single-tool scope should be co-located with the consuming route as an adapter module (see Implementation Notes). Only modules with genuine algorithmic depth or shared multi-tool utility warrant extraction into `packages/*-core`.
 
 This decision is intended to optimize for product cohesion, easier maintenance, and a cleaner future path for adding tools.
 
@@ -60,6 +63,28 @@ This decision is intended to optimize for product cohesion, easier maintenance, 
 - **NEG-003**: The single app must be designed carefully so tool-specific needs do not create tight coupling.
 - **NEG-004**: Large future tools may eventually challenge the single-app model and require reevaluation.
 
+### Package Depth Audit (2026-05-16)
+
+An architecture review surfaced that 5 of the 6 `packages/*-core` packages were **shallow** — their interfaces were nearly as complex as their implementations, and deleting them would merely move code rather than concentrate complexity:
+
+| Module | LOC | Verdict | Action |
+|---|---|---|---|
+| `calendar-core` | 76 | Shallow | Inlined → `lib/tools/add-to-calendar/adapters/` |
+| `qrcode-core` | 65 | Shallow | Inlined → `lib/tools/qrcode-generator/adapters/` |
+| `ua-check-core` | 77 | Shallow | Inlined → `lib/tools/ua-check/adapters/` |
+| `zippy-core` | 84 | Shallow | Inlined → `lib/tools/zippy-img/adapters/` |
+| `wa-link-core` | 89 + 252 JSON | Shallow | Inlined → `lib/tools/wa-link-helper/adapters/` |
+| `js-perf-comp-core` | 267 | **Deep** | Retained as package |
+
+Two additional shallow modules were found and deepened:
+
+| Module | LOC | Verdict | Action |
+|---|---|---|---|
+| `index.tsx` (js-perf-comparator route) | 495 | Shallow (entangled) | Extracted → `useJsPerfRunner` hook (320 LOC) + route shell (105 LOC) |
+| `lib/services/api/` (fetcher, types, utils) | 94 | Shallow (dead code) | Removed; `createQueryClient` inlined into `main.tsx` |
+
+**Narrowed policy**: Before creating a new `packages/*-core` package, apply the deletion test. If deleting it would just move code (not concentrate complexity), keep the logic co-located with its consumer. A second consumer is the signal to extract. See `docs/LANGUAGE.md` for the architecture vocabulary.
+
 ## Alternatives Considered
 
 ### Portal Plus Separate Tool Apps
@@ -75,7 +100,7 @@ This decision is intended to optimize for product cohesion, easier maintenance, 
 ## Implementation Notes
 
 - **IMP-001**: Build `apps/toolbox-web` first, then port existing tools into route-based slices.
-- **IMP-002**: Extract pure logic into `packages/wa-link-core`, `packages/zippy-core`, and `packages/js-perf-comp-core`.
+- **IMP-002**: Co-locate single-tool pure logic in `lib/tools/<tool-name>/adapters/<name>.ts`. Only extract to `packages/*-core` when a module is both deep (passes the deletion test) and shared by multiple consumers.
 - **IMP-003**: Keep shared UI extraction out of the critical path until at least two tool routes are stable.
 - **IMP-004**: Prefer vertical migrations: foundation, shell, one migrated tool, next migrated tool, then new tool.
 
