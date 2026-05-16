@@ -18,12 +18,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
-    "@commitlint/cli": "^20.5.3",
-    "@commitlint/config-conventional": "^20.5.3",
-    "@commitlint/types": "^20.5.0",
-    "commit-and-tag-version": "^12.7.1",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@commitlint/types": "catalog:",
+    "commit-and-tag-version": "catalog:",
     "cross-env": "^10.1.0",
-    "turbo": "^2.9.9",
+    "turbo": "catalog:",
     "typescript": "catalog:",
     "ultracite": "catalog:",
     "vite-plus": "catalog:"

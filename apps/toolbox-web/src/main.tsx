@@ -108,9 +108,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const App = () => {
-  return <RouterProvider router={router} />;
-};
+const App = () => <RouterProvider router={router} />;
 
 const rootElement = document.getElementById('app');
 if (rootElement && !rootElement.innerHTML) {
