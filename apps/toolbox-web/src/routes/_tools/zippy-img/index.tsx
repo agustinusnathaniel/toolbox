@@ -1,18 +1,13 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { Download, HelpCircleIcon, InfoIcon, UploadIcon } from 'lucide-react';
+import { Download, UploadIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
+import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
 import { DropZone } from '@/lib/components/ui/drop-zone';
 import { FileTrigger } from '@/lib/components/ui/file-trigger';
 import {
@@ -231,58 +226,29 @@ function ZippyImgPage() {
         </CardContent>
       </Card>
 
-      <DisclosureGroup>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <InfoIcon className="size-4" />
-              How it works
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <p>
-                This tool compresses images directly in your browser. Your files
-                are never uploaded to any server.
-              </p>
-              <ul className="list-inside list-disc">
-                <li>Drag and drop or click Browse to select images</li>
-                <li>
-                  Maximum {MAX_FILES} files at a time, up to {MAX_SIZE_MB}MB
-                  each
-                </li>
-                <li>Click Compress Now to reduce file sizes</li>
-                <li>Download individual files or all at once as a ZIP</li>
-              </ul>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <HelpCircleIcon className="size-4" />
-              FAQ
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">Is my data safe?</p>
-                <p>
-                  Yes. All processing happens in your browser. No files or
-                  images are sent to any server.
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">
-                  What formats are supported?
-                </p>
-                <p>Most common image formats including PNG, JPEG, and WebP.</p>
-              </div>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-      </DisclosureGroup>
+      <ToolHelp
+        faq={[
+          {
+            question: 'Is my data safe?',
+            answer:
+              'Yes. All processing happens in your browser. No files or images are sent to any server.',
+          },
+          {
+            question: 'What formats are supported?',
+            answer: 'Most common image formats including PNG, JPEG, and WebP.',
+          },
+        ]}
+        howItWorks={{
+          description:
+            'This tool compresses images directly in your browser. Your files are never uploaded to any server.',
+          steps: [
+            'Drag and drop or click Browse to select images',
+            `Maximum ${MAX_FILES} files at a time, up to ${MAX_SIZE_MB}MB each`,
+            'Click Compress Now to reduce file sizes',
+            'Download individual files or all at once as a ZIP',
+          ],
+        }}
+      />
     </div>
   );
 }

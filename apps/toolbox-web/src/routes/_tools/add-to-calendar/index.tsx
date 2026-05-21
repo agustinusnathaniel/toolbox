@@ -2,13 +2,13 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import {
   Card,
@@ -16,12 +16,6 @@ import {
   CardDescription,
   CardHeader,
 } from '@/lib/components/ui/card';
-import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
 import { FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
@@ -253,59 +247,30 @@ function AddToCalendarPage() {
         </CardContent>
       </Card>
 
-      <DisclosureGroup>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <InfoIcon className="size-4" />
-              How it works
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <p>
-                Generate an &quot;Add to Calendar&quot; link for Google
-                Calendar. Fill in the event details and click Generate to create
-                a link that can be added to any calendar.
-              </p>
-              <ul className="list-inside list-disc">
-                <li>Enter event title, description, and location</li>
-                <li>Set start and end date/time</li>
-                <li>Copy the generated link or embed button</li>
-                <li>Share anywhere or add to your website</li>
-              </ul>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <HelpCircleIcon className="size-4" />
-              FAQ
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">Is my data safe?</p>
-                <p>
-                  Yes. All calendar links are generated locally in your browser.
-                  No data is sent to any server.
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">
-                  Which calendars are supported?
-                </p>
-                <p>
-                  Currently only Google Calendar is supported. The link format
-                  follows Google&apos;s calendar event link specification.
-                </p>
-              </div>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-      </DisclosureGroup>
+      <ToolHelp
+        faq={[
+          {
+            question: 'Is my data safe?',
+            answer:
+              'Yes. All calendar links are generated locally in your browser. No data is sent to any server.',
+          },
+          {
+            question: 'Which calendars are supported?',
+            answer:
+              "Currently only Google Calendar is supported. The link format follows Google's calendar event link specification.",
+          },
+        ]}
+        howItWorks={{
+          description:
+            'Generate an "Add to Calendar" link for Google Calendar. Fill in the event details and click Generate to create a link that can be added to any calendar.',
+          steps: [
+            'Enter event title, description, and location',
+            'Set start and end date/time',
+            'Copy the generated link or embed button',
+            'Share anywhere or add to your website',
+          ],
+        }}
+      />
     </div>
   );
 }

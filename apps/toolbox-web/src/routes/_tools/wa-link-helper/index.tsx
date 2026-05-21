@@ -2,13 +2,13 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import {
@@ -17,12 +17,6 @@ import {
   ComboBoxInput,
   ComboBoxItem,
 } from '@/lib/components/ui/combo-box';
-import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
 import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
@@ -201,56 +195,31 @@ function WALinkHelperPage() {
         </CardContent>
       </Card>
 
-      <DisclosureGroup>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <InfoIcon className="size-4" />
-              How to use
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <p>
-                Enter a phone number and optionally a message. The tool
-                generates a WhatsApp link that you can copy and share.
-              </p>
-              <ul className="list-inside list-disc">
-                <li>Select the country code first</li>
-                <li>Enter the phone number without the country code</li>
-                <li>Add an optional pre-filled message</li>
-                <li>Click Copy Link to copy the generated URL</li>
-              </ul>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <HelpCircleIcon className="size-4" />
-              FAQ
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">Why no + sign?</p>
-                <p>
-                  The country code already includes the + prefix. Adding + will
-                  cause the link to fail.
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">Is my data sent anywhere?</p>
-                <p>
-                  No. All processing happens in your browser. No phone numbers
-                  or messages are stored or transmitted.
-                </p>
-              </div>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-      </DisclosureGroup>
+      <ToolHelp
+        faq={[
+          {
+            question: 'Why no + sign?',
+            answer:
+              'The country code already includes the + prefix. Adding + will cause the link to fail.',
+          },
+          {
+            question: 'Is my data sent anywhere?',
+            answer:
+              'No. All processing happens in your browser. No phone numbers or messages are stored or transmitted.',
+          },
+        ]}
+        howItWorks={{
+          title: 'How to use',
+          description:
+            'Enter a phone number and optionally a message. The tool generates a WhatsApp link that you can copy and share.',
+          steps: [
+            'Select the country code first',
+            'Enter the phone number without the country code',
+            'Add an optional pre-filled message',
+            'Click Copy Link to copy the generated URL',
+          ],
+        }}
+      />
     </div>
   );
 }

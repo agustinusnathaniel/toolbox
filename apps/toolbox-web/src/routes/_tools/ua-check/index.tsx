@@ -1,16 +1,10 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 import { useMemo } from 'react';
 
+import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 import { TOOL_META } from '@/lib/utils/metadata';
 
@@ -107,56 +101,30 @@ function UACheckPage() {
         </CardContent>
       </Card>
 
-      <DisclosureGroup>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <InfoIcon className="size-4" />
-              How it works
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <p>
-                This tool analyzes your browser&apos;s user agent string to
-                identify your browser, operating system, and device information.
-              </p>
-              <ul className="list-inside list-disc">
-                <li>Browser name and version</li>
-                <li>Operating system details</li>
-                <li>Device type and model</li>
-                <li>CPU architecture</li>
-              </ul>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <HelpCircleIcon className="size-4" />
-              FAQ
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">Is my data safe?</p>
-                <p>
-                  Yes. All analysis happens locally in your browser. No data is
-                  sent to any server.
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-fg">What is a user agent?</p>
-                <p>
-                  A user agent is a string that your browser sends to websites
-                  identifying itself. This tool parses that string for you.
-                </p>
-              </div>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-      </DisclosureGroup>
+      <ToolHelp
+        faq={[
+          {
+            question: 'Is my data safe?',
+            answer:
+              'Yes. All analysis happens locally in your browser. No data is sent to any server.',
+          },
+          {
+            question: 'What is a user agent?',
+            answer:
+              'A user agent is a string that your browser sends to websites identifying itself. This tool parses that string for you.',
+          },
+        ]}
+        howItWorks={{
+          description:
+            "This tool analyzes your browser's user agent string to identify your browser, operating system, and device information.",
+          steps: [
+            'Browser name and version',
+            'Operating system details',
+            'Device type and model',
+            'CPU architecture',
+          ],
+        }}
+      />
     </div>
   );
 }

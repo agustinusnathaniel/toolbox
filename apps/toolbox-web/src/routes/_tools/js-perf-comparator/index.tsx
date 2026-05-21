@@ -4,13 +4,13 @@ import { createFileRoute } from '@tanstack/react-router';
 import { DEFAULT_RUN_POLICY, isRunable } from '@toolbox/js-perf-comp-core';
 import { useCallback, useState } from 'react';
 
+import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Separator } from '@/lib/components/ui/separator';
 import { TOOL_META } from '@/lib/utils/metadata';
 
 import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
 import { ComparatorConfigBar } from './-components/comparator-config-bar';
-import { ComparatorHelp } from './-components/comparator-help';
 import { ComparisonResults } from './-components/comparison-results';
 import {
   DEFAULT_PRESET,
@@ -164,7 +164,31 @@ function JsPerfComparatorPage() {
         runState={runner.runState}
       />
 
-      <ComparatorHelp />
+      <ToolHelp
+        faq={[
+          {
+            question: 'Is the comparison accurate?',
+            answer:
+              'This tool compares controlled runtime execution, not native browser engine performance. Use it to understand code behavior differences, not benchmark browser engines. If results are close or flip between runs, enable Stability mode to aggregate multiple rounds.',
+          },
+          {
+            question: 'What is QuickJS?',
+            answer:
+              'QuickJS is a small JavaScript engine that runs in a Web Worker. Code is sandboxed and cannot access host APIs.',
+          },
+        ]}
+        howItWorks={{
+          description:
+            'Compare JavaScript snippet execution in parallel sandboxed QuickJS runtimes. Both snippets run the same number of iterations and the results are compared.',
+          steps: [
+            'Write code in both editors',
+            'Select a preset or write custom code',
+            'Optional: enable Stability mode to aggregate multiple rounds',
+            'Click Run Both to execute',
+            'Review execution stats, confidence hints, and output',
+          ],
+        }}
+      />
     </div>
   );
 }
