@@ -2,30 +2,6 @@ export const SITE_NAME = 'Toolbox';
 export const SITE_DESCRIPTION = 'A unified platform for useful web tools.';
 export const SITE_URL = 'https://toolbox.example.com';
 
-export type MetaParams = {
-  title: string;
-  description: string;
-  path?: string;
-  image?: string;
-};
-
-export function buildMeta({ title, description, path, image }: MetaParams): {
-  title: string;
-  description: string;
-  image?: string;
-  url?: string;
-} {
-  const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
-  const url = path ? `${SITE_URL}${path}` : undefined;
-
-  return {
-    title: fullTitle,
-    description,
-    image,
-    url,
-  };
-}
-
 export const TOOL_META = {
   'wa-link-helper': {
     title: 'WA Link Helper',
