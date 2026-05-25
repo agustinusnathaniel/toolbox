@@ -1,0 +1,9 @@
+export interface {{pascalCase name}} {
+  id: string;
+}
+
+export type {{pascalCase name}}Status = 'active' | 'inactive';
+
+export const get{{pascalCase name}}Status = (): {{pascalCase name}}Status => {
+  return 'active';
+};

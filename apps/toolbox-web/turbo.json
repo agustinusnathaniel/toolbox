@@ -2,16 +2,21 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
-    "typecheck": {
+    "type:check": {
       "inputs": ["tsconfig.json", "src/**"],
       "outputs": ["*.tsbuildinfo"],
       "env": ["VITE_API_BASE_URL"]
     },
-    "lint": {
+    "ultracite:check": {
+      "outputs": [],
+      "inputs": ["biome.jsonc", "src/**"]
+    },
+    "biome:ci": {
       "outputs": [],
       "inputs": ["biome.jsonc", "src/**"]
     },
     "build": {
+      "dependsOn": ["type:check"],
       "outputs": ["dist/**", "public/**"],
       "env": ["VITE_API_BASE_URL"]
     },

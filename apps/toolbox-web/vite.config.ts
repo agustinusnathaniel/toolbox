@@ -69,8 +69,10 @@ export default defineConfig(({ mode }) => {
       tsconfigPaths: true,
     },
     test: {
+      environment: 'jsdom',
+      setupFiles: ['./src/lib/test-setup.ts'],
       coverage: {
-        include: ['src/utils/**/**.{ts,tsx,js,jsx}'],
+        include: ['src/**/**.{ts,tsx,js,jsx}'],
       },
     },
   };
