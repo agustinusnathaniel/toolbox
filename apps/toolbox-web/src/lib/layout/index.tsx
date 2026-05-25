@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { AppSidebar } from '@/lib/components/app-sidebar';
 import { AppSidebarNav } from '@/lib/components/app-sidebar-nav';
+import { MobileBottomNav } from '@/lib/components/mobile-bottom-nav';
 import { SidebarInset, SidebarProvider } from '@/lib/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 
@@ -17,19 +18,19 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <SidebarProvider>
       <AppSidebar collapsible="dock" intent="inset" />
-      <SidebarInset>
+      <SidebarInset className="mb-16 min-h-[95dvh] md:mb-0">
         <AppSidebarNav />
         <div
           className={twMerge(
-            isMobile ? '' : 'route-transition',
-            'p-4 lg:p-6',
-            'min-h-[85dvh]'
+            isMobile ? 'pb-16' : 'route-transition',
+            'p-4 lg:p-6'
           )}
         >
           {children}
         </div>
         <Footer />
       </SidebarInset>
+      <MobileBottomNav />
     </SidebarProvider>
   );
 };

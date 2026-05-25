@@ -127,12 +127,16 @@ export const Route = createRootRouteWithContext<{
           <Outlet />
         </Layout>
       </Providers>
-      <Suspense>
-        <TanStackRouterDevtools position="bottom-right" />
-      </Suspense>
-      <Suspense>
-        <ReactQueryDevtools />
-      </Suspense>
+      {import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS ? (
+        <>
+          <Suspense>
+            <TanStackRouterDevtools position="bottom-right" />
+          </Suspense>
+          <Suspense>
+            <ReactQueryDevtools />
+          </Suspense>
+        </>
+      ) : null}
     </>
   ),
 });

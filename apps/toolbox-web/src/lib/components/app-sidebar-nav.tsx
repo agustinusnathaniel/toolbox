@@ -6,7 +6,7 @@ import { SidebarNav, SidebarTrigger } from '@/lib/components/ui/sidebar';
 import { CommandMenuTrigger } from './global-command-menu';
 
 export const AppSidebarNav = () => (
-  <SidebarNav className="sticky top-0 z-5 rounded-t-2xl bg-overlay/80 backdrop-blur-xs">
+  <SidebarNav className="sticky top-0 z-5 rounded-t-2xl bg-muted/80 backdrop-blur-xs">
     <span className="flex items-center gap-x-4">
       <SidebarTrigger />
       <Breadcrumbs className="hidden md:flex">
