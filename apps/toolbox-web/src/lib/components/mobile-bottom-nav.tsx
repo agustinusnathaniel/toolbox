@@ -11,14 +11,18 @@ import { Link } from 'react-aria-components';
 import { SidebarTrigger } from './ui/sidebar';
 
 const navItems = [
-  { href: '/', icon: IconGlobe, label: 'Home' },
-  { href: '/wa-link-helper', icon: IconBrandWhatsapp, label: 'WA Link' },
+  { href: '/' as const, icon: IconGlobe, label: 'Home' },
+  {
+    href: '/wa-link-helper' as const,
+    icon: IconBrandWhatsapp,
+    label: 'WA Link',
+  },
   {
     label: 'Zippy Image',
-    href: '/zippy-img',
+    href: '/zippy-img' as const,
     icon: IconCamera,
   },
-  { href: '/qrcode-generator', icon: IconQrCode, label: 'QR Code' },
+  { href: '/qrcode-generator' as const, icon: IconQrCode, label: 'QR Code' },
 ];
 
 export const MobileBottomNav = () => {
@@ -36,7 +40,6 @@ export const MobileBottomNav = () => {
           <Link
             aria-current={isActive ? 'page' : undefined}
             className={`flex flex-col items-center gap-1 px-3 py-1 font-medium text-xs transition-colors ${isActive ? 'text-primary' : 'text-muted-fg hover:text-fg'}`}
-            //@ts-expect-error
             href={href}
             key={href}
           >
