@@ -34,7 +34,7 @@ function QRCodeGeneratorPage() {
   const {
     mode,
     setMode,
-    qrRef,
+    svgRef,
     urlState,
     vcardState,
     vcardString,
@@ -64,8 +64,8 @@ function QRCodeGeneratorPage() {
         <UrlQRCard
           onSaveQR={handleSaveQR}
           onUpdateUrlField={updateUrlField}
-          qrRef={qrRef}
           qrSize={qrSize}
+          svgRef={svgRef}
           urlState={urlState}
         />
       )}
@@ -74,8 +74,8 @@ function QRCodeGeneratorPage() {
         <VCardQRCard
           onSaveQR={handleSaveQR}
           onUpdateVCardField={updateVCardField}
-          qrRef={qrRef}
           qrSize={qrSize}
+          svgRef={svgRef}
           vcardState={vcardState}
           vcardString={vcardString}
         />

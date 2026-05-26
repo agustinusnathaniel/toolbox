@@ -51,10 +51,11 @@ const DEFAULT_VCARD_STATE: VCardState = {
 
 export function useQRCodeForm() {
   const [mode, setMode] = useState<QRMode>('url');
-  const qrRef = useRef<HTMLCanvasElement>(null);
 
   const [urlState, setUrlState] = useState<UrlState>(DEFAULT_URL_STATE);
   const [vcardState, setVcardState] = useState<VCardState>(DEFAULT_VCARD_STATE);
+
+  const svgRef = useRef<SVGSVGElement | null>(null);
 
   const vcardString = useMemo(
     () => generateVCardString(vcardState as VCardFormData),
@@ -75,28 +76,41 @@ export function useQRCodeForm() {
     setVcardState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSaveQR = () => {
-    const canvas = qrRef.current;
-    if (!canvas) {
+  const handleSaveQR = (size: number) => {
+    const svg = svgRef.current;
+    if (!svg) {
       return;
     }
 
-    const resizedCanvas = document.createElement('canvas');
-    resizedCanvas.setAttribute('width', '2000');
-    resizedCanvas.setAttribute('height', '2000');
-    const ctx = resizedCanvas.getContext('2d');
-    ctx?.drawImage(canvas, 0, 0, 2000, 2000);
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgBlob = new Blob([svgData], {
+      type: 'image/svg+xml;charset=utf-8',
+    });
+    const url = URL.createObjectURL(svgBlob);
 
-    const link = document.createElement('a');
-    link.download = 'qrcode.png';
-    link.href = resizedCanvas.toDataURL();
-    link.click();
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2000 / size;
+      const resizedCanvas = document.createElement('canvas');
+      resizedCanvas.width = size * scale;
+      resizedCanvas.height = size * scale;
+      const ctx = resizedCanvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, resizedCanvas.width, resizedCanvas.height);
+
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = resizedCanvas.toDataURL();
+      link.click();
+
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
   };
 
   return {
     mode,
     setMode,
-    qrRef,
+    svgRef,
     urlState,
     vcardState,
     vcardString,
