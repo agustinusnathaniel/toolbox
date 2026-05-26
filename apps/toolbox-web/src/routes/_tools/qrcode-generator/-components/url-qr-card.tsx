@@ -1,17 +1,32 @@
-import { QRCodeCanvas } from 'qrcode.react';
+import { parseColor } from '@react-stately/color';
+import { QRCodeSVG } from 'qrcode.react';
 
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import { ColorArea } from '@/lib/components/ui/color-area';
+import { ColorField } from '@/lib/components/ui/color-field';
+import { ColorPicker } from '@/lib/components/ui/color-picker';
+import {
+  ColorSlider,
+  ColorSliderTrack,
+} from '@/lib/components/ui/color-slider';
+import { ColorSwatch } from '@/lib/components/ui/color-swatch';
+import { ColorThumb } from '@/lib/components/ui/color-thumb';
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
+import {
+  Popover,
+  PopoverBody,
+  PopoverContent,
+} from '@/lib/components/ui/popover';
 
 import type { UrlState } from './use-qrcode-form';
 
 type UrlQRCardProps = {
-  qrRef: React.RefObject<HTMLCanvasElement | null>;
+  svgRef: React.RefObject<SVGSVGElement | null>;
   qrSize: number;
   urlState: UrlState;
-  onSaveQR: () => void;
+  onSaveQR: (size: number) => void;
   onUpdateUrlField: <K extends keyof UrlState>(
     field: K,
     value: UrlState[K]
@@ -19,12 +34,14 @@ type UrlQRCardProps = {
 };
 
 export function UrlQRCard({
-  qrRef,
+  svgRef,
   qrSize,
   urlState,
   onSaveQR,
   onUpdateUrlField,
 }: UrlQRCardProps) {
+  const color = parseColor(urlState.fgColor);
+
   return (
     <Card>
       <CardHeader title="URL QR Code" />
@@ -32,14 +49,14 @@ export function UrlQRCard({
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-4">
             <div className="rounded-lg bg-white p-4">
-              <QRCodeCanvas
+              <QRCodeSVG
                 fgColor={urlState.fgColor}
+                ref={svgRef}
                 size={qrSize}
                 value={urlState.value || ' '}
               />
             </div>
-            <canvas ref={qrRef} style={{ display: 'none' }} />
-            <Button intent="primary" onPress={onSaveQR}>
+            <Button intent="primary" onPress={() => onSaveQR(qrSize)}>
               Save QR Code
             </Button>
           </div>
@@ -60,14 +77,43 @@ export function UrlQRCard({
 
               <div className="flex flex-col gap-1">
                 <Label htmlFor="url-fgColor">Foreground Color</Label>
-                <Input
-                  id="url-fgColor"
-                  onChange={(e) =>
-                    onUpdateUrlField('fgColor', e.currentTarget.value)
+                <ColorPicker
+                  onChange={(c) =>
+                    onUpdateUrlField(
+                      'fgColor',
+                      c.toFormat('hex').toString() ?? '#000000'
+                    )
                   }
-                  type="color"
-                  value={urlState.fgColor}
-                />
+                  value={color}
+                >
+                  <Popover>
+                    <Button data-slot="control" intent="plain">
+                      <ColorSwatch />
+                      Select color
+                    </Button>
+                    <PopoverContent className="[--gutter:--spacing(1)]">
+                      <PopoverBody>
+                        <div className="space-y-(--gutter)">
+                          <ColorArea
+                            colorSpace="rgb"
+                            xChannel="red"
+                            xName="red"
+                            yChannel="green"
+                            yName="green"
+                          />
+                          <ColorSlider channel="hue" colorSpace="hsb">
+                            <ColorSliderTrack>
+                              <ColorThumb />
+                            </ColorSliderTrack>
+                          </ColorSlider>
+                          <ColorField aria-label="Color">
+                            <Input />
+                          </ColorField>
+                        </div>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                </ColorPicker>
               </div>
             </div>
           </div>
