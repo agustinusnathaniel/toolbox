@@ -1,6 +1,9 @@
 export const SITE_NAME = 'Toolbox';
 export const SITE_DESCRIPTION = 'A unified platform for useful web tools.';
-export const SITE_URL = 'https://toolbox.example.com';
+export const SITE_URL =
+  typeof window === 'undefined'
+    ? 'https://toolbox.example.com'
+    : window.location.origin;
 
 export const TOOL_META = {
   'wa-link-helper': {

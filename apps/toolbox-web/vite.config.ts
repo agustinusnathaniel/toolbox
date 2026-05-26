@@ -9,7 +9,6 @@ import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 import { defineConfig, loadEnv } from 'vite-plus';
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  disable: true,
   registerType: 'autoUpdate',
   base: '/',
   manifest: {

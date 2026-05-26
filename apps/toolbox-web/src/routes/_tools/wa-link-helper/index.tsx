@@ -113,8 +113,6 @@ function WALinkHelperPage() {
                   name={field.name}
                   onChange={field.onChange}
                   value={field.value}
-                  // onSelectionChange={(key) => field.onChange(key)}
-                  // selectedKey={field.value}
                 >
                   <Label htmlFor="country_code">Country Code</Label>
                   <ComboBoxInput placeholder="Search country..." />
