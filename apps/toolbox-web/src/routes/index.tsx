@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight } from 'lucide-react';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 import { StaggerChildren } from '@/lib/components/animations/stagger-children';
 import { CardContent, CardHeader } from '@/lib/components/ui/card';
@@ -22,6 +22,28 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const tools = getToolNavItems();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      const index = Number.parseInt(e.key, 10) - 1;
+      if (index >= 0 && index < tools.length) {
+        e.preventDefault();
+        navigate({ to: tools[index].path });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate, tools]);
 
   return (
     <div className="flex flex-col gap-y-8">
@@ -34,7 +56,7 @@ function HomePage() {
 
       <section className="space-y-4">
         <StaggerChildren className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {tools.map((tool) => (
+          {tools.map((tool, index) => (
             <Link
               className="group/card flex flex-col rounded-lg border p-6 no-underline transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               key={tool.slug}
@@ -48,7 +70,9 @@ function HomePage() {
                   <h2 className="font-semibold text-base/6 text-fg">
                     {tool.title}
                   </h2>
-                  <ArrowRight className="size-4 text-muted-fg transition-transform group-hover/card:translate-x-1" />
+                  <kbd className="inline-flex size-5 items-center justify-center rounded border bg-secondary font-mono text-[10px] text-muted-fg">
+                    {index + 1}
+                  </kbd>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
