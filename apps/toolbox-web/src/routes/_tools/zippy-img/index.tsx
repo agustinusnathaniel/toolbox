@@ -18,6 +18,7 @@ import {
 import {
   compressImage,
   downloadFiles,
+  formatFileSize,
 } from '@/lib/tools/zippy-img/adapters/zippy';
 
 const meta = {
@@ -131,6 +132,22 @@ function ZippyImgPage() {
   const allDone = inputs.length > 0 && inputs.every((i) => i.progress >= 100);
   const hasCompressed = inputs.some((i) => i.compressed !== undefined);
 
+  const compressedItems = inputs.filter(
+    (i): i is ImageFile & { compressed: File } => i.compressed !== undefined
+  );
+  const totalOriginal = compressedItems.reduce(
+    (sum, i) => sum + i.file.size,
+    0
+  );
+  const totalCompressed = compressedItems.reduce(
+    (sum, i) => sum + i.compressed.size,
+    0
+  );
+  const totalSavings =
+    totalOriginal > 0
+      ? Math.round(((totalOriginal - totalCompressed) / totalOriginal) * 100)
+      : 0;
+
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
@@ -229,6 +246,53 @@ function ZippyImgPage() {
           </div>
         </CardContent>
       </Card>
+
+      {allDone && hasCompressed && compressedItems.length > 0 && (
+        <Card>
+          <CardHeader title="Compression Results" />
+          <CardContent className="flex flex-col gap-4">
+            {compressedItems.map((item) => {
+              const savings = Math.round(
+                ((item.file.size - item.compressed.size) / item.file.size) * 100
+              );
+              return (
+                <div className="flex flex-col gap-2" key={item.file.name}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="truncate font-medium">
+                      {item.file.name}
+                    </span>
+                    <span
+                      className={savings > 0 ? 'text-success' : 'text-muted-fg'}
+                    >
+                      {savings > 0 ? `-${savings}%` : 'No reduction'}
+                    </span>
+                  </div>
+                  <div className="flex h-2 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="rounded-full bg-success transition-all"
+                      style={{ width: `${Math.max(100 - savings, 5)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-muted-fg text-xs">
+                    <span>{formatFileSize(item.file.size)}</span>
+                    <span>{formatFileSize(item.compressed.size)}</span>
+                  </div>
+                </div>
+              );
+            })}
+            {compressedItems.length > 1 && (
+              <div className="flex items-center justify-between border-t pt-3 font-medium text-sm">
+                <span>Total savings</span>
+                <span className={totalSavings > 0 ? 'text-success' : ''}>
+                  {totalSavings > 0
+                    ? `-${totalSavings}% (${formatFileSize(totalOriginal)} → ${formatFileSize(totalCompressed)})`
+                    : 'No reduction'}
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <ToolHelp
         faq={[
