@@ -19,20 +19,24 @@ import {
   compressImage,
   downloadFiles,
 } from '@/lib/tools/zippy-img/adapters/zippy';
-import { TOOL_META } from '@/lib/utils/metadata';
 
-const meta = TOOL_META['zippy-img'];
+const meta = {
+  pageTitle: 'Zippy Image',
+  description:
+    'Compress images securely in your browser with no server upload.',
+  slug: 'zippy-img',
+} as const;
 
 export const Route = createFileRoute('/_tools/zippy-img/')({
   component: ZippyImgPage,
   staticData: {
-    pageTitle: meta.title,
+    meta,
   },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
+      { property: 'og:title', content: meta.pageTitle },
       { property: 'og:description', content: meta.description },
       { property: 'og:type', content: 'website' },
     ],

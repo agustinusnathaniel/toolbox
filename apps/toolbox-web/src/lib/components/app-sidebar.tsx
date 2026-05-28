@@ -1,18 +1,8 @@
 'use client';
 
-import {
-  IconBrandWhatsapp,
-  IconCalendar,
-  IconCamera,
-  IconCodeLines,
-  IconDeviceDesktop,
-  IconGlobe,
-  IconMoon,
-  IconQrCode,
-  IconSun,
-} from '@intentui/icons';
-import { type ToOptions, useLocation } from '@tanstack/react-router';
-import { type ReactNode, useCallback } from 'react';
+import { IconGlobe, IconMoon, IconSun } from '@intentui/icons';
+import { useLocation } from '@tanstack/react-router';
+import { useCallback } from 'react';
 
 import { useTheme } from '@/lib/components/theme-provider';
 import { Button } from '@/lib/components/ui/button';
@@ -30,43 +20,9 @@ import {
   useSidebar,
 } from '@/lib/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
+import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
-const navigation: Array<{
-  label: string;
-  icon?: ReactNode;
-  href?: ToOptions['to'];
-}> = [
-  {
-    label: 'WA Link Helper',
-    href: '/wa-link-helper',
-    icon: <IconBrandWhatsapp />,
-  },
-  {
-    label: 'Zippy Image',
-    href: '/zippy-img',
-    icon: <IconCamera />,
-  },
-  {
-    label: 'JS Perf Comparator',
-    href: '/js-perf-comparator',
-    icon: <IconCodeLines />,
-  },
-  {
-    label: 'UA Check',
-    href: '/ua-check',
-    icon: <IconDeviceDesktop />,
-  },
-  {
-    label: 'QR Code Generator',
-    href: '/qrcode-generator',
-    icon: <IconQrCode />,
-  },
-  {
-    label: 'Add to Calendar',
-    href: '/add-to-calendar',
-    icon: <IconCalendar />,
-  },
-];
+const navigation = getToolNavItems();
 
 export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { setIsOpenOnMobile } = useSidebar();
@@ -97,14 +53,14 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
           <SidebarSection label="Tools">
             {navigation.map((item) => (
               <SidebarItem
-                href={item.href}
-                isCurrent={location.pathname === item.href}
-                key={item.label}
+                href={item.path}
+                isCurrent={location.pathname === item.path}
+                key={item.slug}
                 onClick={handleMobileClose}
-                tooltip={item.label}
+                tooltip={item.title}
               >
                 {item.icon}
-                <SidebarLabel>{item.label}</SidebarLabel>
+                <SidebarLabel>{item.title}</SidebarLabel>
               </SidebarItem>
             ))}
           </SidebarSection>

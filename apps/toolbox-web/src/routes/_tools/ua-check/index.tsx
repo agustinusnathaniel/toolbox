@@ -6,20 +6,23 @@ import { useMemo } from 'react';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
-import { TOOL_META } from '@/lib/utils/metadata';
 
-const meta = TOOL_META['ua-check'];
+const meta = {
+  pageTitle: 'UA Check',
+  description: 'Check your browser and device user agent information.',
+  slug: 'ua-check',
+} as const;
 
 export const Route = createFileRoute('/_tools/ua-check/')({
   component: UACheckPage,
   staticData: {
-    pageTitle: meta.title,
+    meta,
   },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
+      { property: 'og:title', content: meta.pageTitle },
       { property: 'og:description', content: meta.description },
       { property: 'og:type', content: 'website' },
     ],

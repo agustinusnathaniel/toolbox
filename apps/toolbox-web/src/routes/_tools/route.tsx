@@ -9,13 +9,13 @@ export const Route = createFileRoute('/_tools')({
 function ToolLayout() {
   const match = useMatches();
   const leafMatch = match.at(-1);
-  const { pageTitle } = leafMatch?.staticData ?? {};
+  const meta = leafMatch?.staticData?.meta;
 
   return (
     <div className="flex flex-col gap-y-6">
       <div className="flex items-center justify-between">
         <Heading className="mx-auto text-center" level={1}>
-          {pageTitle}
+          {meta?.pageTitle}
         </Heading>
       </div>
       <Outlet />

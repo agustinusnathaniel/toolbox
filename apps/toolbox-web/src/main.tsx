@@ -102,7 +102,11 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
   interface StaticDataRouteOption {
-    pageTitle?: string;
+    meta?: {
+      pageTitle: string;
+      description: string;
+      slug: string;
+    };
   }
 }
 
