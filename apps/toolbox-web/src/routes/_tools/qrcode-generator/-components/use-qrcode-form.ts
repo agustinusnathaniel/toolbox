@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 
+import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import type { VCardFormData } from '@/lib/tools/qrcode-generator/adapters/qrcode';
 import { generateVCardString } from '@/lib/tools/qrcode-generator/adapters/qrcode';
 
@@ -53,11 +54,20 @@ const DEFAULT_VCARD_STATE: VCardState = {
   bgColor: '#ffffff',
 };
 
-export function useQRCodeForm() {
-  const [mode, setMode] = useState<QRMode>('url');
+const STORAGE_KEY_MODE = 'toolbox:qr-mode';
+const STORAGE_KEY_URL = 'toolbox:qr-url';
+const STORAGE_KEY_VCARD = 'toolbox:qr-vcard';
 
-  const [urlState, setUrlState] = useState<UrlState>(DEFAULT_URL_STATE);
-  const [vcardState, setVcardState] = useState<VCardState>(DEFAULT_VCARD_STATE);
+export function useQRCodeForm() {
+  const [mode, setMode] = usePersistedState<QRMode>(STORAGE_KEY_MODE, 'url');
+  const [urlState, setUrlState] = usePersistedState<UrlState>(
+    STORAGE_KEY_URL,
+    DEFAULT_URL_STATE
+  );
+  const [vcardState, setVcardState] = usePersistedState<VCardState>(
+    STORAGE_KEY_VCARD,
+    DEFAULT_VCARD_STATE
+  );
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 

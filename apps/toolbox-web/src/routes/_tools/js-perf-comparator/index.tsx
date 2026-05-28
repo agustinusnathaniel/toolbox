@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Separator } from '@/lib/components/ui/separator';
+import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 
 import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
 import { ComparatorConfigBar } from './-components/comparator-config-bar';
@@ -43,13 +44,23 @@ export const Route = createFileRoute('/_tools/js-perf-comparator/')({
   }),
 });
 
+const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';
+const STORAGE_KEY_ITERATIONS = 'toolbox:js-perf-iterations';
+
 function JsPerfComparatorPage() {
-  const [selectedPreset, setSelectedPreset] = useState(DEFAULT_PRESET.name);
-  const [codeA, setCodeA] = useState(DEFAULT_PRESET.codeA);
-  const [codeB, setCodeB] = useState(DEFAULT_PRESET.codeB);
-  const [iterations, setIterations] = useState(
+  const [selectedPreset, setSelectedPreset] = usePersistedState(
+    STORAGE_KEY_PRESET,
+    DEFAULT_PRESET.name
+  );
+  const [iterations, setIterations] = usePersistedState(
+    STORAGE_KEY_ITERATIONS,
     DEFAULT_RUN_POLICY.defaultIterations
   );
+
+  const currentPreset =
+    PRESETS.find((p) => p.name === selectedPreset) ?? DEFAULT_PRESET;
+  const [codeA, setCodeA] = useState(currentPreset.codeA);
+  const [codeB, setCodeB] = useState(currentPreset.codeB);
   const [stabilityModeEnabled, setStabilityModeEnabled] = useState(false);
   const [stabilityRounds, setStabilityRounds] = useState(
     STABILITY_DEFAULT_ROUNDS
@@ -72,14 +83,17 @@ function JsPerfComparatorPage() {
     teardownB,
   });
 
-  const handlePresetChange = useCallback((presetName: string) => {
-    const preset = PRESETS.find((p) => p.name === presetName);
-    if (preset) {
-      setSelectedPreset(presetName);
-      setCodeA(preset.codeA);
-      setCodeB(preset.codeB);
-    }
-  }, []);
+  const handlePresetChange = useCallback(
+    (presetName: string) => {
+      const preset = PRESETS.find((p) => p.name === presetName);
+      if (preset) {
+        setSelectedPreset(presetName);
+        setCodeA(preset.codeA);
+        setCodeB(preset.codeB);
+      }
+    },
+    [setSelectedPreset]
+  );
 
   const handleResetToPreset = useCallback(() => {
     const preset = PRESETS.find((p) => p.name === selectedPreset);
