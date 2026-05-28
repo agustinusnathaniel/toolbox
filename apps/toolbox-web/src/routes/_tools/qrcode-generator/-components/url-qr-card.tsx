@@ -48,8 +48,12 @@ export function UrlQRCard({
       <CardContent className="flex flex-col gap-6">
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-4">
-            <div className="rounded-lg bg-white p-4">
+            <div
+              className="rounded-lg p-4"
+              style={{ backgroundColor: urlState.bgColor }}
+            >
               <QRCodeSVG
+                bgColor={urlState.bgColor}
                 fgColor={urlState.fgColor}
                 ref={svgRef}
                 size={qrSize}
@@ -73,6 +77,29 @@ export function UrlQRCard({
                   placeholder="https://example.com"
                   value={urlState.value}
                 />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  intent="outline"
+                  onPress={() => {
+                    onUpdateUrlField('fgColor', '#000000');
+                    onUpdateUrlField('bgColor', '#ffffff');
+                  }}
+                  size="sm"
+                >
+                  Standard
+                </Button>
+                <Button
+                  intent="outline"
+                  onPress={() => {
+                    onUpdateUrlField('fgColor', '#ffffff');
+                    onUpdateUrlField('bgColor', '#000000');
+                  }}
+                  size="sm"
+                >
+                  Dark Mode
+                </Button>
               </div>
 
               <div className="flex flex-col gap-1">

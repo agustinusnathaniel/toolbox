@@ -49,8 +49,12 @@ export function VCardQRCard({
       <CardContent className="flex flex-col gap-6">
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-4">
-            <div className="rounded-lg bg-white p-4">
+            <div
+              className="rounded-lg p-4"
+              style={{ backgroundColor: vcardState.bgColor }}
+            >
               <QRCodeSVG
+                bgColor={vcardState.bgColor}
                 fgColor={vcardState.fgColor}
                 ref={svgRef}
                 size={qrSize}
@@ -222,6 +226,29 @@ export function VCardQRCard({
                   }
                   value={vcardState.websiteURL}
                 />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  intent="outline"
+                  onPress={() => {
+                    onUpdateVCardField('fgColor', '#000000');
+                    onUpdateVCardField('bgColor', '#ffffff');
+                  }}
+                  size="sm"
+                >
+                  Standard
+                </Button>
+                <Button
+                  intent="outline"
+                  onPress={() => {
+                    onUpdateVCardField('fgColor', '#ffffff');
+                    onUpdateVCardField('bgColor', '#000000');
+                  }}
+                  size="sm"
+                >
+                  Dark Mode
+                </Button>
               </div>
 
               <div className="flex flex-col gap-1">

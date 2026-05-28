@@ -6,11 +6,13 @@ import { generateVCardString } from '@/lib/tools/qrcode-generator/adapters/qrcod
 export type QRMode = 'url' | 'vcard';
 
 export interface UrlState {
+  bgColor: string;
   fgColor: string;
   value: string;
 }
 
 export interface VCardState {
+  bgColor: string;
   city: string;
   companyName: string;
   country: string;
@@ -30,6 +32,7 @@ export interface VCardState {
 const DEFAULT_URL_STATE: UrlState = {
   value: 'https://google.com',
   fgColor: '#000000',
+  bgColor: '#ffffff',
 };
 
 const DEFAULT_VCARD_STATE: VCardState = {
@@ -47,6 +50,7 @@ const DEFAULT_VCARD_STATE: VCardState = {
   country: '',
   websiteURL: '',
   fgColor: '#000000',
+  bgColor: '#ffffff',
 };
 
 export function useQRCodeForm() {
