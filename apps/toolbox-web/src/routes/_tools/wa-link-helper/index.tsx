@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   buildWhatsAppLink,
   countryCodeOptions,
@@ -57,15 +58,32 @@ export const Route = createFileRoute('/_tools/wa-link-helper/')({
   }),
 });
 
+const STORAGE_KEY = 'toolbox:wa-link-helper';
+
+const defaultFormValues: FormType = {
+  country_code: 'ID',
+  phone_number: '',
+  text: '',
+};
+
 function WALinkHelperPage() {
+  const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultFormValues);
+
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      country_code: 'ID',
-      phone_number: '',
-      text: '',
-    },
+    defaultValues: saved,
   });
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      setSaved({
+        country_code: values.country_code ?? '',
+        phone_number: values.phone_number ?? '',
+        text: values.text ?? '',
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [form, setSaved]);
 
   const [countryCode, phoneNumber, text] = form.watch([
     'country_code',

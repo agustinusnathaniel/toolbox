@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   formatLocalDateTimeString,
   generateGoogleCalendarLink,
@@ -24,17 +25,41 @@ const formSchema = z
 
 export type CalendarFormType = z.infer<typeof formSchema>;
 
+const STORAGE_KEY = 'toolbox:add-to-calendar';
+
+type PersistedCalendar = Pick<
+  CalendarFormType,
+  'title' | 'description' | 'location'
+>;
+
+const defaultPersisted: PersistedCalendar = {
+  title: '',
+  description: '',
+  location: '',
+};
+
 export function useCalendarForm() {
+  const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultPersisted);
+
   const form = useForm<CalendarFormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      location: '',
+      ...saved,
       start: formatLocalDateTimeString(),
       end: formatLocalDateTimeString(),
     },
   });
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      setSaved({
+        title: values.title ?? '',
+        description: values.description ?? '',
+        location: values.location ?? '',
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [form, setSaved]);
 
   const [title, description, location, start, end] = form.watch([
     'title',
