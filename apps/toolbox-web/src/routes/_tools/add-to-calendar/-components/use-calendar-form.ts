@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -39,14 +40,21 @@ const defaultPersisted: PersistedCalendar = {
 };
 
 export function useCalendarForm() {
+  const search = useSearch({ from: '/_tools/add-to-calendar/' });
+  const navigate = useNavigate({ from: '/add-to-calendar/' });
   const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultPersisted);
+
+  const defaultStart = search.start ?? formatLocalDateTimeString();
+  const defaultEnd = search.end ?? formatLocalDateTimeString();
 
   const form = useForm<CalendarFormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...saved,
-      start: formatLocalDateTimeString(),
-      end: formatLocalDateTimeString(),
+      title: search.title ?? saved.title,
+      description: search.desc ?? saved.description,
+      location: search.loc ?? saved.location,
+      start: defaultStart,
+      end: defaultEnd,
     },
   });
 
@@ -98,12 +106,32 @@ export function useCalendarForm() {
     });
   };
 
+  const handleCopyShareableLink = () => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        title: title || undefined,
+        desc: description || undefined,
+        loc: location || undefined,
+        start: start || undefined,
+        end: end || undefined,
+      }),
+      replace: true,
+    });
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast('Copied Shareable Link', {
+      description: 'Link with your current values copied to clipboard.',
+    });
+  };
+
   return {
     form,
     linkResult,
     isValid,
     errors,
     handleCopyLink,
+    handleCopyShareableLink,
     handleGenerateEmbed,
   };
 }
