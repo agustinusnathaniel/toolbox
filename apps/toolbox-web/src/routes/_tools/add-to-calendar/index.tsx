@@ -9,24 +9,27 @@ import {
   CardDescription,
   CardHeader,
 } from '@/lib/components/ui/card';
-import { TOOL_META } from '@/lib/utils/metadata';
 
 import { CalendarFormFields } from './-components/calendar-form-fields';
 import { CalendarResultCards } from './-components/calendar-result-cards';
 import { useCalendarForm } from './-components/use-calendar-form';
 
-const meta = TOOL_META['add-to-calendar'];
+const meta = {
+  pageTitle: 'Add to Calendar',
+  description: 'Generate Add to Calendar links for Google Calendar events.',
+  slug: 'add-to-calendar',
+} as const;
 
 export const Route = createFileRoute('/_tools/add-to-calendar/')({
   component: AddToCalendarPage,
   staticData: {
-    pageTitle: meta.title,
+    meta,
   },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
+      { property: 'og:title', content: meta.pageTitle },
       { property: 'og:description', content: meta.description },
       { property: 'og:type', content: 'website' },
     ],

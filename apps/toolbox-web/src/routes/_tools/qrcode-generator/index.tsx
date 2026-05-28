@@ -4,24 +4,27 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { TOOL_META } from '@/lib/utils/metadata';
 
 import { UrlQRCard } from './-components/url-qr-card';
 import { useQRCodeForm } from './-components/use-qrcode-form';
 import { VCardQRCard } from './-components/vcard-qr-card';
 
-const meta = TOOL_META['qrcode-generator'];
+const meta = {
+  pageTitle: 'QR Code Generator',
+  description: 'Generate QR codes for URLs or vCard contact information.',
+  slug: 'qrcode-generator',
+} as const;
 
 export const Route = createFileRoute('/_tools/qrcode-generator/')({
   component: QRCodeGeneratorPage,
   staticData: {
-    pageTitle: meta.title,
+    meta,
   },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
+      { property: 'og:title', content: meta.pageTitle },
       { property: 'og:description', content: meta.description },
       { property: 'og:type', content: 'website' },
     ],

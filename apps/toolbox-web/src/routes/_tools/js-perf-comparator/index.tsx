@@ -7,7 +7,6 @@ import { useCallback, useState } from 'react';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Separator } from '@/lib/components/ui/separator';
-import { TOOL_META } from '@/lib/utils/metadata';
 
 import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
 import { ComparatorConfigBar } from './-components/comparator-config-bar';
@@ -21,18 +20,23 @@ import { RunActionBar } from './-components/run-action-bar';
 import { SnippetEditors } from './-components/snippet-editors';
 import { useJsPerfRunner } from './-components/use-js-perf-runner';
 
-const meta = TOOL_META['js-perf-comparator'];
+const meta = {
+  pageTitle: 'JS Performance Comparator',
+  description:
+    'Compare JavaScript snippet execution in parallel sandboxed runtimes.',
+  slug: 'js-perf-comparator',
+} as const;
 
 export const Route = createFileRoute('/_tools/js-perf-comparator/')({
   component: JsPerfComparatorPage,
   staticData: {
-    pageTitle: meta.title,
+    meta,
   },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
+      { property: 'og:title', content: meta.pageTitle },
       { property: 'og:description', content: meta.description },
       { property: 'og:type', content: 'website' },
     ],

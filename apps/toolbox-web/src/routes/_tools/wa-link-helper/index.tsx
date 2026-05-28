@@ -25,7 +25,6 @@ import {
   buildWhatsAppLink,
   countryCodeOptions,
 } from '@/lib/tools/wa-link-helper/adapters/wa-link';
-import { TOOL_META } from '@/lib/utils/metadata';
 
 const formSchema = z.object({
   country_code: z.string().min(1, 'Please select a country'),
@@ -35,18 +34,23 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>;
 
-const meta = TOOL_META['wa-link-helper'];
+const meta = {
+  pageTitle: 'WA Link Helper',
+  description:
+    'Generate WhatsApp links with pre-filled messages and country codes.',
+  slug: 'wa-link-helper',
+} as const;
 
 export const Route = createFileRoute('/_tools/wa-link-helper/')({
   component: WALinkHelperPage,
   staticData: {
-    pageTitle: meta.title,
+    meta,
   },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
+      { property: 'og:title', content: meta.pageTitle },
       { property: 'og:description', content: meta.description },
       { property: 'og:type', content: 'website' },
     ],
