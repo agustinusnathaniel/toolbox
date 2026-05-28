@@ -1,6 +1,7 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
 
 import { ToolHelp } from '@/lib/components/tool-help';
 import {
@@ -14,6 +15,14 @@ import { CalendarFormFields } from './-components/calendar-form-fields';
 import { CalendarResultCards } from './-components/calendar-result-cards';
 import { useCalendarForm } from './-components/use-calendar-form';
 
+const searchSchema = z.object({
+  title: z.string().optional(),
+  desc: z.string().optional(),
+  loc: z.string().optional(),
+  start: z.string().optional(),
+  end: z.string().optional(),
+});
+
 const meta = {
   pageTitle: 'Add to Calendar',
   description: 'Generate Add to Calendar links for Google Calendar events.',
@@ -22,6 +31,7 @@ const meta = {
 
 export const Route = createFileRoute('/_tools/add-to-calendar/')({
   component: AddToCalendarPage,
+  validateSearch: searchSchema,
   staticData: {
     meta,
   },
@@ -43,6 +53,7 @@ function AddToCalendarPage() {
     isValid,
     errors,
     handleCopyLink,
+    handleCopyShareableLink,
     handleGenerateEmbed,
   } = useCalendarForm();
 
@@ -64,6 +75,7 @@ function AddToCalendarPage() {
             <CalendarResultCards
               linkUrl={linkResult.url}
               onCopyLink={handleCopyLink}
+              onCopyShareableLink={handleCopyShareableLink}
               onGenerateEmbed={handleGenerateEmbed}
             />
           )}

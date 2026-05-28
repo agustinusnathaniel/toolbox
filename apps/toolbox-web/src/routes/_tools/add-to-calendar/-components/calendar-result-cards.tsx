@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 type CalendarResultCardsProps = {
   linkUrl: string;
   onCopyLink: () => void;
+  onCopyShareableLink: () => void;
   onGenerateEmbed: () => void;
 };
 
 export function CalendarResultCards({
   linkUrl,
   onCopyLink,
+  onCopyShareableLink,
   onGenerateEmbed,
 }: CalendarResultCardsProps) {
   return (
@@ -23,8 +25,15 @@ export function CalendarResultCards({
           <Button className="w-full" intent="primary" onPress={onCopyLink}>
             Copy Link
           </Button>
+          <Button
+            className="w-full"
+            intent="outline"
+            onPress={onCopyShareableLink}
+          >
+            Copy Shareable Link
+          </Button>
           <p className="text-center text-muted-fg text-xs">
-            You can copy this link to your custom button or share it anywhere.
+            Shareable link opens this tool with your values pre-filled.
           </p>
         </CardContent>
       </Card>

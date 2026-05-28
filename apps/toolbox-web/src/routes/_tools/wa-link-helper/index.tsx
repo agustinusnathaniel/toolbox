@@ -1,7 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  useNavigate,
+  useSearch,
+} from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
@@ -35,6 +39,12 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>;
 
+const searchSchema = z.object({
+  cc: z.string().optional(),
+  phone: z.string().optional(),
+  text: z.string().optional(),
+});
+
 const meta = {
   pageTitle: 'WA Link Helper',
   description:
@@ -44,6 +54,7 @@ const meta = {
 
 export const Route = createFileRoute('/_tools/wa-link-helper/')({
   component: WALinkHelperPage,
+  validateSearch: searchSchema,
   staticData: {
     meta,
   },
@@ -67,11 +78,19 @@ const defaultFormValues: FormType = {
 };
 
 function WALinkHelperPage() {
+  const search = useSearch({ from: '/_tools/wa-link-helper/' });
+  const navigate = useNavigate({ from: '/wa-link-helper/' });
   const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultFormValues);
+
+  const initialValues: FormType = {
+    country_code: search.cc ?? saved.country_code,
+    phone_number: search.phone ?? saved.phone_number,
+    text: search.text ?? saved.text,
+  };
 
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
-    defaultValues: saved,
+    defaultValues: initialValues,
   });
 
   useEffect(() => {
@@ -114,6 +133,23 @@ function WALinkHelperPage() {
     navigator.clipboard.writeText(link);
     toast('Copied Link', {
       description: link,
+    });
+  };
+
+  const handleCopyShareableLink = () => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        cc: countryCode || undefined,
+        phone: phoneNumber || undefined,
+        text: text || undefined,
+      }),
+      replace: true,
+    });
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast('Copied Shareable Link', {
+      description: 'Link with your current values copied to clipboard.',
     });
   };
 
@@ -209,6 +245,9 @@ function WALinkHelperPage() {
                 <a href={link} rel="noopener noreferrer" target="_blank">
                   {link}
                 </a>
+              </Button>
+              <Button intent="outline" onPress={handleCopyShareableLink}>
+                Copy Shareable Link
               </Button>
             </div>
           ) : null}
