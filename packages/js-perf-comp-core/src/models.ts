@@ -180,23 +180,25 @@ export function calculateRobustStatistics(durations: number[]): ExecutionStatist
   // Filter outliers
   const filtered = sorted.filter((d) => d >= lowerBound && d <= upperBound);
 
+  // Fallback to unfiltered data if all values are outliers
+  const data = filtered.length > 0 ? filtered : sorted;
+
   // Calculate median
-  const mid = Math.floor(filtered.length / 2);
-  const medianMs =
-    filtered.length % 2 === 0 ? (filtered[mid - 1] + filtered[mid]) / 2 : filtered[mid];
+  const mid = Math.floor(data.length / 2);
+  const medianMs = data.length % 2 === 0 ? (data[mid - 1] + data[mid]) / 2 : data[mid];
 
   // Use median as the "mean" for display purposes
   const meanMs = medianMs;
-  const minMs = filtered[0];
-  const maxMs = filtered[filtered.length - 1];
+  const minMs = data[0];
+  const maxMs = data[data.length - 1];
 
   // Calculate standard deviation on filtered data
-  const variance = filtered.reduce((sum, d) => sum + (d - meanMs) ** 2, 0) / filtered.length;
+  const variance = data.reduce((sum, d) => sum + (d - meanMs) ** 2, 0) / data.length;
   const stddevMs = Math.sqrt(variance);
 
   // Calculate margin of error on filtered data
-  const zValue = filtered.length > 30 ? 1.96 : 2.0;
-  const marginMs = (zValue * stddevMs) / Math.sqrt(filtered.length);
+  const zValue = data.length > 30 ? 1.96 : 2.0;
+  const marginMs = (zValue * stddevMs) / Math.sqrt(data.length);
 
   return {
     iterations: n, // Keep original iteration count for display

@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
@@ -10,6 +9,7 @@ import {
   formatLocalDateTimeString,
   generateGoogleCalendarLink,
 } from '@/lib/tools/add-to-calendar/adapters/calendar';
+import { copyToClipboard } from '@/lib/utils/clipboard';
 
 const formSchema = z
   .object({
@@ -45,7 +45,13 @@ export function useCalendarForm() {
   const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultPersisted);
 
   const defaultStart = search.start ?? formatLocalDateTimeString();
-  const defaultEnd = search.end ?? formatLocalDateTimeString();
+  const defaultEnd =
+    search.end ??
+    (() => {
+      const d = new Date();
+      d.setHours(d.getHours() + 1);
+      return formatLocalDateTimeString(d);
+    })();
 
   const form = useForm<CalendarFormType>({
     resolver: zodResolver(formSchema),
@@ -92,18 +98,17 @@ export function useCalendarForm() {
   const { isValid, errors } = form.formState;
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(linkResult.url);
-    toast('Copied Link', {
-      description: 'Calendar link copied to clipboard',
-    });
+    copyToClipboard(linkResult.url, 'Copied Link');
   };
 
   const handleGenerateEmbed = () => {
-    const embed = `<a href="${linkResult.url}" target="_blank" rel="noopener noreferrer" style="border:1px solid black;padding:6px;border-radius:6px;text-decoration:none;color:white;font-weight:400;background-color:black;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">Add to Google Calendar</a>`;
-    navigator.clipboard.writeText(embed);
-    toast('Copied Embed Code', {
-      description: 'Embed HTML copied to clipboard',
-    });
+    const escapedUrl = linkResult.url
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    const embed = `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" style="border:1px solid black;padding:6px;border-radius:6px;text-decoration:none;color:white;font-weight:400;background-color:black;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">Add to Google Calendar</a>`;
+    copyToClipboard(embed, 'Copied Embed Code');
   };
 
   const handleCopyShareableLink = () => {
@@ -119,10 +124,7 @@ export function useCalendarForm() {
       replace: true,
     });
     const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast('Copied Shareable Link', {
-      description: 'Link with your current values copied to clipboard.',
-    });
+    copyToClipboard(url, 'Copied Shareable Link');
   };
 
   return {
