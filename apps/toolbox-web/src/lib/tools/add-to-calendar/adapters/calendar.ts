@@ -19,23 +19,21 @@ const GOOGLE_CAL_TEMPLATE_LINK =
 const COLON_REGEX = /T/;
 
 function trimmedIsoString(date: string): string {
-  return new Date(date)
-    .toISOString()
-    .replace(/[-:]/g, '')
-    .replace(COLON_REGEX, '');
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+  return parsed.toISOString().replace(/[-:]/g, '').replace(COLON_REGEX, '');
 }
 
 export function formatLocalDateTimeString(date?: Date | string): string {
   const d = new Date(date ?? new Date());
-  const dateStr = d.toISOString().slice(0, 10);
-  const timeStr = d
-    .toLocaleTimeString('EN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    })
-    .slice(0, 5);
-  return `${dateStr}T${timeStr}`;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 function buildQueryString(event: CalendarEvent): string {
@@ -51,8 +49,12 @@ function buildQueryString(event: CalendarEvent): string {
     parts.push(`location=${encodeURIComponent(event.location)}`);
   }
 
-  const dates = `${trimmedIsoString(event.start)}%2F${trimmedIsoString(event.end)}`;
-  parts.push(`dates=${dates}`);
+  const startStr = trimmedIsoString(event.start);
+  const endStr = trimmedIsoString(event.end);
+  if (startStr && endStr) {
+    const dates = `${startStr}%2F${endStr}`;
+    parts.push(`dates=${dates}`);
+  }
 
   return parts.join('&');
 }

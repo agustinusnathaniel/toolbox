@@ -67,6 +67,16 @@ export function ComparatorConfigBar({
           id="iterations-input"
           max={MAX_ITERATIONS}
           min={MIN_ITERATIONS}
+          onBlur={(event) => {
+            const value = Number.parseInt(event.target.value, 10);
+            if (!Number.isNaN(value)) {
+              const clamped = Math.max(
+                MIN_ITERATIONS,
+                Math.min(value, MAX_ITERATIONS)
+              );
+              event.target.value = String(clamped);
+            }
+          }}
           onChange={(event) => {
             const value = Number.parseInt(event.target.value, 10);
             if (!Number.isNaN(value)) {
@@ -108,6 +118,16 @@ export function ComparatorConfigBar({
             id="stability-rounds-input"
             max={STABILITY_MAX_ROUNDS}
             min={STABILITY_MIN_ROUNDS}
+            onBlur={(event) => {
+              const value = Number.parseInt(event.target.value, 10);
+              if (!Number.isNaN(value)) {
+                const clamped = Math.max(
+                  STABILITY_MIN_ROUNDS,
+                  Math.min(value, STABILITY_MAX_ROUNDS)
+                );
+                event.target.value = String(clamped);
+              }
+            }}
             onChange={(event) => {
               const value = Number.parseInt(event.target.value, 10);
               if (!Number.isNaN(value)) {

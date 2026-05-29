@@ -47,6 +47,28 @@ describe('generateGoogleCalendarLink', () => {
   });
 });
 
+test('handles invalid date strings gracefully', () => {
+  const result = generateGoogleCalendarLink({
+    title: 'Test',
+    start: 'not-a-date',
+    end: 'also-invalid',
+  });
+
+  expect(result.url).toContain('text=Test');
+  expect(result.url).not.toContain('dates=');
+});
+
+test('handles mix of valid and invalid dates', () => {
+  const result = generateGoogleCalendarLink({
+    title: 'Test',
+    start: '2026-05-01T10:00',
+    end: 'invalid',
+  });
+
+  expect(result.url).toContain('text=Test');
+  expect(result.url).not.toContain('dates=');
+});
+
 describe('formatLocalDateTimeString', () => {
   test('returns correct format for a known date', () => {
     const result = formatLocalDateTimeString(new Date('2026-03-15T14:30:00'));

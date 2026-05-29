@@ -30,6 +30,7 @@ import {
   buildWhatsAppLink,
   countryCodeOptions,
 } from '@/lib/tools/wa-link-helper/adapters/wa-link';
+import { copyToClipboard } from '@/lib/utils/clipboard';
 
 const formSchema = z.object({
   country_code: z.string().min(1, 'Please select a country'),
@@ -130,10 +131,7 @@ function WALinkHelperPage() {
       });
       return;
     }
-    navigator.clipboard.writeText(link);
-    toast('Copied Link', {
-      description: link,
-    });
+    copyToClipboard(link, 'Copied Link');
   };
 
   const handleCopyShareableLink = () => {
@@ -147,10 +145,7 @@ function WALinkHelperPage() {
       replace: true,
     });
     const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast('Copied Shareable Link', {
-      description: 'Link with your current values copied to clipboard.',
-    });
+    copyToClipboard(url, 'Copied Shareable Link');
   };
 
   return (
@@ -202,7 +197,7 @@ function WALinkHelperPage() {
                   value={field.value}
                 >
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input type="number" />
+                  <Input inputMode="numeric" type="tel" />
                   <Description>
                     Enter the phone number without country code
                   </Description>

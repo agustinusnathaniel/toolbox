@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { toast } from 'sonner';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import type { VCardFormData } from '@/lib/tools/qrcode-generator/adapters/qrcode';
@@ -93,6 +94,7 @@ export function useQRCodeForm() {
   const handleSaveQR = (size: number) => {
     const svg = svgRef.current;
     if (!svg) {
+      toast.error('QR code not ready');
       return;
     }
 
@@ -109,13 +111,22 @@ export function useQRCodeForm() {
       resizedCanvas.width = size * scale;
       resizedCanvas.height = size * scale;
       const ctx = resizedCanvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0, resizedCanvas.width, resizedCanvas.height);
+      if (!ctx) {
+        toast.error('Failed to create canvas');
+        URL.revokeObjectURL(url);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, resizedCanvas.width, resizedCanvas.height);
 
       const link = document.createElement('a');
       link.download = 'qrcode.png';
       link.href = resizedCanvas.toDataURL();
       link.click();
 
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      toast.error('Failed to render QR code');
       URL.revokeObjectURL(url);
     };
     img.src = url;
