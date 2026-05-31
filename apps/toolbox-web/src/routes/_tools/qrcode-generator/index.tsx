@@ -2,6 +2,7 @@
 
 import { createFileRoute } from '@tanstack/react-router';
 
+import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 
@@ -34,6 +35,10 @@ export const Route = createFileRoute('/_tools/qrcode-generator/')({
 const qrSize = 220;
 
 function QRCodeGeneratorPage() {
+  const { trackAction } = useToolTracking(
+    'qrcode-generator',
+    'QR Code Generator'
+  );
   const {
     mode,
     setMode,
@@ -51,13 +56,19 @@ function QRCodeGeneratorPage() {
       <div className="flex gap-2">
         <Button
           intent={mode === 'url' ? 'primary' : 'outline'}
-          onPress={() => setMode('url')}
+          onPress={() => {
+            setMode('url');
+            trackAction('mode_url');
+          }}
         >
           URL QR
         </Button>
         <Button
           intent={mode === 'vcard' ? 'primary' : 'outline'}
-          onPress={() => setMode('vcard')}
+          onPress={() => {
+            setMode('vcard');
+            trackAction('mode_vcard');
+          }}
         >
           VCard QR
         </Button>
@@ -65,7 +76,10 @@ function QRCodeGeneratorPage() {
 
       {mode === 'url' && (
         <UrlQRCard
-          onSaveQR={handleSaveQR}
+          onSaveQR={(size) => {
+            trackAction('save_qr');
+            handleSaveQR(size);
+          }}
           onUpdateUrlField={updateUrlField}
           qrSize={qrSize}
           svgRef={svgRef}
@@ -75,7 +89,10 @@ function QRCodeGeneratorPage() {
 
       {mode === 'vcard' && (
         <VCardQRCard
-          onSaveQR={handleSaveQR}
+          onSaveQR={(size) => {
+            trackAction('save_qr');
+            handleSaveQR(size);
+          }}
           onUpdateVCardField={updateVCardField}
           qrSize={qrSize}
           svgRef={svgRef}

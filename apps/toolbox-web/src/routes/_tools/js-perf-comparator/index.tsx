@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { DEFAULT_RUN_POLICY, isRunable } from '@toolbox/js-perf-comp-core';
 import { useCallback, useState } from 'react';
 
+import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Separator } from '@/lib/components/ui/separator';
@@ -48,6 +49,10 @@ const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';
 const STORAGE_KEY_ITERATIONS = 'toolbox:js-perf-iterations';
 
 function JsPerfComparatorPage() {
+  const { trackAction } = useToolTracking(
+    'js-perf-comparator',
+    'JS Perf Comparator'
+  );
   const [selectedPreset, setSelectedPreset] = usePersistedState(
     STORAGE_KEY_PRESET,
     DEFAULT_PRESET.name
@@ -87,12 +92,13 @@ function JsPerfComparatorPage() {
     (presetName: string) => {
       const preset = PRESETS.find((p) => p.name === presetName);
       if (preset) {
+        trackAction('preset_change');
         setSelectedPreset(presetName);
         setCodeA(preset.codeA);
         setCodeB(preset.codeB);
       }
     },
-    [setSelectedPreset]
+    [setSelectedPreset, trackAction]
   );
 
   const handleResetToPreset = useCallback(() => {
@@ -168,7 +174,10 @@ function JsPerfComparatorPage() {
             deadlineMs={DEFAULT_RUN_POLICY.deadlineMs}
             isReady={runner.isReady}
             onReset={runner.reset}
-            onRun={runner.run}
+            onRun={() => {
+              trackAction('run');
+              runner.run();
+            }}
             onStop={runner.terminate}
             runState={runner.runState}
             stabilityProgress={runner.stabilityProgress}

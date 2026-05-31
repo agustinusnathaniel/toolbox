@@ -10,3 +10,16 @@ interface ViteTypeOptions {
 }
 
 interface ImportMetaEnv extends ImportMetaEnvAugmented {}
+
+interface Umami {
+  identify(id: string, data?: object): void;
+  identify(data: object): void;
+  track(
+    event: string | object | ((props: object) => object),
+    data?: object
+  ): void;
+}
+
+interface Window {
+  umami?: Umami;
+}

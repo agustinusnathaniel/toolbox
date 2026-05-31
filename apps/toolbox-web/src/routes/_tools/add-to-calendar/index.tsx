@@ -3,6 +3,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 
+import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import {
   Card,
@@ -47,15 +48,29 @@ export const Route = createFileRoute('/_tools/add-to-calendar/')({
 });
 
 function AddToCalendarPage() {
+  const { trackAction } = useToolTracking('add-to-calendar', 'Add to Calendar');
   const {
     form,
     linkResult,
     isValid,
     errors,
-    handleCopyLink,
-    handleCopyShareableLink,
-    handleGenerateEmbed,
+    handleCopyLink: rawCopyLink,
+    handleCopyShareableLink: rawShareable,
+    handleGenerateEmbed: rawEmbed,
   } = useCalendarForm();
+
+  const handleCopyLink = () => {
+    trackAction('copy_link');
+    rawCopyLink();
+  };
+  const handleCopyShareableLink = () => {
+    trackAction('copy_shareable');
+    rawShareable();
+  };
+  const handleGenerateEmbed = () => {
+    trackAction('generate_embed');
+    rawEmbed();
+  };
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">

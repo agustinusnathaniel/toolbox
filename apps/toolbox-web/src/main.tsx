@@ -11,7 +11,11 @@ import { routeTree } from './routeTree.gen';
 import '@fontsource-variable/onest';
 import '@/lib/styles/globals.css';
 
+import { analytics } from '@/lib/analytics';
+import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
 import { buttonStyles } from '@/lib/components/ui/button';
+
+analytics.addTracker(createUmamiTracker());
 
 const Card = lazy(() =>
   import('@/lib/components/ui/card').then((m) => ({

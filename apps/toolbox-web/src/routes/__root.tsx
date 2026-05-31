@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-router';
 import { lazy, Suspense } from 'react';
 
+import { usePageTracking } from '@/lib/analytics/use-page-tracking';
 import { Providers } from '@/lib/components/providers';
 import { Toast } from '@/lib/components/ui/toast';
 import { Layout } from '@/lib/layout';
@@ -113,30 +114,34 @@ export const Route = createRootRouteWithContext<{
               src: import.meta.env.VITE_UMAMI_SCRIPT_URL,
               async: true,
               'data-website-id': import.meta.env.VITE_UMAMI_WEBSITE_ID,
+              'data-performance': 'true',
             },
           ]
         : []),
     ],
   }),
-  component: () => (
-    <>
-      <HeadContent />
-      <Providers>
-        <Toast />
-        <Layout>
-          <Outlet />
-        </Layout>
-      </Providers>
-      {import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS ? (
-        <>
-          <Suspense>
-            <TanStackRouterDevtools position="bottom-right" />
-          </Suspense>
-          <Suspense>
-            <ReactQueryDevtools />
-          </Suspense>
-        </>
-      ) : null}
-    </>
-  ),
+  component: () => {
+    usePageTracking();
+    return (
+      <>
+        <HeadContent />
+        <Providers>
+          <Toast />
+          <Layout>
+            <Outlet />
+          </Layout>
+        </Providers>
+        {import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS ? (
+          <>
+            <Suspense>
+              <TanStackRouterDevtools position="bottom-right" />
+            </Suspense>
+            <Suspense>
+              <ReactQueryDevtools />
+            </Suspense>
+          </>
+        ) : null}
+      </>
+    );
+  },
 });
