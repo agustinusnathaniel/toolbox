@@ -65,7 +65,7 @@ export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
             >
               <IconGlobe />
               <CommandMenuLabel>Home</CommandMenuLabel>
-              <CommandMenuDescription>
+              <CommandMenuDescription className="col-start-2 row-start-2 ms-0">
                 Open toolbox catalog and tool overview
               </CommandMenuDescription>
             </CommandMenuItem>
@@ -77,7 +77,7 @@ export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
               >
                 {item.icon}
                 <CommandMenuLabel>{item.title}</CommandMenuLabel>
-                <CommandMenuDescription>
+                <CommandMenuDescription className="col-start-2 row-start-2 ms-0">
                   {item.description}
                 </CommandMenuDescription>
               </CommandMenuItem>
