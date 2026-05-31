@@ -14,17 +14,38 @@ const pwaOptions: Partial<VitePWAOptions> = {
   manifest: {
     short_name: 'Tools',
     name: 'Toolbox — Unified Utility Platform',
+    description:
+      'A unified toolkit for developers — JSON tools, text utilities, JS benchmarking, and more.',
     theme_color: '#000000',
     lang: 'en',
     start_url: '/',
     background_color: '#FFFFFF',
     dir: 'ltr',
     display: 'standalone',
+    display_override: ['window-controls-overlay', 'standalone'],
     prefer_related_applications: false,
+    categories: ['developer tools', 'utilities', 'productivity'],
   },
   pwaAssets: {
     disabled: false,
     config: true,
+  },
+  workbox: {
+    globPatterns: ['**/*.{js,css,html,woff2,ico,png,svg,jpeg,jpg}'],
+    navigateFallback: '/',
+    runtimeCaching: [
+      {
+        urlPattern: /\.wasm$/i,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'wasm-files',
+          expiration: {
+            maxEntries: 10,
+            maxAgeSeconds: 60 * 60 * 24 * 30,
+          },
+        },
+      },
+    ],
   },
 };
 
