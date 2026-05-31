@@ -8,10 +8,19 @@ import checker from 'vite-plugin-checker';
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 import { defineConfig, loadEnv } from 'vite-plus';
 
-const pwaOptions: Partial<VitePWAOptions> = {
+const WASM_URL_PATTERN = /\.wasm$/i;
+
+const pwaOptions = (mode: string): Partial<VitePWAOptions> => ({
+  disable: mode !== 'production',
   registerType: 'autoUpdate',
   base: '/',
+  includeAssets: [
+    'favicon.ico',
+    'apple-touch-icon-180x180.png',
+    'maskable-icon-512x512.png',
+  ],
   manifest: {
+    id: '/',
     short_name: 'Tools',
     name: 'Toolbox — Unified Utility Platform',
     description:
@@ -35,7 +44,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
     navigateFallback: '/',
     runtimeCaching: [
       {
-        urlPattern: /\.wasm$/i,
+        urlPattern: WASM_URL_PATTERN,
         handler: 'CacheFirst',
         options: {
           cacheName: 'wasm-files',
@@ -47,7 +56,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
       },
     ],
   },
-};
+});
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -80,7 +89,7 @@ export default defineConfig(({ mode }) => {
               typescript: true,
             }),
           ]),
-      VitePWA(pwaOptions),
+      VitePWA(pwaOptions(mode)),
     ],
     server: {
       open: true,
