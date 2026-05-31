@@ -3,6 +3,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
+import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
@@ -50,6 +51,7 @@ const InfoRow = ({ label, value, capitalize }: InfoRowProps) => {
 };
 
 function UACheckPage() {
+  useToolTracking('ua-check', 'UA Check');
   const result = useMemo(() => parseUserAgent(), []);
 
   return (

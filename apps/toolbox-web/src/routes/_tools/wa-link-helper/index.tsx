@@ -12,6 +12,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -79,6 +80,7 @@ const defaultFormValues: FormType = {
 };
 
 function WALinkHelperPage() {
+  const { trackAction } = useToolTracking('wa-link-helper', 'WA Link Helper');
   const search = useSearch({ from: '/_tools/wa-link-helper/' });
   const navigate = useNavigate({ from: '/wa-link-helper/' });
   const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultFormValues);
@@ -131,10 +133,12 @@ function WALinkHelperPage() {
       });
       return;
     }
+    trackAction('copy_link');
     copyToClipboard(link, 'Copied Link');
   };
 
   const handleCopyShareableLink = () => {
+    trackAction('copy_shareable');
     navigate({
       search: (prev) => ({
         ...prev,
