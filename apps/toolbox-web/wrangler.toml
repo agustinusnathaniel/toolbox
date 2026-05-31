@@ -1,4 +1,4 @@
-name = "intent-dashboard"
+name = "toolbox-web"
 pages_build_output_dir = "./dist"
 
 [vars]
