@@ -11,11 +11,5 @@
         ]
       }
     ]
-  },
-  "mcpServers": {
-    "vite-plus": {
-      "command": "npx",
-      "args": ["vp", "mcp"]
-    }
   }
 }
