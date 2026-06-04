@@ -1,4 +1,5 @@
 import {
+  IconBolt,
   IconBrandWhatsapp,
   IconCalendar,
   IconCamera,
@@ -10,6 +11,7 @@ import type { ToOptions } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
+import { Route as EvChargingEstimatorRoute } from '@/routes/_tools/ev-charging-estimator/index';
 import { Route as JsPerfComparatorRoute } from '@/routes/_tools/js-perf-comparator/index';
 import { Route as QrcodeGeneratorRoute } from '@/routes/_tools/qrcode-generator/index';
 import { Route as UaCheckRoute } from '@/routes/_tools/ua-check/index';
@@ -26,6 +28,7 @@ export interface ToolNavItem {
 
 const iconMap: Record<string, ReactNode> = {
   'add-to-calendar': <IconCalendar />,
+  'ev-charging-estimator': <IconBolt />,
   'js-perf-comparator': <IconCodeLines />,
   'qrcode-generator': <IconQrCode />,
   'ua-check': <IconDeviceDesktop />,
@@ -46,6 +49,9 @@ function getToolMeta(slug: string) {
     { pageTitle: string; description: string; slug: string }
   > = {
     'add-to-calendar': staticMeta(AddToCalendarRoute.options.staticData?.meta),
+    'ev-charging-estimator': staticMeta(
+      EvChargingEstimatorRoute.options.staticData?.meta
+    ),
     'js-perf-comparator': staticMeta(
       JsPerfComparatorRoute.options.staticData?.meta
     ),
@@ -66,6 +72,7 @@ const SLUGS = [
   'qrcode-generator',
   'js-perf-comparator',
   'add-to-calendar',
+  'ev-charging-estimator',
 ] as const;
 
 const navItems: Array<ToolNavItem> = SLUGS.map((slug) => {
