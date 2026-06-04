@@ -5,7 +5,7 @@ import { getToolNavItem, getToolNavItems } from './tool-registry';
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(6);
+    expect(items).toHaveLength(7);
   });
 
   test('each item has required fields', () => {
@@ -39,6 +39,7 @@ describe('getToolNavItems', () => {
     expect(items[3].slug).toBe('qrcode-generator');
     expect(items[4].slug).toBe('js-perf-comparator');
     expect(items[5].slug).toBe('add-to-calendar');
+    expect(items[6].slug).toBe('ev-charging-estimator');
   });
 });
 

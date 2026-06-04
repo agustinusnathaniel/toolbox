@@ -1,0 +1,92 @@
+'use client';
+
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
+
+import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { ToolHelp } from '@/lib/components/tool-help';
+
+import { ChargingForm } from './-components/charging-form';
+
+const searchSchema = z.object({
+  start: z.coerce.number().min(0).max(100).optional(),
+  end: z.coerce.number().min(0).max(100).optional(),
+  cap: z.coerce.number().positive().optional(),
+  usable: z.coerce.number().min(1).max(100).optional(),
+  type: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']).optional(),
+  rate: z.coerce.number().positive().optional(),
+  power: z.coerce.number().positive().optional(),
+});
+
+const meta = {
+  pageTitle: 'EV Charging Estimator',
+  description:
+    'Estimate how much kWh you need to charge your EV, accounting for charging losses.',
+  slug: 'ev-charging-estimator',
+} as const;
+
+export const Route = createFileRoute('/_tools/ev-charging-estimator/')({
+  component: EVChargingEstimatorPage,
+  validateSearch: searchSchema,
+  staticData: {
+    meta,
+  },
+  head: () => ({
+    meta: [
+      { title: meta.pageTitle },
+      { name: 'description', content: meta.description },
+      { property: 'og:title', content: meta.pageTitle },
+      { property: 'og:description', content: meta.description },
+      { property: 'og:type', content: 'website' },
+    ],
+  }),
+});
+
+function EVChargingEstimatorPage() {
+  const { trackAction } = useToolTracking(
+    'ev-charging-estimator',
+    'EV Charging Estimator'
+  );
+
+  return (
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+      <ChargingForm onTrack={trackAction} />
+
+      <ToolHelp
+        faq={[
+          {
+            question: 'Why is charging above 80% less efficient?',
+            answer:
+              'Above 80% SOC, the battery management system slows charging to protect the cells. This means more time drawing power for auxiliary systems (cooling, BMS) relative to energy stored, reducing overall efficiency.',
+          },
+          {
+            question: 'What is "usable" battery capacity?',
+            answer:
+              'Manufacturers often advertise the total (gross) battery capacity, but the BMS reserves a buffer at both ends to protect cell health. The usable capacity is typically 90-95% of total. For example, a car advertised as 82 kWh may only let you use 75 kWh. Use the usable capacity for accurate estimates.',
+          },
+          {
+            question: 'How accurate is this estimate?',
+            answer:
+              'This provides a reasonable estimate based on typical charger efficiencies. Real-world results vary based on temperature, battery health, charger condition, and specific vehicle behavior.',
+          },
+          {
+            question: 'Is my data sent anywhere?',
+            answer:
+              'No. All calculations happen in your browser. No data is stored or transmitted.',
+          },
+        ]}
+        howItWorks={{
+          description:
+            'Estimate how much energy your EV needs to charge between two battery levels, accounting for real-world charging losses.',
+          steps: [
+            'Enter your current (start) and target (end) battery percentage',
+            "Enter your vehicle's total battery capacity in kWh (from the spec sheet)",
+            "Adjust the usable % if needed (default 95% — check your vehicle's actual usable capacity)",
+            'Select your charger type (AC or DC)',
+            'Optionally add electricity rate and charging power for cost and time estimates',
+          ],
+        }}
+      />
+    </div>
+  );
+}
