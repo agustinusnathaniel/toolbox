@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.1.0...v1.2.0) (2026-06-04)
+
+
+### Features
+
+* add EV Charging Estimator tool ([c94a718](https://github.com/agustinusnathaniel/toolbox/commit/c94a718fbcfd55a9176508742274a6d3dda587c4))
+* align PWA config with cartrack conventions ([3850570](https://github.com/agustinusnathaniel/toolbox/commit/385057003354014c3f81627c4e0a41771709a1f7))
+
 ## 1.1.0 (2026-05-31)
 
 
