@@ -21,6 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
+import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   CHARGER_LABELS,
   type ChargerType,
@@ -50,6 +51,26 @@ const CHARGER_OPTIONS: Array<{ id: ChargerType; label: string }> =
     label,
   }));
 
+const STORAGE_KEY = 'toolbox:ev-charging-estimator';
+
+type PersistedValues = {
+  startSOC: number;
+  endSOC: number;
+  totalCapacity: number;
+  usablePercent: number;
+  chargerType: ChargerType;
+  electricityRate?: number;
+  chargingPower?: number;
+};
+
+const defaultValues: PersistedValues = {
+  startSOC: 20,
+  endSOC: 80,
+  totalCapacity: 75,
+  usablePercent: DEFAULT_USABLE_PERCENT,
+  chargerType: 'ac-l2',
+};
+
 type ChargingFormProps = {
   onTrack: (action: string) => void;
 };
@@ -57,21 +78,37 @@ type ChargingFormProps = {
 export function ChargingForm({ onTrack }: ChargingFormProps) {
   const search = useSearch({ from: '/_tools/ev-charging-estimator/' });
   const navigate = useNavigate({ from: '/ev-charging-estimator/' });
+  const [saved, setSaved] = usePersistedState<PersistedValues>(
+    STORAGE_KEY,
+    defaultValues
+  );
 
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      startSOC: search.start ?? 20,
-      endSOC: search.end ?? 80,
-      totalCapacity: search.cap ?? 75,
-      usablePercent: search.usable ?? DEFAULT_USABLE_PERCENT,
-      chargerType: search.type ?? 'ac-l2',
-      electricityRate: search.rate,
-      chargingPower: search.power,
+      startSOC: search.start ?? saved.startSOC,
+      endSOC: search.end ?? saved.endSOC,
+      totalCapacity: search.cap ?? saved.totalCapacity,
+      usablePercent: search.usable ?? saved.usablePercent,
+      chargerType: search.type ?? saved.chargerType,
+      electricityRate: search.rate ?? saved.electricityRate,
+      chargingPower: search.power ?? saved.chargingPower,
     },
   });
 
   const watchedValues = form.watch();
+
+  useEffect(() => {
+    setSaved({
+      startSOC: watchedValues.startSOC,
+      endSOC: watchedValues.endSOC,
+      totalCapacity: watchedValues.totalCapacity,
+      usablePercent: watchedValues.usablePercent,
+      chargerType: watchedValues.chargerType,
+      electricityRate: watchedValues.electricityRate,
+      chargingPower: watchedValues.chargingPower,
+    });
+  }, [watchedValues, setSaved]);
 
   useEffect(() => {
     navigate({
