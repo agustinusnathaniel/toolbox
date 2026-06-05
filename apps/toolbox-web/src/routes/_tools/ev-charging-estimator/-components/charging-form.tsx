@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useEffect, useMemo, useRef } from 'react';
+import { useSearch } from '@tanstack/react-router';
+import { useEffect, useMemo } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ import {
   DisclosurePanel,
   DisclosureTrigger,
 } from '@/lib/components/ui/disclosure-group';
-import { Label } from '@/lib/components/ui/field';
+import { FieldError, Label } from '@/lib/components/ui/field';
 import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
 import {
   Select,
@@ -34,16 +34,21 @@ import { copyToClipboard } from '@/lib/utils/clipboard';
 import { FormulaExplanation } from './formula-explanation';
 import { ResultCard } from './result-card';
 
-const formSchema = z.object({
-  startSOC: z.number().min(0).max(100),
-  endSOC: z.number().min(0).max(100),
-  totalCapacity: z.number().positive(),
-  usablePercent: z.number().min(1).max(100),
-  calibrationFactor: z.number().min(0.5).max(1.5),
-  chargerType: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']),
-  electricityRate: z.number().positive().optional(),
-  chargingPower: z.number().positive().optional(),
-});
+const formSchema = z
+  .object({
+    startSOC: z.number().min(0).max(100),
+    endSOC: z.number().min(0).max(100),
+    totalCapacity: z.number().positive(),
+    usablePercent: z.number().min(1).max(100),
+    calibrationFactor: z.number().min(0.5).max(1.5),
+    chargerType: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']),
+    electricityRate: z.number().positive().optional(),
+    chargingPower: z.number().positive().optional(),
+  })
+  .refine((data) => data.endSOC >= data.startSOC, {
+    message: 'Target SOC must be ≥ Current SOC',
+    path: ['endSOC'],
+  });
 
 type FormType = z.infer<typeof formSchema>;
 
@@ -52,6 +57,13 @@ const CHARGER_OPTIONS: Array<{ id: ChargerType; label: string }> =
     id: id as ChargerType,
     label,
   }));
+
+const coerceNumber =
+  (onChange: (value: number) => void) =>
+  (e: React.FormEvent<HTMLInputElement>) => {
+    const parsed = Number.parseFloat(e.currentTarget.value);
+    onChange(Number.isNaN(parsed) ? 0 : parsed);
+  };
 
 const STORAGE_KEY = 'toolbox:ev-charging-estimator';
 
@@ -81,7 +93,6 @@ type ChargingFormProps = {
 
 export function ChargingForm({ onTrack }: ChargingFormProps) {
   const search = useSearch({ from: '/_tools/ev-charging-estimator/' });
-  const navigate = useNavigate({ from: '/ev-charging-estimator/' });
   const [saved, setSaved] = usePersistedState<PersistedValues>(
     STORAGE_KEY,
     defaultValues
@@ -89,6 +100,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
 
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     defaultValues: {
       startSOC: search.start ?? saved.startSOC,
       endSOC: search.end ?? saved.endSOC,
@@ -102,44 +114,10 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
   });
 
   const watchedValues = form.watch();
-  const prevJsonRef = useRef('');
 
   useEffect(() => {
-    const json = JSON.stringify(watchedValues);
-    if (json === prevJsonRef.current) {
-      return;
-    }
-    prevJsonRef.current = json;
-
-    setSaved({
-      startSOC: watchedValues.startSOC,
-      endSOC: watchedValues.endSOC,
-      totalCapacity: watchedValues.totalCapacity,
-      usablePercent: watchedValues.usablePercent,
-      calibrationFactor: watchedValues.calibrationFactor,
-      chargerType: watchedValues.chargerType,
-      electricityRate: watchedValues.electricityRate,
-      chargingPower: watchedValues.chargingPower,
-    });
-
-    navigate({
-      search: {
-        start: watchedValues.startSOC,
-        end: watchedValues.endSOC,
-        cap: watchedValues.totalCapacity,
-        usable: watchedValues.usablePercent,
-        cal: watchedValues.calibrationFactor,
-        type: watchedValues.chargerType,
-        rate: watchedValues.electricityRate,
-        power: watchedValues.chargingPower,
-      },
-      replace: true,
-    });
-  }, [watchedValues, setSaved, navigate]);
-
-  const result = useMemo(
-    () =>
-      calculateChargingEstimate({
+    const timer = setTimeout(() => {
+      setSaved({
         startSOC: watchedValues.startSOC,
         endSOC: watchedValues.endSOC,
         totalCapacity: watchedValues.totalCapacity,
@@ -148,8 +126,29 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
         chargerType: watchedValues.chargerType,
         electricityRate: watchedValues.electricityRate,
         chargingPower: watchedValues.chargingPower,
-      }),
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [watchedValues, setSaved]);
+
+  const isValid = watchedValues.endSOC >= watchedValues.startSOC;
+
+  const result = useMemo(
+    () =>
+      isValid
+        ? calculateChargingEstimate({
+            startSOC: watchedValues.startSOC,
+            endSOC: watchedValues.endSOC,
+            totalCapacity: watchedValues.totalCapacity,
+            usablePercent: watchedValues.usablePercent,
+            calibrationFactor: watchedValues.calibrationFactor,
+            chargerType: watchedValues.chargerType,
+            electricityRate: watchedValues.electricityRate,
+            chargingPower: watchedValues.chargingPower,
+          })
+        : null,
     [
+      isValid,
       watchedValues.startSOC,
       watchedValues.endSOC,
       watchedValues.totalCapacity,
@@ -163,7 +162,22 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
 
   const handleCopyShareableLink = () => {
     onTrack('copy_shareable');
-    copyToClipboard(window.location.href, 'Copied Shareable Link');
+    const params = new URLSearchParams({
+      start: String(watchedValues.startSOC),
+      end: String(watchedValues.endSOC),
+      cap: String(watchedValues.totalCapacity),
+      usable: String(watchedValues.usablePercent),
+      cal: String(watchedValues.calibrationFactor),
+      type: watchedValues.chargerType,
+    });
+    if (watchedValues.electricityRate != null) {
+      params.set('rate', String(watchedValues.electricityRate));
+    }
+    if (watchedValues.chargingPower != null) {
+      params.set('power', String(watchedValues.chargingPower));
+    }
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    copyToClipboard(url, 'Copied Shareable Link');
   };
 
   return (
@@ -186,7 +200,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                   maxValue={100}
                   minValue={0}
                   name={field.name}
-                  onChange={field.onChange}
+                  onInput={coerceNumber(field.onChange)}
                   value={field.value}
                 >
                   <Label>Current SOC (%)</Label>
@@ -198,16 +212,18 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
             <Controller
               control={form.control}
               name="endSOC"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <NumberField
+                  isInvalid={!!fieldState.error}
                   maxValue={100}
                   minValue={0}
                   name={field.name}
-                  onChange={field.onChange}
+                  onInput={coerceNumber(field.onChange)}
                   value={field.value}
                 >
                   <Label>Target SOC (%)</Label>
                   <NumberInput />
+                  <FieldError>{fieldState.error?.message}</FieldError>
                 </NumberField>
               )}
             />
@@ -221,7 +237,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                 <NumberField
                   minValue={1}
                   name={field.name}
-                  onChange={field.onChange}
+                  onInput={coerceNumber(field.onChange)}
                   value={field.value}
                 >
                   <Label>Battery Capacity (kWh)</Label>
@@ -264,7 +280,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={100}
                         minValue={1}
                         name={field.name}
-                        onChange={field.onChange}
+                        onInput={coerceNumber(field.onChange)}
                         value={field.value}
                       >
                         <Label>Usable Battery %</Label>
@@ -281,7 +297,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={1.5}
                         minValue={0.5}
                         name={field.name}
-                        onChange={field.onChange}
+                        onInput={coerceNumber(field.onChange)}
                         value={field.value}
                       >
                         <Label>Calibration Factor</Label>
@@ -331,8 +347,10 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
           </Button>
         </Form>
 
-        <ResultCard inputs={watchedValues} result={result} />
-        <FormulaExplanation inputs={watchedValues} result={result} />
+        {result && <ResultCard inputs={watchedValues} result={result} />}
+        {result && (
+          <FormulaExplanation inputs={watchedValues} result={result} />
+        )}
       </CardContent>
     </Card>
   );
