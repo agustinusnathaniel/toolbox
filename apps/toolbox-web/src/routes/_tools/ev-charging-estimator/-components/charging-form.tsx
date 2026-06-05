@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -97,8 +97,15 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
   });
 
   const watchedValues = form.watch();
+  const prevJsonRef = useRef('');
 
   useEffect(() => {
+    const json = JSON.stringify(watchedValues);
+    if (json === prevJsonRef.current) {
+      return;
+    }
+    prevJsonRef.current = json;
+
     setSaved({
       startSOC: watchedValues.startSOC,
       endSOC: watchedValues.endSOC,
@@ -108,9 +115,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       electricityRate: watchedValues.electricityRate,
       chargingPower: watchedValues.chargingPower,
     });
-  }, [watchedValues, setSaved]);
 
-  useEffect(() => {
     navigate({
       search: {
         start: watchedValues.startSOC,
@@ -123,7 +128,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       },
       replace: true,
     });
-  }, [watchedValues, navigate]);
+  }, [watchedValues, setSaved, navigate]);
 
   const result = useMemo(
     () =>
@@ -136,7 +141,15 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
         electricityRate: watchedValues.electricityRate,
         chargingPower: watchedValues.chargingPower,
       }),
-    [watchedValues]
+    [
+      watchedValues.startSOC,
+      watchedValues.endSOC,
+      watchedValues.totalCapacity,
+      watchedValues.usablePercent,
+      watchedValues.chargerType,
+      watchedValues.electricityRate,
+      watchedValues.chargingPower,
+    ]
   );
 
   const handleCopyShareableLink = () => {
