@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.2.0...v1.3.0) (2026-06-05)
+
+
+### Features
+
+* **ev-charging:** calibrate model against real-world data and add calibration factor ([64a4289](https://github.com/agustinusnathaniel/toolbox/commit/64a42895ee469363be62a4023a4459918124ecf6))
+* persist EV charging estimator inputs to localStorage ([c7be050](https://github.com/agustinusnathaniel/toolbox/commit/c7be050e79468e5061abc3d1ee0b6e9f9ee3481b))
+
+
+### Bug Fixes
+
+* allow data: font-src in CSP for fontsource variable fonts ([c75450d](https://github.com/agustinusnathaniel/toolbox/commit/c75450d3451cc81e84dbfea1707924593ee91f68))
+* exclude js-perf worker from SW precache, switch WASM to NetworkFirst ([78a75a0](https://github.com/agustinusnathaniel/toolbox/commit/78a75a0fee47071729503b20ff42cc86bbf0d90d))
+* remove navigateFallback causing non-precached-url error ([0d9bcc0](https://github.com/agustinusnathaniel/toolbox/commit/0d9bcc04b0be9c5bb18233333152638c79da6400))
+* stop infinite render loop in EV Charging Estimator form ([82f3b70](https://github.com/agustinusnathaniel/toolbox/commit/82f3b70df1da796e2427747ded67ea778459f6d2))
+* use virtual:pwa-register for SW registration ([7895a1e](https://github.com/agustinusnathaniel/toolbox/commit/7895a1ea1ced2eb18473250669bf048c2e76e2f0))
+
 ## [1.2.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.1.0...v1.2.0) (2026-06-04)
 
 
