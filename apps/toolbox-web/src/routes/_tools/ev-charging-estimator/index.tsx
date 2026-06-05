@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
+import { Note } from '@/lib/components/ui/note';
 
 import { ChargingForm } from './-components/charging-form';
 
@@ -52,6 +53,20 @@ function EVChargingEstimatorPage() {
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <ChargingForm onTrack={trackAction} />
+
+      <Note intent="info">
+        Want to track your vehicle's consumption over time?{' '}
+        <a
+          className="font-semibold underline underline-offset-2"
+          href="https://cartrack.sznm.dev"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Try CarTrack
+        </a>{' '}
+        — a local-first app for tracking EV, PHEV, and gasoline car fuel
+        consumption.
+      </Note>
 
       <ToolHelp
         faq={[
