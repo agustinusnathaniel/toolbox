@@ -54,7 +54,7 @@ export function ResultCard({ result, inputs }: ResultCardProps) {
             If charged to 80% instead:{' '}
             <span className="font-medium text-fg">{comparison80.kwh} kWh</span>
             {' — '}
-            <span className="font-medium text-accent">
+            <span className="font-medium text-accent-fg">
               save {comparison80.savings} kWh
             </span>
           </p>
