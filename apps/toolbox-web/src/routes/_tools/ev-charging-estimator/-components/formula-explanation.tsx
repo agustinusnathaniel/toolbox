@@ -60,12 +60,17 @@ export function FormulaExplanation({
 
             <p>
               Charger efficiency for{' '}
-              <span className="font-medium text-fg">{chargerType}</span> is{' '}
+              <span className="font-medium text-fg">{chargerType}</span>:{' '}
               <span className="font-medium text-fg">
-                {(efficiency * 100).toFixed(0)}%
+                {(efficiency * 100).toFixed(0)}% below {SOC_THRESHOLD}%
               </span>
-              . This accounts for AC/DC conversion losses and battery
-              resistance.
+              ,{' '}
+              <span className="font-medium text-fg">
+                {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% above{' '}
+                {SOC_THRESHOLD}%
+              </span>
+              . Charging slows above {SOC_THRESHOLD}% to protect battery health,
+              which increases relative losses.
             </p>
 
             {calibrationFactor !== 1 && (
@@ -81,12 +86,12 @@ export function FormulaExplanation({
             {showSplitFormula && (
               <>
                 <p>
-                  Since charging spans above and below the 80% SOC threshold,
-                  the calculation is split into two parts:
+                  Since charging spans both efficiency zones, the calculation is
+                  split into two parts:
                 </p>
                 <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
                   <p>
-                    basePart = ({SOC_THRESHOLD} - {startSOC}) x {usableCapacity}{' '}
+                    below80 = ({SOC_THRESHOLD} - {startSOC}) x {usableCapacity}{' '}
                     / {efficiency} ={' '}
                     {result.baseKwh > result.conversionLossKwh
                       ? (
@@ -98,7 +103,7 @@ export function FormulaExplanation({
                     kWh
                   </p>
                   <p>
-                    topPart = ({endSOC} - {SOC_THRESHOLD}) x {usableCapacity} /{' '}
+                    above80 = ({endSOC} - {SOC_THRESHOLD}) x {usableCapacity} /{' '}
                     {(efficiency - SOC_PENALTY).toFixed(2)} ={' '}
                     {(
                       ((endSOC - SOC_THRESHOLD) * usableCapacity) /
@@ -108,25 +113,17 @@ export function FormulaExplanation({
                     kWh
                   </p>
                   <p className="mt-1 font-semibold">
-                    total = basePart + topPart = {result.totalKwh} kWh
+                    total = below80 + above80 = {result.totalKwh} kWh
                   </p>
                 </div>
-                <p>
-                  The 80% SOC threshold adds a{' '}
-                  <span className="font-medium text-fg">
-                    {(SOC_PENALTY * 100).toFixed(0)} percentage point
-                  </span>{' '}
-                  efficiency penalty to slow down charging and protect battery
-                  health.
-                </p>
               </>
             )}
 
             {showAboveFormula && (
               <>
                 <p>
-                  Since charging starts at or above 80%, the penalty applies to
-                  the entire charge:
+                  Since charging starts at or above {SOC_THRESHOLD}%, the higher
+                  loss rate applies to the entire charge:
                 </p>
                 <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
                   <p>
@@ -141,7 +138,8 @@ export function FormulaExplanation({
             {!(showSplitFormula || showAboveFormula) && (
               <>
                 <p>
-                  Since charging stays below 80%, standard efficiency applies:
+                  Since charging stays below {SOC_THRESHOLD}%, the standard
+                  efficiency applies:
                 </p>
                 <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
                   <p>
