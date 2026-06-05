@@ -13,13 +13,10 @@ import '@/lib/styles/globals.css';
 
 import { analytics } from '@/lib/analytics';
 import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
+import { ReloadPrompt } from '@/lib/components/reload-prompt';
 import { buttonStyles } from '@/lib/components/ui/button';
 
-import { registerSW } from 'virtual:pwa-register';
-
 analytics.addTracker(createUmamiTracker());
-
-registerSW({ immediate: true });
 
 const Card = lazy(() =>
   import('@/lib/components/ui/card').then((m) => ({
@@ -127,6 +124,7 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <App />
+        <ReloadPrompt />
       </QueryClientProvider>
     </StrictMode>
   );
