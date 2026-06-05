@@ -13,6 +13,7 @@ const searchSchema = z.object({
   end: z.coerce.number().min(0).max(100).optional(),
   cap: z.coerce.number().positive().optional(),
   usable: z.coerce.number().min(1).max(100).optional(),
+  cal: z.coerce.number().min(0.5).max(1.5).optional(),
   type: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']).optional(),
   rate: z.coerce.number().positive().optional(),
   power: z.coerce.number().positive().optional(),

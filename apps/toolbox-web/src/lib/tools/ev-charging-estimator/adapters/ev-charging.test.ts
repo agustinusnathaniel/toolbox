@@ -14,7 +14,7 @@ describe('calculateChargingEstimate', () => {
       });
 
       const expectedBase = (60 - 20) * (75 / 100);
-      const expectedTotal = expectedBase / 0.9;
+      const expectedTotal = expectedBase / 0.86;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.baseKwh).toBe(Math.round(expectedBase * 100) / 100);
@@ -35,7 +35,7 @@ describe('calculateChargingEstimate', () => {
       });
 
       const expectedBase = (50 - 10) * (60 / 100);
-      const expectedTotal = expectedBase / 0.92;
+      const expectedTotal = expectedBase / 0.87;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.socPenaltyKwh).toBe(0);
@@ -53,8 +53,8 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l2',
       });
 
-      const basePart = ((80 - 20) * 75) / 100 / 0.9;
-      const topPart = ((100 - 80) * 75) / 100 / (0.9 - 0.07);
+      const basePart = ((80 - 20) * 75) / 100 / 0.86;
+      const topPart = ((100 - 80) * 75) / 100 / (0.86 - 0.02);
       const expectedTotal = basePart + topPart;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -75,8 +75,8 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l1',
       });
 
-      const basePart = ((80 - 50) * 100) / 100 / 0.87;
-      const topPart = ((95 - 80) * 100) / 100 / (0.87 - 0.07);
+      const basePart = ((80 - 50) * 100) / 100 / 0.83;
+      const topPart = ((95 - 80) * 100) / 100 / (0.83 - 0.02);
       const expectedTotal = basePart + topPart;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -95,7 +95,7 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'dc-ultra',
       });
 
-      const penalizedEfficiency = 0.9 - 0.07;
+      const penalizedEfficiency = 0.85 - 0.02;
       const expectedBase = (100 - 80) * (75 / 100);
       const expectedTotal = expectedBase / penalizedEfficiency;
 
@@ -114,7 +114,7 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l2',
       });
 
-      const penalizedEfficiency = 0.9 - 0.07;
+      const penalizedEfficiency = 0.86 - 0.02;
       const expectedBase = (95 - 85) * (75 / 100);
       const expectedTotal = expectedBase / penalizedEfficiency;
 
@@ -125,10 +125,10 @@ describe('calculateChargingEstimate', () => {
 
   describe('all charger types', () => {
     test.each([
-      ['ac-l1', 0.87],
-      ['ac-l2', 0.9],
-      ['dc-fast', 0.92],
-      ['dc-ultra', 0.9],
+      ['ac-l1', 0.83],
+      ['ac-l2', 0.86],
+      ['dc-fast', 0.87],
+      ['dc-ultra', 0.85],
     ] as const)('charger %s uses efficiency %s', (chargerType, expectedEfficiency) => {
       const result = calculateChargingEstimate({
         startSOC: 20,
@@ -169,7 +169,7 @@ describe('calculateChargingEstimate', () => {
 
       const expectedUsable = 82 * 0.92;
       const expectedBase = (80 - 20) * (expectedUsable / 100);
-      const expectedTotal = expectedBase / 0.9;
+      const expectedTotal = expectedBase / 0.86;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
     });
@@ -331,6 +331,121 @@ describe('calculateChargingEstimate', () => {
       });
 
       expect(result.comparison80).toBeUndefined();
+    });
+  });
+
+  describe('calibration factor', () => {
+    test('defaults to 1 when not provided', () => {
+      const withoutCal = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+      });
+
+      const withCal1 = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        calibrationFactor: 1,
+      });
+
+      expect(withoutCal.totalKwh).toBe(withCal1.totalKwh);
+    });
+
+    test('scales totalKwh by calibration factor', () => {
+      const base = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+      });
+
+      const calibrated = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        calibrationFactor: 1.1,
+      });
+
+      expect(calibrated.totalKwh).toBe(
+        Math.round(base.totalKwh * 1.1 * 100) / 100
+      );
+    });
+
+    test('scales cost by calibration factor', () => {
+      const base = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        electricityRate: 0.15,
+      });
+
+      const calibrated = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        electricityRate: 0.15,
+        calibrationFactor: 1.1,
+      });
+
+      expect(calibrated.estimatedCost).toBe(
+        Math.round(calibrated.totalKwh * 0.15 * 100) / 100
+      );
+      expect(calibrated.estimatedCost).toBeGreaterThan(base.estimatedCost ?? 0);
+    });
+
+    test('scales socPenaltyKwh by calibration factor', () => {
+      const base = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 100,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+      });
+
+      const calibrated = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 100,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        calibrationFactor: 0.9,
+      });
+
+      expect(calibrated.socPenaltyKwh).toBeLessThan(base.socPenaltyKwh);
+      expect(calibrated.socPenaltyKwh).toBeGreaterThan(0);
+    });
+
+    test('baseKwh is unaffected by calibration factor', () => {
+      const base = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+      });
+
+      const calibrated = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 80,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        calibrationFactor: 1.2,
+      });
+
+      expect(calibrated.baseKwh).toBe(base.baseKwh);
     });
   });
 });
