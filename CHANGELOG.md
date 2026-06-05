@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.5.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.4.0...v1.5.0) (2026-06-05)
+
+
+### Features
+
+* **components:** switch PWA to prompt-for-update to prevent data loss ([f4c6983](https://github.com/agustinusnathaniel/toolbox/commit/f4c6983f71a2d238101d12199d4af175e98e3e81))
+
 ## [1.4.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.3.0...v1.4.0) (2026-06-05)
 
 
