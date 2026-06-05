@@ -1,12 +1,16 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
+import { useIsMobile } from '@/lib/hooks/use-mobile';
+
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const TOAST_ID = 'pwa-update';
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
 export function ReloadPrompt() {
+  const isMobile = useIsMobile();
+
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -34,6 +38,7 @@ export function ReloadPrompt() {
     if (needRefresh) {
       toast.info('New version available', {
         id: TOAST_ID,
+        position: isMobile ? 'bottom-center' : 'top-right',
         description: 'Reload to get the latest updates.',
         duration: Number.POSITIVE_INFINITY,
         action: {
@@ -49,12 +54,13 @@ export function ReloadPrompt() {
         },
       });
     }
-  }, [needRefresh, updateServiceWorker, setNeedRefresh]);
+  }, [needRefresh, updateServiceWorker, setNeedRefresh, isMobile]);
 
   useEffect(() => {
     if (offlineReady) {
       toast.success('App ready to work offline', {
         id: `${TOAST_ID}-offline`,
+        position: isMobile ? 'bottom-center' : 'top-right',
         description: 'You can use the app without an internet connection.',
         duration: 5000,
         cancel: {
@@ -66,7 +72,7 @@ export function ReloadPrompt() {
         },
       });
     }
-  }, [offlineReady, setOfflineReady]);
+  }, [offlineReady, setOfflineReady, isMobile]);
 
   return null;
 }
