@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.3.0...v1.4.0) (2026-06-05)
+
+
+### Features
+
+* **ev-charging:** calibrate model against real-world data and add calibration factor ([b40fa33](https://github.com/agustinusnathaniel/toolbox/commit/b40fa3325fee9c143ae2ba93a224241447421930))
+
+
+### Bug Fixes
+
+* EV charging estimator validation, live calculation, and navigation ([b0f5ad3](https://github.com/agustinusnathaniel/toolbox/commit/b0f5ad37e711ae6f8903308982e1036158af90ca))
+
 ## [1.3.1](https://github.com/agustinusnathaniel/toolbox/compare/v1.3.0...v1.3.1) (2026-06-05)
 
 
