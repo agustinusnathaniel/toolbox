@@ -18,7 +18,9 @@
     "incremental": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "^/*": ["./*"],
+      "@root/*": ["../../*"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,
