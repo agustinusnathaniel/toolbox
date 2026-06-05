@@ -9,7 +9,6 @@ import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 import { defineConfig, loadEnv } from 'vite-plus';
 
 const WASM_URL_PATTERN = /\.wasm$/i;
-const SW_DENYLIST = [/^\/sw\.js$/, /^\/registerSW\.js$/];
 const WORKER_GLOB_IGNORE = ['**/js-perf.worker-**'];
 
 const pwaOptions = (mode: string): Partial<VitePWAOptions> => ({
@@ -43,8 +42,6 @@ const pwaOptions = (mode: string): Partial<VitePWAOptions> => ({
   },
   workbox: {
     globPatterns: ['**/*.{js,css,html,woff2,ico,png,svg,jpeg,jpg}'],
-    navigateFallback: '/',
-    navigateFallbackDenylist: SW_DENYLIST,
     cleanupOutdatedCaches: true,
     globIgnores: WORKER_GLOB_IGNORE,
     runtimeCaching: [
