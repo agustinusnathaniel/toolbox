@@ -2,7 +2,10 @@ export type ChargerType = 'ac-l1' | 'ac-l2' | 'dc-fast' | 'dc-ultra';
 
 export const DEFAULT_USABLE_PERCENT = 95;
 
+export const DEFAULT_CALIBRATION_FACTOR = 1;
+
 export interface ChargingInputs {
+  calibrationFactor?: number;
   chargerType: ChargerType;
   chargingPower?: number;
   electricityRate?: number;
@@ -27,10 +30,10 @@ export interface ChargingResult {
 }
 
 export const CHARGER_EFFICIENCIES: Record<ChargerType, number> = {
-  'ac-l1': 0.87,
-  'ac-l2': 0.9,
-  'dc-fast': 0.92,
-  'dc-ultra': 0.9,
+  'ac-l1': 0.83,
+  'ac-l2': 0.86,
+  'dc-fast': 0.87,
+  'dc-ultra': 0.85,
 };
 
 export const CHARGER_LABELS: Record<ChargerType, string> = {
@@ -40,8 +43,8 @@ export const CHARGER_LABELS: Record<ChargerType, string> = {
   'dc-ultra': 'DC Ultra-fast (150kW+)',
 };
 
-const SOC_PENALTY = 0.07;
-const SOC_THRESHOLD = 80;
+export const SOC_PENALTY = 0.02;
+export const SOC_THRESHOLD = 80;
 
 export function calculateChargingEstimate(
   inputs: ChargingInputs
@@ -73,22 +76,23 @@ export function calculateChargingEstimate(
     socPenaltyKwh = baseKwh / efficiency - baseKwh / penalizedEfficiency;
   }
 
-  const conversionLossKwh = totalKwh - baseKwh;
+  const calibration = inputs.calibrationFactor ?? 1;
+  const calibratedTotalKwh = totalKwh * calibration;
 
   const result: ChargingResult = {
     usableCapacity: round2(usableCapacity),
-    totalKwh: round2(totalKwh),
+    totalKwh: round2(calibratedTotalKwh),
     baseKwh: round2(baseKwh),
-    conversionLossKwh: round2(conversionLossKwh),
-    socPenaltyKwh: round2(Math.abs(socPenaltyKwh)),
+    conversionLossKwh: round2(calibratedTotalKwh - baseKwh),
+    socPenaltyKwh: round2(Math.abs(socPenaltyKwh) * calibration),
   };
 
   if (inputs.electricityRate && inputs.electricityRate > 0) {
-    result.estimatedCost = round2(totalKwh * inputs.electricityRate);
+    result.estimatedCost = round2(calibratedTotalKwh * inputs.electricityRate);
   }
 
   if (inputs.chargingPower && inputs.chargingPower > 0) {
-    result.estimatedTimeHours = totalKwh / inputs.chargingPower;
+    result.estimatedTimeHours = calibratedTotalKwh / inputs.chargingPower;
   }
 
   if (endSOC > SOC_THRESHOLD) {
@@ -98,7 +102,7 @@ export function calculateChargingEstimate(
         : 0;
     result.comparison80 = {
       kwh: round2(kwhAt80),
-      savings: round2(totalKwh - kwhAt80),
+      savings: round2(calibratedTotalKwh - kwhAt80),
     };
   }
 

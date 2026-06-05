@@ -8,6 +8,8 @@ import {
   CHARGER_EFFICIENCIES,
   type ChargerType,
   type ChargingResult,
+  SOC_PENALTY,
+  SOC_THRESHOLD,
 } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
 
 type FormulaExplanationProps = {
@@ -16,6 +18,7 @@ type FormulaExplanationProps = {
     endSOC: number;
     totalCapacity: number;
     usablePercent: number;
+    calibrationFactor: number;
     chargerType: ChargerType;
   };
   result: ChargingResult;
@@ -29,12 +32,16 @@ export function FormulaExplanation({
     return null;
   }
 
-  const { startSOC, endSOC, totalCapacity, usablePercent, chargerType } =
-    inputs;
+  const {
+    startSOC,
+    endSOC,
+    totalCapacity,
+    usablePercent,
+    calibrationFactor,
+    chargerType,
+  } = inputs;
   const usableCapacity = result.usableCapacity;
   const efficiency = CHARGER_EFFICIENCIES[chargerType];
-  const SOC_THRESHOLD = 80;
-  const SOC_PENALTY = 0.07;
 
   const showSplitFormula = endSOC > SOC_THRESHOLD && startSOC < SOC_THRESHOLD;
   const showAboveFormula = startSOC >= SOC_THRESHOLD;
@@ -60,6 +67,16 @@ export function FormulaExplanation({
               . This accounts for AC/DC conversion losses and battery
               resistance.
             </p>
+
+            {calibrationFactor !== 1 && (
+              <p>
+                Calibration factor:{' '}
+                <span className="font-medium text-fg">
+                  {calibrationFactor.toFixed(2)}x
+                </span>{' '}
+                — adjusted to match a specific vehicle's real-world efficiency.
+              </p>
+            )}
 
             {showSplitFormula && (
               <>

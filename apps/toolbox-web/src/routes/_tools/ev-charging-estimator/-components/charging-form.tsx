@@ -26,6 +26,7 @@ import {
   CHARGER_LABELS,
   type ChargerType,
   calculateChargingEstimate,
+  DEFAULT_CALIBRATION_FACTOR,
   DEFAULT_USABLE_PERCENT,
 } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
 import { copyToClipboard } from '@/lib/utils/clipboard';
@@ -38,6 +39,7 @@ const formSchema = z.object({
   endSOC: z.number().min(0).max(100),
   totalCapacity: z.number().positive(),
   usablePercent: z.number().min(1).max(100),
+  calibrationFactor: z.number().min(0.5).max(1.5),
   chargerType: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']),
   electricityRate: z.number().positive().optional(),
   chargingPower: z.number().positive().optional(),
@@ -58,6 +60,7 @@ type PersistedValues = {
   endSOC: number;
   totalCapacity: number;
   usablePercent: number;
+  calibrationFactor: number;
   chargerType: ChargerType;
   electricityRate?: number;
   chargingPower?: number;
@@ -68,6 +71,7 @@ const defaultValues: PersistedValues = {
   endSOC: 80,
   totalCapacity: 75,
   usablePercent: DEFAULT_USABLE_PERCENT,
+  calibrationFactor: DEFAULT_CALIBRATION_FACTOR,
   chargerType: 'ac-l2',
 };
 
@@ -90,6 +94,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       endSOC: search.end ?? saved.endSOC,
       totalCapacity: search.cap ?? saved.totalCapacity,
       usablePercent: search.usable ?? saved.usablePercent,
+      calibrationFactor: search.cal ?? saved.calibrationFactor,
       chargerType: search.type ?? saved.chargerType,
       electricityRate: search.rate ?? saved.electricityRate,
       chargingPower: search.power ?? saved.chargingPower,
@@ -111,6 +116,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       endSOC: watchedValues.endSOC,
       totalCapacity: watchedValues.totalCapacity,
       usablePercent: watchedValues.usablePercent,
+      calibrationFactor: watchedValues.calibrationFactor,
       chargerType: watchedValues.chargerType,
       electricityRate: watchedValues.electricityRate,
       chargingPower: watchedValues.chargingPower,
@@ -122,6 +128,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
         end: watchedValues.endSOC,
         cap: watchedValues.totalCapacity,
         usable: watchedValues.usablePercent,
+        cal: watchedValues.calibrationFactor,
         type: watchedValues.chargerType,
         rate: watchedValues.electricityRate,
         power: watchedValues.chargingPower,
@@ -137,6 +144,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
         endSOC: watchedValues.endSOC,
         totalCapacity: watchedValues.totalCapacity,
         usablePercent: watchedValues.usablePercent,
+        calibrationFactor: watchedValues.calibrationFactor,
         chargerType: watchedValues.chargerType,
         electricityRate: watchedValues.electricityRate,
         chargingPower: watchedValues.chargingPower,
@@ -146,6 +154,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       watchedValues.endSOC,
       watchedValues.totalCapacity,
       watchedValues.usablePercent,
+      watchedValues.calibrationFactor,
       watchedValues.chargerType,
       watchedValues.electricityRate,
       watchedValues.chargingPower,
@@ -246,7 +255,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
             <Disclosure>
               <DisclosureTrigger>Advanced</DisclosureTrigger>
               <DisclosurePanel>
-                <div className="grid gap-3 pt-2 sm:grid-cols-3">
+                <div className="grid gap-3 pt-2 sm:grid-cols-4">
                   <Controller
                     control={form.control}
                     name="usablePercent"
@@ -259,6 +268,23 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         value={field.value}
                       >
                         <Label>Usable Battery %</Label>
+                        <NumberInput />
+                      </NumberField>
+                    )}
+                  />
+
+                  <Controller
+                    control={form.control}
+                    name="calibrationFactor"
+                    render={({ field }) => (
+                      <NumberField
+                        maxValue={1.5}
+                        minValue={0.5}
+                        name={field.name}
+                        onChange={field.onChange}
+                        value={field.value}
+                      >
+                        <Label>Calibration Factor</Label>
                         <NumberInput />
                       </NumberField>
                     )}
