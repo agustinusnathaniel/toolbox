@@ -13,7 +13,7 @@ const WORKER_GLOB_IGNORE = ['**/js-perf.worker-**'];
 
 const pwaOptions = (mode: string): Partial<VitePWAOptions> => ({
   disable: mode !== 'production',
-  registerType: 'autoUpdate',
+  registerType: 'prompt',
   base: '/',
   includeAssets: [
     'favicon.ico',
