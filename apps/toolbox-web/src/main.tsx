@@ -15,7 +15,11 @@ import { analytics } from '@/lib/analytics';
 import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
 import { buttonStyles } from '@/lib/components/ui/button';
 
+import { registerSW } from 'virtual:pwa-register';
+
 analytics.addTracker(createUmamiTracker());
+
+registerSW({ immediate: true });
 
 const Card = lazy(() =>
   import('@/lib/components/ui/card').then((m) => ({
