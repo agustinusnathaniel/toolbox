@@ -2,6 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <script>
+    'use strict';
+    (() => {
+      const theme = localStorage.getItem('vite-ui-theme');
+      const root = document.documentElement;
+      root.classList.add(
+        theme === 'dark' ||
+          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ? 'dark'
+          : 'light'
+      );
+    })();
+    </script>
   </head>
   <body>
     <div id="app"></div>
