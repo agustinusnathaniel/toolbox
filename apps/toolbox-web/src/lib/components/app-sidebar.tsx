@@ -1,6 +1,6 @@
 'use client';
 
-import { IconGlobe, IconMoon, IconSun } from '@intentui/icons';
+import { IconClock, IconGlobe, IconMoon, IconSun } from '@intentui/icons';
 import { useLocation } from '@tanstack/react-router';
 import { useCallback } from 'react';
 
@@ -63,6 +63,17 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
                 <SidebarLabel>{item.title}</SidebarLabel>
               </SidebarItem>
             ))}
+          </SidebarSection>
+          <SidebarSection label="More">
+            <SidebarItem
+              href="/changelog"
+              isCurrent={location.pathname === '/changelog'}
+              onClick={handleMobileClose}
+              tooltip="Changelog"
+            >
+              <IconClock />
+              <SidebarLabel>Changelog</SidebarLabel>
+            </SidebarItem>
           </SidebarSection>
         </SidebarSectionGroup>
       </SidebarContent>

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
@@ -19,6 +20,11 @@ import { Route as ToolsJsPerfComparatorIndexRouteImport } from './routes/_tools/
 import { Route as ToolsEvChargingEstimatorIndexRouteImport } from './routes/_tools/ev-charging-estimator/index'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
 
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsRouteRoute = ToolsRouteRouteImport.update({
   id: '/_tools',
   getParentRoute: () => rootRouteImport,
@@ -69,6 +75,7 @@ const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/changelog': typeof ChangelogRoute
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/ev-charging-estimator/': typeof ToolsEvChargingEstimatorIndexRoute
   '/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/changelog': typeof ChangelogRoute
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
   '/ev-charging-estimator': typeof ToolsEvChargingEstimatorIndexRoute
   '/js-perf-comparator': typeof ToolsJsPerfComparatorIndexRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_tools': typeof ToolsRouteRouteWithChildren
+  '/changelog': typeof ChangelogRoute
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/_tools/ev-charging-estimator/': typeof ToolsEvChargingEstimatorIndexRoute
   '/_tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/changelog'
     | '/add-to-calendar/'
     | '/ev-charging-estimator/'
     | '/js-perf-comparator/'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/changelog'
     | '/add-to-calendar'
     | '/ev-charging-estimator'
     | '/js-perf-comparator'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_tools'
+    | '/changelog'
     | '/_tools/add-to-calendar/'
     | '/_tools/ev-charging-estimator/'
     | '/_tools/js-perf-comparator/'
@@ -136,10 +148,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ToolsRouteRoute: typeof ToolsRouteRouteWithChildren
+  ChangelogRoute: typeof ChangelogRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_tools': {
       id: '/_tools'
       path: ''
@@ -233,6 +253,7 @@ const ToolsRouteRouteWithChildren = ToolsRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ToolsRouteRoute: ToolsRouteRouteWithChildren,
+  ChangelogRoute: ChangelogRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
