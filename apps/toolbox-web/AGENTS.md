@@ -41,6 +41,119 @@ Intent Dashboard is a React-based SPA built with performance and accessibility a
 - **Icons**: Use `@intentui/icons`. Check existing imports for naming conventions (e.g., `IconDotsVertical`).
 - **URL Search Params**: Sync UI state (like active tabs or filters) with the URL search parameters using TanStack Router's `validateSearch`, `useSearch`, and `useNavigate`. This ensures state persistence across page refreshes and enables deep-linking.
 - **Core Style Primitives**: Do NOT modify `src/lib/styles/primitive.ts`. This file is a core part of the design system's foundation and should only be updated if explicitly required by the component registry or CLI updates.
+- **Writing Changelog Entries**: Follow the conventions in the Changelog Writing Guide below. Content lives in `content/changelog/*.mdx`.
+
+### Changelog Writing Guide
+
+Changelog entries are user-facing product updates, not developer-facing commit logs. Content lives in `content/changelog/*.mdx` files and is loaded via `src/lib/pages/changelog/entries.tsx`.
+
+#### MDX File Format
+
+Every entry exports metadata and renders markdown as the default export:
+
+```mdx
+export const version = "1.6.0";
+export const date = "2026-06-10";
+export const tag = "new";
+export const title = "Catchy, User-Facing Title";
+
+One-sentence subtitle that summarizes the release.
+
+### New Features
+
+- **Feature name** — what the user can now do, written in plain language
+```
+
+#### Title Rules
+
+- **Always user-facing, never technical.** Write what the user gets, not what changed under the hood.
+- **Catchy but specific.** "EV Charging Estimator" not "Add EV Charging Estimator Tool". "Charts Get an Upgrade" not "Chart Component Improvements".
+- **First releases use a launch-style title.** "Toolbox Launches", "CarTrack Is Here".
+- **No version numbers in the title.** The version is shown separately via the badge.
+
+#### Subtitle
+
+One sentence directly under the metadata, before any `###` headings. Summarizes the release in user terms. Examples:
+- "A new tool for electric vehicle owners."
+- "Better visualizations for your consumption and cost data, plus smarter imports."
+- "CarTrack now gets smarter about where you are, so you spend less time configuring."
+
+#### Section Headings
+
+Use these standard headings, in this order when applicable:
+
+| Heading | When to use |
+|---------|-------------|
+| `### New Features` | Brand-new capabilities, tools, or major additions |
+| `### Improvements` | Enhancements to existing features |
+| `### Bug Fixes` | Resolved issues |
+
+Omit empty sections. For a pure bug-fix release, only include `### Bug Fixes`. For a first release, `### What's Included` or `### Tools` works as an alternative to `### New Features`.
+
+#### List Item Format
+
+Every bullet follows: **Bold label** — plain description.
+
+```markdown
+- **Feature name** — what it does for the user, no implementation details
+- **Another feature** — benefit-focused description
+```
+
+- The bold part is a short feature name (2-5 words).
+- The description after the em-dash explains the user benefit, not the technical change.
+- No trailing periods on list items.
+- No commit hashes, PR numbers, or technical references.
+
+#### Tone and Voice
+
+- **Active voice.** "The estimator now uses real-world data" not "Real-world data is now used."
+- **Direct and specific.** "Press 1 through 7 to jump to any tool" not "Keyboard shortcuts have been added for navigation."
+- **No marketing fluff.** Avoid "seamless", "powerful", "exciting", "we're thrilled". Just describe what changed.
+- **No developer jargon in content.** Write for the person using the tool, not the person who built it.
+- **Domain jargon is okay** when it matches what the audience knows. EV users understand kWh, AC/DC charging, battery capacity. Automotive users understand odometer, fuel level, PHEV. Do not over-explain domain terms.
+- **Use "now" to signal changes.** "The form now adapts based on your vehicle type" signals improvement without being wordy.
+- **No "we" statements.** The product does the work: "Toolbox asks before applying an update" not "We now ask before updating."
+
+#### Tag Selection
+
+| Tag | Use when |
+|-----|----------|
+| `new` | Brand-new feature, tool, or capability that didn't exist before |
+| `improved` | Enhancement to an existing feature, better accuracy, refined UX |
+| `fixed` | Bug fix, resolved issue, corrected behavior |
+
+When a release has both new features and fixes, use the highest-impact tag as the entry-level tag (usually `new` or `improved`). Individual sections within the content still clarify what's new vs fixed.
+
+#### Writing Examples
+
+Good:
+```mdx
+- **Searchable currency picker** — choose from 170+ currencies with a quick search instead of scrolling through a long list
+- **Keyboard shortcuts** — press 1 through 7 to jump directly to any tool from the home page
+```
+
+Bad:
+```mdx
+- Added currency search combobox component with debounced input handling
+- Implemented keydown event listener for numeric key navigation (1-7)
+```
+
+Good:
+```mdx
+- **Safer data deletion** — three-step confirmation before wiping all your data
+```
+
+Bad:
+```mdx
+- Added confirmation dialog with typed verification before destructive action
+```
+
+#### Adding a New Entry
+
+1. Create `content/changelog/v<version>.mdx`
+2. Export `version`, `date`, `tag`, `title`
+3. Write content following the conventions above
+4. The glob loader in `entries.tsx` picks it up automatically, sorted by semver descending
 
 ### Safe vs Risky Changes
 
