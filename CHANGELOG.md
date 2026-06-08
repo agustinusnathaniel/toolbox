@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.5.1...v1.6.0) (2026-06-08)
+
+
+### Features
+
+* add user-facing changelog page ([#4](https://github.com/agustinusnathaniel/toolbox/issues/4)) ([18aa918](https://github.com/agustinusnathaniel/toolbox/commit/18aa918286bb784aece12598604a878a8c1ff86d))
+* **components:** replace custom theme provider with next-themes ([#5](https://github.com/agustinusnathaniel/toolbox/issues/5)) ([592a529](https://github.com/agustinusnathaniel/toolbox/commit/592a52906f52f5a76177903bdb00155526ef06ed))
+
 ## [1.5.1](https://github.com/agustinusnathaniel/toolbox/compare/v1.5.0...v1.5.1) (2026-06-05)
 
 ## [1.5.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.4.0...v1.5.0) (2026-06-05)
