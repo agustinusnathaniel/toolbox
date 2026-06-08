@@ -69,6 +69,7 @@
     "@commitlint/config-conventional": "^21.0.1",
     "@commitlint/types": "^21.0.1",
     "@julr/vite-plugin-validate-env": "^2.2.2",
+    "@mdx-js/rollup": "catalog:",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/router-plugin": "catalog:",
