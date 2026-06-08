@@ -2,7 +2,7 @@
 
 import { Toaster as ToasterPrimitive, type ToasterProps } from "sonner"
 import { twJoin } from "tailwind-merge"
-import { useTheme } from "@/lib/components/theme-provider"
+import { useTheme } from "next-themes"
 
 export function Toast(props: ToasterProps) {
   const { theme = "system" } = useTheme()

@@ -5,9 +5,8 @@ import {
   type ToOptions,
   useRouter,
 } from '@tanstack/react-router';
+import { ThemeProvider } from 'next-themes';
 import { RouterProvider } from 'react-aria-components';
-
-import { ThemeProvider } from './theme-provider';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -25,7 +24,13 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
       navigate={(to, options) => router.navigate({ to, ...options })}
       useHref={(to) => router.buildLocation({ to }).href}
     >
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        storageKey="vite-ui-theme"
+      >
+        {children}
+      </ThemeProvider>
     </RouterProvider>
   );
 };

@@ -50,6 +50,7 @@
     "jszip": "^3.10.1",
     "lucide-react": "catalog:",
     "motion": "^12.38.0",
+    "next-themes": "catalog:",
     "qrcode.react": "^4.2.0",
     "quickjs-emscripten": "^0.32.0",
     "radashi": "catalog:",

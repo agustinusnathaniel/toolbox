@@ -2,9 +2,9 @@
 
 import { IconClock, IconGlobe, IconMoon, IconSun } from '@intentui/icons';
 import { useLocation } from '@tanstack/react-router';
+import { useTheme } from 'next-themes';
 import { useCallback } from 'react';
 
-import { useTheme } from '@/lib/components/theme-provider';
 import { Button } from '@/lib/components/ui/button';
 import { Link } from '@/lib/components/ui/link';
 import {
@@ -28,7 +28,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { setIsOpenOnMobile } = useSidebar();
   const isMobile = useIsMobile();
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const handleMobileClose = useCallback(() => {
     if (isMobile) {
@@ -82,9 +82,9 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
         <Button
           className="size-8"
           intent="plain"
-          onPress={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onPress={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         >
-          {theme === 'dark' ? <IconSun /> : <IconMoon />}
+          {resolvedTheme === 'dark' ? <IconSun /> : <IconMoon />}
         </Button>
       </SidebarFooter>
       <SidebarRail />
