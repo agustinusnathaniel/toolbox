@@ -138,6 +138,11 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
     }
   }, [watchedValues.chargerType, form]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startSOC triggers endSOC refinement
+  useEffect(() => {
+    form.trigger('endSOC');
+  }, [watchedValues.startSOC, form]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setSaved({
