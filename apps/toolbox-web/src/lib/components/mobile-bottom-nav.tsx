@@ -22,7 +22,7 @@ const navItems = [
     href: '/zippy-img' as const,
     icon: IconCamera,
   },
-  { href: '/qrcode-generator' as const, icon: IconQrCode, label: 'QR Code' },
+  { href: '/qrcode' as const, icon: IconQrCode, label: 'QR Code' },
 ];
 
 export const MobileBottomNav = () => {

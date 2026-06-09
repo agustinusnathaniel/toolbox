@@ -15,9 +15,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
-import { Route as ToolsQrcodeGeneratorIndexRouteImport } from './routes/_tools/qrcode-generator/index'
-import { Route as ToolsJsPerfComparatorIndexRouteImport } from './routes/_tools/js-perf-comparator/index'
-import { Route as ToolsEvChargingEstimatorIndexRouteImport } from './routes/_tools/ev-charging-estimator/index'
+import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
+import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
+import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
 
 const ChangelogRoute = ChangelogRouteImport.update({
@@ -49,24 +49,21 @@ const ToolsUaCheckIndexRoute = ToolsUaCheckIndexRouteImport.update({
   path: '/ua-check/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
-const ToolsQrcodeGeneratorIndexRoute =
-  ToolsQrcodeGeneratorIndexRouteImport.update({
-    id: '/qrcode-generator/',
-    path: '/qrcode-generator/',
-    getParentRoute: () => ToolsRouteRoute,
-  } as any)
-const ToolsJsPerfComparatorIndexRoute =
-  ToolsJsPerfComparatorIndexRouteImport.update({
-    id: '/js-perf-comparator/',
-    path: '/js-perf-comparator/',
-    getParentRoute: () => ToolsRouteRoute,
-  } as any)
-const ToolsEvChargingEstimatorIndexRoute =
-  ToolsEvChargingEstimatorIndexRouteImport.update({
-    id: '/ev-charging-estimator/',
-    path: '/ev-charging-estimator/',
-    getParentRoute: () => ToolsRouteRoute,
-  } as any)
+const ToolsQrcodeIndexRoute = ToolsQrcodeIndexRouteImport.update({
+  id: '/qrcode/',
+  path: '/qrcode/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsJsPerfIndexRoute = ToolsJsPerfIndexRouteImport.update({
+  id: '/js-perf/',
+  path: '/js-perf/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
+  id: '/ev-charging/',
+  path: '/ev-charging/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
   id: '/add-to-calendar/',
   path: '/add-to-calendar/',
@@ -77,9 +74,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
-  '/ev-charging-estimator/': typeof ToolsEvChargingEstimatorIndexRoute
-  '/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
-  '/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
+  '/ev-charging/': typeof ToolsEvChargingIndexRoute
+  '/js-perf/': typeof ToolsJsPerfIndexRoute
+  '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/zippy-img/': typeof ToolsZippyImgIndexRoute
@@ -88,9 +85,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
-  '/ev-charging-estimator': typeof ToolsEvChargingEstimatorIndexRoute
-  '/js-perf-comparator': typeof ToolsJsPerfComparatorIndexRoute
-  '/qrcode-generator': typeof ToolsQrcodeGeneratorIndexRoute
+  '/ev-charging': typeof ToolsEvChargingIndexRoute
+  '/js-perf': typeof ToolsJsPerfIndexRoute
+  '/qrcode': typeof ToolsQrcodeIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
   '/zippy-img': typeof ToolsZippyImgIndexRoute
@@ -101,9 +98,9 @@ export interface FileRoutesById {
   '/_tools': typeof ToolsRouteRouteWithChildren
   '/changelog': typeof ChangelogRoute
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
-  '/_tools/ev-charging-estimator/': typeof ToolsEvChargingEstimatorIndexRoute
-  '/_tools/js-perf-comparator/': typeof ToolsJsPerfComparatorIndexRoute
-  '/_tools/qrcode-generator/': typeof ToolsQrcodeGeneratorIndexRoute
+  '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
+  '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
+  '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/_tools/zippy-img/': typeof ToolsZippyImgIndexRoute
@@ -114,9 +111,9 @@ export interface FileRouteTypes {
     | '/'
     | '/changelog'
     | '/add-to-calendar/'
-    | '/ev-charging-estimator/'
-    | '/js-perf-comparator/'
-    | '/qrcode-generator/'
+    | '/ev-charging/'
+    | '/js-perf/'
+    | '/qrcode/'
     | '/ua-check/'
     | '/wa-link-helper/'
     | '/zippy-img/'
@@ -125,9 +122,9 @@ export interface FileRouteTypes {
     | '/'
     | '/changelog'
     | '/add-to-calendar'
-    | '/ev-charging-estimator'
-    | '/js-perf-comparator'
-    | '/qrcode-generator'
+    | '/ev-charging'
+    | '/js-perf'
+    | '/qrcode'
     | '/ua-check'
     | '/wa-link-helper'
     | '/zippy-img'
@@ -137,9 +134,9 @@ export interface FileRouteTypes {
     | '/_tools'
     | '/changelog'
     | '/_tools/add-to-calendar/'
-    | '/_tools/ev-charging-estimator/'
-    | '/_tools/js-perf-comparator/'
-    | '/_tools/qrcode-generator/'
+    | '/_tools/ev-charging/'
+    | '/_tools/js-perf/'
+    | '/_tools/qrcode/'
     | '/_tools/ua-check/'
     | '/_tools/wa-link-helper/'
     | '/_tools/zippy-img/'
@@ -195,25 +192,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsUaCheckIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/_tools/qrcode-generator/': {
-      id: '/_tools/qrcode-generator/'
-      path: '/qrcode-generator'
-      fullPath: '/qrcode-generator/'
-      preLoaderRoute: typeof ToolsQrcodeGeneratorIndexRouteImport
+    '/_tools/qrcode/': {
+      id: '/_tools/qrcode/'
+      path: '/qrcode'
+      fullPath: '/qrcode/'
+      preLoaderRoute: typeof ToolsQrcodeIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/_tools/js-perf-comparator/': {
-      id: '/_tools/js-perf-comparator/'
-      path: '/js-perf-comparator'
-      fullPath: '/js-perf-comparator/'
-      preLoaderRoute: typeof ToolsJsPerfComparatorIndexRouteImport
+    '/_tools/js-perf/': {
+      id: '/_tools/js-perf/'
+      path: '/js-perf'
+      fullPath: '/js-perf/'
+      preLoaderRoute: typeof ToolsJsPerfIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/_tools/ev-charging-estimator/': {
-      id: '/_tools/ev-charging-estimator/'
-      path: '/ev-charging-estimator'
-      fullPath: '/ev-charging-estimator/'
-      preLoaderRoute: typeof ToolsEvChargingEstimatorIndexRouteImport
+    '/_tools/ev-charging/': {
+      id: '/_tools/ev-charging/'
+      path: '/ev-charging'
+      fullPath: '/ev-charging/'
+      preLoaderRoute: typeof ToolsEvChargingIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/add-to-calendar/': {
@@ -228,9 +225,9 @@ declare module '@tanstack/react-router' {
 
 interface ToolsRouteRouteChildren {
   ToolsAddToCalendarIndexRoute: typeof ToolsAddToCalendarIndexRoute
-  ToolsEvChargingEstimatorIndexRoute: typeof ToolsEvChargingEstimatorIndexRoute
-  ToolsJsPerfComparatorIndexRoute: typeof ToolsJsPerfComparatorIndexRoute
-  ToolsQrcodeGeneratorIndexRoute: typeof ToolsQrcodeGeneratorIndexRoute
+  ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
+  ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
+  ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
   ToolsZippyImgIndexRoute: typeof ToolsZippyImgIndexRoute
@@ -238,9 +235,9 @@ interface ToolsRouteRouteChildren {
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsAddToCalendarIndexRoute: ToolsAddToCalendarIndexRoute,
-  ToolsEvChargingEstimatorIndexRoute: ToolsEvChargingEstimatorIndexRoute,
-  ToolsJsPerfComparatorIndexRoute: ToolsJsPerfComparatorIndexRoute,
-  ToolsQrcodeGeneratorIndexRoute: ToolsQrcodeGeneratorIndexRoute,
+  ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
+  ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
+  ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
   ToolsZippyImgIndexRoute: ToolsZippyImgIndexRoute,

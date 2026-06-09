@@ -71,5 +71,37 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/qrcode-generator",
+      "destination": "/qrcode",
+      "permanent": true
+    },
+    {
+      "source": "/qrcode-generator/",
+      "destination": "/qrcode",
+      "permanent": true
+    },
+    {
+      "source": "/js-perf-comparator",
+      "destination": "/js-perf",
+      "permanent": true
+    },
+    {
+      "source": "/js-perf-comparator/",
+      "destination": "/js-perf",
+      "permanent": true
+    },
+    {
+      "source": "/ev-charging-estimator",
+      "destination": "/ev-charging",
+      "permanent": true
+    },
+    {
+      "source": "/ev-charging-estimator/",
+      "destination": "/ev-charging",
+      "permanent": true
+    }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }

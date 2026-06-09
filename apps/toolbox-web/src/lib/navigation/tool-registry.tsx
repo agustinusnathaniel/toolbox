@@ -11,9 +11,9 @@ import type { ToOptions } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
-import { Route as EvChargingEstimatorRoute } from '@/routes/_tools/ev-charging-estimator/index';
-import { Route as JsPerfComparatorRoute } from '@/routes/_tools/js-perf-comparator/index';
-import { Route as QrcodeGeneratorRoute } from '@/routes/_tools/qrcode-generator/index';
+import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
+import { Route as JsPerfRoute } from '@/routes/_tools/js-perf/index';
+import { Route as QrcodeRoute } from '@/routes/_tools/qrcode/index';
 import { Route as UaCheckRoute } from '@/routes/_tools/ua-check/index';
 import { Route as WaLinkHelperRoute } from '@/routes/_tools/wa-link-helper/index';
 import { Route as ZippyImgRoute } from '@/routes/_tools/zippy-img/index';
@@ -28,9 +28,9 @@ export interface ToolNavItem {
 
 const iconMap: Record<string, ReactNode> = {
   'add-to-calendar': <IconCalendar />,
-  'ev-charging-estimator': <IconBolt />,
-  'js-perf-comparator': <IconCodeLines />,
-  'qrcode-generator': <IconQrCode />,
+  'ev-charging': <IconBolt />,
+  'js-perf': <IconCodeLines />,
+  qrcode: <IconQrCode />,
   'ua-check': <IconDeviceDesktop />,
   'wa-link-helper': <IconBrandWhatsapp />,
   'zippy-img': <IconCamera />,
@@ -49,15 +49,9 @@ function getToolMeta(slug: string) {
     { pageTitle: string; description: string; slug: string }
   > = {
     'add-to-calendar': staticMeta(AddToCalendarRoute.options.staticData?.meta),
-    'ev-charging-estimator': staticMeta(
-      EvChargingEstimatorRoute.options.staticData?.meta
-    ),
-    'js-perf-comparator': staticMeta(
-      JsPerfComparatorRoute.options.staticData?.meta
-    ),
-    'qrcode-generator': staticMeta(
-      QrcodeGeneratorRoute.options.staticData?.meta
-    ),
+    'ev-charging': staticMeta(EvChargingRoute.options.staticData?.meta),
+    'js-perf': staticMeta(JsPerfRoute.options.staticData?.meta),
+    qrcode: staticMeta(QrcodeRoute.options.staticData?.meta),
     'ua-check': staticMeta(UaCheckRoute.options.staticData?.meta),
     'wa-link-helper': staticMeta(WaLinkHelperRoute.options.staticData?.meta),
     'zippy-img': staticMeta(ZippyImgRoute.options.staticData?.meta),
@@ -69,10 +63,10 @@ const SLUGS = [
   'wa-link-helper',
   'zippy-img',
   'ua-check',
-  'qrcode-generator',
-  'js-perf-comparator',
+  'qrcode',
+  'js-perf',
   'add-to-calendar',
-  'ev-charging-estimator',
+  'ev-charging',
 ] as const;
 
 const navItems: Array<ToolNavItem> = SLUGS.map((slug) => {

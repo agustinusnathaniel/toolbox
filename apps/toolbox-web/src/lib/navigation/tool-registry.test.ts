@@ -36,10 +36,10 @@ describe('getToolNavItems', () => {
     expect(items[0].slug).toBe('wa-link-helper');
     expect(items[1].slug).toBe('zippy-img');
     expect(items[2].slug).toBe('ua-check');
-    expect(items[3].slug).toBe('qrcode-generator');
-    expect(items[4].slug).toBe('js-perf-comparator');
+    expect(items[3].slug).toBe('qrcode');
+    expect(items[4].slug).toBe('js-perf');
     expect(items[5].slug).toBe('add-to-calendar');
-    expect(items[6].slug).toBe('ev-charging-estimator');
+    expect(items[6].slug).toBe('ev-charging');
   });
 });
 

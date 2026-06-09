@@ -26,10 +26,10 @@ const meta = {
   pageTitle: 'JS Performance Comparator',
   description:
     'Compare JavaScript snippet execution in parallel sandboxed runtimes.',
-  slug: 'js-perf-comparator',
+  slug: 'js-perf',
 } as const;
 
-export const Route = createFileRoute('/_tools/js-perf-comparator/')({
+export const Route = createFileRoute('/_tools/js-perf/')({
   component: JsPerfComparatorPage,
   staticData: {
     meta,
@@ -49,10 +49,7 @@ const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';
 const STORAGE_KEY_ITERATIONS = 'toolbox:js-perf-iterations';
 
 function JsPerfComparatorPage() {
-  const { trackAction } = useToolTracking(
-    'js-perf-comparator',
-    'JS Perf Comparator'
-  );
+  const { trackAction } = useToolTracking('js-perf', 'JS Perf Comparator');
   const [selectedPreset, setSelectedPreset] = usePersistedState(
     STORAGE_KEY_PRESET,
     DEFAULT_PRESET.name

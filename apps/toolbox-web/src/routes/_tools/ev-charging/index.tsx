@@ -24,10 +24,10 @@ const meta = {
   pageTitle: 'EV Charging Estimator',
   description:
     'Estimate how much kWh you need to charge your EV, accounting for charging losses.',
-  slug: 'ev-charging-estimator',
+  slug: 'ev-charging',
 } as const;
 
-export const Route = createFileRoute('/_tools/ev-charging-estimator/')({
+export const Route = createFileRoute('/_tools/ev-charging/')({
   component: EVChargingEstimatorPage,
   validateSearch: searchSchema,
   staticData: {
@@ -46,7 +46,7 @@ export const Route = createFileRoute('/_tools/ev-charging-estimator/')({
 
 function EVChargingEstimatorPage() {
   const { trackAction } = useToolTracking(
-    'ev-charging-estimator',
+    'ev-charging',
     'EV Charging Estimator'
   );
 

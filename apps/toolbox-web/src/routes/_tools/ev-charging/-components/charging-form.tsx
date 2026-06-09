@@ -104,7 +104,7 @@ type ChargingFormProps = {
 };
 
 export function ChargingForm({ onTrack }: ChargingFormProps) {
-  const search = useSearch({ from: '/_tools/ev-charging-estimator/' });
+  const search = useSearch({ from: '/_tools/ev-charging/' });
   const [saved, setSaved] = usePersistedState<PersistedValues>(
     STORAGE_KEY,
     defaultValues

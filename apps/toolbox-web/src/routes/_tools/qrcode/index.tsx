@@ -13,10 +13,10 @@ import { VCardQRCard } from './-components/vcard-qr-card';
 const meta = {
   pageTitle: 'QR Code Generator',
   description: 'Generate QR codes for URLs or vCard contact information.',
-  slug: 'qrcode-generator',
+  slug: 'qrcode',
 } as const;
 
-export const Route = createFileRoute('/_tools/qrcode-generator/')({
+export const Route = createFileRoute('/_tools/qrcode/')({
   component: QRCodeGeneratorPage,
   staticData: {
     meta,
@@ -35,10 +35,7 @@ export const Route = createFileRoute('/_tools/qrcode-generator/')({
 const qrSize = 220;
 
 function QRCodeGeneratorPage() {
-  const { trackAction } = useToolTracking(
-    'qrcode-generator',
-    'QR Code Generator'
-  );
+  const { trackAction } = useToolTracking('qrcode', 'QR Code Generator');
   const {
     mode,
     setMode,
