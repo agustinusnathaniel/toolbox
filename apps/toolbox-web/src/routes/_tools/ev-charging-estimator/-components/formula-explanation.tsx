@@ -5,7 +5,6 @@ import {
   DisclosureTrigger,
 } from '@/lib/components/ui/disclosure-group';
 import {
-  CHARGER_EFFICIENCIES,
   type ChargerType,
   type ChargingResult,
   SOC_PENALTY,
@@ -20,6 +19,7 @@ type FormulaExplanationProps = {
     usablePercent: number;
     calibrationFactor: number;
     chargerType: ChargerType;
+    chargingPower?: number;
   };
   result: ChargingResult;
 };
@@ -41,7 +41,7 @@ export function FormulaExplanation({
     chargerType,
   } = inputs;
   const usableCapacity = result.usableCapacity;
-  const efficiency = CHARGER_EFFICIENCIES[chargerType];
+  const efficiency = result.efficiency;
 
   const showSplitFormula = endSOC > SOC_THRESHOLD && startSOC < SOC_THRESHOLD;
   const showAboveFormula = startSOC >= SOC_THRESHOLD;

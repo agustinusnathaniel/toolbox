@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearch } from '@tanstack/react-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Form } from 'react-aria-components';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -23,10 +23,12 @@ import {
 } from '@/lib/components/ui/select';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
+  CHARGER_DEFAULT_POWER,
   CHARGER_LABELS,
   type ChargerType,
   calculateChargingEstimate,
   DEFAULT_CALIBRATION_FACTOR,
+  DEFAULT_CHARGING_POWER,
   DEFAULT_USABLE_PERCENT,
 } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
 import { copyToClipboard } from '@/lib/utils/clipboard';
@@ -59,10 +61,10 @@ const CHARGER_OPTIONS: Array<{ id: ChargerType; label: string }> =
   }));
 
 const coerceNumber =
-  (onChange: (value: number) => void) =>
+  (onChange: (value: number | undefined) => void, fallback?: number) =>
   (e: React.FormEvent<HTMLInputElement>) => {
     const parsed = Number.parseFloat(e.currentTarget.value);
-    onChange(Number.isNaN(parsed) ? 0 : parsed);
+    onChange(Number.isNaN(parsed) ? fallback : parsed);
   };
 
 const STORAGE_KEY = 'toolbox:ev-charging-estimator';
@@ -85,6 +87,7 @@ const defaultValues: PersistedValues = {
   usablePercent: DEFAULT_USABLE_PERCENT,
   calibrationFactor: DEFAULT_CALIBRATION_FACTOR,
   chargerType: 'ac-l2',
+  chargingPower: DEFAULT_CHARGING_POWER,
 };
 
 type ChargingFormProps = {
@@ -114,6 +117,17 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
   });
 
   const watchedValues = form.watch();
+  const prevChargerType = useRef(watchedValues.chargerType);
+
+  useEffect(() => {
+    if (prevChargerType.current !== watchedValues.chargerType) {
+      prevChargerType.current = watchedValues.chargerType;
+      form.setValue(
+        'chargingPower',
+        CHARGER_DEFAULT_POWER[watchedValues.chargerType]
+      );
+    }
+  }, [watchedValues.chargerType, form]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -124,8 +138,8 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
         usablePercent: watchedValues.usablePercent,
         calibrationFactor: watchedValues.calibrationFactor,
         chargerType: watchedValues.chargerType,
-        electricityRate: watchedValues.electricityRate,
-        chargingPower: watchedValues.chargingPower,
+        electricityRate: watchedValues.electricityRate || undefined,
+        chargingPower: watchedValues.chargingPower || undefined,
       });
     }, 300);
     return () => clearTimeout(timer);
@@ -170,10 +184,16 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       cal: String(watchedValues.calibrationFactor),
       type: watchedValues.chargerType,
     });
-    if (watchedValues.electricityRate != null) {
+    if (
+      watchedValues.electricityRate != null &&
+      watchedValues.electricityRate > 0
+    ) {
       params.set('rate', String(watchedValues.electricityRate));
     }
-    if (watchedValues.chargingPower != null) {
+    if (
+      watchedValues.chargingPower != null &&
+      watchedValues.chargingPower > 0
+    ) {
       params.set('power', String(watchedValues.chargingPower));
     }
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -280,7 +300,10 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={100}
                         minValue={1}
                         name={field.name}
-                        onInput={coerceNumber(field.onChange)}
+                        onInput={coerceNumber(
+                          field.onChange,
+                          DEFAULT_USABLE_PERCENT
+                        )}
                         value={field.value}
                       >
                         <Label>Usable Battery %</Label>
@@ -297,7 +320,10 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={1.5}
                         minValue={0.5}
                         name={field.name}
-                        onInput={coerceNumber(field.onChange)}
+                        onInput={coerceNumber(
+                          field.onChange,
+                          DEFAULT_CALIBRATION_FACTOR
+                        )}
                         value={field.value}
                       >
                         <Label>Calibration Factor</Label>
@@ -313,7 +339,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                       <NumberField
                         minValue={0}
                         name={field.name}
-                        onChange={field.onChange}
+                        onChange={(v) => field.onChange(v || undefined)}
                         value={field.value}
                       >
                         <Label>Electricity Rate ($/kWh)</Label>
@@ -329,7 +355,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                       <NumberField
                         minValue={0}
                         name={field.name}
-                        onChange={field.onChange}
+                        onInput={coerceNumber(field.onChange)}
                         value={field.value}
                       >
                         <Label>Charging Power (kW)</Label>

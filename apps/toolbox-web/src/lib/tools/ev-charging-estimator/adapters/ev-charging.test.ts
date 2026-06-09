@@ -53,9 +53,12 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l2',
       });
 
+      // Graduated penalty: 80-90% = 2pp, 90-95% = 4pp, 95-100% = 8pp
       const basePart = ((80 - 20) * 75) / 100 / 0.86;
-      const topPart = ((100 - 80) * 75) / 100 / (0.86 - 0.02);
-      const expectedTotal = basePart + topPart;
+      const seg80_90 = ((90 - 80) * 75) / 100 / (0.86 - 0.02);
+      const seg90_95 = ((95 - 90) * 75) / 100 / (0.86 - 0.04);
+      const seg95_100 = ((100 - 95) * 75) / 100 / (0.86 - 0.08);
+      const expectedTotal = basePart + seg80_90 + seg90_95 + seg95_100;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.socPenaltyKwh).toBeGreaterThan(0);
@@ -75,9 +78,11 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l1',
       });
 
+      // Graduated penalty: 80-90% = 2pp, 90-95% = 4pp
       const basePart = ((80 - 50) * 100) / 100 / 0.83;
-      const topPart = ((95 - 80) * 100) / 100 / (0.83 - 0.02);
-      const expectedTotal = basePart + topPart;
+      const seg80_90 = ((90 - 80) * 100) / 100 / (0.83 - 0.02);
+      const seg90_95 = ((95 - 90) * 100) / 100 / (0.83 - 0.04);
+      const expectedTotal = basePart + seg80_90 + seg90_95;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.socPenaltyKwh).toBeGreaterThan(0);
@@ -95,9 +100,11 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'dc-ultra',
       });
 
-      const penalizedEfficiency = 0.85 - 0.02;
-      const expectedBase = (100 - 80) * (75 / 100);
-      const expectedTotal = expectedBase / penalizedEfficiency;
+      // Graduated penalty: 80-90% = 2pp, 90-95% = 4pp, 95-100% = 8pp
+      const seg80_90 = ((90 - 80) * 75) / 100 / (0.85 - 0.02);
+      const seg90_95 = ((95 - 90) * 75) / 100 / (0.85 - 0.04);
+      const seg95_100 = ((100 - 95) * 75) / 100 / (0.85 - 0.08);
+      const expectedTotal = seg80_90 + seg90_95 + seg95_100;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.comparison80).toBeDefined();
@@ -114,9 +121,10 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l2',
       });
 
-      const penalizedEfficiency = 0.86 - 0.02;
-      const expectedBase = (95 - 85) * (75 / 100);
-      const expectedTotal = expectedBase / penalizedEfficiency;
+      // Graduated penalty: 85-90% = 2pp, 90-95% = 4pp
+      const seg85_90 = ((90 - 85) * 75) / 100 / (0.86 - 0.02);
+      const seg90_95 = ((95 - 90) * 75) / 100 / (0.86 - 0.04);
+      const expectedTotal = seg85_90 + seg90_95;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.socPenaltyKwh).toBeGreaterThan(0);
@@ -262,7 +270,12 @@ describe('calculateChargingEstimate', () => {
         chargingPower: 11,
       });
 
+      // 11kW → power-based efficiency 0.87 (from power table, ≤30kW tier)
+      const expectedBase = (80 - 20) * (75 / 100);
+      const expectedTotal = expectedBase / 0.87;
+
       expect(result.estimatedTimeHours).toBeDefined();
+      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
       expect(result.estimatedTimeHours).toBeCloseTo(result.totalKwh / 11, 2);
     });
 
@@ -446,6 +459,100 @@ describe('calculateChargingEstimate', () => {
       });
 
       expect(calibrated.baseKwh).toBe(base.baseKwh);
+    });
+  });
+
+  describe('power-based efficiency', () => {
+    test('uses charger type efficiency when chargingPower is not provided', () => {
+      const result = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+      });
+
+      // ac-l2 default = 0.86
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.86;
+      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
+    });
+
+    test('uses power-based efficiency at 10kW (0.86)', () => {
+      const result = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        chargingPower: 10,
+      });
+
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.86;
+      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
+    });
+
+    test('uses power-based efficiency at 25kW (0.87)', () => {
+      const result = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'dc-fast',
+        chargingPower: 25,
+      });
+
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.87;
+      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
+    });
+
+    test('uses power-based efficiency at 70kW (0.83)', () => {
+      const result = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'dc-fast',
+        chargingPower: 70,
+      });
+
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.83;
+      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
+    });
+
+    test('uses power-based efficiency at 150kW (0.85)', () => {
+      const result = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'dc-ultra',
+        chargingPower: 150,
+      });
+
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.85;
+      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
+    });
+
+    test('power-based efficiency can differ from charger type default', () => {
+      const withPower = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'dc-fast',
+        chargingPower: 70,
+      });
+
+      const withoutPower = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 60,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'dc-fast',
+      });
+
+      // dc-fast default=0.87, 70kW=0.83 → different results
+      expect(withPower.totalKwh).toBeGreaterThan(withoutPower.totalKwh);
     });
   });
 });

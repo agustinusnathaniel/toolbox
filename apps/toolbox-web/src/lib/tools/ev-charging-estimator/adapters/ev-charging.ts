@@ -3,6 +3,14 @@ export type ChargerType = 'ac-l1' | 'ac-l2' | 'dc-fast' | 'dc-ultra';
 export const DEFAULT_USABLE_PERCENT = 95;
 
 export const DEFAULT_CALIBRATION_FACTOR = 1;
+export const DEFAULT_CHARGING_POWER = 22;
+
+export const CHARGER_DEFAULT_POWER: Record<ChargerType, number> = {
+  'ac-l1': 1.4,
+  'ac-l2': 7,
+  'dc-fast': 25,
+  'dc-ultra': 85,
+};
 
 export interface ChargingInputs {
   calibrationFactor?: number;
@@ -22,6 +30,7 @@ export interface ChargingResult {
     savings: number;
   };
   conversionLossKwh: number;
+  efficiency: number;
   estimatedCost?: number;
   estimatedTimeHours?: number;
   socPenaltyKwh: number;
@@ -43,14 +52,40 @@ export const CHARGER_LABELS: Record<ChargerType, string> = {
   'dc-ultra': 'DC Ultra-fast (150kW+)',
 };
 
+// Power-based efficiency lookup (kW → efficiency)
+// Calibrated from real-world Jaecoo J5 data
+const POWER_EFFICIENCY_TABLE: Array<{ maxKw: number; efficiency: number }> = [
+  { maxKw: 0, efficiency: 0.83 },
+  { maxKw: 10, efficiency: 0.86 },
+  { maxKw: 30, efficiency: 0.87 },
+  { maxKw: 50, efficiency: 0.85 },
+  { maxKw: 80, efficiency: 0.83 },
+  { maxKw: Number.POSITIVE_INFINITY, efficiency: 0.85 },
+];
+
+function getEfficiency(chargerType: ChargerType, powerKw?: number): number {
+  if (!powerKw || powerKw <= 0) {
+    return CHARGER_EFFICIENCIES[chargerType];
+  }
+  for (const tier of POWER_EFFICIENCY_TABLE) {
+    if (powerKw <= tier.maxKw) {
+      return tier.efficiency;
+    }
+  }
+  return CHARGER_EFFICIENCIES[chargerType];
+}
+
 export const SOC_PENALTY = 0.02;
 export const SOC_THRESHOLD = 80;
+
+// Graduated penalty above 80% — inefficiency increases as SOC rises
+const SOC_PENALTY_90 = 0.04;
+const SOC_PENALTY_95 = 0.08;
 
 export function calculateChargingEstimate(
   inputs: ChargingInputs
 ): ChargingResult {
-  const efficiency = CHARGER_EFFICIENCIES[inputs.chargerType];
-  const penalizedEfficiency = efficiency - SOC_PENALTY;
+  const efficiency = getEfficiency(inputs.chargerType, inputs.chargingPower);
   const { startSOC, endSOC } = inputs;
 
   const usableCapacity = (inputs.totalCapacity * inputs.usablePercent) / 100;
@@ -65,15 +100,23 @@ export function calculateChargingEstimate(
   } else if (startSOC < SOC_THRESHOLD) {
     const basePart =
       ((SOC_THRESHOLD - startSOC) * usableCapacity) / 100 / efficiency;
-    const topPart =
-      ((endSOC - SOC_THRESHOLD) * usableCapacity) / 100 / penalizedEfficiency;
+    const { topPart, penalty } = calcAboveThreshold(
+      SOC_THRESHOLD,
+      endSOC,
+      usableCapacity,
+      efficiency
+    );
     totalKwh = basePart + topPart;
-    socPenaltyKwh =
-      ((endSOC - SOC_THRESHOLD) * usableCapacity) / 100 / efficiency -
-      ((endSOC - SOC_THRESHOLD) * usableCapacity) / 100 / penalizedEfficiency;
+    socPenaltyKwh = penalty;
   } else {
-    totalKwh = baseKwh / penalizedEfficiency;
-    socPenaltyKwh = baseKwh / efficiency - baseKwh / penalizedEfficiency;
+    const { topPart, penalty } = calcAboveThreshold(
+      startSOC,
+      endSOC,
+      usableCapacity,
+      efficiency
+    );
+    totalKwh = topPart;
+    socPenaltyKwh = penalty;
   }
 
   const calibration = inputs.calibrationFactor ?? 1;
@@ -84,6 +127,7 @@ export function calculateChargingEstimate(
     totalKwh: round2(calibratedTotalKwh),
     baseKwh: round2(baseKwh),
     conversionLossKwh: round2(calibratedTotalKwh - baseKwh),
+    efficiency,
     socPenaltyKwh: round2(Math.abs(socPenaltyKwh) * calibration),
   };
 
@@ -107,6 +151,37 @@ export function calculateChargingEstimate(
   }
 
   return result;
+}
+
+function calcAboveThreshold(
+  from: number,
+  to: number,
+  usableCapacity: number,
+  efficiency: number
+): { topPart: number; penalty: number } {
+  const breakpoints = [
+    { start: SOC_THRESHOLD, end: 90, penalty: SOC_PENALTY },
+    { start: 90, end: 95, penalty: SOC_PENALTY_90 },
+    { start: 95, end: 100, penalty: SOC_PENALTY_95 },
+  ];
+
+  let topPart = 0;
+  let penalty = 0;
+
+  for (const bp of breakpoints) {
+    const segStart = Math.max(from, bp.start);
+    const segEnd = Math.min(to, bp.end);
+    if (segStart >= segEnd) {
+      continue;
+    }
+
+    const segKwh = ((segEnd - segStart) * usableCapacity) / 100;
+    const eff = efficiency - bp.penalty;
+    topPart += segKwh / eff;
+    penalty += segKwh / eff - segKwh / efficiency;
+  }
+
+  return { topPart, penalty };
 }
 
 function round2(n: number): number {
