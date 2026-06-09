@@ -61,10 +61,19 @@ const CHARGER_OPTIONS: Array<{ id: ChargerType; label: string }> =
   }));
 
 const coerceNumber =
-  (onChange: (value: number | undefined) => void, fallback?: number) =>
+  (onChange: (value: number | undefined) => void) =>
   (e: React.FormEvent<HTMLInputElement>) => {
     const parsed = Number.parseFloat(e.currentTarget.value);
-    onChange(Number.isNaN(parsed) ? fallback : parsed);
+    onChange(Number.isNaN(parsed) ? undefined : parsed);
+  };
+
+const resetOnBlur =
+  (onChange: (value: number) => void, fallback: number) =>
+  (e: React.FocusEvent<HTMLInputElement>) => {
+    const parsed = Number.parseFloat(e.currentTarget.value);
+    if (Number.isNaN(parsed)) {
+      onChange(fallback);
+    }
   };
 
 const STORAGE_KEY = 'toolbox:ev-charging-estimator';
@@ -300,10 +309,11 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={100}
                         minValue={1}
                         name={field.name}
-                        onInput={coerceNumber(
+                        onBlur={resetOnBlur(
                           field.onChange,
                           DEFAULT_USABLE_PERCENT
                         )}
+                        onInput={coerceNumber(field.onChange)}
                         value={field.value}
                       >
                         <Label>Usable Battery %</Label>
@@ -320,10 +330,11 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={1.5}
                         minValue={0.5}
                         name={field.name}
-                        onInput={coerceNumber(
+                        onBlur={resetOnBlur(
                           field.onChange,
                           DEFAULT_CALIBRATION_FACTOR
                         )}
+                        onInput={coerceNumber(field.onChange)}
                         value={field.value}
                       >
                         <Label>Calibration Factor</Label>
@@ -355,6 +366,10 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                       <NumberField
                         minValue={0}
                         name={field.name}
+                        onBlur={resetOnBlur(
+                          field.onChange,
+                          CHARGER_DEFAULT_POWER[watchedValues.chargerType]
+                        )}
                         onInput={coerceNumber(field.onChange)}
                         value={field.value}
                       >
