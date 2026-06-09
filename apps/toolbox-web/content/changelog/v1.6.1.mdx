@@ -1,11 +1,18 @@
 export const version = "1.6.1";
-export const date = "2026-06-05";
+export const date = "2026-06-09";
 export const tag = "improved";
-export const title = "Better Toast Placement";
+export const title = "Smarter EV Charging Estimates";
 
-PWA update toasts now sit at the bottom on mobile for easier thumb reach, and move to the top-right on desktop.
+The EV Charging Estimator now uses real-world charger data for more accurate results, with gentler behavior when you're editing inputs.
 
 ### Improvements
 
-- **Responsive toast position** — update notifications appear at the bottom-center on mobile and top-right on desktop
-- **Shorter tool URLs** — QR Code, JS Perf, and EV Charging tools now have cleaner paths (`/qrcode`, `/js-perf`, `/ev-charging`). Old URLs redirect automatically.
+- **Real-world efficiency data** — efficiency rates now reflect actual charger performance (7kW at 86%, 25kW at 87%, 70kW at 83%, 85kW at 85%) instead of a flat estimate
+- **Graduated SOC penalty** — battery charging slowdown now scales with state of charge: mild at 80–90%, moderate at 90–95%, and steep at 95–100%
+- **Smarter charger defaults** — selecting a charger type (AC Level 1, AC Level 2, DC Fast, DC Ultra) now pre-fills the charging power with its real-world default
+- **Less intrusive editing** — advanced fields stay empty while you type and only fill with defaults on blur, so the form doesn't fight your input
+
+### Bug Fixes
+
+- **Validation timing** — end-of-charge validation now clears immediately when you fix the start SOC, instead of staying stuck
+- **Field reset behavior** — advanced fields now reset on blur instead of on every keystroke, preventing accidental overwrites while typing
