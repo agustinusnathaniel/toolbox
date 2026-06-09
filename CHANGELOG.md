@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.1](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.0...v1.6.1) (2026-06-09)
+
+
+### Features
+
+* **ev-charging:** power-based efficiency, graduated SOC penalty, and smart defaults ([ffae156](https://github.com/agustinusnathaniel/toolbox/commit/ffae156a1984708d469912a45018ccdcfb72616a))
+* shorten tool paths with 301 redirects ([518f6c3](https://github.com/agustinusnathaniel/toolbox/commit/518f6c389eadc68ac187e585667c36362734bc0f))
+
+
+### Bug Fixes
+
+* **ev-charging:** clear endSOC validation when startSOC changes ([7fe0fce](https://github.com/agustinusnathaniel/toolbox/commit/7fe0fce109b6267e97f75c22b7ee87461f97737e))
+* **ev-charging:** reset advanced fields on blur instead of on input ([2183088](https://github.com/agustinusnathaniel/toolbox/commit/21830889edcbcef480ec0601d8edc7c2f15f220a))
+
 ## [1.6.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.5.1...v1.6.0) (2026-06-08)
 
 
