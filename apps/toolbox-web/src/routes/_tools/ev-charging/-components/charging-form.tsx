@@ -69,8 +69,10 @@ const coerceNumber =
 
 const resetOnBlur =
   (onChange: (value: number) => void, fallback: number) =>
-  (e: React.FocusEvent<HTMLInputElement>) => {
-    const parsed = Number.parseFloat(e.currentTarget.value);
+  (e: React.FocusEvent<Element>) => {
+    const parsed = Number.parseFloat(
+      (e.currentTarget as HTMLInputElement).value
+    );
     if (Number.isNaN(parsed)) {
       onChange(fallback);
     }
