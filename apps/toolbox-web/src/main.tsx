@@ -95,9 +95,13 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
-  defaultViewTransition: {
-    types: ({ pathChanged }) => (pathChanged ? [] : false),
-  },
+  // Disabled: TanStack Router calls document.startViewTransition() without
+  // try/catch. When a transition is already in progress (rapid nav, tab switch,
+  // concurrent render), the browser throws InvalidStateError and leaves a white
+  // screen. React fixed their own handling (facebook/react#34098) but TanStack
+  // Router bypasses it. Route animations are handled via CSS keyframes instead
+  // (see globals.css .route-transition).
+  defaultViewTransition: false,
   defaultPendingComponent: PendingPage,
   defaultNotFoundComponent: NotFoundPage,
 });

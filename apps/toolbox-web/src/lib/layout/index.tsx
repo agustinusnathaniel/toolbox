@@ -1,3 +1,4 @@
+import { useRouterState } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -15,6 +16,9 @@ type LayoutProps = {
 
 export const Layout = ({ children }: LayoutProps) => {
   const isMobile = useIsMobile();
+  const {
+    location: { pathname },
+  } = useRouterState();
   return (
     <SidebarProvider>
       <AppSidebar collapsible="dock" intent="inset" />
@@ -25,6 +29,7 @@ export const Layout = ({ children }: LayoutProps) => {
             isMobile ? 'pb-16' : 'route-transition',
             'p-4 lg:p-6'
           )}
+          key={pathname}
         >
           {children}
         </div>
