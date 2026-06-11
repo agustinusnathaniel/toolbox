@@ -26,7 +26,7 @@ interface GlobalCommandMenuProps {
   children: React.ReactNode;
 }
 
-export const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
+const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();

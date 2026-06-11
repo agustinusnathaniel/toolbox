@@ -1,4 +1,4 @@
-export type ExecutionStatus =
+type ExecutionStatus =
   | 'success'
   | 'runtime_error'
   | 'timeout'
@@ -56,21 +56,6 @@ export const DEFAULT_RUN_POLICY: RunPolicy = {
   defaultIterations: 30, // 30 timed iterations + 5 warmup = 35 total runs
 };
 
-export function normalizeResult(
-  raw: Partial<ExecutionResult> & { id: string; code: string }
-): ExecutionResult {
-  return {
-    id: raw.id,
-    code: raw.code,
-    status: raw.status ?? 'worker_error',
-    durationMs: raw.durationMs ?? null,
-    perIterationMs: raw.perIterationMs ?? null,
-    statistics: raw.statistics ?? null,
-    errorMessage: raw.errorMessage ?? null,
-    output: raw.output ?? [],
-  };
-}
-
 export function isRunable(code: string): boolean {
   return code.trim().length > 0;
 }
@@ -101,41 +86,6 @@ function formatMs(value: number): string {
 export function formatStatistics(stats: ExecutionStatistics): string {
   const { meanMs, marginMs, iterations } = stats;
   return `${formatMs(meanMs)} ±${formatMs(marginMs)} (${iterations} runs)`;
-}
-
-export function calculateStatistics(
-  durations: Array<number>
-): ExecutionStatistics {
-  const n = durations.length;
-  if (n === 0) {
-    return {
-      iterations: 0,
-      minMs: 0,
-      maxMs: 0,
-      meanMs: 0,
-      stddevMs: 0,
-      marginMs: 0,
-    };
-  }
-
-  const minMs = Math.min(...durations);
-  const maxMs = Math.max(...durations);
-  const meanMs = durations.reduce((a, b) => a + b, 0) / n;
-
-  if (n === 1) {
-    return { iterations: 1, minMs, maxMs, meanMs, stddevMs: 0, marginMs: 0 };
-  }
-
-  const squaredDiffs = durations.map((d) => (d - meanMs) ** 2);
-  const variance = squaredDiffs.reduce((a, b) => a + b, 0) / n;
-  const stddevMs = Math.sqrt(variance);
-
-  // 95% confidence margin of error: z * (stddev / sqrt(n))
-  // Using z-score approximation: 1.96 for n>30, otherwise 2.0 (conservative)
-  const zValue = n > 30 ? 1.96 : 2.0;
-  const marginMs = (zValue * stddevMs) / Math.sqrt(n);
-
-  return { iterations: n, minMs, maxMs, meanMs, stddevMs, marginMs };
 }
 
 /**

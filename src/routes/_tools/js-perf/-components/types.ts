@@ -8,7 +8,7 @@ export interface Preset {
 }
 
 export type RunState = 'idle' | 'running' | 'done';
-export type RunMode = 'single' | 'stability';
+type RunMode = 'single' | 'stability';
 
 export interface ActiveRunEntry {
   code: string;

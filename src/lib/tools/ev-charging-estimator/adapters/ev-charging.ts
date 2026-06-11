@@ -38,7 +38,7 @@ export interface ChargingResult {
   usableCapacity: number;
 }
 
-export const CHARGER_EFFICIENCIES: Record<ChargerType, number> = {
+const CHARGER_EFFICIENCIES: Record<ChargerType, number> = {
   'ac-l1': 0.83,
   'ac-l2': 0.86,
   'dc-fast': 0.87,

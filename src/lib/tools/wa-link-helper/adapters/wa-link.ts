@@ -2,24 +2,10 @@ import { parsePhoneNumber } from 'awesome-phonenumber';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 
 import countryCodes from './country-codes.json';
-
-export interface BuildLinkOptions {
-  countryCode: string;
-  phoneNumber: string;
-  text?: string;
-}
-
-export interface BuildLinkResult {
-  isValid: boolean;
-  link: string;
-}
-
 export interface CountryOption {
   id: string;
   name: string;
 }
-
-export type CountryCode = keyof typeof countryCodes;
 
 export const getPhoneCountryCode = (countryCode: string): string | undefined =>
   countryCodes[countryCode as keyof typeof countryCodes];
@@ -40,9 +26,13 @@ export const countryCodeOptions: Array<CountryOption> = Object.keys(
 
 export const getCountryOptions = (): Array<CountryOption> => countryCodeOptions;
 
-export const buildWhatsAppLink = (
-  options: BuildLinkOptions
-): BuildLinkResult => {
+interface BuildLinkOptions {
+  countryCode: string;
+  phoneNumber: string;
+  text?: string;
+}
+
+export const buildWhatsAppLink = (options: BuildLinkOptions) => {
   const { countryCode, phoneNumber, text } = options;
 
   const parsedPhoneNumber = parsePhoneNumber(phoneNumber, {
