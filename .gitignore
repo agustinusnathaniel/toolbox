@@ -1,10 +1,19 @@
 node_modules
+.DS_Store
 dist
-.turbo
+dist-ssr
+*.local
+
+yarn-error.log*
+.pnpm-debug.log*
+
+# TS
 *.tsbuildinfo
 
-docs/INIT.md
-.plans
+stats.*
 
-.playwright-mcp
-**/10x/**/*
+# Test
+coverage/
+.tanstack/
+
+.sisyphus

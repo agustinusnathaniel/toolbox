@@ -1,6 +1,0 @@
-{
-  "extends": "@toolbox/config-typescript/base.json",
-  "compilerOptions": {
-    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"]
-  }
-}
