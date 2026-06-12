@@ -36,6 +36,13 @@ import { copyToClipboard } from '@/lib/utils/clipboard';
 import { FormulaExplanation } from './formula-explanation';
 import { ResultCard } from './result-card';
 
+const coerceNumber =
+  (onChange: (value: number | undefined) => void) =>
+  (e: React.FormEvent<HTMLInputElement>) => {
+    const parsed = Number.parseFloat(e.currentTarget.value);
+    onChange(Number.isNaN(parsed) ? undefined : parsed);
+  };
+
 const formSchema = z
   .object({
     startSOC: z
@@ -73,13 +80,6 @@ const CHARGER_OPTIONS: Array<{ id: ChargerType; label: string }> =
     id: id as ChargerType,
     label,
   }));
-
-const coerceNumber =
-  (onChange: (value: number | undefined) => void) =>
-  (e: React.FormEvent<HTMLInputElement>) => {
-    const parsed = Number.parseFloat(e.currentTarget.value);
-    onChange(Number.isNaN(parsed) ? undefined : parsed);
-  };
 
 const STORAGE_KEY = 'toolbox:ev-charging-estimator';
 
@@ -265,6 +265,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                   maxValue={100}
                   minValue={0}
                   name={field.name}
+                  onChange={(v) => field.onChange(v)}
                   onInput={coerceNumber(field.onChange)}
                 >
                   <Label>Current SOC (%)</Label>
@@ -284,6 +285,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                   maxValue={100}
                   minValue={0}
                   name={field.name}
+                  onChange={(v) => field.onChange(v)}
                   onInput={coerceNumber(field.onChange)}
                 >
                   <Label>Target SOC (%)</Label>
@@ -304,6 +306,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                   isInvalid={!!fieldState.error}
                   minValue={1}
                   name={field.name}
+                  onChange={(v) => field.onChange(v)}
                   onInput={coerceNumber(field.onChange)}
                 >
                   <Label>Battery Capacity (kWh)</Label>
@@ -319,7 +322,13 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
               render={({ field }) => (
                 <Select
                   name={field.name}
-                  onChange={(key) => field.onChange(key as ChargerType)}
+                  onChange={(key) => {
+                    field.onChange(key as ChargerType);
+                    form.setValue(
+                      'chargingPower',
+                      CHARGER_DEFAULT_POWER[key as ChargerType]
+                    );
+                  }}
                   selectedKey={field.value}
                 >
                   <Label>Charger Type</Label>
@@ -349,6 +358,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={100}
                         minValue={1}
                         name={field.name}
+                        onChange={(v) => field.onChange(v)}
                         onInput={coerceNumber(field.onChange)}
                       >
                         <Label>Usable Battery %</Label>
@@ -368,6 +378,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         maxValue={1.5}
                         minValue={0.5}
                         name={field.name}
+                        onChange={(v) => field.onChange(v)}
                         onInput={coerceNumber(field.onChange)}
                       >
                         <Label>Calibration Factor</Label>
@@ -386,6 +397,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                         isInvalid={!!fieldState.error}
                         minValue={0}
                         name={field.name}
+                        onChange={(v) => field.onChange(v || undefined)}
                         onInput={coerceNumber((v) =>
                           field.onChange(v || undefined)
                         )}
@@ -404,8 +416,10 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
                       <NumberField
                         defaultValue={effectiveChargingPower}
                         isInvalid={!!fieldState.error}
+                        key={watchedValues.chargerType}
                         minValue={0}
                         name={field.name}
+                        onChange={(v) => field.onChange(v)}
                         onInput={coerceNumber(field.onChange)}
                       >
                         <Label>Charging Power (kW)</Label>
