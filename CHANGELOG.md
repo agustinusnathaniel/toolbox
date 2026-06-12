@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.4](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.3...v1.6.4) (2026-06-12)
+
+
+### Features
+
+* **routes:** add shareable links to QR Code via URL search params ([9c285ed](https://github.com/agustinusnathaniel/toolbox/commit/9c285ed4bdbbb270d59bce1dd41ef6cef7b62d93))
+
+
+### Bug Fixes
+
+* **routes:** allow clearing EV Charging inputs without auto-prefill ([0ca3886](https://github.com/agustinusnathaniel/toolbox/commit/0ca388669e264a4bb8ddcb4479deadb2dcdb2151))
+* **routes:** balance Battery Capacity and Charger Type input widths ([35ae5af](https://github.com/agustinusnathaniel/toolbox/commit/35ae5af18277f075386c7d1b1596ac084d653c5e))
+* **routes:** fall through to hardcoded defaults on reload ([e26dc81](https://github.com/agustinusnathaniel/toolbox/commit/e26dc8145c467bc70d792354baf9526226315a71))
+* **routes:** restore onInput + sync chargingPower on charger change ([a3f3a39](https://github.com/agustinusnathaniel/toolbox/commit/a3f3a39d7a753c3ac684eb6183209bce0cd33d8e))
+
 ## [1.6.3](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.2...v1.6.3) (2026-06-11)
 
 ## [1.6.2](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.1...v1.6.2) (2026-06-10)
