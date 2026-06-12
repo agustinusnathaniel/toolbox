@@ -1,0 +1,20 @@
+export const version = "1.6.4";
+export const date = "2026-06-12";
+export const tag = "improved";
+export const title = "Shareable QR Codes & EV Charging Refinements";
+
+QR Code links can now be shared directly — encode your settings in the URL so anyone opening the tool sees the same configuration. The EV Charging Estimator also gets several quality-of-life fixes.
+
+### What's New
+
+- **Shareable QR codes** — custom colors, size, and error correction level are now encoded in the URL. Share the link and recipients see exactly what you designed
+
+### Improvements
+
+- **Charger type sync** — changing the charger type (AC Level 1, AC Level 2, etc.) now automatically updates the charging power field in real time
+- **Better input balance** — Battery Capacity and Charger Type inputs have balanced widths for a cleaner form layout
+
+### Bug Fixes
+
+- **Reload resilience** — hardcoded defaults now apply on page reload when localStorage values are missing, preventing empty fields
+- **Clear inputs** — EV Charging inputs can now be cleared without auto-prefilling, giving you full control over blank fields
