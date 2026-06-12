@@ -8,7 +8,7 @@ import {
   IconQrCode,
 } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
-import type { ReactNode } from 'react';
+import type { JSX } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
 import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
@@ -20,21 +20,19 @@ import { Route as ZippyImgRoute } from '@/routes/_tools/zippy-img/index';
 
 export interface ToolNavItem {
   description: string;
-  icon: ReactNode;
+  icon: JSX.Element;
   path: ToOptions['to'];
   slug: string;
   title: string;
 }
 
-const iconMap: Record<string, ReactNode> = {
-  'add-to-calendar': <IconCalendar />,
-  'ev-charging': <IconBolt />,
-  'js-perf': <IconCodeLines />,
-  qrcode: <IconQrCode />,
-  'ua-check': <IconDeviceDesktop />,
-  'wa-link-helper': <IconBrandWhatsapp />,
-  'zippy-img': <IconCamera />,
-};
+interface ToolDefinition {
+  icon: JSX.Element;
+  mobileTitle?: string;
+  route: { options: { staticData?: { meta?: unknown } } };
+  showInMobile?: boolean;
+  slug: string;
+}
 
 function staticMeta<T>(value: T | undefined): T {
   if (!value) {
@@ -43,47 +41,68 @@ function staticMeta<T>(value: T | undefined): T {
   return value;
 }
 
-function getToolMeta(slug: string) {
-  const map: Record<
-    string,
-    { pageTitle: string; description: string; slug: string }
-  > = {
-    'add-to-calendar': staticMeta(AddToCalendarRoute.options.staticData?.meta),
-    'ev-charging': staticMeta(EvChargingRoute.options.staticData?.meta),
-    'js-perf': staticMeta(JsPerfRoute.options.staticData?.meta),
-    qrcode: staticMeta(QrcodeRoute.options.staticData?.meta),
-    'ua-check': staticMeta(UaCheckRoute.options.staticData?.meta),
-    'wa-link-helper': staticMeta(WaLinkHelperRoute.options.staticData?.meta),
-    'zippy-img': staticMeta(ZippyImgRoute.options.staticData?.meta),
-  };
-  return map[slug];
+const tools: Array<ToolDefinition> = [
+  {
+    slug: 'wa-link-helper',
+    icon: <IconBrandWhatsapp />,
+    mobileTitle: 'WA Link',
+    route: WaLinkHelperRoute,
+    showInMobile: true,
+  },
+  {
+    slug: 'zippy-img',
+    icon: <IconCamera />,
+    route: ZippyImgRoute,
+    showInMobile: true,
+  },
+  { slug: 'ua-check', icon: <IconDeviceDesktop />, route: UaCheckRoute },
+  {
+    slug: 'qrcode',
+    icon: <IconQrCode />,
+    mobileTitle: 'QR Code',
+    route: QrcodeRoute,
+    showInMobile: true,
+  },
+  { slug: 'js-perf', icon: <IconCodeLines />, route: JsPerfRoute },
+  {
+    slug: 'add-to-calendar',
+    icon: <IconCalendar />,
+    route: AddToCalendarRoute,
+  },
+  { slug: 'ev-charging', icon: <IconBolt />, route: EvChargingRoute },
+];
+
+function buildNavItems(filter?: { mobile?: boolean }): Array<ToolNavItem> {
+  return tools
+    .filter((t) => (filter?.mobile ? t.showInMobile : true))
+    .map((t) => {
+      const meta = staticMeta(
+        t.route.options.staticData?.meta as
+          | { pageTitle: string; description: string; slug: string }
+          | undefined
+      );
+      return {
+        slug: t.slug,
+        title: filter?.mobile
+          ? (t.mobileTitle ?? meta.pageTitle)
+          : meta.pageTitle,
+        description: meta.description,
+        path: `/${t.slug}` as ToOptions['to'],
+        icon: t.icon,
+      };
+    });
 }
 
-const SLUGS = [
-  'wa-link-helper',
-  'zippy-img',
-  'ua-check',
-  'qrcode',
-  'js-perf',
-  'add-to-calendar',
-  'ev-charging',
-] as const;
-
-const navItems: Array<ToolNavItem> = SLUGS.map((slug) => {
-  const meta = getToolMeta(slug);
-  return {
-    slug,
-    title: meta.pageTitle,
-    description: meta.description,
-    path: `/${slug}` as ToOptions['to'],
-    icon: iconMap[slug],
-  };
-});
+const allNavItems = buildNavItems();
 
 export function getToolNavItems(): Array<ToolNavItem> {
-  return navItems;
+  return allNavItems;
+}
+
+export function getMobileNavItems(): Array<ToolNavItem> {
+  return buildNavItems({ mobile: true });
 }
 
 export function getToolNavItem(slug: string): ToolNavItem | undefined {
-  return navItems.find((item) => item.slug === slug);
+  return allNavItems.find((item) => item.slug === slug);
 }

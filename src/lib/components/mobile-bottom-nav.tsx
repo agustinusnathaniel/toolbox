@@ -1,40 +1,31 @@
-import {
-  IconBrandWhatsapp,
-  IconCamera,
-  IconGlobe,
-  IconHamburger,
-  IconQrCode,
-} from '@intentui/icons';
+import { IconGlobe, IconHamburger } from '@intentui/icons';
 import { useRouterState } from '@tanstack/react-router';
 import { Link } from 'react-aria-components';
 
+import { getMobileNavItems } from '@/lib/navigation/tool-registry';
+
 import { SidebarTrigger } from './ui/sidebar';
 
-const navItems = [
-  { href: '/' as const, icon: IconGlobe, label: 'Home' },
-  {
-    href: '/wa-link-helper' as const,
-    icon: IconBrandWhatsapp,
-    label: 'WA Link',
-  },
-  {
-    label: 'Zippy Image',
-    href: '/zippy-img' as const,
-    icon: IconCamera,
-  },
-  { href: '/qrcode' as const, icon: IconQrCode, label: 'QR Code' },
-];
+const homeItem = { href: '/' as const, icon: <IconGlobe />, label: 'Home' };
 
 export const MobileBottomNav = () => {
   const { location } = useRouterState();
   const currentPath = location.pathname;
+
+  const toolItems = getMobileNavItems().map((item) => ({
+    href: item.path,
+    icon: item.icon,
+    label: item.title,
+  }));
+
+  const navItems = [homeItem, ...toolItems];
 
   return (
     <nav
       aria-label="Mobile bottom navigation"
       className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t bg-navbar/80 py-2.5 backdrop-blur-xs md:hidden"
     >
-      {navItems.map(({ href, icon: Icon, label }) => {
+      {navItems.map(({ href, icon, label }) => {
         const isActive = currentPath === href;
         return (
           <Link
@@ -43,7 +34,7 @@ export const MobileBottomNav = () => {
             href={href}
             key={href}
           >
-            <Icon className="size-5" />
+            <span className="size-5">{icon}</span>
             <span>{label}</span>
           </Link>
         );
