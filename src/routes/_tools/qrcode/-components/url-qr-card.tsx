@@ -27,6 +27,7 @@ type UrlQRCardProps = {
   qrSize: number;
   urlState: UrlState;
   onSaveQR: (size: number) => void;
+  onCopyShareableLink: () => void;
   onUpdateUrlField: <K extends keyof UrlState>(
     field: K,
     value: UrlState[K]
@@ -38,6 +39,7 @@ export function UrlQRCard({
   qrSize,
   urlState,
   onSaveQR,
+  onCopyShareableLink,
   onUpdateUrlField,
 }: UrlQRCardProps) {
   const color = parseColor(urlState.fgColor);
@@ -62,6 +64,9 @@ export function UrlQRCard({
             </div>
             <Button intent="primary" onPress={() => onSaveQR(qrSize)}>
               Save QR Code
+            </Button>
+            <Button intent="outline" onPress={onCopyShareableLink}>
+              Copy Shareable Link
             </Button>
           </div>
 

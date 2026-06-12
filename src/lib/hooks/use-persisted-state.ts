@@ -2,9 +2,13 @@ import { useCallback, useState } from 'react';
 
 export function usePersistedState<T>(
   key: string,
-  defaultValue: T
+  defaultValue: T,
+  forceValue?: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [state, setState] = useState<T>(() => {
+    if (forceValue !== undefined) {
+      return forceValue;
+    }
     try {
       const stored = localStorage.getItem(key);
       if (stored !== null) {

@@ -29,6 +29,7 @@ type VCardQRCardProps = {
   vcardState: VCardState;
   vcardString: string;
   onSaveQR: (size: number) => void;
+  onCopyShareableLink: () => void;
   onUpdateVCardField: <K extends keyof VCardState>(
     field: K,
     value: VCardState[K]
@@ -41,6 +42,7 @@ export function VCardQRCard({
   vcardState,
   vcardString,
   onSaveQR,
+  onCopyShareableLink,
   onUpdateVCardField,
 }: VCardQRCardProps) {
   return (
@@ -63,6 +65,9 @@ export function VCardQRCard({
             </div>
             <Button intent="primary" onPress={() => onSaveQR(qrSize)}>
               Save QR Code
+            </Button>
+            <Button intent="outline" onPress={onCopyShareableLink}>
+              Copy Shareable Link
             </Button>
           </div>
 
