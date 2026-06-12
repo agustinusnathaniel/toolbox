@@ -140,14 +140,22 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
-      startSOC: search.start ?? saved.startSOC,
-      endSOC: search.end ?? saved.endSOC,
-      totalCapacity: search.cap ?? saved.totalCapacity,
-      usablePercent: search.usable ?? saved.usablePercent,
-      calibrationFactor: search.cal ?? saved.calibrationFactor,
-      chargerType: search.type ?? saved.chargerType,
-      electricityRate: search.rate ?? saved.electricityRate,
-      chargingPower: search.power ?? saved.chargingPower,
+      startSOC: search.start ?? saved.startSOC ?? defaultValues.startSOC,
+      endSOC: search.end ?? saved.endSOC ?? defaultValues.endSOC,
+      totalCapacity:
+        search.cap ?? saved.totalCapacity ?? defaultValues.totalCapacity,
+      usablePercent:
+        search.usable ?? saved.usablePercent ?? defaultValues.usablePercent,
+      calibrationFactor:
+        search.cal ??
+        saved.calibrationFactor ??
+        defaultValues.calibrationFactor,
+      chargerType:
+        search.type ?? saved.chargerType ?? defaultValues.chargerType,
+      electricityRate:
+        search.rate ?? saved.electricityRate ?? defaultValues.electricityRate,
+      chargingPower:
+        search.power ?? saved.chargingPower ?? defaultValues.chargingPower,
     },
   });
 
