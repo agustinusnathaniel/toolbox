@@ -294,7 +294,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Controller
               control={form.control}
               name="totalCapacity"
