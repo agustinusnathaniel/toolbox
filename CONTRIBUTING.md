@@ -139,7 +139,7 @@ import { someFunction } from '@/lib/tools/<tool-name>';
 Use the analytics hooks to track tool usage:
 
 ```typescript
-import { useToolTracking } from '@/lib/analytics/useAnalytics';
+import { useToolTracking } from '@/lib/analytics/use-analytics';
 
 function ToolPage() {
   const { trackAction, trackComplete } = useToolTracking('<tool-id>', 'Tool Name');
