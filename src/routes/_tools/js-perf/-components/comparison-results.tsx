@@ -1,11 +1,12 @@
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { type ExecutionResult, formatDuration } from '@/lib/js-perf-comp-core';
-
-import { ComparisonEntry } from './comparison-entry';
 import {
   buildComparisonMetrics,
   type ComparisonVerdict,
-} from './comparison-metrics';
+  type ExecutionResult,
+  formatDuration,
+} from '@/lib/js-perf-comp-core';
+
+import { ComparisonEntry } from './comparison-entry';
 import { ResultCard } from './result-card';
 import type { RunState } from './types';
 

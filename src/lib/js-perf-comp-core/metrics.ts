@@ -1,4 +1,4 @@
-import type { ExecutionResult } from '@/lib/js-perf-comp-core';
+import type { ExecutionResult } from './models';
 
 export type ComparisonVerdict = 'inconclusive' | 'likely' | 'confident';
 

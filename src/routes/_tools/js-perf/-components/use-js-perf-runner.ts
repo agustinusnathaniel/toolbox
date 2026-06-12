@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
+  buildStabilitySummaryResult,
   createExecutionRequest,
+  createWorkerErrorResult,
   DEFAULT_RUN_POLICY,
   type ExecutionResult,
   type WorkerInboundMessage,
 } from '@/lib/js-perf-comp-core';
 
-import {
-  buildStabilitySummaryResult,
-  buildWorker,
-  createWorkerErrorResult,
-} from './runner-utils';
+import { buildWorker } from './runner-utils';
 import type { ActiveRunState, RunState, StabilitySession } from './types';
 
 export interface UseJsPerfRunnerOptions {

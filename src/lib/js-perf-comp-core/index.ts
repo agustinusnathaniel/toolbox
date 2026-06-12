@@ -1,10 +1,17 @@
 export type {
+  ComparisonMetrics,
+  ComparisonVerdict,
+} from './metrics';
+// biome-ignore lint/performance/noBarrelFile: internal library entry point
+export { buildComparisonMetrics } from './metrics';
+export type {
   ExecutionRequest,
   ExecutionResult,
 } from './models';
-// biome-ignore lint/performance/noBarrelFile: internal library entry point
 export {
+  buildStabilitySummaryResult,
   calculateRobustStatistics,
+  createWorkerErrorResult,
   DEFAULT_RUN_POLICY,
   formatDuration,
   formatStatistics,
