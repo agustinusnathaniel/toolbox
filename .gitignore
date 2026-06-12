@@ -10,10 +10,13 @@ yarn-error.log*
 # TS
 *.tsbuildinfo
 
+# Turbo
+.turbo
+
 stats.*
 
 # Test
 coverage/
 .tanstack/
 
-.sisyphus
+**/10x/*

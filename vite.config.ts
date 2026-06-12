@@ -69,9 +69,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     staged: {
-      'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}': ['ultracite fix'],
-      '*.{ts,js,json,md}': ['ultracite fix'],
-      'content/**/*.mdx': ['ultracite fix'],
+      '*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}': ['ultracite fix'],
     },
     plugins: [
       ValidateEnv(),
