@@ -20,8 +20,7 @@ import {
   PopoverContent,
 } from '@/lib/components/ui/popover';
 import { Textarea } from '@/lib/components/ui/textarea';
-
-import type { VCardState } from './use-qrcode-form';
+import type { VCardState } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
 
 type VCardQRCardProps = {
   svgRef: React.RefObject<SVGSVGElement | null>;

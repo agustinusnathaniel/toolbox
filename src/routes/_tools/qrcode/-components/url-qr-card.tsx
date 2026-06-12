@@ -19,8 +19,7 @@ import {
   PopoverBody,
   PopoverContent,
 } from '@/lib/components/ui/popover';
-
-import type { UrlState } from './use-qrcode-form';
+import type { UrlState } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
 
 type UrlQRCardProps = {
   svgRef: React.RefObject<SVGSVGElement | null>;
