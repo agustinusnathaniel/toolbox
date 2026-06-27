@@ -26,6 +26,22 @@ export const countryCodeOptions: Array<CountryOption> = Object.keys(
 
 export const getCountryOptions = (): Array<CountryOption> => countryCodeOptions;
 
+export interface WALinkInputs {
+  countryCode?: string;
+  phoneNumber?: string;
+  text?: string;
+}
+
+export function buildWALinkSearchParams(
+  inputs: WALinkInputs
+): Record<string, string | undefined> {
+  return {
+    cc: inputs.countryCode || undefined,
+    phone: inputs.phoneNumber || undefined,
+    text: inputs.text || undefined,
+  };
+}
+
 interface BuildLinkOptions {
   countryCode: string;
   phoneNumber: string;

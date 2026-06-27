@@ -16,14 +16,19 @@ export interface CalendarLinkResult {
 const GOOGLE_CAL_TEMPLATE_LINK =
   'https://www.google.com/calendar/render?action=TEMPLATE';
 
-const COLON_REGEX = /T/;
-
 function trimmedIsoString(date: string): string {
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) {
     return '';
   }
-  return parsed.toISOString().replace(/[-:]/g, '').replace(COLON_REGEX, '');
+  // Build YYYYMMDDTHHMMSSZ manually to avoid toISOString() millisecond suffix (.NNN)
+  const year = parsed.getUTCFullYear();
+  const month = String(parsed.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getUTCDate()).padStart(2, '0');
+  const hours = String(parsed.getUTCHours()).padStart(2, '0');
+  const minutes = String(parsed.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(parsed.getUTCSeconds()).padStart(2, '0');
+  return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
 }
 
 export function formatLocalDateTimeString(date?: Date | string): string {
@@ -34,6 +39,26 @@ export function formatLocalDateTimeString(date?: Date | string): string {
   const hours = String(d.getHours()).padStart(2, '0');
   const minutes = String(d.getMinutes()).padStart(2, '0');
   return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+export interface CalendarSearchInputs {
+  description?: string;
+  end?: string;
+  location?: string;
+  start?: string;
+  title?: string;
+}
+
+export function buildCalendarSearchParams(
+  inputs: CalendarSearchInputs
+): Record<string, string | undefined> {
+  return {
+    title: inputs.title || undefined,
+    desc: inputs.description || undefined,
+    loc: inputs.location || undefined,
+    start: inputs.start || undefined,
+    end: inputs.end || undefined,
+  };
 }
 
 function buildQueryString(event: CalendarEvent): string {

@@ -1,6 +1,10 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { calculateChargingEstimate, formatTime } from './ev-charging';
+import {
+  buildChargingSearchParams,
+  calculateChargingEstimate,
+  formatTime,
+} from './ev-charging';
 
 describe('calculateChargingEstimate', () => {
   describe('charging within 80% zone (endSOC <= 80%)', () => {
@@ -554,6 +558,108 @@ describe('calculateChargingEstimate', () => {
       // dc-fast default=0.87, 70kW=0.83 → different results
       expect(withPower.totalKwh).toBeGreaterThan(withoutPower.totalKwh);
     });
+  });
+});
+
+describe('buildChargingSearchParams', () => {
+  test('sets all required params', () => {
+    const params = buildChargingSearchParams({
+      startSOC: 20,
+      endSOC: 80,
+      totalCapacity: 75,
+      usablePercent: 95,
+      calibrationFactor: 1,
+      chargerType: 'ac-l2',
+    });
+    expect(params.get('start')).toBe('20');
+    expect(params.get('end')).toBe('80');
+    expect(params.get('cap')).toBe('75');
+    expect(params.get('usable')).toBe('95');
+    expect(params.get('cal')).toBe('1');
+    expect(params.get('type')).toBe('ac-l2');
+    expect(params.get('rate')).toBeNull();
+    expect(params.get('power')).toBeNull();
+  });
+
+  test('includes rate and power when positive', () => {
+    const params = buildChargingSearchParams({
+      startSOC: 20,
+      endSOC: 80,
+      totalCapacity: 60,
+      usablePercent: 100,
+      calibrationFactor: 1,
+      chargerType: 'dc-fast',
+      electricityRate: 0.15,
+      chargingPower: 50,
+    });
+    expect(params.get('rate')).toBe('0.15');
+    expect(params.get('power')).toBe('50');
+  });
+
+  test('omits rate when zero or negative', () => {
+    const zero = buildChargingSearchParams({
+      startSOC: 20,
+      endSOC: 80,
+      totalCapacity: 60,
+      usablePercent: 100,
+      calibrationFactor: 1,
+      chargerType: 'ac-l2',
+      electricityRate: 0,
+    });
+    expect(zero.get('rate')).toBeNull();
+
+    const neg = buildChargingSearchParams({
+      startSOC: 20,
+      endSOC: 80,
+      totalCapacity: 60,
+      usablePercent: 100,
+      calibrationFactor: 1,
+      chargerType: 'ac-l2',
+      electricityRate: -1,
+    });
+    expect(neg.get('rate')).toBeNull();
+  });
+
+  test('omits power when zero or negative', () => {
+    const zero = buildChargingSearchParams({
+      startSOC: 20,
+      endSOC: 80,
+      totalCapacity: 60,
+      usablePercent: 100,
+      calibrationFactor: 1,
+      chargerType: 'ac-l2',
+      chargingPower: 0,
+    });
+    expect(zero.get('power')).toBeNull();
+  });
+
+  test('handles null inputs gracefully', () => {
+    const params = buildChargingSearchParams({
+      startSOC: null,
+      endSOC: null,
+      totalCapacity: null,
+      usablePercent: null,
+      calibrationFactor: null,
+      chargerType: null,
+    });
+    expect(params.get('start')).toBeNull();
+    expect(params.get('end')).toBeNull();
+    expect(params.get('cap')).toBeNull();
+    expect(params.get('usable')).toBeNull();
+    expect(params.get('cal')).toBeNull();
+    expect(params.get('type')).toBeNull();
+    expect(params.toString()).toBe('');
+  });
+
+  test('handles partial inputs', () => {
+    const params = buildChargingSearchParams({
+      startSOC: 10,
+      endSOC: 90,
+    });
+    expect(params.get('start')).toBe('10');
+    expect(params.get('end')).toBe('90');
+    expect(params.get('cap')).toBeNull();
+    expect(params.toString()).toBe('start=10&end=90');
   });
 });
 

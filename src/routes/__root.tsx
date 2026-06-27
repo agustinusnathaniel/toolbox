@@ -1,4 +1,3 @@
-import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -17,15 +16,8 @@ const TanStackRouterDevtools = lazy(() =>
     default: m.TanStackRouterDevtools,
   }))
 );
-const ReactQueryDevtools = lazy(() =>
-  import('@tanstack/react-query-devtools').then((m) => ({
-    default: m.ReactQueryDevtools,
-  }))
-);
 
-export const Route = createRootRouteWithContext<{
-  queryClient: QueryClient;
-}>()({
+export const Route = createRootRouteWithContext()({
   head: () => ({
     meta: [
       {
@@ -132,14 +124,9 @@ export const Route = createRootRouteWithContext<{
           </Layout>
         </Providers>
         {import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS ? (
-          <>
-            <Suspense>
-              <TanStackRouterDevtools position="bottom-right" />
-            </Suspense>
-            <Suspense>
-              <ReactQueryDevtools />
-            </Suspense>
-          </>
+          <Suspense>
+            <TanStackRouterDevtools position="bottom-right" />
+          </Suspense>
         ) : null}
       </>
     );

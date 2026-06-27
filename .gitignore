@@ -2,6 +2,8 @@ node_modules
 .DS_Store
 dist
 dist-ssr
+# Env files
+.env
 *.local
 
 yarn-error.log*
@@ -20,3 +22,5 @@ coverage/
 .tanstack/
 
 **/10x/*
+
+plans/

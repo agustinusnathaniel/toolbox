@@ -1,0 +1,27 @@
+import { createFileRoute } from '@tanstack/react-router';
+
+const meta = {
+  pageTitle: '{{titleCase name}}',
+  description: '{{description}}',
+  slug: '{{dashCase name}}',
+} as const;
+
+export const Route = createFileRoute('/_tools/{{dashCase name}}/')({
+  staticData: { meta },
+  head: () => ({
+    meta: [
+      { title: meta.pageTitle },
+      { name: 'description', content: meta.description },
+    ],
+  }),
+  component: {{pascalCase name}}Page,
+});
+
+function {{pascalCase name}}Page() {
+  return (
+    <div>
+      <h2>{{titleCase name}}</h2>
+      <p>TODO: implement</p>
+    </div>
+  );
+}

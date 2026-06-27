@@ -1,11 +1,14 @@
 import { describe, expect, test } from 'vite-plus/test';
 
 import {
+  buildCalendarSearchParams,
   formatLocalDateTimeString,
   generateGoogleCalendarLink,
 } from './calendar';
 
 const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+const DATES_PARAM_REGEX = /dates=([^&]+)/;
+const DATE_TIME_FMT_REGEX = /^\d{8}T\d{6}Z$/;
 
 describe('generateGoogleCalendarLink', () => {
   test('generates correct URL with title and dates', () => {
@@ -45,6 +48,27 @@ describe('generateGoogleCalendarLink', () => {
 
     expect(result.url).toContain(encodeURIComponent('Party & Dinner @ 7pm'));
   });
+
+  test('dates parameter uses YYYYMMDDTHHMMSSZ format without millisecond suffix', () => {
+    const result = generateGoogleCalendarLink({
+      title: 'Test',
+      start: '2026-06-27T12:00:00',
+      end: '2026-06-27T13:30:00',
+    });
+
+    // Extract the dates parameter value
+    const datesMatch = result.url.match(DATES_PARAM_REGEX);
+    expect(datesMatch).not.toBeNull();
+    const dates = (datesMatch as RegExpMatchArray)[1];
+    // The dates value is start%2Fend (URL-encoded forward slash)
+    const [startDate, endDate] = dates.split('%2F');
+
+    // Format should be YYYYMMDDTHHMMSSZ — no periods (no .NNN suffix)
+    expect(startDate).toMatch(DATE_TIME_FMT_REGEX);
+    expect(endDate).toMatch(DATE_TIME_FMT_REGEX);
+    expect(startDate).not.toContain('.');
+    expect(endDate).not.toContain('.');
+  });
 });
 
 test('handles invalid date strings gracefully', () => {
@@ -78,5 +102,54 @@ describe('formatLocalDateTimeString', () => {
   test('returns a string without calling with undefined', () => {
     const result = formatLocalDateTimeString();
     expect(result).toMatch(DATETIME_REGEX);
+  });
+});
+
+describe('buildCalendarSearchParams', () => {
+  test('returns object with all fields', () => {
+    const result = buildCalendarSearchParams({
+      title: 'Team Meeting',
+      description: 'Weekly sync',
+      location: 'Room 1',
+      start: '2026-06-01T10:00',
+      end: '2026-06-01T11:00',
+    });
+    expect(result).toEqual({
+      title: 'Team Meeting',
+      desc: 'Weekly sync',
+      loc: 'Room 1',
+      start: '2026-06-01T10:00',
+      end: '2026-06-01T11:00',
+    });
+  });
+
+  test('omits empty fields', () => {
+    const result = buildCalendarSearchParams({
+      title: '',
+      description: '',
+      location: '',
+      start: '',
+      end: '',
+    });
+    expect(result).toEqual({
+      title: undefined,
+      desc: undefined,
+      loc: undefined,
+      start: undefined,
+      end: undefined,
+    });
+  });
+
+  test('handles partial inputs', () => {
+    const result = buildCalendarSearchParams({
+      title: 'Conference',
+    });
+    expect(result).toEqual({
+      title: 'Conference',
+      desc: undefined,
+      loc: undefined,
+      start: undefined,
+      end: undefined,
+    });
   });
 });

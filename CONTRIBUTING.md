@@ -72,26 +72,24 @@ Tools live as routes under `src/routes/_tools/<tool-name>/`. Business logic shou
 
 ### Step 1: Create the Route
 
-Create a new directory at `src/routes/tools/<tool-name>/` and add an `index.tsx` file:
+Create a new directory at `src/routes/_tools/<tool-name>/` and add an `index.tsx` file:
 
 ```typescript
 import { createFileRoute } from '@tanstack/react-router';
-import { TOOL_META } from '@/lib/utils/metadata';
 
-const meta = TOOL_META['<tool-id>'];
+const meta = {
+  pageTitle: '<Tool Display Name>',
+  description: '<What this tool does in 1 sentence>',
+  slug: '<tool-slug>',
+} as const;
 
-export const Route = createFileRoute('/tools/<tool-name>/')({
+export const Route = createFileRoute('/_tools/<tool-name>/')({
   component: ToolPage,
-  staticData: {
-    pageTitle: meta.title,
-  },
+  staticData: { meta },
   head: () => ({
     meta: [
-      { title: meta.title },
+      { title: meta.pageTitle },
       { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.title },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
     ],
   }),
 });
@@ -101,20 +99,36 @@ function ToolPage() {
 }
 ```
 
-### Step 2: Register Metadata
+### Step 2: Define route metadata
 
-Add an entry to `src/lib/utils/metadata.ts` in the `TOOL_META` constant:
+In your new route file (`src/routes/_tools/<tool-name>/index.tsx`), define metadata as a const:
 
-```typescript
-export const TOOL_META = {
-  // ...existing entries
-  '<tool-id>': {
-    title: 'Tool Display Name',
-    description: 'Brief description of what the tool does.',
-    path: '/tools/<tool-name>',
-  },
+```ts
+const meta = {
+  pageTitle: '<Tool Display Name>',
+  description: '<What this tool does in 1 sentence>',
+  slug: '<tool-slug>',
 } as const;
 ```
+
+Pass the metadata to the route's `staticData` and `head()` function:
+
+```ts
+export const Route = createFileRoute('/_tools/<tool-name>/')({
+  staticData: { meta },
+  head: () => ({
+    meta: [
+      { title: meta.pageTitle },
+      { name: 'description', content: meta.description },
+    ],
+  }),
+  // ...
+});
+```
+
+The navigation system (`src/lib/navigation/tool-registry.tsx`) automatically discovers registered routes by reading `staticData.meta` from each route definition. No manual registry update is needed.
+
+See existing routes (e.g., `src/routes/_tools/qrcode/index.tsx`, `src/routes/_tools/ev-charging/index.tsx`) for concrete examples.
 
 ### Step 3: Add to Homepage Catalog
 
@@ -122,11 +136,19 @@ Update the tool lists in `src/routes/index.tsx` to include your new tool in eith
 
 ### Step 4: Extract Business Logic (Recommended)
 
-For non-trivial tools, extract pure logic into `src/lib/tools/<tool-name>/`:
+For non-trivial tools, extract pure logic into `src/lib/tools/<tool-name>/`.
 
-- `index.ts` — public exports
-- `*.ts` — pure functions, types, and models
-- `*.test.ts` — unit tests
+Create a subdirectory called `adapters/` inside your tool's lib directory:
+`src/lib/tools/<tool-name>/adapters/<tool>.ts`. This keeps pure functions
+separate from UI components and makes them testable without DOM mocking.
+See existing tools (e.g., `src/lib/tools/qrcode-generator/adapters/`,
+`src/lib/tools/ev-charging-estimator/adapters/`) for the convention.
+
+Create a corresponding test file alongside the adapter:
+`src/lib/tools/<tool-name>/adapters/<tool>.test.ts`. Model your tests after
+existing adapter tests — they use `vitest` with jsdom. See
+`src/lib/tools/ev-charging-estimator/adapters/ev-charging.test.ts` for a
+comprehensive example covering edge cases.
 
 Then import from your route:
 
