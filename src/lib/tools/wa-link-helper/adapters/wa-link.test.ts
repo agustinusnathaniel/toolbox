@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vite-plus/test';
 
 import {
+  buildWALinkSearchParams,
   buildWhatsAppLink,
   countryCodeOptions,
   getCountryOptions,
@@ -76,5 +77,41 @@ describe('buildWhatsAppLink', () => {
     });
     expect(result.isValid).toBe(true);
     expect(result.link).toContain('https://wa.me/');
+  });
+});
+
+describe('buildWALinkSearchParams', () => {
+  test('returns object with all fields', () => {
+    const result = buildWALinkSearchParams({
+      countryCode: 'US',
+      phoneNumber: '2125551234',
+      text: 'Hello',
+    });
+    expect(result).toEqual({ cc: 'US', phone: '2125551234', text: 'Hello' });
+  });
+
+  test('omits empty fields', () => {
+    const result = buildWALinkSearchParams({
+      countryCode: '',
+      phoneNumber: '',
+      text: '',
+    });
+    expect(result).toEqual({
+      cc: undefined,
+      phone: undefined,
+      text: undefined,
+    });
+  });
+
+  test('handles partial inputs', () => {
+    const result = buildWALinkSearchParams({
+      countryCode: 'ID',
+      phoneNumber: '81234567890',
+    });
+    expect(result).toEqual({
+      cc: 'ID',
+      phone: '81234567890',
+      text: undefined,
+    });
   });
 });

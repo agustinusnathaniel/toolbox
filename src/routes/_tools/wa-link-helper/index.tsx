@@ -28,6 +28,7 @@ import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
+  buildWALinkSearchParams,
   buildWhatsAppLink,
   countryCodeOptions,
 } from '@/lib/tools/wa-link-helper/adapters/wa-link';
@@ -142,9 +143,11 @@ function WALinkHelperPage() {
     navigate({
       search: (prev) => ({
         ...prev,
-        cc: countryCode || undefined,
-        phone: phoneNumber || undefined,
-        text: text || undefined,
+        ...buildWALinkSearchParams({
+          countryCode,
+          phoneNumber,
+          text,
+        }),
       }),
       replace: true,
     });

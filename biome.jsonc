@@ -6,11 +6,7 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
-  "extends": [
-    "ultracite/biome/core",
-    "ultracite/biome/react",
-    "ultracite/biome/remix"
-  ],
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
   "files": {
     "ignoreUnknown": false,
     "includes": [

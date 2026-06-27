@@ -115,6 +115,13 @@ export default defineConfig(({ mode }) => {
       setupFiles: ['./src/lib/test-setup.ts'],
       coverage: {
         include: ['src/**/**.{ts,tsx,js,jsx}'],
+        exclude: [
+          '**/*.test.*',
+          '**/*.spec.*',
+          '**/routeTree.gen.ts',
+          'src/main.tsx',
+          'src/env.d.ts',
+        ],
       },
     },
   };

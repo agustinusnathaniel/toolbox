@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
+  buildCalendarSearchParams,
   formatLocalDateTimeString,
   generateGoogleCalendarLink,
 } from '@/lib/tools/add-to-calendar/adapters/calendar';
@@ -115,11 +116,13 @@ export function useCalendarForm() {
     navigate({
       search: (prev) => ({
         ...prev,
-        title: title || undefined,
-        desc: description || undefined,
-        loc: location || undefined,
-        start: start || undefined,
-        end: end || undefined,
+        ...buildCalendarSearchParams({
+          title,
+          description,
+          location,
+          start,
+          end,
+        }),
       }),
       replace: true,
     });

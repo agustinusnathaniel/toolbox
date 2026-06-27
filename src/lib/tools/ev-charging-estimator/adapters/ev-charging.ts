@@ -184,6 +184,48 @@ function calcAboveThreshold(
   return { topPart, penalty };
 }
 
+export interface ChargingSearchInput {
+  calibrationFactor?: number | null;
+  chargerType?: string | null;
+  chargingPower?: number | null;
+  electricityRate?: number | null;
+  endSOC?: number | null;
+  startSOC?: number | null;
+  totalCapacity?: number | null;
+  usablePercent?: number | null;
+}
+
+export function buildChargingSearchParams(
+  inputs: ChargingSearchInput
+): URLSearchParams {
+  const params = new URLSearchParams();
+  if (inputs.startSOC != null) {
+    params.set('start', String(inputs.startSOC));
+  }
+  if (inputs.endSOC != null) {
+    params.set('end', String(inputs.endSOC));
+  }
+  if (inputs.totalCapacity != null) {
+    params.set('cap', String(inputs.totalCapacity));
+  }
+  if (inputs.usablePercent != null) {
+    params.set('usable', String(inputs.usablePercent));
+  }
+  if (inputs.calibrationFactor != null) {
+    params.set('cal', String(inputs.calibrationFactor));
+  }
+  if (inputs.chargerType != null) {
+    params.set('type', inputs.chargerType);
+  }
+  if (inputs.electricityRate != null && inputs.electricityRate > 0) {
+    params.set('rate', String(inputs.electricityRate));
+  }
+  if (inputs.chargingPower != null && inputs.chargingPower > 0) {
+    params.set('power', String(inputs.chargingPower));
+  }
+  return params;
+}
+
 function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }

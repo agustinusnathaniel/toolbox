@@ -1,0 +1,13 @@
+import { describe, expect, test } from 'vite-plus/test';
+
+import { {{camelCase name}} } from './{{dashCase name}}';
+
+describe('{{camelCase name}}', () => {
+  test('returns the expected output', () => {
+    expect({{camelCase name}}('hello')).toBe('hello');
+  });
+
+  test('handles edge cases', () => {
+    expect({{camelCase name}}('')).toBe('');
+  });
+});

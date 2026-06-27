@@ -18,8 +18,9 @@ import {
   DEFAULT_URL_STATE,
   DEFAULT_VCARD_STATE,
 } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
-import { svgToPngDownload } from '@/lib/tools/qrcode-generator/adapters/renderer';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+
+import { svgToPngDownload } from './qr-download';
 
 const STORAGE_KEY_MODE = 'toolbox:qr-mode';
 const STORAGE_KEY_URL = 'toolbox:qr-url';

@@ -1,29 +1,33 @@
-export default function configure(
-  /** @type {import('plop').NodePlopAPI} */ plop
-) {
-  plop.setGenerator('feature', {
-    description: 'Create a new feature module (types, data, operations)',
+export default function (plop) {
+  plop.setGenerator('tool', {
+    description: 'scaffold a new tool',
     prompts: [
       {
         type: 'input',
         name: 'name',
-        message: 'Feature name (e.g., "users"):',
+        message: 'tool slug (kebab-case, e.g. my-tool)',
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: 'short description (1 sentence)',
       },
     ],
     actions: [
       {
-        type: 'addMany',
-        destination: 'src/lib/features/{{dashCase name}}',
-        base: 'plop-templates/feature',
-        templateFiles: 'plop-templates/feature/*.ts.hbs',
-        stripExtensions: ['hbs'],
+        type: 'add',
+        path: 'src/routes/_tools/{{dashCase name}}/index.tsx',
+        templateFile: 'plop-templates/tool/route.tsx.hbs',
       },
       {
-        type: 'modify',
-        path: 'src/lib/features/{{dashCase name}}/types.ts',
-        pattern: /export const get\w+Status/g,
-        template:
-          '// TODO: Add your status/helper functions here\nexport const get{{pascalCase name}}Status',
+        type: 'add',
+        path: 'src/lib/tools/{{dashCase name}}/adapters/{{dashCase name}}.ts',
+        templateFile: 'plop-templates/tool/adapter.ts.hbs',
+      },
+      {
+        type: 'add',
+        path: 'src/lib/tools/{{dashCase name}}/adapters/{{dashCase name}}.test.ts',
+        templateFile: 'plop-templates/tool/adapter.test.ts.hbs',
       },
     ],
   });

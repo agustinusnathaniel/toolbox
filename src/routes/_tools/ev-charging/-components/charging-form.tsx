@@ -23,6 +23,7 @@ import {
 } from '@/lib/components/ui/select';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
+  buildChargingSearchParams,
   CHARGER_DEFAULT_POWER,
   CHARGER_LABELS,
   type ChargerType,
@@ -208,37 +209,7 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
 
   const handleCopyShareableLink = () => {
     onTrack('copy_shareable');
-    const params = new URLSearchParams();
-    if (watchedValues.startSOC != null) {
-      params.set('start', String(watchedValues.startSOC));
-    }
-    if (watchedValues.endSOC != null) {
-      params.set('end', String(watchedValues.endSOC));
-    }
-    if (watchedValues.totalCapacity != null) {
-      params.set('cap', String(watchedValues.totalCapacity));
-    }
-    if (watchedValues.usablePercent != null) {
-      params.set('usable', String(watchedValues.usablePercent));
-    }
-    if (watchedValues.calibrationFactor != null) {
-      params.set('cal', String(watchedValues.calibrationFactor));
-    }
-    if (watchedValues.chargerType != null) {
-      params.set('type', watchedValues.chargerType);
-    }
-    if (
-      watchedValues.electricityRate != null &&
-      watchedValues.electricityRate > 0
-    ) {
-      params.set('rate', String(watchedValues.electricityRate));
-    }
-    if (
-      watchedValues.chargingPower != null &&
-      watchedValues.chargingPower > 0
-    ) {
-      params.set('power', String(watchedValues.chargingPower));
-    }
+    const params = buildChargingSearchParams(watchedValues);
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     copyToClipboard(url, 'Copied Shareable Link');
   };

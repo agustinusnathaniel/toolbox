@@ -16,7 +16,7 @@
     },
     "build": {
       "dependsOn": ["type:check"],
-      "outputs": ["dist/**", "public/**"],
+      "outputs": ["dist/**"],
       "env": ["VITE_API_BASE_URL"]
     },
     "test": {
