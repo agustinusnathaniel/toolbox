@@ -422,6 +422,43 @@ describe('calculateChargingEstimate', () => {
       expect(calibrated.estimatedCost).toBeGreaterThan(base.estimatedCost ?? 0);
     });
 
+    test('scales comparison80 by calibration factor when endSOC > 80%', () => {
+      const base = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 100,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+      });
+
+      const calibrated = calculateChargingEstimate({
+        startSOC: 20,
+        endSOC: 100,
+        totalCapacity: 75,
+        usablePercent: 100,
+        chargerType: 'ac-l2',
+        calibrationFactor: 1.1,
+      });
+
+      expect(base.comparison80).toBeDefined();
+      expect(calibrated.comparison80).toBeDefined();
+
+      const baseCmp = base.comparison80 as NonNullable<
+        typeof base.comparison80
+      >;
+      const calCmp = calibrated.comparison80 as NonNullable<
+        typeof calibrated.comparison80
+      >;
+
+      // kwhAt80 should be scaled by calibration
+      expect(calCmp.kwh).toBe(Math.round(baseCmp.kwh * 1.1 * 100) / 100);
+
+      // savings = totalKwh - comparison80.kwh (both calibrated)
+      expect(calCmp.savings).toBe(
+        Math.round((calibrated.totalKwh - calCmp.kwh) * 100) / 100
+      );
+    });
+
     test('scales socPenaltyKwh by calibration factor', () => {
       const base = calculateChargingEstimate({
         startSOC: 20,
