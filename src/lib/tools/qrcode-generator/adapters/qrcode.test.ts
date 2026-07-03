@@ -48,6 +48,39 @@ describe('generateVCardString', () => {
     );
   });
 
+  test('generates vCard with address missing city (middle gap)', () => {
+    const result = generateVCardString({
+      firstName: 'Jane',
+      lastName: 'Smith',
+      streetAddress: '123 Main St',
+      state: 'OR',
+      postalCode: '97201',
+      country: 'US',
+    });
+
+    expect(result).toContain('ADR;TYPE=WORK,PREF:;;123 Main St;;OR;97201;US');
+  });
+
+  test('generates vCard with address missing multiple gaps (street + country only)', () => {
+    const result = generateVCardString({
+      firstName: 'Jane',
+      lastName: 'Smith',
+      streetAddress: '123 Main St',
+      country: 'US',
+    });
+
+    expect(result).toContain('ADR;TYPE=WORK,PREF:;;123 Main St;;;;US');
+  });
+
+  test('generates vCard with all address fields empty', () => {
+    const result = generateVCardString({
+      firstName: 'Jane',
+      lastName: 'Smith',
+    });
+
+    expect(result).not.toContain('ADR;');
+  });
+
   test('generates vCard with website URL', () => {
     const result = generateVCardString({ websiteURL: 'https://example.com' });
 
