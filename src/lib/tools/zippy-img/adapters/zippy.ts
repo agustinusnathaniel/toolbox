@@ -38,12 +38,15 @@ function getImageDimensions(
     if (typeof source === 'string') {
       img.src = source;
     } else {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target?.result as string;
+      img.src = URL.createObjectURL(source);
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        resolve({
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          size: source.size,
+        });
       };
-      reader.onerror = reject;
-      reader.readAsDataURL(source);
     }
   });
 }
