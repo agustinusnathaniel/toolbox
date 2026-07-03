@@ -35,6 +35,12 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 pnpm install
 ```
 
+3. Copy `.env.example` to `.env` and adjust if needed (most tools work without configuration):
+
+   ```bash
+   cp .env.example .env
+   ```
+
 ### Development
 
 ```bash
