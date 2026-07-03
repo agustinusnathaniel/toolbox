@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
 import { useIsMobile } from '@/lib/hooks/use-mobile';
@@ -10,6 +10,8 @@ const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
 export function ReloadPrompt() {
   const isMobile = useIsMobile();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
 
   const {
     offlineReady: [offlineReady, setOfflineReady],
@@ -21,18 +23,30 @@ export function ReloadPrompt() {
         return;
       }
 
-      setInterval(async () => {
-        if (registration.installing || !navigator.onLine) {
-          return;
-        }
-
-        await registration.update();
-      }, UPDATE_CHECK_INTERVAL_MS);
+      registrationRef.current = registration;
     },
     onRegisterError(error) {
       console.error('SW registration error', error);
     },
   });
+
+  useEffect(() => {
+    intervalRef.current = setInterval(async () => {
+      const registration = registrationRef.current;
+      if (!registration || registration.installing || !navigator.onLine) {
+        return;
+      }
+
+      await registration.update();
+    }, UPDATE_CHECK_INTERVAL_MS);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (needRefresh) {
