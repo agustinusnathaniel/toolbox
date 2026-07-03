@@ -5,7 +5,7 @@ Directives for AI coding agents. Read this before making changes.
 ## Task Completion
 
 Mark "done" only when **all** pass:
-1. `vp typecheck` — no `any`, no `@ts-expect-error`
+1. `pnpm type:check` — no `any`, no `@ts-expect-error`
 2. `vp lint` — zero warnings
 3. `vp test` — for changed modules
 4. `vp build` — no bundle errors
