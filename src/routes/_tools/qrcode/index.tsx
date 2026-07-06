@@ -1,6 +1,7 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
@@ -59,7 +60,10 @@ export const Route = createFileRoute('/_tools/qrcode/')({
 const qrSize = 220;
 
 function QRCodeGeneratorPage() {
-  const { trackAction } = useToolTracking('qrcode', 'QR Code Generator');
+  const { trackAction, trackComplete } = useToolTracking(
+    'qrcode',
+    'QR Code Generator'
+  );
   const search = useSearch({ from: '/_tools/qrcode/' });
   const {
     mode,
@@ -73,6 +77,15 @@ function QRCodeGeneratorPage() {
     handleSaveQR,
     handleCopyShareableLink,
   } = useQRCodeForm(search);
+
+  useEffect(() => {
+    const hasQRData =
+      (mode === 'url' && urlState.value.length > 0) ||
+      (mode === 'vcard' && vcardString.length > 0);
+    if (hasQRData) {
+      trackComplete(true);
+    }
+  }, [mode, urlState.value, vcardString, trackComplete]);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">

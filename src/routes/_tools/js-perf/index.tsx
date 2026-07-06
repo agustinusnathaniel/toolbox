@@ -1,7 +1,7 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -49,7 +49,10 @@ const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';
 const STORAGE_KEY_ITERATIONS = 'toolbox:js-perf-iterations';
 
 function JsPerfComparatorPage() {
-  const { trackAction } = useToolTracking('js-perf', 'JS Perf Comparator');
+  const { trackAction, trackComplete } = useToolTracking(
+    'js-perf',
+    'JS Perf Comparator'
+  );
   const [selectedPreset, setSelectedPreset] = usePersistedState(
     STORAGE_KEY_PRESET,
     DEFAULT_PRESET.name
@@ -106,6 +109,12 @@ function JsPerfComparatorPage() {
     }
     runner.reset();
   }, [selectedPreset, runner.reset]);
+
+  useEffect(() => {
+    if (runner.runState === 'done') {
+      trackComplete(true);
+    }
+  }, [runner.runState, trackComplete]);
 
   const canRun =
     isRunable(codeA) &&
