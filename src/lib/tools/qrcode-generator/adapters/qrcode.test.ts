@@ -86,4 +86,55 @@ describe('generateVCardString', () => {
 
     expect(result).toContain('URL:https://example.com');
   });
+
+  test('generates vCard with all fields filled', () => {
+    const result = generateVCardString({
+      firstName: 'Alice',
+      lastName: 'Johnson',
+      mobilePhoneNumber: '+1-555-1111',
+      otherPhoneNumber: '+1-555-2222',
+      emailAddress: 'alice@example.com',
+      companyName: 'Tech Corp',
+      jobTitle: 'Developer',
+      streetAddress: '456 Oak St',
+      city: 'Seattle',
+      state: 'WA',
+      postalCode: '98101',
+      country: 'US',
+      websiteURL: 'https://alice.dev',
+    });
+
+    expect(result).toBe(
+      [
+        'BEGIN:VCARD',
+        'N:Johnson;Alice',
+        'TEL;TYPE=work,VOICE:+1-555-1111',
+        'TEL;TYPE=home,VOICE:+1-555-2222',
+        'EMAIL:alice@example.com',
+        'ORG:Tech Corp',
+        'TITLE:Developer',
+        'ADR;TYPE=WORK,PREF:;;456 Oak St;Seattle;WA;98101;US',
+        'URL:https://alice.dev',
+        'VERSION:3.0',
+        'END:VCARD',
+      ].join('\n')
+    );
+  });
+
+  test('generates vCard with minimal fields (empty object)', () => {
+    const result = generateVCardString({});
+
+    expect(result).toBe(['BEGIN:VCARD', 'VERSION:3.0', 'END:VCARD'].join('\n'));
+  });
+
+  test('handles special characters in name and organization', () => {
+    const result = generateVCardString({
+      firstName: 'José',
+      lastName: 'Peña',
+      companyName: 'Foo & Bar, LLC',
+    });
+
+    expect(result).toContain('N:Peña;José');
+    expect(result).toContain('ORG:Foo & Bar, LLC');
+  });
 });
