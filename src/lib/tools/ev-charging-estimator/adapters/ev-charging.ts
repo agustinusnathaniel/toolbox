@@ -144,9 +144,10 @@ export function calculateChargingEstimate(
       startSOC < SOC_THRESHOLD
         ? ((SOC_THRESHOLD - startSOC) * usableCapacity) / 100 / efficiency
         : 0;
+    const calibratedKwhAt80 = kwhAt80 * calibration;
     result.comparison80 = {
-      kwh: round2(kwhAt80),
-      savings: round2(calibratedTotalKwh - kwhAt80),
+      kwh: round2(calibratedKwhAt80),
+      savings: round2(calibratedTotalKwh - calibratedKwhAt80),
     };
   }
 

@@ -81,7 +81,10 @@ const defaultFormValues: FormType = {
 };
 
 function WALinkHelperPage() {
-  const { trackAction } = useToolTracking('wa-link-helper', 'WA Link Helper');
+  const { trackAction, trackComplete } = useToolTracking(
+    'wa-link-helper',
+    'WA Link Helper'
+  );
   const search = useSearch({ from: '/_tools/wa-link-helper/' });
   const navigate = useNavigate({ from: '/wa-link-helper/' });
   const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultFormValues);
@@ -123,6 +126,12 @@ function WALinkHelperPage() {
       }),
     [countryCode, phoneNumber, text]
   );
+
+  useEffect(() => {
+    if (link && isPhoneValid) {
+      trackComplete(true);
+    }
+  }, [link, isPhoneValid, trackComplete]);
 
   const { isValid, errors } = form.formState;
 

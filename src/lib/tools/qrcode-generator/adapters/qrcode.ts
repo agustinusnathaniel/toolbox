@@ -24,7 +24,14 @@ function buildAddressLine(
   if (!(streetAddress || city || state || postalCode || country)) {
     return;
   }
-  return `ADR;TYPE=WORK,PREF:;;${streetAddress || ''}${streetAddress ? ';' : ''}${city || ''}${city ? ';' : ''}${state || ''}${state ? ';' : ''}${postalCode || ''}${postalCode ? ';' : ''}${country || ''}`;
+  const parts = [
+    streetAddress || '',
+    city || '',
+    state || '',
+    postalCode || '',
+    country || '',
+  ];
+  return `ADR;TYPE=WORK,PREF:;;${parts.join(';')}`;
 }
 
 export const generateVCardString = (data: VCardFormData): string => {

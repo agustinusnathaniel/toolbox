@@ -25,7 +25,7 @@ toolbox/
 
 #### 1. Route-Based Tool Composition
 
-Each tool lives as a route under `src/routes/tools/<tool-name>/`. The root layout provides:
+Each tool lives as a route under `src/routes/_tools/<tool-name>/`. The root layout provides:
 
 - Global navigation sidebar
 - Tool-specific headings via `staticData.pageTitle`
@@ -41,11 +41,7 @@ Business logic is co-located with routes under `src/lib/tools/<tool-name>/`:
 
 #### 3. Metadata System
 
-Each route defines its own metadata via the `head` export. A shared helper in `src/lib/utils/metadata.ts` provides:
-
-- Consistent title formatting (`<title> — Toolbox`)
-- OG tags for social sharing
-- Tool-specific descriptions
+Each route defines its own metadata via `staticData.meta` (with `pageTitle`, `description`, `slug`) and the `head` export. A shared utility in `src/lib/utils/metadata.ts` provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`). Tool-specific descriptors are co-located with each route.
 
 #### 4. Analytics Instrumentation
 
@@ -58,8 +54,9 @@ The `src/lib/analytics/` module provides:
 
 ### State Management
 
-- **Server state**: TanStack Query (not currently used for data fetching, but available)
-- **Client state**: Zustand for preferences, component state for UI
+- **Component-local state**: `useState`/`useRef` for component-level concerns
+- **Shareable state**: URL search params via `validateSearch` + Zod (shareable, bookmarkable)
+- **Persisted preferences**: `usePersistedState` for localStorage-backed settings
 
 ### Design System
 
@@ -89,7 +86,7 @@ graph TD
 ## Tool Addition Workflow
 
 1. Create route at `src/routes/_tools/<tool-name>/index.tsx`
-2. Add metadata entry in `src/lib/utils/metadata.ts`
+2. Add `staticData: { meta: { pageTitle, description, slug } }` to the route (navigation auto-discovers routes via `tool-registry.tsx`)
 3. Extract business logic to `src/lib/tools/<tool-name>/`
 4. Add tool card to homepage catalog in `src/routes/index.tsx`
 5. (Optional) Add analytics tracking with `useToolTracking`

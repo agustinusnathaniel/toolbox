@@ -11,6 +11,8 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **UA Check** — Inspect your browser and device user agent
 - **QR Code Generator** — Create QR codes for URLs or vCard contact info
 - **JS Performance Comparator** — Compare JavaScript snippet execution in sandboxed runtimes
+- **EV Charging Estimator** — Estimate how much kWh you need to charge your EV, accounting for charging losses
+- **Add to Calendar** — Generate Add to Calendar links for Google Calendar events
 
 ## Tech Stack
 
@@ -32,6 +34,12 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 ```bash
 pnpm install
 ```
+
+3. Copy `.env.example` to `.env` and adjust if needed (most tools work without configuration):
+
+   ```bash
+   cp .env.example .env
+   ```
 
 ### Development
 
@@ -66,8 +74,7 @@ toolbox/
 │       ├── analytics/   # Event tracking
 │       └── utils/       # Shared utilities
 ├── public/              # Static assets
-└── docs/
-    └── adr/             # Architecture decision records
+└── docs/                # (reserved for future ADRs)
 ```
 
 ## Documentation

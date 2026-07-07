@@ -50,5 +50,5 @@ command = 'pnpm build'
 publish = 'dist'
 
 [build.environment]
-NODE_VERSION = "22"
+NODE_VERSION = "24"
 COREPACK_INTEGRITY_KEYS = "0"

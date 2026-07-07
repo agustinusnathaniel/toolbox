@@ -5,7 +5,7 @@ Directives for AI coding agents. Read this before making changes.
 ## Task Completion
 
 Mark "done" only when **all** pass:
-1. `vp typecheck` — no `any`, no `@ts-expect-error`
+1. `pnpm type:check` — no `any`, no `@ts-expect-error`
 2. `vp lint` — zero warnings
 3. `vp test` — for changed modules
 4. `vp build` — no bundle errors
@@ -58,7 +58,7 @@ Test public contracts, not implementation. Prefer `adapters/` over UI — pure f
 
 - Use `vp` CLI, not `vite` (`vp dev`, `vp build`, `vp test`). Package manager is `pnpm`.
 - CSP includes `'unsafe-eval'` and `'unsafe-inline'` — intentional for QuickJS WASM. Don't flag it.
-- Three icon libs coexist: `lucide-react` (preferred for new code), `@intentui/icons` (system/nav), `@heroicons/react` (legacy, avoid).
+- Three icon libs coexist: `lucide-react` (preferred for new tool UI), `@intentui/icons` (system/nav), `@heroicons/react` (IntentUI component library dependency — do NOT remove, it's embedded in shared UI components).
 - Never edit `src/routeTree.gen.ts` (auto-generated). Never modify `dist/` (build output).
 - Never copy IntentUI component code — use `pnpm dlx shadcn@latest add @intentui/<name>`.
 - PWA service worker is disabled in dev, enabled only in production builds.
