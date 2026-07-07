@@ -45,14 +45,14 @@ export const Route = createFileRoute('/_tools/ev-charging/')({
 });
 
 function EVChargingEstimatorPage() {
-  const { trackAction } = useToolTracking(
+  const { trackAction, trackComplete } = useToolTracking(
     'ev-charging',
     'EV Charging Estimator'
   );
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
-      <ChargingForm onTrack={trackAction} />
+      <ChargingForm onComplete={trackComplete} onTrack={trackAction} />
 
       <Note intent="info">
         Want to track your vehicle's consumption over time?{' '}

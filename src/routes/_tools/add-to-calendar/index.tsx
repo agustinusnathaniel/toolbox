@@ -1,6 +1,7 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
@@ -48,7 +49,10 @@ export const Route = createFileRoute('/_tools/add-to-calendar/')({
 });
 
 function AddToCalendarPage() {
-  const { trackAction } = useToolTracking('add-to-calendar', 'Add to Calendar');
+  const { trackAction, trackComplete } = useToolTracking(
+    'add-to-calendar',
+    'Add to Calendar'
+  );
   const {
     form,
     linkResult,
@@ -71,6 +75,12 @@ function AddToCalendarPage() {
     trackAction('generate_embed');
     rawEmbed();
   };
+
+  useEffect(() => {
+    if (isValid && linkResult) {
+      trackComplete(true);
+    }
+  }, [isValid, linkResult, trackComplete]);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">

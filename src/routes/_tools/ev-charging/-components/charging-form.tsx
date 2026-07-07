@@ -127,10 +127,11 @@ function allRequiredFields(
 }
 
 type ChargingFormProps = {
+  onComplete: (success: boolean) => void;
   onTrack: (action: string) => void;
 };
 
-export function ChargingForm({ onTrack }: ChargingFormProps) {
+export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
   const search = useSearch({ from: '/_tools/ev-charging/' });
   const [saved, setSaved] = usePersistedState<PersistedValues>(
     STORAGE_KEY,
@@ -206,6 +207,12 @@ export function ChargingForm({ onTrack }: ChargingFormProps) {
       chargingPower: effectiveChargingPower,
     });
   }, [watchedValues, effectiveChargingPower]);
+
+  useEffect(() => {
+    if (result) {
+      onComplete(true);
+    }
+  }, [result, onComplete]);
 
   const handleCopyShareableLink = () => {
     onTrack('copy_shareable');

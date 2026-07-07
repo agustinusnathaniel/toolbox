@@ -1,7 +1,7 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -51,8 +51,16 @@ const InfoRow = ({ label, value, capitalize }: InfoRowProps) => {
 };
 
 function UACheckPage() {
-  useToolTracking('ua-check', 'UA Check');
+  const { trackAction, trackComplete } = useToolTracking(
+    'ua-check',
+    'UA Check'
+  );
   const result = useMemo(() => parseUserAgent(), []);
+
+  useEffect(() => {
+    trackAction('view');
+    trackComplete(true);
+  }, [trackAction, trackComplete]);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] lg:grid lg:grid-cols-2">
