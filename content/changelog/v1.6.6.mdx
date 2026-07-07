@@ -1,25 +1,11 @@
 export const version = "1.6.6";
 export const date = "2026-07-07";
 export const tag = "polished";
-export const title = "Cleanup, Hardened Tools & Better Diagnostics";
+export const title = "Tool Fixes & Performance Improvements";
 
-This release removes ~6,000 lines of dead code, adds adapter tests across the board, and fixes several subtle bugs in existing tools. No new features — a dedicated improvement pass.
+### Fixes & Improvements
 
-### Improvements
-
-- **JS Perf Comparator** — now shows a clear error message when the benchmarking engine fails to initialize, rather than silently timing out
-- **EV Charging Estimator** — calibration factor now correctly scales the "charging above 80%" comparison metric
-- **QR Code Generator** — vCard addresses produce correct ADR field separation even when optional fields are missing
-- **Zippy Image** — uses blob URLs instead of FileReader for memory-efficient dimension detection
-- **Analytics** — tracking now records completion events across all tools (previously only Zippy Image reported them)
-
-### Bug Fixes
-
-- **Service worker** — update poller no longer leaks interval timers when the component remounts
-
-### Internal
-
-- Removed 42 unused component files and 4 orphaned dependencies (~6,000 lines of dead code)
-- Added 10 new adapter tests (197 total, +14 from previous release)
-- Fixed AGENTS.md, README.md, and SPEC.md to accurately reflect the current project state
-- Created `.env.example` with all documented environment variables, each accompanied by a description
+- **QR Code Generator** — vCard addresses with optional fields left blank now produce correctly formatted output
+- **JS Perf Comparator** — shows a clear error message when the benchmarking engine fails to initialize, instead of silently timing out
+- **EV Charging Estimator** — calibration consistently scales the "charging above 80%" comparison metric
+- **Zippy Image** — uses less memory when loading large images for dimension detection
