@@ -47,4 +47,45 @@ describe('parseUserAgent', () => {
 
     expect(result.ua).toBe(chromeUA);
   });
+
+  const operaUA =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0';
+
+  test('parses Opera on macOS', () => {
+    const result = parseUserAgent(operaUA);
+
+    expect(result.browser.name).toBe('Opera');
+    expect(result.os.name).toBe('macOS');
+  });
+
+  const samsungUA =
+    'Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/23.0 Chrome/120.0.6099.230 Mobile Safari/537.36';
+
+  test('parses Samsung Internet on Android', () => {
+    const result = parseUserAgent(samsungUA);
+
+    expect(result.browser.name).toBe('Samsung Internet');
+    expect(result.os.name).toBe('Android');
+    expect(result.device.type).toBe('mobile');
+    expect(result.device.vendor).toBe('Samsung');
+  });
+
+  const bingbotUA =
+    'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/120.0.0.0 Safari/537.36';
+
+  test('parses Bingbot crawler', () => {
+    const result = parseUserAgent(bingbotUA);
+
+    expect(result.browser.name).toBe('Chrome');
+    expect(result.os.name).toBeUndefined();
+    expect(result.device.type).toBeUndefined();
+  });
+
+  test('handles malformed UA string without throwing', () => {
+    const result = parseUserAgent('this is not a user agent string at all!!!');
+
+    expect(result.ua).toBe('this is not a user agent string at all!!!');
+    expect(result.browser.name).toBeUndefined();
+    expect(result.os.name).toBeUndefined();
+  });
 });
