@@ -53,14 +53,14 @@ export const CHARGER_LABELS: Record<ChargerType, string> = {
 };
 
 // Power-based efficiency lookup (kW → efficiency)
-// Calibrated from real-world Jaecoo J5 data
+// Calibrated from Jaecoo J5 data (7 sessions, Apr-Jul 2026)
+// Note: 30-50 kW band has no direct data; set to adjacent 10-30 kW value (0.88).
 const POWER_EFFICIENCY_TABLE: Array<{ maxKw: number; efficiency: number }> = [
-  { maxKw: 0, efficiency: 0.83 },
   { maxKw: 10, efficiency: 0.86 },
-  { maxKw: 30, efficiency: 0.87 },
-  { maxKw: 50, efficiency: 0.85 },
-  { maxKw: 80, efficiency: 0.83 },
-  { maxKw: Number.POSITIVE_INFINITY, efficiency: 0.85 },
+  { maxKw: 30, efficiency: 0.88 },
+  { maxKw: 50, efficiency: 0.88 },
+  { maxKw: 80, efficiency: 0.86 },
+  { maxKw: Number.POSITIVE_INFINITY, efficiency: 0.87 },
 ];
 
 function getEfficiency(chargerType: ChargerType, powerKw?: number): number {
@@ -75,12 +75,12 @@ function getEfficiency(chargerType: ChargerType, powerKw?: number): number {
   return CHARGER_EFFICIENCIES[chargerType];
 }
 
-export const SOC_PENALTY = 0.02;
+export const SOC_PENALTY = 0.045;
 export const SOC_THRESHOLD = 80;
 
-// Graduated penalty above 80% — inefficiency increases as SOC rises
-const SOC_PENALTY_90 = 0.04;
-const SOC_PENALTY_95 = 0.08;
+// Penalty above 80% SOC — all tiers use the same rate (0.045). The graduated structure is preserved for future refinement when more data is available.
+export const SOC_PENALTY_90 = 0.045;
+export const SOC_PENALTY_95 = 0.045;
 
 export function calculateChargingEstimate(
   inputs: ChargingInputs

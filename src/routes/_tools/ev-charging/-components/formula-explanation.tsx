@@ -8,6 +8,8 @@ import {
   type ChargerType,
   type ChargingResult,
   SOC_PENALTY,
+  SOC_PENALTY_90,
+  SOC_PENALTY_95,
   SOC_THRESHOLD,
 } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
 
@@ -63,14 +65,24 @@ export function FormulaExplanation({
               <span className="font-medium text-fg">{chargerType}</span>:{' '}
               <span className="font-medium text-fg">
                 {(efficiency * 100).toFixed(0)}% below {SOC_THRESHOLD}%
+              </span>{' '}
+              and drops progressively above it:&nbsp;
+              <span className="font-medium text-fg">
+                {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% at{' '}
+                {SOC_THRESHOLD}–90% SOC
               </span>
               ,{' '}
               <span className="font-medium text-fg">
-                {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% above{' '}
-                {SOC_THRESHOLD}%
+                {((efficiency - SOC_PENALTY_90) * 100).toFixed(0)}% at 90–95%
+                SOC
               </span>
-              . Charging slows above {SOC_THRESHOLD}% to protect battery health,
-              which increases relative losses.
+              ,{' '}
+              <span className="font-medium text-fg">
+                {((efficiency - SOC_PENALTY_95) * 100).toFixed(0)}% above 95%
+                SOC
+              </span>
+              . Charging slows at high SOC to protect battery health, which
+              increases relative losses.
             </p>
 
             {calibrationFactor !== 1 && (
@@ -87,33 +99,59 @@ export function FormulaExplanation({
               <>
                 <p>
                   Since charging spans both efficiency zones, the calculation is
-                  split into two parts:
+                  split by SOC threshold:
                 </p>
                 <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
                   <p>
-                    below80 = ({SOC_THRESHOLD} - {startSOC}) x {usableCapacity}{' '}
-                    / {efficiency} ={' '}
-                    {result.baseKwh > result.conversionLossKwh
-                      ? (
-                          ((SOC_THRESHOLD - startSOC) * usableCapacity) /
-                          100 /
-                          efficiency
-                        ).toFixed(2)
-                      : '—'}{' '}
-                    kWh
-                  </p>
-                  <p>
-                    above80 = ({endSOC} - {SOC_THRESHOLD}) x {usableCapacity} /{' '}
-                    {(efficiency - SOC_PENALTY).toFixed(2)} ={' '}
+                    below{SOC_THRESHOLD} = ({SOC_THRESHOLD} - {startSOC}) x{' '}
+                    {usableCapacity} / {efficiency} ={' '}
                     {(
-                      ((endSOC - SOC_THRESHOLD) * usableCapacity) /
+                      ((SOC_THRESHOLD - startSOC) * usableCapacity) /
                       100 /
-                      (efficiency - SOC_PENALTY)
+                      efficiency
                     ).toFixed(2)}{' '}
                     kWh
                   </p>
+                  {endSOC > 80 && (
+                    <p>
+                      {SOC_THRESHOLD}–90% = (
+                      {Math.min(endSOC, 90) - SOC_THRESHOLD}) x {usableCapacity}{' '}
+                      / {(efficiency - SOC_PENALTY).toFixed(3)} ={' '}
+                      {(
+                        ((Math.min(endSOC, 90) - SOC_THRESHOLD) *
+                          usableCapacity) /
+                        100 /
+                        (efficiency - SOC_PENALTY)
+                      ).toFixed(2)}{' '}
+                      kWh
+                    </p>
+                  )}
+                  {endSOC > 90 && (
+                    <p>
+                      90–95% = ({Math.min(endSOC, 95) - 90}) x {usableCapacity}{' '}
+                      / {(efficiency - SOC_PENALTY_90).toFixed(3)} ={' '}
+                      {(
+                        ((Math.min(endSOC, 95) - 90) * usableCapacity) /
+                        100 /
+                        (efficiency - SOC_PENALTY_90)
+                      ).toFixed(2)}{' '}
+                      kWh
+                    </p>
+                  )}
+                  {endSOC > 95 && (
+                    <p>
+                      95–100% = ({endSOC - 95}) x {usableCapacity} /{' '}
+                      {(efficiency - SOC_PENALTY_95).toFixed(3)} ={' '}
+                      {(
+                        ((endSOC - 95) * usableCapacity) /
+                        100 /
+                        (efficiency - SOC_PENALTY_95)
+                      ).toFixed(2)}{' '}
+                      kWh
+                    </p>
+                  )}
                   <p className="mt-1 font-semibold">
-                    total = below80 + above80 = {result.totalKwh} kWh
+                    total = {result.totalKwh} kWh
                   </p>
                 </div>
               </>
@@ -122,14 +160,54 @@ export function FormulaExplanation({
             {showAboveFormula && (
               <>
                 <p>
-                  Since charging starts at or above {SOC_THRESHOLD}%, the higher
-                  loss rate applies to the entire charge:
+                  Since charging starts at or above {SOC_THRESHOLD}%, each SOC
+                  band uses its own loss rate:
                 </p>
                 <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
-                  <p>
-                    kWh = ({endSOC} - {startSOC}) x {usableCapacity} /{' '}
-                    {(efficiency - SOC_PENALTY).toFixed(2)} = {result.totalKwh}{' '}
-                    kWh
+                  {endSOC > 80 && startSOC < 90 && (
+                    <p>
+                      {SOC_THRESHOLD}–90% = (
+                      {Math.min(endSOC, 90) - Math.max(startSOC, 80)}) x{' '}
+                      {usableCapacity} / {(efficiency - SOC_PENALTY).toFixed(3)}{' '}
+                      ={' '}
+                      {(
+                        ((Math.min(endSOC, 90) - Math.max(startSOC, 80)) *
+                          usableCapacity) /
+                        100 /
+                        (efficiency - SOC_PENALTY)
+                      ).toFixed(2)}{' '}
+                      kWh
+                    </p>
+                  )}
+                  {endSOC > 90 && startSOC < 95 && (
+                    <p>
+                      90–95% = ({Math.min(endSOC, 95) - Math.max(startSOC, 90)})
+                      x {usableCapacity} /{' '}
+                      {(efficiency - SOC_PENALTY_90).toFixed(3)} ={' '}
+                      {(
+                        ((Math.min(endSOC, 95) - Math.max(startSOC, 90)) *
+                          usableCapacity) /
+                        100 /
+                        (efficiency - SOC_PENALTY_90)
+                      ).toFixed(2)}{' '}
+                      kWh
+                    </p>
+                  )}
+                  {endSOC > 95 && (
+                    <p>
+                      95–100% = ({endSOC - Math.max(startSOC, 95)}) x{' '}
+                      {usableCapacity} /{' '}
+                      {(efficiency - SOC_PENALTY_95).toFixed(3)} ={' '}
+                      {(
+                        ((endSOC - Math.max(startSOC, 95)) * usableCapacity) /
+                        100 /
+                        (efficiency - SOC_PENALTY_95)
+                      ).toFixed(2)}{' '}
+                      kWh
+                    </p>
+                  )}
+                  <p className="mt-1 font-semibold">
+                    total = {result.totalKwh} kWh
                   </p>
                 </div>
               </>

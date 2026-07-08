@@ -57,11 +57,11 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l2',
       });
 
-      // Graduated penalty: 80-90% = 2pp, 90-95% = 4pp, 95-100% = 8pp
+      // Graduated penalty: 80-90% = 4.5pp, 90-95% = 4.5pp, 95-100% = 4.5pp
       const basePart = ((80 - 20) * 75) / 100 / 0.86;
-      const seg80_90 = ((90 - 80) * 75) / 100 / (0.86 - 0.02);
-      const seg90_95 = ((95 - 90) * 75) / 100 / (0.86 - 0.04);
-      const seg95_100 = ((100 - 95) * 75) / 100 / (0.86 - 0.08);
+      const seg80_90 = ((90 - 80) * 75) / 100 / (0.86 - 0.045);
+      const seg90_95 = ((95 - 90) * 75) / 100 / (0.86 - 0.045);
+      const seg95_100 = ((100 - 95) * 75) / 100 / (0.86 - 0.045);
       const expectedTotal = basePart + seg80_90 + seg90_95 + seg95_100;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -82,10 +82,10 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l1',
       });
 
-      // Graduated penalty: 80-90% = 2pp, 90-95% = 4pp
+      // Graduated penalty: 80-90% = 4.5pp, 90-95% = 4.5pp
       const basePart = ((80 - 50) * 100) / 100 / 0.83;
-      const seg80_90 = ((90 - 80) * 100) / 100 / (0.83 - 0.02);
-      const seg90_95 = ((95 - 90) * 100) / 100 / (0.83 - 0.04);
+      const seg80_90 = ((90 - 80) * 100) / 100 / (0.83 - 0.045);
+      const seg90_95 = ((95 - 90) * 100) / 100 / (0.83 - 0.045);
       const expectedTotal = basePart + seg80_90 + seg90_95;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -104,10 +104,10 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'dc-ultra',
       });
 
-      // Graduated penalty: 80-90% = 2pp, 90-95% = 4pp, 95-100% = 8pp
-      const seg80_90 = ((90 - 80) * 75) / 100 / (0.85 - 0.02);
-      const seg90_95 = ((95 - 90) * 75) / 100 / (0.85 - 0.04);
-      const seg95_100 = ((100 - 95) * 75) / 100 / (0.85 - 0.08);
+      // Graduated penalty: 80-90% = 4.5pp, 90-95% = 4.5pp, 95-100% = 4.5pp
+      const seg80_90 = ((90 - 80) * 75) / 100 / (0.85 - 0.045);
+      const seg90_95 = ((95 - 90) * 75) / 100 / (0.85 - 0.045);
+      const seg95_100 = ((100 - 95) * 75) / 100 / (0.85 - 0.045);
       const expectedTotal = seg80_90 + seg90_95 + seg95_100;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -125,9 +125,9 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'ac-l2',
       });
 
-      // Graduated penalty: 85-90% = 2pp, 90-95% = 4pp
-      const seg85_90 = ((90 - 85) * 75) / 100 / (0.86 - 0.02);
-      const seg90_95 = ((95 - 90) * 75) / 100 / (0.86 - 0.04);
+      // Graduated penalty: 85-90% = 4.5pp, 90-95% = 4.5pp
+      const seg85_90 = ((90 - 85) * 75) / 100 / (0.86 - 0.045);
+      const seg90_95 = ((95 - 90) * 75) / 100 / (0.86 - 0.045);
       const expectedTotal = seg85_90 + seg90_95;
 
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -274,9 +274,9 @@ describe('calculateChargingEstimate', () => {
         chargingPower: 11,
       });
 
-      // 11kW → power-based efficiency 0.87 (from power table, ≤30kW tier)
+      // 11kW → power-based efficiency 0.88 (from power table, ≤30kW tier)
       const expectedBase = (80 - 20) * (75 / 100);
-      const expectedTotal = expectedBase / 0.87;
+      const expectedTotal = expectedBase / 0.88;
 
       expect(result.estimatedTimeHours).toBeDefined();
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
@@ -454,9 +454,9 @@ describe('calculateChargingEstimate', () => {
       expect(calCmp.kwh).toBe(Math.round(baseCmp.kwh * 1.1 * 100) / 100);
 
       // savings = totalKwh - comparison80.kwh (both calibrated)
-      expect(calCmp.savings).toBe(
-        Math.round((calibrated.totalKwh - calCmp.kwh) * 100) / 100
-      );
+      // Use toBeCloseTo — the code computes savings from unrounded intermediates
+      // while totalKwh/kwh are already rounded, creating a ~0.01 tolerance window
+      expect(calCmp.savings).toBeCloseTo(calibrated.totalKwh - calCmp.kwh, 1);
     });
 
     test('scales socPenaltyKwh by calibration factor', () => {
@@ -532,7 +532,7 @@ describe('calculateChargingEstimate', () => {
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
     });
 
-    test('uses power-based efficiency at 25kW (0.87)', () => {
+    test('uses power-based efficiency at 25kW (0.88)', () => {
       const result = calculateChargingEstimate({
         startSOC: 20,
         endSOC: 60,
@@ -542,11 +542,11 @@ describe('calculateChargingEstimate', () => {
         chargingPower: 25,
       });
 
-      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.87;
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.88;
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
     });
 
-    test('uses power-based efficiency at 70kW (0.83)', () => {
+    test('uses power-based efficiency at 70kW (0.86)', () => {
       const result = calculateChargingEstimate({
         startSOC: 20,
         endSOC: 60,
@@ -556,11 +556,11 @@ describe('calculateChargingEstimate', () => {
         chargingPower: 70,
       });
 
-      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.83;
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.86;
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
     });
 
-    test('uses power-based efficiency at 150kW (0.85)', () => {
+    test('uses power-based efficiency at 150kW (0.87)', () => {
       const result = calculateChargingEstimate({
         startSOC: 20,
         endSOC: 60,
@@ -570,7 +570,7 @@ describe('calculateChargingEstimate', () => {
         chargingPower: 150,
       });
 
-      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.85;
+      const expectedTotal = ((60 - 20) * (75 / 100)) / 0.87;
       expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
     });
 
@@ -592,7 +592,7 @@ describe('calculateChargingEstimate', () => {
         chargerType: 'dc-fast',
       });
 
-      // dc-fast default=0.87, 70kW=0.83 → different results
+      // dc-fast default=0.87, 70kW=0.86 → different results
       expect(withPower.totalKwh).toBeGreaterThan(withoutPower.totalKwh);
     });
   });
