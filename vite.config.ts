@@ -104,9 +104,6 @@ export default defineConfig(({ mode }) => {
           ]),
       VitePWA(pwaOptions(mode)),
     ]),
-    server: {
-      open: true,
-    },
     resolve: {
       tsconfigPaths: true,
     },
