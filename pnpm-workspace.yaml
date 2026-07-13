@@ -17,3 +17,5 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
+patchedDependencies:
+  '@tanstack/router-core@1.171.13': patches/@tanstack__router-core@1.171.13.patch

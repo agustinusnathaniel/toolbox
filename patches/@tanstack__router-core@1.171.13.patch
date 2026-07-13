@@ -1,0 +1,17 @@
+diff --git a/dist/esm/router.js b/dist/esm/router.js
+index 46071243253f340fe1d9253b0ea64bc57543393a..1c53388b98f85e835b170dfa66fd39f880a75a11 100644
+--- a/dist/esm/router.js
++++ b/dist/esm/router.js
+@@ -654,7 +654,11 @@ var RouterCore = class {
+ 						types: resolvedViewTransitionTypes
+ 					};
+ 				} else startViewTransitionParams = fn;
+-				document.startViewTransition(startViewTransitionParams);
++				try {
++					document.startViewTransition(startViewTransitionParams);
++				} catch {
++					fn();
++				}
+ 			} else fn();
+ 		};
+ 		this.updateMatch = (id, updater) => {

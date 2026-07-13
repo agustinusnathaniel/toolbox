@@ -283,10 +283,14 @@
 }
 
 /* [START] Route Transition
- * CSS-only fade-in on route change. Replaces View Transition API which caused
- * InvalidStateError with TanStack Router (no try/catch around startViewTransition).
- * Animation replays via key={pathname} on the .route-transition container.
- * No exit animation — that would require AnimatePresence or View Transition API.
+ * Primary: View Transition API (document.startViewTransition) for smooth
+ * exit + enter animations. Errors (InvalidStateError on concurrent transitions)
+ * are caught by a pnpm patch on @tanstack/router-core, falling back to direct
+ * update. See patches/@tanstack__router-core@1.171.13.patch.
+ *
+ * Fallback: CSS-only fade-in via key={pathname} remount. When the VT API
+ * throws and falls through to fn(), the key change forces React to remount
+ * the subtree, replaying the enter animation below.
  */
 @keyframes route-enter {
   from {
@@ -301,9 +305,46 @@
   }
 }
 
+@keyframes route-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+    filter: blur(12px);
+  }
+}
+
+.route-transition {
+  view-transition-name: route-transition;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  /* View Transition API — exit & enter */
+  ::view-transition-old(route-transition) {
+    animation: route-exit 50ms ease-out both;
+  }
+
+  ::view-transition-new(route-transition) {
+    animation: route-enter 160ms ease-out both;
+  }
+
+  /* Fallback CSS animation — when VT API errors out */
   .route-transition > * {
     animation: route-enter 150ms ease-out both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(route-transition),
+  ::view-transition-new(route-transition) {
+    animation-duration: 0ms;
+  }
+  .route-transition > * {
+    animation: none;
   }
 }
 /* [END] Route Transition */
