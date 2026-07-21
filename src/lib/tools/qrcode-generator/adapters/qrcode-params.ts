@@ -25,27 +25,27 @@ export interface VCardState {
 }
 
 export const DEFAULT_URL_STATE: UrlState = {
-  value: 'https://google.com',
-  fgColor: '#000000',
   bgColor: '#ffffff',
+  fgColor: '#000000',
+  value: 'https://google.com',
 };
 
 export const DEFAULT_VCARD_STATE: VCardState = {
+  bgColor: '#ffffff',
+  city: '',
+  companyName: '',
+  country: '',
+  emailAddress: '',
+  fgColor: '#000000',
   firstName: '',
+  jobTitle: '',
   lastName: '',
   mobilePhoneNumber: '',
   otherPhoneNumber: '',
-  emailAddress: '',
-  companyName: '',
-  jobTitle: '',
-  streetAddress: '',
-  city: '',
-  state: '',
   postalCode: '',
-  country: '',
+  state: '',
+  streetAddress: '',
   websiteURL: '',
-  fgColor: '#000000',
-  bgColor: '#ffffff',
 };
 
 export type SearchParams = {
@@ -147,28 +147,28 @@ export function buildVCardParams(state: VCardState): URLSearchParams {
 
 export function buildVcardStateFromSearch(search: SearchParams): VCardState {
   return {
+    bgColor: formatHex(search.bg) ?? DEFAULT_VCARD_STATE.bgColor,
+    city: search.ct ?? DEFAULT_VCARD_STATE.city,
+    companyName: search.co ?? DEFAULT_VCARD_STATE.companyName,
+    country: search.cn ?? DEFAULT_VCARD_STATE.country,
+    emailAddress: search.em ?? DEFAULT_VCARD_STATE.emailAddress,
+    fgColor: formatHex(search.fg) ?? DEFAULT_VCARD_STATE.fgColor,
     firstName: search.fn ?? DEFAULT_VCARD_STATE.firstName,
+    jobTitle: search.jt ?? DEFAULT_VCARD_STATE.jobTitle,
     lastName: search.ln ?? DEFAULT_VCARD_STATE.lastName,
     mobilePhoneNumber: search.mp ?? DEFAULT_VCARD_STATE.mobilePhoneNumber,
     otherPhoneNumber: search.op ?? DEFAULT_VCARD_STATE.otherPhoneNumber,
-    emailAddress: search.em ?? DEFAULT_VCARD_STATE.emailAddress,
-    companyName: search.co ?? DEFAULT_VCARD_STATE.companyName,
-    jobTitle: search.jt ?? DEFAULT_VCARD_STATE.jobTitle,
-    streetAddress: search.st ?? DEFAULT_VCARD_STATE.streetAddress,
-    city: search.ct ?? DEFAULT_VCARD_STATE.city,
-    state: search.sa ?? DEFAULT_VCARD_STATE.state,
     postalCode: search.pc ?? DEFAULT_VCARD_STATE.postalCode,
-    country: search.cn ?? DEFAULT_VCARD_STATE.country,
+    state: search.sa ?? DEFAULT_VCARD_STATE.state,
+    streetAddress: search.st ?? DEFAULT_VCARD_STATE.streetAddress,
     websiteURL: search.wb ?? DEFAULT_VCARD_STATE.websiteURL,
-    fgColor: formatHex(search.fg) ?? DEFAULT_VCARD_STATE.fgColor,
-    bgColor: formatHex(search.bg) ?? DEFAULT_VCARD_STATE.bgColor,
   };
 }
 
 export function buildUrlStateFromSearch(search: SearchParams): UrlState {
   return {
-    value: search.value ?? DEFAULT_URL_STATE.value,
-    fgColor: formatHex(search.fg) ?? DEFAULT_URL_STATE.fgColor,
     bgColor: formatHex(search.bg) ?? DEFAULT_URL_STATE.bgColor,
+    fgColor: formatHex(search.fg) ?? DEFAULT_URL_STATE.fgColor,
+    value: search.value ?? DEFAULT_URL_STATE.value,
   };
 }

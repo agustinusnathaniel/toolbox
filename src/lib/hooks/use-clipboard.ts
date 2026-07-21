@@ -32,5 +32,5 @@ export function useClipboard() {
     []
   );
 
-  return { copy, copied };
+  return { copied, copy };
 }

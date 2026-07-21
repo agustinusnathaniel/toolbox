@@ -9,25 +9,25 @@ import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 
 const meta = {
-  pageTitle: 'UA Check',
   description: 'Check your browser and device user agent information.',
+  pageTitle: 'UA Check',
   slug: 'ua-check',
 } as const;
 
 export const Route = createFileRoute('/_tools/ua-check/')({
   component: UACheckPage,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
 });
 
 interface InfoRowProps {
@@ -117,14 +117,14 @@ function UACheckPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Is my data safe?',
             answer:
               'Yes. All analysis happens locally in your browser. No data is sent to any server.',
+            question: 'Is my data safe?',
           },
           {
-            question: 'What is a user agent?',
             answer:
               'A user agent is a string that your browser sends to websites identifying itself. This tool parses that string for you.',
+            question: 'What is a user agent?',
           },
         ]}
         howItWorks={{

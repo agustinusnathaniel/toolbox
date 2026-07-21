@@ -21,14 +21,14 @@ export function MonacoEditor({
       language={language}
       onChange={onChange}
       options={{
-        minimap: { enabled: false },
+        automaticLayout: true,
         fontSize: 13,
         lineNumbers: 'on',
+        minimap: { enabled: false },
+        padding: { top: 8 },
         scrollBeyondLastLine: false,
-        automaticLayout: true,
         tabSize: 2,
         wordWrap: 'on',
-        padding: { top: 8 },
       }}
       theme="vs-dark"
       value={value}

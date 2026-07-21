@@ -43,33 +43,33 @@ function staticMeta<T>(value: T | undefined): T {
 
 const tools: Array<ToolDefinition> = [
   {
-    slug: 'wa-link-helper',
     icon: <IconBrandWhatsapp />,
     mobileTitle: 'WA Link',
     route: WaLinkHelperRoute,
     showInMobile: true,
+    slug: 'wa-link-helper',
   },
   {
-    slug: 'zippy-img',
     icon: <IconCamera />,
     route: ZippyImgRoute,
     showInMobile: true,
+    slug: 'zippy-img',
   },
-  { slug: 'ua-check', icon: <IconDeviceDesktop />, route: UaCheckRoute },
+  { icon: <IconDeviceDesktop />, route: UaCheckRoute, slug: 'ua-check' },
   {
-    slug: 'qrcode',
     icon: <IconQrCode />,
     mobileTitle: 'QR Code',
     route: QrcodeRoute,
     showInMobile: true,
+    slug: 'qrcode',
   },
-  { slug: 'js-perf', icon: <IconCodeLines />, route: JsPerfRoute },
+  { icon: <IconCodeLines />, route: JsPerfRoute, slug: 'js-perf' },
   {
-    slug: 'add-to-calendar',
     icon: <IconCalendar />,
     route: AddToCalendarRoute,
+    slug: 'add-to-calendar',
   },
-  { slug: 'ev-charging', icon: <IconBolt />, route: EvChargingRoute },
+  { icon: <IconBolt />, route: EvChargingRoute, slug: 'ev-charging' },
 ];
 
 function buildNavItems(filter?: { mobile?: boolean }): Array<ToolNavItem> {
@@ -82,13 +82,13 @@ function buildNavItems(filter?: { mobile?: boolean }): Array<ToolNavItem> {
           | undefined
       );
       return {
+        description: meta.description,
+        icon: t.icon,
+        path: `/${t.slug}` as ToOptions['to'],
         slug: t.slug,
         title: filter?.mobile
           ? (t.mobileTitle ?? meta.pageTitle)
           : meta.pageTitle,
-        description: meta.description,
-        path: `/${t.slug}` as ToOptions['to'],
-        icon: t.icon,
       };
     });
 }

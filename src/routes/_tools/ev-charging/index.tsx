@@ -10,38 +10,38 @@ import { Note } from '@/lib/components/ui/note';
 import { ChargingForm } from './-components/charging-form';
 
 const searchSchema = z.object({
-  start: z.coerce.number().min(0).max(100).optional(),
-  end: z.coerce.number().min(0).max(100).optional(),
-  cap: z.coerce.number().positive().optional(),
-  usable: z.coerce.number().min(1).max(100).optional(),
   cal: z.coerce.number().min(0.5).max(1.5).optional(),
-  type: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']).optional(),
-  rate: z.coerce.number().positive().optional(),
+  cap: z.coerce.number().positive().optional(),
+  end: z.coerce.number().min(0).max(100).optional(),
   power: z.coerce.number().positive().optional(),
+  rate: z.coerce.number().positive().optional(),
+  start: z.coerce.number().min(0).max(100).optional(),
+  type: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']).optional(),
+  usable: z.coerce.number().min(1).max(100).optional(),
 });
 
 const meta = {
-  pageTitle: 'EV Charging Estimator',
   description:
     'Estimate how much kWh you need to charge your EV, accounting for charging losses.',
+  pageTitle: 'EV Charging Estimator',
   slug: 'ev-charging',
 } as const;
 
 export const Route = createFileRoute('/_tools/ev-charging/')({
   component: EVChargingEstimatorPage,
-  validateSearch: searchSchema,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
+  validateSearch: searchSchema,
 });
 
 function EVChargingEstimatorPage() {
@@ -71,24 +71,24 @@ function EVChargingEstimatorPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Why is charging above 80% less efficient?',
             answer:
               'Above 80% SOC, the battery management system slows charging to protect the cells. This means more time drawing power for auxiliary systems (cooling, BMS) relative to energy stored, reducing overall efficiency.',
+            question: 'Why is charging above 80% less efficient?',
           },
           {
-            question: 'What is "usable" battery capacity?',
             answer:
               'Manufacturers often advertise the total (gross) battery capacity, but the BMS reserves a buffer at both ends to protect cell health. The usable capacity is typically 90-95% of total. For example, a car advertised as 82 kWh may only let you use 75 kWh. Use the usable capacity for accurate estimates.',
+            question: 'What is "usable" battery capacity?',
           },
           {
-            question: 'How accurate is this estimate?',
             answer:
               'This provides a reasonable estimate based on typical charger efficiencies. Real-world results vary based on temperature, battery health, charger condition, and specific vehicle behavior.',
+            question: 'How accurate is this estimate?',
           },
           {
-            question: 'Is my data sent anywhere?',
             answer:
               'No. All calculations happen in your browser. No data is stored or transmitted.',
+            question: 'Is my data sent anywhere?',
           },
         ]}
         howItWorks={{

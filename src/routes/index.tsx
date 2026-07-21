@@ -11,11 +11,11 @@ export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
       { title: SITE_NAME },
-      { name: 'description', content: SITE_DESCRIPTION },
-      { property: 'og:title', content: SITE_NAME },
-      { property: 'og:description', content: SITE_DESCRIPTION },
-      { property: 'og:type', content: 'website' },
-      { property: 'og:url', content: '/' },
+      { content: SITE_DESCRIPTION, name: 'description' },
+      { content: SITE_NAME, property: 'og:title' },
+      { content: SITE_DESCRIPTION, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
+      { content: '/', property: 'og:url' },
     ],
   }),
 });

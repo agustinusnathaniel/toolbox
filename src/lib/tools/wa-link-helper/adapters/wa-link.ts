@@ -19,8 +19,8 @@ export const countryCodeOptions: Array<CountryOption> = Object.keys(
   const phoneCountryCode = getPhoneCountryCode(countryCode);
 
   return {
-    name: `${countryFlag} ${regionName} - ${phoneCountryCode}`,
     id: countryCode,
+    name: `${countryFlag} ${regionName} - ${phoneCountryCode}`,
   };
 });
 
@@ -59,8 +59,8 @@ export const buildWhatsAppLink = (options: BuildLinkOptions) => {
 
   if (!isValid) {
     return {
-      link: '',
       isValid: false,
+      link: '',
     };
   }
 
@@ -68,8 +68,8 @@ export const buildWhatsAppLink = (options: BuildLinkOptions) => {
 
   if (!e164Number) {
     return {
-      link: '',
       isValid: false,
+      link: '',
     };
   }
 
@@ -78,7 +78,7 @@ export const buildWhatsAppLink = (options: BuildLinkOptions) => {
   const link = `https://wa.me/${encodeURIComponent(e164Number)}${message}`;
 
   return {
-    link,
     isValid: true,
+    link,
   };
 };

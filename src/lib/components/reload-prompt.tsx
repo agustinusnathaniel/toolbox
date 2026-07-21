@@ -18,15 +18,15 @@ export function ReloadPrompt() {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
+    onRegisterError(error) {
+      console.error('SW registration error', error);
+    },
     onRegisteredSW(_swUrl, registration) {
       if (!registration) {
         return;
       }
 
       registrationRef.current = registration;
-    },
-    onRegisterError(error) {
-      console.error('SW registration error', error);
     },
   });
 
@@ -51,10 +51,6 @@ export function ReloadPrompt() {
   useEffect(() => {
     if (needRefresh) {
       toast.info('New version available', {
-        id: TOAST_ID,
-        position: isMobile ? 'bottom-center' : 'top-right',
-        description: 'Reload to get the latest updates.',
-        duration: Number.POSITIVE_INFINITY,
         action: {
           label: 'Reload',
           onClick: () => updateServiceWorker(true),
@@ -66,6 +62,10 @@ export function ReloadPrompt() {
             toast.dismiss(TOAST_ID);
           },
         },
+        description: 'Reload to get the latest updates.',
+        duration: Number.POSITIVE_INFINITY,
+        id: TOAST_ID,
+        position: isMobile ? 'bottom-center' : 'top-right',
       });
     }
   }, [needRefresh, updateServiceWorker, setNeedRefresh, isMobile]);
@@ -73,10 +73,6 @@ export function ReloadPrompt() {
   useEffect(() => {
     if (offlineReady) {
       toast.success('App ready to work offline', {
-        id: `${TOAST_ID}-offline`,
-        position: isMobile ? 'bottom-center' : 'top-right',
-        description: 'You can use the app without an internet connection.',
-        duration: 5000,
         cancel: {
           label: 'OK',
           onClick: () => {
@@ -84,6 +80,10 @@ export function ReloadPrompt() {
             toast.dismiss(`${TOAST_ID}-offline`);
           },
         },
+        description: 'You can use the app without an internet connection.',
+        duration: 5000,
+        id: `${TOAST_ID}-offline`,
+        position: isMobile ? 'bottom-center' : 'top-right',
       });
     }
   }, [offlineReady, setOfflineReady, isMobile]);

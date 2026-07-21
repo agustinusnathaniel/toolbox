@@ -10,8 +10,8 @@ import {
 
 function createMockTracker() {
   return {
-    track: vi.fn() as unknown as AnalyticsTracker['track'],
     page: vi.fn() as unknown as AnalyticsTracker['page'],
+    track: vi.fn() as unknown as AnalyticsTracker['track'],
   };
 }
 
@@ -78,12 +78,12 @@ describe('analytics.track', () => {
 
     analytics.track({
       name: 'test_event',
-      properties: { key: 'value', count: 42 },
+      properties: { count: 42, key: 'value' },
     });
 
     expect(tracker.track).toHaveBeenCalledWith(
       expect.objectContaining({
-        properties: { key: 'value', count: 42 },
+        properties: { count: 42, key: 'value' },
       })
     );
 
@@ -107,10 +107,10 @@ describe('analytics.track', () => {
 
   test('silently ignores tracker errors', () => {
     const badTracker = {
+      page: vi.fn() as unknown as AnalyticsTracker['page'],
       track: (() => {
         throw new Error('tracker exploded');
       }) as AnalyticsTracker['track'],
-      page: vi.fn() as unknown as AnalyticsTracker['page'],
     };
     const goodTracker = createMockTracker();
     const unsub1 = analytics.addTracker(badTracker);
@@ -157,10 +157,10 @@ describe('analytics.page', () => {
 
   test('silently ignores tracker errors', () => {
     const badTracker = {
-      track: vi.fn() as unknown as AnalyticsTracker['track'],
       page: (() => {
         throw new Error('tracker exploded');
       }) as AnalyticsTracker['page'],
+      track: vi.fn() as unknown as AnalyticsTracker['track'],
     };
     const goodTracker = createMockTracker();
     const unsub1 = analytics.addTracker(badTracker);
@@ -202,7 +202,7 @@ describe('trackToolCompletion', () => {
     expect(tracker.track).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'tool_completion',
-        properties: { tool_id: 'my-tool', tool_name: 'My Tool', success: true },
+        properties: { success: true, tool_id: 'my-tool', tool_name: 'My Tool' },
       })
     );
 
@@ -219,9 +219,9 @@ describe('trackToolCompletion', () => {
       expect.objectContaining({
         name: 'tool_completion',
         properties: {
+          success: false,
           tool_id: 'my-tool',
           tool_name: 'My Tool',
-          success: false,
         },
       })
     );
@@ -241,9 +241,9 @@ describe('trackToolAction', () => {
       expect.objectContaining({
         name: 'tool_action',
         properties: {
+          action: 'compress',
           tool_id: 'my-tool',
           tool_name: 'My Tool',
-          action: 'compress',
         },
       })
     );

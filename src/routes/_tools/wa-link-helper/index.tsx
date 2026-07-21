@@ -49,27 +49,27 @@ const searchSchema = z.object({
 });
 
 const meta = {
-  pageTitle: 'WA Link Helper',
   description:
     'Generate WhatsApp links with pre-filled messages and country codes.',
+  pageTitle: 'WA Link Helper',
   slug: 'wa-link-helper',
 } as const;
 
 export const Route = createFileRoute('/_tools/wa-link-helper/')({
   component: WALinkHelperPage,
-  validateSearch: searchSchema,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
+  validateSearch: searchSchema,
 });
 
 const STORAGE_KEY = 'toolbox:wa-link-helper';
@@ -96,8 +96,8 @@ function WALinkHelperPage() {
   };
 
   const form = useForm<FormType>({
-    resolver: zodResolver(formSchema),
     defaultValues: initialValues,
+    resolver: zodResolver(formSchema),
   });
 
   useEffect(() => {
@@ -150,6 +150,7 @@ function WALinkHelperPage() {
   const handleCopyShareableLink = () => {
     trackAction('copy_shareable');
     navigate({
+      replace: true,
       search: (prev) => ({
         ...prev,
         ...buildWALinkSearchParams({
@@ -158,7 +159,6 @@ function WALinkHelperPage() {
           text,
         }),
       }),
-      replace: true,
     });
     const url = window.location.href;
     copyToClipboard(url, 'Copied Shareable Link');
@@ -268,18 +268,17 @@ function WALinkHelperPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Why no + sign?',
             answer:
               'The country code already includes the + prefix. Adding + will cause the link to fail.',
+            question: 'Why no + sign?',
           },
           {
-            question: 'Is my data sent anywhere?',
             answer:
               'No. All processing happens in your browser. No phone numbers or messages are stored or transmitted.',
+            question: 'Is my data sent anywhere?',
           },
         ]}
         howItWorks={{
-          title: 'How to use',
           description:
             'Enter a phone number and optionally a message. The tool generates a WhatsApp link that you can copy and share.',
           steps: [
@@ -288,6 +287,7 @@ function WALinkHelperPage() {
             'Add an optional pre-filled message',
             'Click Copy Link to copy the generated URL',
           ],
+          title: 'How to use',
         }}
       />
     </div>

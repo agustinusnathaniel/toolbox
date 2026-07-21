@@ -17,9 +17,9 @@ export function createExecutionRequest(
   teardown = ''
 ): ExecutionRequest {
   return {
-    id: crypto.randomUUID(),
     code,
     deadlineMs,
+    id: crypto.randomUUID(),
     iterations,
     setup,
     teardown,
@@ -38,8 +38,8 @@ export function parseWorkerMessage(
   }
   if (msg.type === 'result' && typeof msg.payload === 'object') {
     return {
-      type: 'result',
       payload: msg.payload as ExecutionResult,
+      type: 'result',
     };
   }
   return null;

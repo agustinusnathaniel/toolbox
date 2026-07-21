@@ -53,11 +53,11 @@ export function buildCalendarSearchParams(
   inputs: CalendarSearchInputs
 ): Record<string, string | undefined> {
   return {
-    title: inputs.title || undefined,
     desc: inputs.description || undefined,
+    end: inputs.end || undefined,
     loc: inputs.location || undefined,
     start: inputs.start || undefined,
-    end: inputs.end || undefined,
+    title: inputs.title || undefined,
   };
 }
 
@@ -91,7 +91,7 @@ export function generateGoogleCalendarLink(
   const url = `${GOOGLE_CAL_TEMPLATE_LINK}&${queryString}`;
 
   return {
-    url,
     provider: 'google',
+    url,
   };
 }

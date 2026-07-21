@@ -14,11 +14,11 @@ import { copyToClipboard } from '@/lib/utils/clipboard';
 
 const formSchema = z
   .object({
-    title: z.string().min(1, 'Title is required'),
     description: z.string().optional(),
+    end: z.string().min(1, 'End date/time is required'),
     location: z.string().optional(),
     start: z.string().min(1, 'Start date/time is required'),
-    end: z.string().min(1, 'End date/time is required'),
+    title: z.string().min(1, 'Title is required'),
   })
   .refine((data) => new Date(data.end) >= new Date(data.start), {
     message: 'End date/time cannot be earlier than start date/time',
@@ -35,9 +35,9 @@ type PersistedCalendar = Pick<
 >;
 
 const defaultPersisted: PersistedCalendar = {
-  title: '',
   description: '',
   location: '',
+  title: '',
 };
 
 export function useCalendarForm() {
@@ -55,22 +55,22 @@ export function useCalendarForm() {
     })();
 
   const form = useForm<CalendarFormType>({
-    resolver: zodResolver(formSchema),
     defaultValues: {
-      title: search.title ?? saved.title,
       description: search.desc ?? saved.description,
+      end: defaultEnd,
       location: search.loc ?? saved.location,
       start: defaultStart,
-      end: defaultEnd,
+      title: search.title ?? saved.title,
     },
+    resolver: zodResolver(formSchema),
   });
 
   useEffect(() => {
     const subscription = form.watch((values) => {
       setSaved({
-        title: values.title ?? '',
         description: values.description ?? '',
         location: values.location ?? '',
+        title: values.title ?? '',
       });
     });
     return () => subscription.unsubscribe();
@@ -87,11 +87,11 @@ export function useCalendarForm() {
   const linkResult = useMemo(
     () =>
       generateGoogleCalendarLink({
-        title: title || '',
         description: description || undefined,
+        end,
         location: location || undefined,
         start,
-        end,
+        title: title || '',
       }),
     [title, description, location, start, end]
   );
@@ -114,29 +114,29 @@ export function useCalendarForm() {
 
   const handleCopyShareableLink = () => {
     navigate({
+      replace: true,
       search: (prev) => ({
         ...prev,
         ...buildCalendarSearchParams({
-          title,
           description,
+          end,
           location,
           start,
-          end,
+          title,
         }),
       }),
-      replace: true,
     });
     const url = window.location.href;
     copyToClipboard(url, 'Copied Shareable Link');
   };
 
   return {
-    form,
-    linkResult,
-    isValid,
     errors,
+    form,
     handleCopyLink,
     handleCopyShareableLink,
     handleGenerateEmbed,
+    isValid,
+    linkResult,
   };
 }

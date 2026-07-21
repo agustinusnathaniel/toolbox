@@ -104,10 +104,10 @@ describe('formatStatistics', () => {
   test('formats statistics display string', () => {
     const s: ExecutionStatistics = {
       iterations: 30,
+      marginMs: 2.3,
       maxMs: 15,
       meanMs: 10.5,
       minMs: 5,
-      marginMs: 2.3,
       stddevMs: 3,
     };
     expect(formatStatistics(s)).toBe('10.50 ms \u00b12.30 ms (30 runs)');
@@ -144,9 +144,9 @@ describe('createWorkerErrorResult', () => {
 describe('buildStabilitySummaryResult', () => {
   test('all rounds successful returns success status', () => {
     const results: Array<ExecutionResult> = [
-      makeResult({ status: 'success', perIterationMs: 10 }),
-      makeResult({ status: 'success', perIterationMs: 12 }),
-      makeResult({ status: 'success', perIterationMs: 11 }),
+      makeResult({ perIterationMs: 10, status: 'success' }),
+      makeResult({ perIterationMs: 12, status: 'success' }),
+      makeResult({ perIterationMs: 11, status: 'success' }),
     ];
     const r = buildStabilitySummaryResult('test-code', 5, 3, results, 'A');
     expect(r.status).toBe('success');
@@ -159,11 +159,11 @@ describe('buildStabilitySummaryResult', () => {
   });
   test('mixed success/failure uses first failure', () => {
     const results: Array<ExecutionResult> = [
-      makeResult({ status: 'success', perIterationMs: 8 }),
+      makeResult({ perIterationMs: 8, status: 'success' }),
       makeResult({
-        status: 'runtime_error',
-        perIterationMs: null,
         errorMessage: 'OOM',
+        perIterationMs: null,
+        status: 'runtime_error',
       }),
     ];
     const r = buildStabilitySummaryResult('test-code', 5, 2, results, 'B');

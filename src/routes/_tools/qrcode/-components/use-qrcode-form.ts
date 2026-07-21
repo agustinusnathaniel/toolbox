@@ -102,15 +102,15 @@ export function useQRCodeForm(search: SearchParams = {}) {
   };
 
   return {
+    handleCopyShareableLink,
+    handleSaveQR,
     mode,
     setMode,
     svgRef,
+    updateUrlField,
+    updateVCardField,
     urlState,
     vcardState,
     vcardString,
-    updateUrlField,
-    updateVCardField,
-    handleSaveQR,
-    handleCopyShareableLink,
   };
 }

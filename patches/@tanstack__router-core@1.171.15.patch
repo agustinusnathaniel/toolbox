@@ -1,0 +1,34 @@
+diff --git a/dist/cjs/router.cjs b/dist/cjs/router.cjs
+index 69080aaf31f1bc2ad8a42bab33ba11f8cdbe08ce..25446792525e3ff0f16e2207d4d2b3d768be78aa 100644
+--- a/dist/cjs/router.cjs
++++ b/dist/cjs/router.cjs
+@@ -653,7 +653,11 @@ var RouterCore = class {
+ 						types: resolvedViewTransitionTypes
+ 					};
+ 				} else startViewTransitionParams = fn;
+-				document.startViewTransition(startViewTransitionParams);
++				try {
++					document.startViewTransition(startViewTransitionParams);
++				} catch {
++					fn();
++				}
+ 			} else fn();
+ 		};
+ 		this.updateMatch = (id, updater) => {
+diff --git a/dist/esm/router.js b/dist/esm/router.js
+index 7cd17f817b6dbebcf5a5ee44bf83e5beed82e82a..30ced9709f3c03442f7ccdc83b988760773dc664 100644
+--- a/dist/esm/router.js
++++ b/dist/esm/router.js
+@@ -653,7 +653,11 @@ var RouterCore = class {
+ 						types: resolvedViewTransitionTypes
+ 					};
+ 				} else startViewTransitionParams = fn;
+-				document.startViewTransition(startViewTransitionParams);
++				try {
++					document.startViewTransition(startViewTransitionParams);
++				} catch {
++					fn();
++				}
+ 			} else fn();
+ 		};
+ 		this.updateMatch = (id, updater) => {

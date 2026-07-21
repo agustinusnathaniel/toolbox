@@ -149,7 +149,7 @@ function createVmSession(maxOutputLines: number): VmSession | null {
   logHandle.dispose();
   consoleHandle.dispose();
 
-  return { context, runtime, output, outputTruncated };
+  return { context, output, outputTruncated, runtime };
 }
 
 function disposeVmSession(session: VmSession): void {
@@ -183,15 +183,15 @@ function runSnippet(
       : 'runtime_error';
     const phaseLabel = describePhase(phase);
     return {
-      ok: false,
       failure: {
-        phase,
-        status,
         message:
           status === 'timeout'
             ? `Execution timed out during ${phaseLabel} (>${deadlineMs}ms)`
             : `Execution failed during ${phaseLabel}: ${formatUnknownError(error)}`,
+        phase,
+        status,
       },
+      ok: false,
     };
   }
 }
@@ -225,15 +225,15 @@ function runMainIteration(
     const iterationLabel = `${iteration}/${totalIterations}`;
 
     return {
-      ok: false,
       failure: {
-        phase,
-        status,
         message:
           status === 'timeout'
             ? `Execution timed out during ${phaseLabel} ${iterationLabel} (>${deadlineMs}ms)`
             : `Execution failed during ${phaseLabel} ${iterationLabel}: ${formatUnknownError(error)}`,
+        phase,
+        status,
       },
+      ok: false,
     };
   } finally {
     fnHandle.dispose();
@@ -247,9 +247,9 @@ function executeBenchmark(payload: ExecutionRequest): BenchmarkRunOutcome {
     return {
       durations: [],
       failure: {
+        message: 'Runtime not initialized',
         phase: 'setup',
         status: 'worker_error',
-        message: 'Runtime not initialized',
       },
       output: [],
     };
@@ -371,18 +371,18 @@ function buildResult(
       : null;
 
   return {
-    id: payload.id,
     code: payload.code,
-    status,
     durationMs: totalDurationMs,
+    errorMessage,
+    id: payload.id,
+    output,
     perIterationMs:
       durations.length > 0 && totalDurationMs !== null
         ? totalDurationMs / durations.length
         : null,
     statistics:
       durations.length > 0 ? calculateRobustStatistics(durations) : null,
-    errorMessage,
-    output,
+    status,
   };
 }
 
@@ -395,7 +395,7 @@ function execute(payload: ExecutionRequest): void {
       [],
       'Runtime not initialized'
     );
-    const msg: WorkerOutboundMessage = { type: 'result', payload: result };
+    const msg: WorkerOutboundMessage = { payload: result, type: 'result' };
     self.postMessage(msg);
     return;
   }
@@ -412,7 +412,7 @@ function execute(payload: ExecutionRequest): void {
     output,
     failure?.message ?? null
   );
-  const msg: WorkerOutboundMessage = { type: 'result', payload: result };
+  const msg: WorkerOutboundMessage = { payload: result, type: 'result' };
   self.postMessage(msg);
 }
 

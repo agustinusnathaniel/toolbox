@@ -52,8 +52,8 @@ export interface RunPolicy {
 
 export const DEFAULT_RUN_POLICY: RunPolicy = {
   deadlineMs: 5000,
-  maxOutputLines: 100,
   defaultIterations: 30, // 30 timed iterations + 5 warmup = 35 total runs
+  maxOutputLines: 100,
 };
 
 export function isRunable(code: string): boolean {
@@ -102,22 +102,22 @@ export function calculateRobustStatistics(
   if (n === 0) {
     return {
       iterations: 0,
-      minMs: 0,
+      marginMs: 0,
       maxMs: 0,
       meanMs: 0,
+      minMs: 0,
       stddevMs: 0,
-      marginMs: 0,
     };
   }
 
   if (n === 1) {
     return {
       iterations: 1,
-      minMs: durations[0],
+      marginMs: 0,
       maxMs: durations[0],
       meanMs: durations[0],
+      minMs: durations[0],
       stddevMs: 0,
-      marginMs: 0,
     };
   }
 
@@ -164,11 +164,11 @@ export function calculateRobustStatistics(
 
   return {
     iterations: n, // Keep original iteration count for display
-    minMs,
+    marginMs,
     maxMs,
     meanMs,
+    minMs,
     stddevMs,
-    marginMs,
   };
 }
 
@@ -181,14 +181,14 @@ export function createWorkerErrorResult(
   }
 
   return {
-    id: runEntry.id,
     code: runEntry.code,
-    status: 'worker_error',
     durationMs: null,
+    errorMessage: errorMessage ?? 'Worker crashed unexpectedly',
+    id: runEntry.id,
+    output: [],
     perIterationMs: null,
     statistics: null,
-    errorMessage: errorMessage ?? 'Worker crashed unexpectedly',
-    output: [],
+    status: 'worker_error',
   };
 }
 
@@ -217,16 +217,16 @@ export function buildStabilitySummaryResult(
   if (failed.length > 0) {
     const firstFailure = failed[0];
     return {
-      id: `${sideLabel.toLowerCase()}-stability-summary`,
       code,
-      status: firstFailure.status,
       durationMs,
-      perIterationMs,
-      statistics,
       errorMessage:
         `Stability mode had ${failed.length}/${rounds} failed rounds. ` +
         `First failure: ${firstFailure.errorMessage ?? firstFailure.status}.`,
+      id: `${sideLabel.toLowerCase()}-stability-summary`,
       output: firstFailure.output,
+      perIterationMs,
+      statistics,
+      status: firstFailure.status,
     };
   }
 
@@ -237,13 +237,13 @@ export function buildStabilitySummaryResult(
       : baseOutput;
 
   return {
-    id: `${sideLabel.toLowerCase()}-stability-summary`,
     code,
-    status: 'success',
     durationMs,
+    errorMessage: null,
+    id: `${sideLabel.toLowerCase()}-stability-summary`,
+    output,
     perIterationMs,
     statistics,
-    errorMessage: null,
-    output,
+    status: 'success',
   };
 }

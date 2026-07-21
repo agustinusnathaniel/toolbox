@@ -5,12 +5,12 @@ import { generateVCardString } from './qrcode';
 describe('generateVCardString', () => {
   test('generates vCard with full contact info', () => {
     const result = generateVCardString({
+      companyName: 'Acme Inc',
+      emailAddress: 'john@example.com',
       firstName: 'John',
+      jobTitle: 'Engineer',
       lastName: 'Doe',
       mobilePhoneNumber: '+1-555-1234',
-      emailAddress: 'john@example.com',
-      companyName: 'Acme Inc',
-      jobTitle: 'Engineer',
     });
 
     expect(result).toContain('BEGIN:VCARD');
@@ -34,13 +34,13 @@ describe('generateVCardString', () => {
 
   test('generates vCard with address fields', () => {
     const result = generateVCardString({
+      city: 'Portland',
+      country: 'US',
       firstName: 'Jane',
       lastName: 'Smith',
-      streetAddress: '123 Main St',
-      city: 'Portland',
-      state: 'OR',
       postalCode: '97201',
-      country: 'US',
+      state: 'OR',
+      streetAddress: '123 Main St',
     });
 
     expect(result).toContain(
@@ -50,12 +50,12 @@ describe('generateVCardString', () => {
 
   test('generates vCard with address missing city (middle gap)', () => {
     const result = generateVCardString({
+      country: 'US',
       firstName: 'Jane',
       lastName: 'Smith',
-      streetAddress: '123 Main St',
-      state: 'OR',
       postalCode: '97201',
-      country: 'US',
+      state: 'OR',
+      streetAddress: '123 Main St',
     });
 
     expect(result).toContain('ADR;TYPE=WORK,PREF:;;123 Main St;;OR;97201;US');
@@ -63,10 +63,10 @@ describe('generateVCardString', () => {
 
   test('generates vCard with address missing multiple gaps (street + country only)', () => {
     const result = generateVCardString({
+      country: 'US',
       firstName: 'Jane',
       lastName: 'Smith',
       streetAddress: '123 Main St',
-      country: 'US',
     });
 
     expect(result).toContain('ADR;TYPE=WORK,PREF:;;123 Main St;;;;US');
@@ -89,18 +89,18 @@ describe('generateVCardString', () => {
 
   test('generates vCard with all fields filled', () => {
     const result = generateVCardString({
+      city: 'Seattle',
+      companyName: 'Tech Corp',
+      country: 'US',
+      emailAddress: 'alice@example.com',
       firstName: 'Alice',
+      jobTitle: 'Developer',
       lastName: 'Johnson',
       mobilePhoneNumber: '+1-555-1111',
       otherPhoneNumber: '+1-555-2222',
-      emailAddress: 'alice@example.com',
-      companyName: 'Tech Corp',
-      jobTitle: 'Developer',
-      streetAddress: '456 Oak St',
-      city: 'Seattle',
-      state: 'WA',
       postalCode: '98101',
-      country: 'US',
+      state: 'WA',
+      streetAddress: '456 Oak St',
       websiteURL: 'https://alice.dev',
     });
 
@@ -129,9 +129,9 @@ describe('generateVCardString', () => {
 
   test('handles special characters in name and organization', () => {
     const result = generateVCardString({
+      companyName: 'Foo & Bar, LLC',
       firstName: 'José',
       lastName: 'Peña',
-      companyName: 'Foo & Bar, LLC',
     });
 
     expect(result).toContain('N:Peña;José');

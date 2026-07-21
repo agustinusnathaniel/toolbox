@@ -23,26 +23,26 @@ import { SnippetEditors } from './-components/snippet-editors';
 import { useJsPerfRunner } from './-components/use-js-perf-runner';
 
 const meta = {
-  pageTitle: 'JS Performance Comparator',
   description:
     'Compare JavaScript snippet execution in parallel sandboxed runtimes.',
+  pageTitle: 'JS Performance Comparator',
   slug: 'js-perf',
 } as const;
 
 export const Route = createFileRoute('/_tools/js-perf/')({
   component: JsPerfComparatorPage,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
 });
 
 const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';
@@ -80,10 +80,10 @@ function JsPerfComparatorPage() {
     codeA,
     codeB,
     iterations,
-    stabilityMode: stabilityModeEnabled,
-    stabilityRounds,
     setupA,
     setupB,
+    stabilityMode: stabilityModeEnabled,
+    stabilityRounds,
     teardownA,
     teardownB,
   });
@@ -200,14 +200,14 @@ function JsPerfComparatorPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Is the comparison accurate?',
             answer:
               'This tool compares controlled runtime execution, not native browser engine performance. Use it to understand code behavior differences, not benchmark browser engines. If results are close or flip between runs, enable Stability mode to aggregate multiple rounds.',
+            question: 'Is the comparison accurate?',
           },
           {
-            question: 'What is QuickJS?',
             answer:
               'QuickJS is a small JavaScript engine that runs in a Web Worker. Code is sandboxed and cannot access host APIs.',
+            question: 'What is QuickJS?',
           },
         ]}
         howItWorks={{

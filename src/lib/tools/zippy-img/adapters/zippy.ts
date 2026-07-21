@@ -27,9 +27,9 @@ function getImageDimensions(
 
     img.onload = () => {
       resolve({
-        width: img.naturalWidth,
         height: img.naturalHeight,
         size: typeof source === 'string' ? undefined : source.size,
+        width: img.naturalWidth,
       });
     };
 
@@ -42,9 +42,9 @@ function getImageDimensions(
       img.onload = () => {
         URL.revokeObjectURL(img.src);
         resolve({
-          width: img.naturalWidth,
           height: img.naturalHeight,
           size: source.size,
+          width: img.naturalWidth,
         });
       };
     }
@@ -66,8 +66,8 @@ export async function compressImage(
   const compressed = await imageCompression(file, {
     maxSizeMB,
     maxWidthOrHeight,
-    preserveExif: true,
     onProgress: options.onProgress,
+    preserveExif: true,
   });
 
   return new File([compressed], file.name, { type: file.type });

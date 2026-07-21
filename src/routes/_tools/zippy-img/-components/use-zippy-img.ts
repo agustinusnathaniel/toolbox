@@ -63,7 +63,7 @@ export function useZippyImg(
     trackAction('compress');
     setIsCompressing(true);
     setInputs((prev) =>
-      prev.map((p) => ({ ...p, progress: 0, compressed: undefined }))
+      prev.map((p) => ({ ...p, compressed: undefined, progress: 0 }))
     );
 
     const results = await Promise.all(
@@ -76,10 +76,10 @@ export function useZippyImg(
               );
             },
           });
-          return { file: item.file, progress: 100, compressed };
+          return { compressed, file: item.file, progress: 100 };
         } catch {
           toast.error(`Failed to compress "${item.file.name}"`);
-          return { file: item.file, progress: 0, compressed: undefined };
+          return { compressed: undefined, file: item.file, progress: 0 };
         }
       })
     );
@@ -127,17 +127,17 @@ export function useZippyImg(
       : 0;
 
   return {
-    inputs,
-    isCompressing,
     allDone,
-    hasCompressed,
     compressedItems,
-    totalOriginal,
-    totalCompressed,
-    totalSavings,
-    handleFilesSelected,
     executeCompress,
     handleDownload,
+    handleFilesSelected,
     handleRemove,
+    hasCompressed,
+    inputs,
+    isCompressing,
+    totalCompressed,
+    totalOriginal,
+    totalSavings,
   };
 }

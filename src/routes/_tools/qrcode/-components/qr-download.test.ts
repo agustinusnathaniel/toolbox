@@ -32,10 +32,10 @@ function setupMocks(opts: { getContextResult: object | null }) {
   vi.spyOn(document, 'createElement').mockImplementation(((tag: string) => {
     if (tag === 'canvas') {
       return {
-        width: 0,
-        height: 0,
         getContext: mockGetContext,
+        height: 0,
         toDataURL: mockToDataURL,
+        width: 0,
       };
     }
     if (tag === 'a') {
@@ -60,14 +60,14 @@ function setupMocks(opts: { getContextResult: object | null }) {
   vi.stubGlobal('Image', MockImage);
 
   return {
-    mockSerialize,
-    mockCreateObjectURL,
-    mockRevokeObjectURL,
-    mockClick,
-    mockGetContext,
-    mockToDataURL,
-    mockDrawImage,
     getCapturedOnload: () => capturedOnload,
+    mockClick,
+    mockCreateObjectURL,
+    mockDrawImage,
+    mockGetContext,
+    mockRevokeObjectURL,
+    mockSerialize,
+    mockToDataURL,
   };
 }
 
