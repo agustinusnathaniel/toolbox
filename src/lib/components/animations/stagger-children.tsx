@@ -13,16 +13,16 @@ type StaggerChildrenProps<T extends ElementType = 'div'> = {
 } & Omit<ComponentPropsWithRef<T>, 'as' | 'children' | 'className'>;
 
 const motionComponents = {
-  div: motion.div,
-  section: motion.section,
   article: motion.article,
   aside: motion.aside,
-  main: motion.main,
-  header: motion.header,
+  div: motion.div,
   footer: motion.footer,
+  header: motion.header,
+  main: motion.main,
   nav: motion.nav,
-  ul: motion.ul,
   ol: motion.ol,
+  section: motion.section,
+  ul: motion.ul,
 } as const;
 
 type MotionComponentKey = keyof typeof motionComponents;
@@ -55,13 +55,13 @@ export const StaggerChildren = <T extends ElementType = 'div'>({
     hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
-      y: 0,
       transition: reducedMotion
         ? { duration: 0 }
         : {
             duration,
             ease: [0.4, 0, 0.2, 1],
           },
+      y: 0,
     },
   };
 

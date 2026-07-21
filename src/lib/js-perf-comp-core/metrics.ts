@@ -41,8 +41,8 @@ function getInterval(result: ExecutionResult): ConfidenceInterval | null {
   }
 
   return {
-    lowMs: Math.max(0, meanMs - marginMs),
     highMs: Math.max(0, meanMs + marginMs),
+    lowMs: Math.max(0, meanMs - marginMs),
   };
 }
 
@@ -130,18 +130,18 @@ export function buildComparisonMetrics(
   const verdict = buildVerdict(absoluteDeltaMs, combinedMarginMs);
 
   return {
-    winner,
-    speedup,
     absoluteDeltaMs,
-    percentDelta,
-    combinedMarginMs,
-    marginRatio,
-    verdict,
-    confidenceText: buildConfidenceText(verdict, intervalsOverlap),
     aInterval,
     bInterval,
+    combinedMarginMs,
+    confidenceText: buildConfidenceText(verdict, intervalsOverlap),
     intervalsOverlap,
+    marginRatio,
+    percentDelta,
     relativeMarginA: getRelativeMargin(resultA),
     relativeMarginB: getRelativeMargin(resultB),
+    speedup,
+    verdict,
+    winner,
   };
 }

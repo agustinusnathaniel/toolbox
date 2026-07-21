@@ -84,11 +84,11 @@ const PendingPage = () => (
 );
 
 const router = createRouter({
-  routeTree,
+  defaultNotFoundComponent: NotFoundPage,
+  defaultPendingComponent: PendingPage,
   defaultPreload: 'intent',
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  defaultStructuralSharing: true,
   // View Transition API: errors (InvalidStateError on concurrent transitions)
   // are caught by a pnpm patch on @tanstack/router-core that falls back to
   // direct update. CSS animations via .route-transition serve as fallback.
@@ -96,8 +96,8 @@ const router = createRouter({
   defaultViewTransition: {
     types: ({ pathChanged }) => (pathChanged ? [] : false),
   },
-  defaultPendingComponent: PendingPage,
-  defaultNotFoundComponent: NotFoundPage,
+  routeTree,
+  scrollRestoration: true,
 });
 
 declare module '@tanstack/react-router' {

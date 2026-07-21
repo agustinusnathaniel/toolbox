@@ -13,9 +13,9 @@ const DATE_TIME_FMT_REGEX = /^\d{8}T\d{6}Z$/;
 describe('generateGoogleCalendarLink', () => {
   test('generates correct URL with title and dates', () => {
     const result = generateGoogleCalendarLink({
-      title: 'Team Meeting',
-      start: '2026-05-01T10:00',
       end: '2026-05-01T11:00',
+      start: '2026-05-01T10:00',
+      title: 'Team Meeting',
     });
 
     expect(result.provider).toBe('google');
@@ -28,11 +28,11 @@ describe('generateGoogleCalendarLink', () => {
 
   test('includes description and location when provided', () => {
     const result = generateGoogleCalendarLink({
-      title: 'Conference',
       description: 'Annual conference',
+      end: '2026-06-03T17:00',
       location: 'Convention Center',
       start: '2026-06-01T09:00',
-      end: '2026-06-03T17:00',
+      title: 'Conference',
     });
 
     expect(result.url).toContain('details=Annual%20conference');
@@ -41,9 +41,9 @@ describe('generateGoogleCalendarLink', () => {
 
   test('encodes special characters in title', () => {
     const result = generateGoogleCalendarLink({
-      title: 'Party & Dinner @ 7pm',
-      start: '2026-07-04T19:00',
       end: '2026-07-04T22:00',
+      start: '2026-07-04T19:00',
+      title: 'Party & Dinner @ 7pm',
     });
 
     expect(result.url).toContain(encodeURIComponent('Party & Dinner @ 7pm'));
@@ -51,9 +51,9 @@ describe('generateGoogleCalendarLink', () => {
 
   test('dates parameter uses YYYYMMDDTHHMMSSZ format without millisecond suffix', () => {
     const result = generateGoogleCalendarLink({
-      title: 'Test',
-      start: '2026-06-27T12:00:00',
       end: '2026-06-27T13:30:00',
+      start: '2026-06-27T12:00:00',
+      title: 'Test',
     });
 
     // Extract the dates parameter value
@@ -73,9 +73,9 @@ describe('generateGoogleCalendarLink', () => {
 
 test('handles invalid date strings gracefully', () => {
   const result = generateGoogleCalendarLink({
-    title: 'Test',
-    start: 'not-a-date',
     end: 'also-invalid',
+    start: 'not-a-date',
+    title: 'Test',
   });
 
   expect(result.url).toContain('text=Test');
@@ -84,9 +84,9 @@ test('handles invalid date strings gracefully', () => {
 
 test('handles mix of valid and invalid dates', () => {
   const result = generateGoogleCalendarLink({
-    title: 'Test',
-    start: '2026-05-01T10:00',
     end: 'invalid',
+    start: '2026-05-01T10:00',
+    title: 'Test',
   });
 
   expect(result.url).toContain('text=Test');
@@ -108,35 +108,35 @@ describe('formatLocalDateTimeString', () => {
 describe('buildCalendarSearchParams', () => {
   test('returns object with all fields', () => {
     const result = buildCalendarSearchParams({
-      title: 'Team Meeting',
       description: 'Weekly sync',
+      end: '2026-06-01T11:00',
       location: 'Room 1',
       start: '2026-06-01T10:00',
-      end: '2026-06-01T11:00',
+      title: 'Team Meeting',
     });
     expect(result).toEqual({
-      title: 'Team Meeting',
       desc: 'Weekly sync',
+      end: '2026-06-01T11:00',
       loc: 'Room 1',
       start: '2026-06-01T10:00',
-      end: '2026-06-01T11:00',
+      title: 'Team Meeting',
     });
   });
 
   test('omits empty fields', () => {
     const result = buildCalendarSearchParams({
-      title: '',
       description: '',
+      end: '',
       location: '',
       start: '',
-      end: '',
+      title: '',
     });
     expect(result).toEqual({
-      title: undefined,
       desc: undefined,
+      end: undefined,
       loc: undefined,
       start: undefined,
-      end: undefined,
+      title: undefined,
     });
   });
 
@@ -145,11 +145,11 @@ describe('buildCalendarSearchParams', () => {
       title: 'Conference',
     });
     expect(result).toEqual({
-      title: 'Conference',
       desc: undefined,
+      end: undefined,
       loc: undefined,
       start: undefined,
-      end: undefined,
+      title: 'Conference',
     });
   });
 });

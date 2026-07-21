@@ -23,19 +23,19 @@ function simpleResult(
   marginMs?: number
 ): ExecutionResult {
   return makeExecResult({
-    status: 'success',
     perIterationMs,
     statistics:
       meanMs === undefined
         ? null
         : {
             iterations: 10,
+            marginMs: marginMs ?? 0,
             maxMs: perIterationMs * 1.5,
             meanMs,
             minMs: perIterationMs * 0.5,
-            marginMs: marginMs ?? 0,
             stddevMs: marginMs === undefined ? 0 : marginMs / 2,
           },
+    status: 'success',
   });
 }
 
@@ -54,7 +54,7 @@ describe('buildComparisonMetrics', () => {
 
   test('returns null when result A is not success', () => {
     const result = buildComparisonMetrics(
-      makeExecResult({ status: 'runtime_error', durationMs: null }),
+      makeExecResult({ durationMs: null, status: 'runtime_error' }),
       simpleResult(10)
     );
     expect(result).toBeNull();
@@ -63,15 +63,15 @@ describe('buildComparisonMetrics', () => {
   test('returns null when result B is not success', () => {
     const result = buildComparisonMetrics(
       simpleResult(10),
-      makeExecResult({ status: 'timeout', durationMs: null })
+      makeExecResult({ durationMs: null, status: 'timeout' })
     );
     expect(result).toBeNull();
   });
 
   test('returns null when perIterationMs is null on either result', () => {
     const result = buildComparisonMetrics(
-      makeExecResult({ status: 'success', perIterationMs: 10 }),
-      makeExecResult({ status: 'success', perIterationMs: null })
+      makeExecResult({ perIterationMs: 10, status: 'success' }),
+      makeExecResult({ perIterationMs: null, status: 'success' })
     );
     expect(result).toBeNull();
   });
@@ -147,8 +147,8 @@ describe('buildComparisonMetrics', () => {
     );
 
     expect(result?.intervalsOverlap).toBe(true);
-    expect(result?.aInterval).toStrictEqual({ lowMs: 8, highMs: 12 });
-    expect(result?.bInterval).toStrictEqual({ lowMs: 10, highMs: 14 });
+    expect(result?.aInterval).toStrictEqual({ highMs: 12, lowMs: 8 });
+    expect(result?.bInterval).toStrictEqual({ highMs: 14, lowMs: 10 });
   });
 
   test('intervals do not overlap when confidence intervals are separate', () => {
@@ -163,9 +163,9 @@ describe('buildComparisonMetrics', () => {
   test('null relative margins and intervals when statistics missing', () => {
     const result = buildComparisonMetrics(
       makeExecResult({
-        status: 'success',
         perIterationMs: 10,
         statistics: null,
+        status: 'success',
       }),
       simpleResult(20, 20, 5)
     );
@@ -173,7 +173,7 @@ describe('buildComparisonMetrics', () => {
     expect(result?.relativeMarginA).toBeNull();
     expect(result?.relativeMarginB).toBeCloseTo(25, 4);
     expect(result?.aInterval).toBeNull();
-    expect(result?.bInterval).toStrictEqual({ lowMs: 15, highMs: 25 });
+    expect(result?.bInterval).toStrictEqual({ highMs: 25, lowMs: 15 });
     expect(result?.intervalsOverlap).toBeNull();
   });
 });
@@ -206,9 +206,9 @@ describe('buildConfidenceText scenarios', () => {
   test('confident verdict with null interval overlap', () => {
     const result = buildComparisonMetrics(
       makeExecResult({
-        status: 'success',
         perIterationMs: 10,
         statistics: null,
+        status: 'success',
       }),
       simpleResult(20, 20, 1)
     );

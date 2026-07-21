@@ -40,18 +40,18 @@ describe('parseWorkerMessage', () => {
   });
   test('type "result" with payload -> parsed message', () => {
     const payload = {
-      id: 'abc',
-      status: 'success',
       code: '',
       durationMs: null,
       errorMessage: null,
+      id: 'abc',
       output: [],
       perIterationMs: null,
       statistics: null,
+      status: 'success',
     };
-    expect(parseWorkerMessage({ type: 'result', payload })).toStrictEqual({
-      type: 'result',
+    expect(parseWorkerMessage({ payload, type: 'result' })).toStrictEqual({
       payload,
+      type: 'result',
     });
   });
   test('null -> returns null', () => {

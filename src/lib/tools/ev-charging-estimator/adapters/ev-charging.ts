@@ -56,11 +56,11 @@ export const CHARGER_LABELS: Record<ChargerType, string> = {
 // Calibrated from Jaecoo J5 data (7 sessions, Apr-Jul 2026)
 // Note: 30-50 kW band has no direct data; set to adjacent 10-30 kW value (0.88).
 const POWER_EFFICIENCY_TABLE: Array<{ maxKw: number; efficiency: number }> = [
-  { maxKw: 10, efficiency: 0.86 },
-  { maxKw: 30, efficiency: 0.88 },
-  { maxKw: 50, efficiency: 0.88 },
-  { maxKw: 80, efficiency: 0.86 },
-  { maxKw: Number.POSITIVE_INFINITY, efficiency: 0.87 },
+  { efficiency: 0.86, maxKw: 10 },
+  { efficiency: 0.88, maxKw: 30 },
+  { efficiency: 0.88, maxKw: 50 },
+  { efficiency: 0.86, maxKw: 80 },
+  { efficiency: 0.87, maxKw: Number.POSITIVE_INFINITY },
 ];
 
 function getEfficiency(chargerType: ChargerType, powerKw?: number): number {
@@ -123,12 +123,12 @@ export function calculateChargingEstimate(
   const calibratedTotalKwh = totalKwh * calibration;
 
   const result: ChargingResult = {
-    usableCapacity: round2(usableCapacity),
-    totalKwh: round2(calibratedTotalKwh),
     baseKwh: round2(baseKwh),
     conversionLossKwh: round2(calibratedTotalKwh - baseKwh),
     efficiency,
     socPenaltyKwh: round2(Math.abs(socPenaltyKwh) * calibration),
+    totalKwh: round2(calibratedTotalKwh),
+    usableCapacity: round2(usableCapacity),
   };
 
   if (inputs.electricityRate && inputs.electricityRate > 0) {
@@ -161,9 +161,9 @@ function calcAboveThreshold(
   efficiency: number
 ): { topPart: number; penalty: number } {
   const breakpoints = [
-    { start: SOC_THRESHOLD, end: 90, penalty: SOC_PENALTY },
-    { start: 90, end: 95, penalty: SOC_PENALTY_90 },
-    { start: 95, end: 100, penalty: SOC_PENALTY_95 },
+    { end: 90, penalty: SOC_PENALTY, start: SOC_THRESHOLD },
+    { end: 95, penalty: SOC_PENALTY_90, start: 90 },
+    { end: 100, penalty: SOC_PENALTY_95, start: 95 },
   ];
 
   let topPart = 0;
@@ -182,7 +182,7 @@ function calcAboveThreshold(
     penalty += segKwh / eff - segKwh / efficiency;
   }
 
-  return { topPart, penalty };
+  return { penalty, topPart };
 }
 
 export interface ChargingSearchInput {

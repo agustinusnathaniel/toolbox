@@ -18,26 +18,26 @@ import {
 } from './-components/use-zippy-img';
 
 const meta = {
-  pageTitle: 'Zippy Image',
   description:
     'Compress images securely in your browser with no server upload.',
+  pageTitle: 'Zippy Image',
   slug: 'zippy-img',
 } as const;
 
 export const Route = createFileRoute('/_tools/zippy-img/')({
   component: ZippyImgPage,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
 });
 
 function ZippyImgPage() {
@@ -116,13 +116,13 @@ function ZippyImgPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Is my data safe?',
             answer:
               'Yes. All processing happens in your browser. No files or images are sent to any server.',
+            question: 'Is my data safe?',
           },
           {
-            question: 'What formats are supported?',
             answer: 'Most common image formats including PNG, JPEG, and WebP.',
+            question: 'What formats are supported?',
           },
         ]}
         howItWorks={{

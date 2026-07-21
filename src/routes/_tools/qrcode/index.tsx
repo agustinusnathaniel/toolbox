@@ -13,48 +13,48 @@ import { useQRCodeForm } from './-components/use-qrcode-form';
 import { VCardQRCard } from './-components/vcard-qr-card';
 
 const searchSchema = z.object({
-  mode: z.enum(['url', 'vcard']).optional(),
-  // URL mode
-  value: z.string().optional(),
-  fg: z.string().optional(),
   bg: z.string().optional(),
+  cn: z.string().optional(),
+  co: z.string().optional(),
+  ct: z.string().optional(),
+  em: z.string().optional(),
+  fg: z.string().optional(),
   // VCard mode
   fn: z.string().optional(),
+  jt: z.string().optional(),
   ln: z.string().optional(),
+  mode: z.enum(['url', 'vcard']).optional(),
   mp: z.string().optional(),
   op: z.string().optional(),
-  em: z.string().optional(),
-  co: z.string().optional(),
-  jt: z.string().optional(),
-  st: z.string().optional(),
-  ct: z.string().optional(),
-  sa: z.string().optional(),
   pc: z.string().optional(),
-  cn: z.string().optional(),
+  sa: z.string().optional(),
+  st: z.string().optional(),
+  // URL mode
+  value: z.string().optional(),
   wb: z.string().optional(),
 });
 
 const meta = {
-  pageTitle: 'QR Code Generator',
   description: 'Generate QR codes for URLs or vCard contact information.',
+  pageTitle: 'QR Code Generator',
   slug: 'qrcode',
 } as const;
 
 export const Route = createFileRoute('/_tools/qrcode/')({
   component: QRCodeGeneratorPage,
-  validateSearch: searchSchema,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
+  validateSearch: searchSchema,
 });
 
 const qrSize = 220;
@@ -148,14 +148,14 @@ function QRCodeGeneratorPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Is my data safe?',
             answer:
               'Yes. All QR code generation happens in your browser. No data is sent to any server.',
+            question: 'Is my data safe?',
           },
           {
-            question: 'What is VCard?',
             answer:
               "VCard is a standard file format for electronic business cards. The QR code contains your contact information that can be saved directly to a phone's contacts.",
+            question: 'What is VCard?',
           },
         ]}
         howItWorks={{

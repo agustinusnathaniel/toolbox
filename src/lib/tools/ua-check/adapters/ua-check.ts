@@ -5,17 +5,17 @@ export const parseUserAgent = (ua?: string) => {
 
   return {
     browser: {
+      major: browser.major,
       name: browser.name,
       version: browser.version,
-      major: browser.major,
     },
     cpu: {
       architecture: cpu.architecture,
     },
     device: {
+      model: device.model,
       type: device.type,
       vendor: device.vendor,
-      model: device.model,
     },
     engine: {
       name: engine.name,

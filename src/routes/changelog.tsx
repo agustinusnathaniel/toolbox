@@ -9,8 +9,8 @@ export const Route = createFileRoute('/changelog')({
     meta: [
       { title: `Changelog — ${SITE_NAME}` },
       {
-        name: 'description',
         content: "What's new in Toolbox — product updates and improvements.",
+        name: 'description',
       },
     ],
   }),

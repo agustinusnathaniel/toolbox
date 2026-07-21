@@ -67,8 +67,8 @@ describe('page', () => {
     const result = callback({ existing: 'prop' });
     expect(result).toEqual({
       existing: 'prop',
-      url: '/',
       title: 'Home',
+      url: '/',
     });
   });
 

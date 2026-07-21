@@ -13,49 +13,49 @@ const WASM_URL_PATTERN = /\.wasm$/i;
 const WORKER_GLOB_IGNORE = ['**/js-perf.worker-**'];
 
 const pwaOptions = (mode: string): Partial<VitePWAOptions> => ({
-  disable: mode !== 'production',
-  registerType: 'prompt',
   base: '/',
+  disable: mode !== 'production',
   includeAssets: [
     'favicon.ico',
     'apple-touch-icon-180x180.png',
     'maskable-icon-512x512.png',
   ],
   manifest: {
-    id: '/',
-    short_name: 'Tools',
-    name: 'Toolbox — Unified Utility Platform',
+    background_color: '#FFFFFF',
+    categories: ['developer tools', 'utilities', 'productivity'],
     description:
       'A unified toolkit for developers — JSON tools, text utilities, JS benchmarking, and more.',
-    theme_color: '#000000',
-    lang: 'en',
-    start_url: '/',
-    background_color: '#FFFFFF',
     dir: 'ltr',
     display: 'standalone',
     display_override: ['window-controls-overlay', 'standalone'],
+    id: '/',
+    lang: 'en',
+    name: 'Toolbox — Unified Utility Platform',
     prefer_related_applications: false,
-    categories: ['developer tools', 'utilities', 'productivity'],
+    short_name: 'Tools',
+    start_url: '/',
+    theme_color: '#000000',
   },
   pwaAssets: {
-    disabled: false,
     config: true,
+    disabled: false,
   },
+  registerType: 'prompt',
   workbox: {
-    globPatterns: ['**/*.{js,css,html,woff2,ico,png,svg,jpeg,jpg}'],
     cleanupOutdatedCaches: true,
     globIgnores: WORKER_GLOB_IGNORE,
+    globPatterns: ['**/*.{js,css,html,woff2,ico,png,svg,jpeg,jpg}'],
     runtimeCaching: [
       {
-        urlPattern: WASM_URL_PATTERN,
         handler: 'NetworkFirst',
         options: {
           cacheName: 'wasm-files',
           expiration: {
-            maxEntries: 10,
             maxAgeSeconds: 60 * 60 * 24 * 7,
+            maxEntries: 10,
           },
         },
+        urlPattern: WASM_URL_PATTERN,
       },
     ],
   },
@@ -68,18 +68,15 @@ export default defineConfig(({ mode }) => {
   const isReactCompilerEnabled = env.ENABLE_PLUGIN_REACT_COMPILER === 'true';
 
   return {
-    lint: {
-      options: { typeAware: true, typeCheck: true },
-      // disable vp check
-      ignorePatterns: ['**/*'],
-    },
     fmt: {
-      singleQuote: true,
       // disable vp fmt
       ignorePatterns: ['**/*'],
+      singleQuote: true,
     },
-    staged: {
-      '*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}': ['ultracite fix'],
+    lint: {
+      // disable vp check
+      ignorePatterns: ['**/*'],
+      options: { typeAware: true, typeCheck: true },
     },
     plugins: lazyPlugins(() => [
       ValidateEnv(),
@@ -107,11 +104,11 @@ export default defineConfig(({ mode }) => {
     resolve: {
       tsconfigPaths: true,
     },
+    staged: {
+      '*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}': ['ultracite fix'],
+    },
     test: {
-      environment: 'jsdom',
-      setupFiles: ['./src/lib/test-setup.ts'],
       coverage: {
-        include: ['src/**/**.{ts,tsx,js,jsx}'],
         exclude: [
           '**/*.test.*',
           '**/*.spec.*',
@@ -119,7 +116,10 @@ export default defineConfig(({ mode }) => {
           'src/main.tsx',
           'src/env.d.ts',
         ],
+        include: ['src/**/**.{ts,tsx,js,jsx}'],
       },
+      environment: 'jsdom',
+      setupFiles: ['./src/lib/test-setup.ts'],
     },
   };
 });

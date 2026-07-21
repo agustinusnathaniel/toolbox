@@ -143,13 +143,13 @@ export function useJsPerfRunner(
     reqB.id = `b-r${nextRound}-${reqB.id}`;
 
     activeRunRef.current = {
-      a: { id: reqA.id, code: reqA.code },
-      b: { id: reqB.id, code: reqB.code },
+      a: { code: reqA.code, id: reqA.id },
+      b: { code: reqB.code, id: reqB.id },
     };
     pendingRef.current = new Set([reqA.id, reqB.id]);
 
-    const msgA: WorkerInboundMessage = { type: 'execute', payload: reqA };
-    const msgB: WorkerInboundMessage = { type: 'execute', payload: reqB };
+    const msgA: WorkerInboundMessage = { payload: reqA, type: 'execute' };
+    const msgB: WorkerInboundMessage = { payload: reqB, type: 'execute' };
 
     workerARef.current.postMessage(msgA);
     workerBRef.current.postMessage(msgB);
@@ -303,19 +303,19 @@ export function useJsPerfRunner(
     setRunState('running');
 
     sessionRef.current = {
-      mode: opts.stabilityMode ? 'stability' : 'single',
-      roundsTotal: opts.stabilityRounds,
-      roundsCompleted: 0,
-      iterations: opts.iterations,
-      deadlineMs: deadlineRef.current,
       codeA: opts.codeA,
       codeB: opts.codeB,
-      setupA: opts.setupA,
-      teardownA: opts.teardownA,
-      setupB: opts.setupB,
-      teardownB: opts.teardownB,
+      deadlineMs: deadlineRef.current,
+      iterations: opts.iterations,
+      mode: opts.stabilityMode ? 'stability' : 'single',
       resultsA: [],
       resultsB: [],
+      roundsCompleted: 0,
+      roundsTotal: opts.stabilityRounds,
+      setupA: opts.setupA,
+      setupB: opts.setupB,
+      teardownA: opts.teardownA,
+      teardownB: opts.teardownB,
     };
     startSessionRound();
   }, [runState, isReady, startSessionRound]);

@@ -47,16 +47,16 @@ describe('usePersistedState', () => {
   });
 
   test('handles complex objects', () => {
-    const defaultObj = { name: 'test', count: 0 };
+    const defaultObj = { count: 0, name: 'test' };
     const { result } = renderHook(() =>
       usePersistedState('test-key', defaultObj)
     );
 
     act(() => {
-      result.current[1]({ name: 'updated', count: 5 });
+      result.current[1]({ count: 5, name: 'updated' });
     });
 
-    expect(result.current[0]).toEqual({ name: 'updated', count: 5 });
+    expect(result.current[0]).toEqual({ count: 5, name: 'updated' });
   });
 
   test('returns default value for invalid JSON in localStorage', () => {

@@ -10,11 +10,11 @@ describe('calculateChargingEstimate', () => {
   describe('charging within 80% zone (endSOC <= 80%)', () => {
     test('calculates correct kWh for AC L2 20->60%', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 60,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const expectedBase = (60 - 20) * (75 / 100);
@@ -31,11 +31,11 @@ describe('calculateChargingEstimate', () => {
 
     test('calculates correct kWh for DC Fast 10->50%', () => {
       const result = calculateChargingEstimate({
-        startSOC: 10,
+        chargerType: 'dc-fast',
         endSOC: 50,
+        startSOC: 10,
         totalCapacity: 60,
         usablePercent: 100,
-        chargerType: 'dc-fast',
       });
 
       const expectedBase = (50 - 10) * (60 / 100);
@@ -50,11 +50,11 @@ describe('calculateChargingEstimate', () => {
   describe('charging across 80% threshold (start < 80, end > 80)', () => {
     test('splits calculation for 20->100% on AC L2', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       // Graduated penalty: 80-90% = 4.5pp, 90-95% = 4.5pp, 95-100% = 4.5pp
@@ -75,11 +75,11 @@ describe('calculateChargingEstimate', () => {
 
     test('splits calculation for 50->95% on AC L1', () => {
       const result = calculateChargingEstimate({
-        startSOC: 50,
+        chargerType: 'ac-l1',
         endSOC: 95,
+        startSOC: 50,
         totalCapacity: 100,
         usablePercent: 100,
-        chargerType: 'ac-l1',
       });
 
       // Graduated penalty: 80-90% = 4.5pp, 90-95% = 4.5pp
@@ -97,11 +97,11 @@ describe('calculateChargingEstimate', () => {
   describe('charging entirely above 80% (start >= 80)', () => {
     test('applies penalty for 80->100% on DC Ultra', () => {
       const result = calculateChargingEstimate({
-        startSOC: 80,
+        chargerType: 'dc-ultra',
         endSOC: 100,
+        startSOC: 80,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'dc-ultra',
       });
 
       // Graduated penalty: 80-90% = 4.5pp, 90-95% = 4.5pp, 95-100% = 4.5pp
@@ -118,11 +118,11 @@ describe('calculateChargingEstimate', () => {
 
     test('applies penalty for 85->95% on AC L2', () => {
       const result = calculateChargingEstimate({
-        startSOC: 85,
+        chargerType: 'ac-l2',
         endSOC: 95,
+        startSOC: 85,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       // Graduated penalty: 85-90% = 4.5pp, 90-95% = 4.5pp
@@ -141,30 +141,33 @@ describe('calculateChargingEstimate', () => {
       ['ac-l2', 0.86],
       ['dc-fast', 0.87],
       ['dc-ultra', 0.85],
-    ] as const)('charger %s uses efficiency %s', (chargerType, expectedEfficiency) => {
-      const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 60,
-        totalCapacity: 75,
-        usablePercent: 100,
-        chargerType,
-      });
+    ] as const)(
+      'charger %s uses efficiency %s',
+      (chargerType, expectedEfficiency) => {
+        const result = calculateChargingEstimate({
+          chargerType,
+          endSOC: 60,
+          startSOC: 20,
+          totalCapacity: 75,
+          usablePercent: 100,
+        });
 
-      const expectedBase = (60 - 20) * (75 / 100);
-      const expectedTotal = expectedBase / expectedEfficiency;
+        const expectedBase = (60 - 20) * (75 / 100);
+        const expectedTotal = expectedBase / expectedEfficiency;
 
-      expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
-    });
+        expect(result.totalKwh).toBe(Math.round(expectedTotal * 100) / 100);
+      }
+    );
   });
 
   describe('usable capacity calculation', () => {
     test('derives usableCapacity from totalCapacity and usablePercent', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 82,
         usablePercent: 92,
-        chargerType: 'ac-l2',
       });
 
       expect(result.usableCapacity).toBe(75.44);
@@ -172,11 +175,11 @@ describe('calculateChargingEstimate', () => {
 
     test('uses usableCapacity in energy calculation', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 82,
         usablePercent: 92,
-        chargerType: 'ac-l2',
       });
 
       const expectedUsable = 82 * 0.92;
@@ -188,11 +191,11 @@ describe('calculateChargingEstimate', () => {
 
     test('defaults to 100% when usablePercent is 100', () => {
       const result = calculateChargingEstimate({
-        startSOC: 0,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 0,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       expect(result.usableCapacity).toBe(75);
@@ -200,19 +203,19 @@ describe('calculateChargingEstimate', () => {
 
     test('reduces usableCapacity when usablePercent is lower', () => {
       const result100 = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const result90 = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 90,
-        chargerType: 'ac-l2',
       });
 
       expect(result90.usableCapacity).toBeLessThan(result100.usableCapacity);
@@ -223,12 +226,12 @@ describe('calculateChargingEstimate', () => {
   describe('cost calculation', () => {
     test('calculates cost when electricityRate is provided', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 80,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'ac-l2',
         electricityRate: 0.15,
+        endSOC: 80,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       expect(result.estimatedCost).toBeDefined();
@@ -239,12 +242,12 @@ describe('calculateChargingEstimate', () => {
 
     test('does not include cost when electricityRate is 0', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 80,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'ac-l2',
         electricityRate: 0,
+        endSOC: 80,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       expect(result.estimatedCost).toBeUndefined();
@@ -252,11 +255,11 @@ describe('calculateChargingEstimate', () => {
 
     test('does not include cost when electricityRate is not provided', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       expect(result.estimatedCost).toBeUndefined();
@@ -266,12 +269,12 @@ describe('calculateChargingEstimate', () => {
   describe('time calculation', () => {
     test('calculates time when chargingPower is provided', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 80,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'ac-l2',
         chargingPower: 11,
+        endSOC: 80,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       // 11kW → power-based efficiency 0.88 (from power table, ≤30kW tier)
@@ -285,12 +288,12 @@ describe('calculateChargingEstimate', () => {
 
     test('does not include time when chargingPower is 0', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 80,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'ac-l2',
         chargingPower: 0,
+        endSOC: 80,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       expect(result.estimatedTimeHours).toBeUndefined();
@@ -298,11 +301,11 @@ describe('calculateChargingEstimate', () => {
 
     test('does not include time when chargingPower is not provided', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       expect(result.estimatedTimeHours).toBeUndefined();
@@ -312,11 +315,11 @@ describe('calculateChargingEstimate', () => {
   describe('edge cases', () => {
     test('returns 0 kWh when startSOC equals endSOC', () => {
       const result = calculateChargingEstimate({
-        startSOC: 50,
+        chargerType: 'ac-l2',
         endSOC: 50,
+        startSOC: 50,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       expect(result.totalKwh).toBe(0);
@@ -326,11 +329,11 @@ describe('calculateChargingEstimate', () => {
 
     test('handles full charge 0->100%', () => {
       const result = calculateChargingEstimate({
-        startSOC: 0,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 0,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       expect(result.totalKwh).toBeGreaterThan(75);
@@ -340,11 +343,11 @@ describe('calculateChargingEstimate', () => {
 
     test('comparison80 is undefined when endSOC <= 80', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       expect(result.comparison80).toBeUndefined();
@@ -354,20 +357,20 @@ describe('calculateChargingEstimate', () => {
   describe('calibration factor', () => {
     test('defaults to 1 when not provided', () => {
       const withoutCal = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const withCal1 = calculateChargingEstimate({
-        startSOC: 20,
+        calibrationFactor: 1,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
-        calibrationFactor: 1,
       });
 
       expect(withoutCal.totalKwh).toBe(withCal1.totalKwh);
@@ -375,20 +378,20 @@ describe('calculateChargingEstimate', () => {
 
     test('scales totalKwh by calibration factor', () => {
       const base = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const calibrated = calculateChargingEstimate({
-        startSOC: 20,
+        calibrationFactor: 1.1,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
-        calibrationFactor: 1.1,
       });
 
       expect(calibrated.totalKwh).toBe(
@@ -398,22 +401,22 @@ describe('calculateChargingEstimate', () => {
 
     test('scales cost by calibration factor', () => {
       const base = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 80,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'ac-l2',
         electricityRate: 0.15,
+        endSOC: 80,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       const calibrated = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 80,
-        totalCapacity: 75,
-        usablePercent: 100,
+        calibrationFactor: 1.1,
         chargerType: 'ac-l2',
         electricityRate: 0.15,
-        calibrationFactor: 1.1,
+        endSOC: 80,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       expect(calibrated.estimatedCost).toBe(
@@ -424,20 +427,20 @@ describe('calculateChargingEstimate', () => {
 
     test('scales comparison80 by calibration factor when endSOC > 80%', () => {
       const base = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const calibrated = calculateChargingEstimate({
-        startSOC: 20,
+        calibrationFactor: 1.1,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
-        calibrationFactor: 1.1,
       });
 
       expect(base.comparison80).toBeDefined();
@@ -461,20 +464,20 @@ describe('calculateChargingEstimate', () => {
 
     test('scales socPenaltyKwh by calibration factor', () => {
       const base = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const calibrated = calculateChargingEstimate({
-        startSOC: 20,
+        calibrationFactor: 0.9,
+        chargerType: 'ac-l2',
         endSOC: 100,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
-        calibrationFactor: 0.9,
       });
 
       expect(calibrated.socPenaltyKwh).toBeLessThan(base.socPenaltyKwh);
@@ -483,20 +486,20 @@ describe('calculateChargingEstimate', () => {
 
     test('baseKwh is unaffected by calibration factor', () => {
       const base = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       const calibrated = calculateChargingEstimate({
-        startSOC: 20,
+        calibrationFactor: 1.2,
+        chargerType: 'ac-l2',
         endSOC: 80,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
-        calibrationFactor: 1.2,
       });
 
       expect(calibrated.baseKwh).toBe(base.baseKwh);
@@ -506,11 +509,11 @@ describe('calculateChargingEstimate', () => {
   describe('power-based efficiency', () => {
     test('uses charger type efficiency when chargingPower is not provided', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'ac-l2',
         endSOC: 60,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'ac-l2',
       });
 
       // ac-l2 default = 0.86
@@ -520,12 +523,12 @@ describe('calculateChargingEstimate', () => {
 
     test('uses power-based efficiency at 10kW (0.86)', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 60,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'ac-l2',
         chargingPower: 10,
+        endSOC: 60,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       const expectedTotal = ((60 - 20) * (75 / 100)) / 0.86;
@@ -534,12 +537,12 @@ describe('calculateChargingEstimate', () => {
 
     test('uses power-based efficiency at 25kW (0.88)', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 60,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'dc-fast',
         chargingPower: 25,
+        endSOC: 60,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       const expectedTotal = ((60 - 20) * (75 / 100)) / 0.88;
@@ -548,12 +551,12 @@ describe('calculateChargingEstimate', () => {
 
     test('uses power-based efficiency at 70kW (0.86)', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 60,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'dc-fast',
         chargingPower: 70,
+        endSOC: 60,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       const expectedTotal = ((60 - 20) * (75 / 100)) / 0.86;
@@ -562,12 +565,12 @@ describe('calculateChargingEstimate', () => {
 
     test('uses power-based efficiency at 150kW (0.87)', () => {
       const result = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 60,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'dc-ultra',
         chargingPower: 150,
+        endSOC: 60,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       const expectedTotal = ((60 - 20) * (75 / 100)) / 0.87;
@@ -576,20 +579,20 @@ describe('calculateChargingEstimate', () => {
 
     test('power-based efficiency can differ from charger type default', () => {
       const withPower = calculateChargingEstimate({
-        startSOC: 20,
-        endSOC: 60,
-        totalCapacity: 75,
-        usablePercent: 100,
         chargerType: 'dc-fast',
         chargingPower: 70,
+        endSOC: 60,
+        startSOC: 20,
+        totalCapacity: 75,
+        usablePercent: 100,
       });
 
       const withoutPower = calculateChargingEstimate({
-        startSOC: 20,
+        chargerType: 'dc-fast',
         endSOC: 60,
+        startSOC: 20,
         totalCapacity: 75,
         usablePercent: 100,
-        chargerType: 'dc-fast',
       });
 
       // dc-fast default=0.87, 70kW=0.86 → different results
@@ -601,12 +604,12 @@ describe('calculateChargingEstimate', () => {
 describe('buildChargingSearchParams', () => {
   test('sets all required params', () => {
     const params = buildChargingSearchParams({
-      startSOC: 20,
-      endSOC: 80,
-      totalCapacity: 75,
-      usablePercent: 95,
       calibrationFactor: 1,
       chargerType: 'ac-l2',
+      endSOC: 80,
+      startSOC: 20,
+      totalCapacity: 75,
+      usablePercent: 95,
     });
     expect(params.get('start')).toBe('20');
     expect(params.get('end')).toBe('80');
@@ -620,14 +623,14 @@ describe('buildChargingSearchParams', () => {
 
   test('includes rate and power when positive', () => {
     const params = buildChargingSearchParams({
-      startSOC: 20,
-      endSOC: 80,
-      totalCapacity: 60,
-      usablePercent: 100,
       calibrationFactor: 1,
       chargerType: 'dc-fast',
-      electricityRate: 0.15,
       chargingPower: 50,
+      electricityRate: 0.15,
+      endSOC: 80,
+      startSOC: 20,
+      totalCapacity: 60,
+      usablePercent: 100,
     });
     expect(params.get('rate')).toBe('0.15');
     expect(params.get('power')).toBe('50');
@@ -635,49 +638,49 @@ describe('buildChargingSearchParams', () => {
 
   test('omits rate when zero or negative', () => {
     const zero = buildChargingSearchParams({
-      startSOC: 20,
-      endSOC: 80,
-      totalCapacity: 60,
-      usablePercent: 100,
       calibrationFactor: 1,
       chargerType: 'ac-l2',
       electricityRate: 0,
+      endSOC: 80,
+      startSOC: 20,
+      totalCapacity: 60,
+      usablePercent: 100,
     });
     expect(zero.get('rate')).toBeNull();
 
     const neg = buildChargingSearchParams({
-      startSOC: 20,
-      endSOC: 80,
-      totalCapacity: 60,
-      usablePercent: 100,
       calibrationFactor: 1,
       chargerType: 'ac-l2',
       electricityRate: -1,
+      endSOC: 80,
+      startSOC: 20,
+      totalCapacity: 60,
+      usablePercent: 100,
     });
     expect(neg.get('rate')).toBeNull();
   });
 
   test('omits power when zero or negative', () => {
     const zero = buildChargingSearchParams({
-      startSOC: 20,
-      endSOC: 80,
-      totalCapacity: 60,
-      usablePercent: 100,
       calibrationFactor: 1,
       chargerType: 'ac-l2',
       chargingPower: 0,
+      endSOC: 80,
+      startSOC: 20,
+      totalCapacity: 60,
+      usablePercent: 100,
     });
     expect(zero.get('power')).toBeNull();
   });
 
   test('handles null inputs gracefully', () => {
     const params = buildChargingSearchParams({
-      startSOC: null,
-      endSOC: null,
-      totalCapacity: null,
-      usablePercent: null,
       calibrationFactor: null,
       chargerType: null,
+      endSOC: null,
+      startSOC: null,
+      totalCapacity: null,
+      usablePercent: null,
     });
     expect(params.get('start')).toBeNull();
     expect(params.get('end')).toBeNull();
@@ -690,8 +693,8 @@ describe('buildChargingSearchParams', () => {
 
   test('handles partial inputs', () => {
     const params = buildChargingSearchParams({
-      startSOC: 10,
       endSOC: 90,
+      startSOC: 10,
     });
     expect(params.get('start')).toBe('10');
     expect(params.get('end')).toBe('90');

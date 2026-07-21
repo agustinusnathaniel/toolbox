@@ -18,100 +18,6 @@ const TanStackRouterDevtools = lazy(() =>
 );
 
 export const Route = createRootRouteWithContext()({
-  head: () => ({
-    meta: [
-      {
-        title: SITE_NAME,
-      },
-      {
-        name: 'description',
-        content: SITE_DESCRIPTION,
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1.0',
-      },
-      {
-        name: 'application-name',
-        content: SITE_NAME,
-      },
-      {
-        name: 'apple-mobile-web-app-capable',
-        content: 'yes',
-      },
-      {
-        name: 'apple-mobile-web-app-status-bar-style',
-        content: 'default',
-      },
-      {
-        name: 'apple-mobile-web-app-title',
-        content: SITE_NAME,
-      },
-      {
-        name: 'format-detection',
-        content: 'telephone=no',
-      },
-      {
-        name: 'mobile-web-app-capable',
-        content: 'yes',
-      },
-      {
-        name: 'theme-color',
-        content: '#000000',
-      },
-      {
-        name: 'og:type',
-        content: 'website',
-      },
-      {
-        name: 'og:title',
-        content: SITE_NAME,
-      },
-      {
-        name: 'og:description',
-        content: SITE_DESCRIPTION,
-      },
-      {
-        name: 'twitter:card',
-        content: 'summary_large_image',
-      },
-      {
-        name: 'twitter:title',
-        content: SITE_NAME,
-      },
-      {
-        name: 'twitter:description',
-        content: SITE_DESCRIPTION,
-      },
-    ],
-    links: [
-      {
-        rel: 'icon',
-        href: '/favicon.ico',
-      },
-      {
-        rel: 'apple-touch-icon',
-        href: '/apple-touch-icon-180x180.png',
-      },
-      {
-        rel: 'manifest',
-        href: '/manifest.webmanifest',
-      },
-    ],
-    scripts: [
-      ...(import.meta.env.VITE_UMAMI_SCRIPT_URL &&
-      import.meta.env.VITE_UMAMI_WEBSITE_ID
-        ? [
-            {
-              src: import.meta.env.VITE_UMAMI_SCRIPT_URL,
-              async: true,
-              'data-website-id': import.meta.env.VITE_UMAMI_WEBSITE_ID,
-              'data-performance': 'true',
-            },
-          ]
-        : []),
-    ],
-  }),
   component: () => {
     usePageTracking();
     return (
@@ -131,4 +37,98 @@ export const Route = createRootRouteWithContext()({
       </>
     );
   },
+  head: () => ({
+    links: [
+      {
+        href: '/favicon.ico',
+        rel: 'icon',
+      },
+      {
+        href: '/apple-touch-icon-180x180.png',
+        rel: 'apple-touch-icon',
+      },
+      {
+        href: '/manifest.webmanifest',
+        rel: 'manifest',
+      },
+    ],
+    meta: [
+      {
+        title: SITE_NAME,
+      },
+      {
+        content: SITE_DESCRIPTION,
+        name: 'description',
+      },
+      {
+        content: 'width=device-width, initial-scale=1.0',
+        name: 'viewport',
+      },
+      {
+        content: SITE_NAME,
+        name: 'application-name',
+      },
+      {
+        content: 'yes',
+        name: 'apple-mobile-web-app-capable',
+      },
+      {
+        content: 'default',
+        name: 'apple-mobile-web-app-status-bar-style',
+      },
+      {
+        content: SITE_NAME,
+        name: 'apple-mobile-web-app-title',
+      },
+      {
+        content: 'telephone=no',
+        name: 'format-detection',
+      },
+      {
+        content: 'yes',
+        name: 'mobile-web-app-capable',
+      },
+      {
+        content: '#000000',
+        name: 'theme-color',
+      },
+      {
+        content: 'website',
+        name: 'og:type',
+      },
+      {
+        content: SITE_NAME,
+        name: 'og:title',
+      },
+      {
+        content: SITE_DESCRIPTION,
+        name: 'og:description',
+      },
+      {
+        content: 'summary_large_image',
+        name: 'twitter:card',
+      },
+      {
+        content: SITE_NAME,
+        name: 'twitter:title',
+      },
+      {
+        content: SITE_DESCRIPTION,
+        name: 'twitter:description',
+      },
+    ],
+    scripts: [
+      ...(import.meta.env.VITE_UMAMI_SCRIPT_URL &&
+      import.meta.env.VITE_UMAMI_WEBSITE_ID
+        ? [
+            {
+              async: true,
+              'data-performance': 'true',
+              'data-website-id': import.meta.env.VITE_UMAMI_WEBSITE_ID,
+              src: import.meta.env.VITE_UMAMI_SCRIPT_URL,
+            },
+          ]
+        : []),
+    ],
+  }),
 });

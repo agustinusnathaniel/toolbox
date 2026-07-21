@@ -46,12 +46,19 @@ const coerceNumber =
 
 const formSchema = z
   .object({
-    startSOC: z
-      .number('Current SOC is required')
-      .min(0, 'Must be at least 0%')
-      .max(100, 'Must be at most 100%'),
+    calibrationFactor: z
+      .number('Calibration factor is required')
+      .min(0.5, 'Must be at least 0.5')
+      .max(1.5, 'Must be at most 1.5'),
+    chargerType: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']),
+    chargingPower: z.number().positive().optional(),
+    electricityRate: z.number().positive().optional(),
     endSOC: z
       .number('Target SOC is required')
+      .min(0, 'Must be at least 0%')
+      .max(100, 'Must be at most 100%'),
+    startSOC: z
+      .number('Current SOC is required')
       .min(0, 'Must be at least 0%')
       .max(100, 'Must be at most 100%'),
     totalCapacity: z
@@ -61,13 +68,6 @@ const formSchema = z
       .number('Usable battery % is required')
       .min(1, 'Must be at least 1%')
       .max(100, 'Must be at most 100%'),
-    calibrationFactor: z
-      .number('Calibration factor is required')
-      .min(0.5, 'Must be at least 0.5')
-      .max(1.5, 'Must be at most 1.5'),
-    chargerType: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']),
-    electricityRate: z.number().positive().optional(),
-    chargingPower: z.number().positive().optional(),
   })
   .refine((data) => data.endSOC >= data.startSOC, {
     message: 'Target SOC must be ≥ Current SOC',
@@ -96,13 +96,13 @@ type PersistedValues = {
 };
 
 const defaultValues: PersistedValues = {
-  startSOC: 20,
-  endSOC: 80,
-  totalCapacity: 60,
-  usablePercent: DEFAULT_USABLE_PERCENT,
   calibrationFactor: DEFAULT_CALIBRATION_FACTOR,
   chargerType: 'ac-l2',
   chargingPower: DEFAULT_CHARGING_POWER,
+  endSOC: 80,
+  startSOC: 20,
+  totalCapacity: 60,
+  usablePercent: DEFAULT_USABLE_PERCENT,
 };
 
 function allRequiredFields(
@@ -139,26 +139,26 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
   );
 
   const form = useForm<FormType>({
-    resolver: zodResolver(formSchema),
-    mode: 'onChange',
     defaultValues: {
-      startSOC: search.start ?? saved.startSOC ?? defaultValues.startSOC,
-      endSOC: search.end ?? saved.endSOC ?? defaultValues.endSOC,
-      totalCapacity:
-        search.cap ?? saved.totalCapacity ?? defaultValues.totalCapacity,
-      usablePercent:
-        search.usable ?? saved.usablePercent ?? defaultValues.usablePercent,
       calibrationFactor:
         search.cal ??
         saved.calibrationFactor ??
         defaultValues.calibrationFactor,
       chargerType:
         search.type ?? saved.chargerType ?? defaultValues.chargerType,
-      electricityRate:
-        search.rate ?? saved.electricityRate ?? defaultValues.electricityRate,
       chargingPower:
         search.power ?? saved.chargingPower ?? defaultValues.chargingPower,
+      electricityRate:
+        search.rate ?? saved.electricityRate ?? defaultValues.electricityRate,
+      endSOC: search.end ?? saved.endSOC ?? defaultValues.endSOC,
+      startSOC: search.start ?? saved.startSOC ?? defaultValues.startSOC,
+      totalCapacity:
+        search.cap ?? saved.totalCapacity ?? defaultValues.totalCapacity,
+      usablePercent:
+        search.usable ?? saved.usablePercent ?? defaultValues.usablePercent,
     },
+    mode: 'onChange',
+    resolver: zodResolver(formSchema),
   });
 
   const watchedValues = form.watch();
@@ -175,14 +175,14 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setSaved({
-        startSOC: watchedValues.startSOC,
-        endSOC: watchedValues.endSOC,
-        totalCapacity: watchedValues.totalCapacity,
-        usablePercent: watchedValues.usablePercent,
         calibrationFactor: watchedValues.calibrationFactor,
         chargerType: watchedValues.chargerType,
-        electricityRate: watchedValues.electricityRate ?? undefined,
         chargingPower: watchedValues.chargingPower ?? undefined,
+        electricityRate: watchedValues.electricityRate ?? undefined,
+        endSOC: watchedValues.endSOC,
+        startSOC: watchedValues.startSOC,
+        totalCapacity: watchedValues.totalCapacity,
+        usablePercent: watchedValues.usablePercent,
       });
     }, 300);
     return () => clearTimeout(timer);
@@ -197,14 +197,14 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
     }
 
     return calculateChargingEstimate({
-      startSOC: watchedValues.startSOC,
-      endSOC: watchedValues.endSOC,
-      totalCapacity: watchedValues.totalCapacity,
-      usablePercent: watchedValues.usablePercent,
       calibrationFactor: watchedValues.calibrationFactor,
       chargerType: watchedValues.chargerType,
-      electricityRate: watchedValues.electricityRate,
       chargingPower: effectiveChargingPower,
+      electricityRate: watchedValues.electricityRate,
+      endSOC: watchedValues.endSOC,
+      startSOC: watchedValues.startSOC,
+      totalCapacity: watchedValues.totalCapacity,
+      usablePercent: watchedValues.usablePercent,
     });
   }, [watchedValues, effectiveChargingPower]);
 

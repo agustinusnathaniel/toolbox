@@ -16,6 +16,7 @@
       "!src/*.gen.ts",
       "!src/lib/components/ui/**/*",
       "!src/lib/styles/primitive.ts",
+      "!**/*.svg",
       "!**/*.css",
       "!node_modules",
       "!.agents",
@@ -29,8 +30,21 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
+      "suspicious": {
+        "noEqualsToNull": "off",
+        "noLeakedRender": "off",
+        "noShadow": "off",
+        "noUnnecessaryConditions": "off"
+      },
+      "performance": {
+        "noJsxPropsBind": "off",
+        "noAwaitInLoops": "off"
+      },
       "style": {
+        "noIncrementDecrement": "off",
+        "useDestructuring": "off",
+        "useConsistentMethodSignatures": "off",
         "useConsistentTypeDefinitions": "off",
         "useConsistentArrayType": {
           "level": "error",

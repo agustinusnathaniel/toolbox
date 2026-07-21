@@ -18,34 +18,34 @@ import { CalendarResultCards } from './-components/calendar-result-cards';
 import { useCalendarForm } from './-components/use-calendar-form';
 
 const searchSchema = z.object({
-  title: z.string().optional(),
   desc: z.string().optional(),
+  end: z.string().optional(),
   loc: z.string().optional(),
   start: z.string().optional(),
-  end: z.string().optional(),
+  title: z.string().optional(),
 });
 
 const meta = {
-  pageTitle: 'Add to Calendar',
   description: 'Generate Add to Calendar links for Google Calendar events.',
+  pageTitle: 'Add to Calendar',
   slug: 'add-to-calendar',
 } as const;
 
 export const Route = createFileRoute('/_tools/add-to-calendar/')({
   component: AddToCalendarPage,
-  validateSearch: searchSchema,
-  staticData: {
-    meta,
-  },
   head: () => ({
     meta: [
       { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-      { property: 'og:title', content: meta.pageTitle },
-      { property: 'og:description', content: meta.description },
-      { property: 'og:type', content: 'website' },
+      { content: meta.description, name: 'description' },
+      { content: meta.pageTitle, property: 'og:title' },
+      { content: meta.description, property: 'og:description' },
+      { content: 'website', property: 'og:type' },
     ],
   }),
+  staticData: {
+    meta,
+  },
+  validateSearch: searchSchema,
 });
 
 function AddToCalendarPage() {
@@ -110,14 +110,14 @@ function AddToCalendarPage() {
       <ToolHelp
         faq={[
           {
-            question: 'Is my data safe?',
             answer:
               'Yes. All calendar links are generated locally in your browser. No data is sent to any server.',
+            question: 'Is my data safe?',
           },
           {
-            question: 'Which calendars are supported?',
             answer:
               "Currently only Google Calendar is supported. The link format follows Google's calendar event link specification.",
+            question: 'Which calendars are supported?',
           },
         ]}
         howItWorks={{

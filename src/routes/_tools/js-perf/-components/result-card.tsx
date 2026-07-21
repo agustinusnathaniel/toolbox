@@ -11,7 +11,7 @@ function createOutputPreview(
   return output.slice(0, 20).map((line) => {
     const count = (lineCounts.get(line) ?? 0) + 1;
     lineCounts.set(line, count);
-    return { line, key: `${line}-${count}` };
+    return { key: `${line}-${count}`, line };
   });
 }
 

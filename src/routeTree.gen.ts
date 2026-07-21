@@ -9,54 +9,34 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ChangelogRouteImport } from './routes/changelog'
-import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
-import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
-import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
-import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
-import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
-import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
+import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
+import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
+import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
+import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
+import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
+import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
+import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
+import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
 
-const ChangelogRoute = ChangelogRouteImport.update({
-  id: '/changelog',
-  path: '/changelog',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsRouteRoute = ToolsRouteRouteImport.update({
   id: '/_tools',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsZippyImgIndexRoute = ToolsZippyImgIndexRouteImport.update({
-  id: '/zippy-img/',
-  path: '/zippy-img/',
-  getParentRoute: () => ToolsRouteRoute,
-} as any)
-const ToolsWaLinkHelperIndexRoute = ToolsWaLinkHelperIndexRouteImport.update({
-  id: '/wa-link-helper/',
-  path: '/wa-link-helper/',
-  getParentRoute: () => ToolsRouteRoute,
-} as any)
-const ToolsUaCheckIndexRoute = ToolsUaCheckIndexRouteImport.update({
-  id: '/ua-check/',
-  path: '/ua-check/',
-  getParentRoute: () => ToolsRouteRoute,
-} as any)
-const ToolsQrcodeIndexRoute = ToolsQrcodeIndexRouteImport.update({
-  id: '/qrcode/',
-  path: '/qrcode/',
-  getParentRoute: () => ToolsRouteRoute,
-} as any)
-const ToolsJsPerfIndexRoute = ToolsJsPerfIndexRouteImport.update({
-  id: '/js-perf/',
-  path: '/js-perf/',
+const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
+  id: '/add-to-calendar/',
+  path: '/add-to-calendar/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
@@ -64,9 +44,29 @@ const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
   path: '/ev-charging/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
-const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
-  id: '/add-to-calendar/',
-  path: '/add-to-calendar/',
+const ToolsJsPerfIndexRoute = ToolsJsPerfIndexRouteImport.update({
+  id: '/js-perf/',
+  path: '/js-perf/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsQrcodeIndexRoute = ToolsQrcodeIndexRouteImport.update({
+  id: '/qrcode/',
+  path: '/qrcode/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsUaCheckIndexRoute = ToolsUaCheckIndexRouteImport.update({
+  id: '/ua-check/',
+  path: '/ua-check/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsWaLinkHelperIndexRoute = ToolsWaLinkHelperIndexRouteImport.update({
+  id: '/wa-link-helper/',
+  path: '/wa-link-helper/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsZippyImgIndexRoute = ToolsZippyImgIndexRouteImport.update({
+  id: '/zippy-img/',
+  path: '/zippy-img/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 
@@ -150,11 +150,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/changelog': {
-      id: '/changelog'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof ChangelogRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_tools': {
@@ -164,46 +164,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_tools/zippy-img/': {
-      id: '/_tools/zippy-img/'
-      path: '/zippy-img'
-      fullPath: '/zippy-img/'
-      preLoaderRoute: typeof ToolsZippyImgIndexRouteImport
-      parentRoute: typeof ToolsRouteRoute
-    }
-    '/_tools/wa-link-helper/': {
-      id: '/_tools/wa-link-helper/'
-      path: '/wa-link-helper'
-      fullPath: '/wa-link-helper/'
-      preLoaderRoute: typeof ToolsWaLinkHelperIndexRouteImport
-      parentRoute: typeof ToolsRouteRoute
-    }
-    '/_tools/ua-check/': {
-      id: '/_tools/ua-check/'
-      path: '/ua-check'
-      fullPath: '/ua-check/'
-      preLoaderRoute: typeof ToolsUaCheckIndexRouteImport
-      parentRoute: typeof ToolsRouteRoute
-    }
-    '/_tools/qrcode/': {
-      id: '/_tools/qrcode/'
-      path: '/qrcode'
-      fullPath: '/qrcode/'
-      preLoaderRoute: typeof ToolsQrcodeIndexRouteImport
-      parentRoute: typeof ToolsRouteRoute
-    }
-    '/_tools/js-perf/': {
-      id: '/_tools/js-perf/'
-      path: '/js-perf'
-      fullPath: '/js-perf/'
-      preLoaderRoute: typeof ToolsJsPerfIndexRouteImport
+    '/_tools/add-to-calendar/': {
+      id: '/_tools/add-to-calendar/'
+      path: '/add-to-calendar'
+      fullPath: '/add-to-calendar/'
+      preLoaderRoute: typeof ToolsAddToCalendarIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/ev-charging/': {
@@ -213,11 +185,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsEvChargingIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
-    '/_tools/add-to-calendar/': {
-      id: '/_tools/add-to-calendar/'
-      path: '/add-to-calendar'
-      fullPath: '/add-to-calendar/'
-      preLoaderRoute: typeof ToolsAddToCalendarIndexRouteImport
+    '/_tools/js-perf/': {
+      id: '/_tools/js-perf/'
+      path: '/js-perf'
+      fullPath: '/js-perf/'
+      preLoaderRoute: typeof ToolsJsPerfIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/qrcode/': {
+      id: '/_tools/qrcode/'
+      path: '/qrcode'
+      fullPath: '/qrcode/'
+      preLoaderRoute: typeof ToolsQrcodeIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/ua-check/': {
+      id: '/_tools/ua-check/'
+      path: '/ua-check'
+      fullPath: '/ua-check/'
+      preLoaderRoute: typeof ToolsUaCheckIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/wa-link-helper/': {
+      id: '/_tools/wa-link-helper/'
+      path: '/wa-link-helper'
+      fullPath: '/wa-link-helper/'
+      preLoaderRoute: typeof ToolsWaLinkHelperIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/zippy-img/': {
+      id: '/_tools/zippy-img/'
+      path: '/zippy-img'
+      fullPath: '/zippy-img/'
+      preLoaderRoute: typeof ToolsZippyImgIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
   }

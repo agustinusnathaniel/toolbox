@@ -73,9 +73,9 @@ describe('buildVCardParams', () => {
   test('includes all provided fields', () => {
     const params = buildVCardParams({
       ...DEFAULT_VCARD_STATE,
+      emailAddress: 'john@example.com',
       firstName: 'John',
       lastName: 'Doe',
-      emailAddress: 'john@example.com',
     });
     expect(params.get('fn')).toBe('John');
     expect(params.get('ln')).toBe('Doe');
@@ -101,9 +101,9 @@ describe('buildVCardParams', () => {
   test('includes non-default colors', () => {
     const params = buildVCardParams({
       ...DEFAULT_VCARD_STATE,
-      firstName: 'John',
-      fgColor: '#ff0000',
       bgColor: '#cccccc',
+      fgColor: '#ff0000',
+      firstName: 'John',
     });
     expect(params.get('fg')).toBe('#ff0000');
     expect(params.get('bg')).toBe('#cccccc');
@@ -112,15 +112,15 @@ describe('buildVCardParams', () => {
   test('maps all VCard fields to correct param keys', () => {
     const params = buildVCardParams({
       ...DEFAULT_VCARD_STATE,
+      city: 'Springfield',
+      companyName: 'Acme',
+      country: 'US',
+      jobTitle: 'Engineer',
       mobilePhoneNumber: '123',
       otherPhoneNumber: '456',
-      companyName: 'Acme',
-      jobTitle: 'Engineer',
-      streetAddress: '123 Main',
-      city: 'Springfield',
-      state: 'IL',
       postalCode: '62701',
-      country: 'US',
+      state: 'IL',
+      streetAddress: '123 Main',
       websiteURL: 'https://example.com',
     });
     expect(params.get('mp')).toBe('123');
@@ -148,7 +148,7 @@ describe('buildUrlStateFromSearch', () => {
   });
 
   test('formats hex colors from search', () => {
-    const state = buildUrlStateFromSearch({ fg: 'ff0000', bg: 'cccccc' });
+    const state = buildUrlStateFromSearch({ bg: 'cccccc', fg: 'ff0000' });
     expect(state.fgColor).toBe('#ff0000');
     expect(state.bgColor).toBe('#cccccc');
   });
@@ -167,9 +167,9 @@ describe('buildVcardStateFromSearch', () => {
 
   test('overrides fields from search', () => {
     const state = buildVcardStateFromSearch({
+      em: 'john@example.com',
       fn: 'John',
       ln: 'Doe',
-      em: 'john@example.com',
     });
     expect(state.firstName).toBe('John');
     expect(state.lastName).toBe('Doe');
@@ -177,22 +177,22 @@ describe('buildVcardStateFromSearch', () => {
   });
 
   test('formats hex colors from search', () => {
-    const state = buildVcardStateFromSearch({ fg: 'ff0000', bg: 'cccccc' });
+    const state = buildVcardStateFromSearch({ bg: 'cccccc', fg: 'ff0000' });
     expect(state.fgColor).toBe('#ff0000');
     expect(state.bgColor).toBe('#cccccc');
   });
 
   test('maps all VCard param keys to correct fields', () => {
     const state = buildVcardStateFromSearch({
+      cn: 'US',
+      co: 'Acme',
+      ct: 'Springfield',
+      jt: 'Engineer',
       mp: '123',
       op: '456',
-      co: 'Acme',
-      jt: 'Engineer',
-      st: '123 Main',
-      ct: 'Springfield',
-      sa: 'IL',
       pc: '62701',
-      cn: 'US',
+      sa: 'IL',
+      st: '123 Main',
       wb: 'https://example.com',
     });
     expect(state.mobilePhoneNumber).toBe('123');
