@@ -55,6 +55,17 @@ export const DEFAULT_RUN_POLICY: RunPolicy = {
   maxOutputLines: 100,
   defaultIterations: 30, // 30 timed iterations + 5 warmup = 35 total runs
 };
+/** @internal Shared edge-case: zero iterations. */
+function emptyStats(): ExecutionStatistics {
+  return { iterations: 0, minMs: 0, maxMs: 0, meanMs: 0, stddevMs: 0, marginMs: 0 };
+}
+
+/** @internal Shared edge-case: single iteration. */
+function singleValueStats(value: number): ExecutionStatistics {
+  return { iterations: 1, minMs: value, maxMs: value, meanMs: value, stddevMs: 0, marginMs: 0 };
+}
+
+
 
 export function normalizeResult(
   raw: Partial<ExecutionResult> & { id: string; code: string },
@@ -101,24 +112,12 @@ export function formatStatistics(stats: ExecutionStatistics): string {
 
 export function calculateStatistics(durations: number[]): ExecutionStatistics {
   const n = durations.length;
-  if (n === 0) {
-    return {
-      iterations: 0,
-      minMs: 0,
-      maxMs: 0,
-      meanMs: 0,
-      stddevMs: 0,
-      marginMs: 0,
-    };
-  }
+  if (n === 0) return emptyStats();
+  if (n === 1) return singleValueStats(durations[0]);
 
   const minMs = Math.min(...durations);
   const maxMs = Math.max(...durations);
   const meanMs = durations.reduce((a, b) => a + b, 0) / n;
-
-  if (n === 1) {
-    return { iterations: 1, minMs, maxMs, meanMs, stddevMs: 0, marginMs: 0 };
-  }
 
   const squaredDiffs = durations.map((d) => (d - meanMs) ** 2);
   const variance = squaredDiffs.reduce((a, b) => a + b, 0) / n;
@@ -141,27 +140,8 @@ export function calculateStatistics(durations: number[]): ExecutionStatistics {
  */
 export function calculateRobustStatistics(durations: number[]): ExecutionStatistics {
   const n = durations.length;
-  if (n === 0) {
-    return {
-      iterations: 0,
-      minMs: 0,
-      maxMs: 0,
-      meanMs: 0,
-      stddevMs: 0,
-      marginMs: 0,
-    };
-  }
-
-  if (n === 1) {
-    return {
-      iterations: 1,
-      minMs: durations[0],
-      maxMs: durations[0],
-      meanMs: durations[0],
-      stddevMs: 0,
-      marginMs: 0,
-    };
-  }
+  if (n === 0) return emptyStats();
+  if (n === 1) return singleValueStats(durations[0]);
 
   // Sort for percentile calculations
   const sorted = [...durations].sort((a, b) => a - b);
