@@ -11,7 +11,12 @@ import {
   buildWorker,
   createWorkerErrorResult,
 } from './runner-utils';
-import type { ActiveRunState, RunState, StabilitySession } from './types';
+import type {
+  ActiveRunEntry,
+  ActiveRunState,
+  RunState,
+  StabilitySession,
+} from './types';
 
 export interface UseJsPerfRunnerOptions {
   codeA: string;
@@ -37,6 +42,50 @@ export interface UseJsPerfRunnerReturn {
     total: number;
   } | null;
   terminate: () => void;
+}
+
+function discardWorker(
+  workerRef: React.RefObject<Worker | null>,
+  workerIdRef: React.RefObject<number>
+) {
+  workerIdRef.current += 1;
+  workerRef.current?.terminate();
+  workerRef.current = null;
+}
+
+function clearSideRun(
+  activeRunRef: React.MutableRefObject<ActiveRunState>,
+  isA: boolean
+) {
+  if (isA) {
+    activeRunRef.current.a = null;
+  } else {
+    activeRunRef.current.b = null;
+  }
+}
+
+function pushSideResult(
+  isA: boolean,
+  result: ExecutionResult,
+  session: StabilitySession | null,
+  setResult: (r: ExecutionResult | null) => void
+) {
+  if (session?.mode === 'stability') {
+    if (isA) {
+      session.resultsA.push(result);
+    } else {
+      session.resultsB.push(result);
+    }
+  } else {
+    setResult(result);
+  }
+}
+
+function getSideRunEntry(
+  activeRunRef: React.MutableRefObject<ActiveRunState>,
+  isA: boolean
+): ActiveRunEntry | null {
+  return isA ? activeRunRef.current.a : activeRunRef.current.b;
 }
 
 export function useJsPerfRunner(
@@ -176,109 +225,66 @@ export function useJsPerfRunner(
   }, [finalizeSession, startSessionRound]);
 
   const setupWorkers = useCallback(() => {
-    const handleWorkerAReady = () => setWorkerAReady(true);
-    const handleWorkerBReady = () => setWorkerBReady(true);
+    const makeSideHandlers = (isA: boolean) => {
+      const setReady = isA ? setWorkerAReady : setWorkerBReady;
+      const setResult = isA ? setResultA : setResultB;
 
-    const handleWorkerAResult = (id: string, result: ExecutionResult) => {
-      if (!pendingRef.current.has(id)) {
-        return;
-      }
-      pendingRef.current.delete(id);
-      activeRunRef.current.a = null;
-      const session = sessionRef.current;
-      if (session?.mode === 'stability') {
-        session.resultsA.push(result);
-      } else {
-        setResultA(result);
-      }
-      if (pendingRef.current.size === 0) {
-        handleRoundFinished();
-      }
-    };
-
-    const handleWorkerBResult = (id: string, result: ExecutionResult) => {
-      if (!pendingRef.current.has(id)) {
-        return;
-      }
-      pendingRef.current.delete(id);
-      activeRunRef.current.b = null;
-      const session = sessionRef.current;
-      if (session?.mode === 'stability') {
-        session.resultsB.push(result);
-      } else {
-        setResultB(result);
-      }
-      if (pendingRef.current.size === 0) {
-        handleRoundFinished();
-      }
-    };
-
-    const handleWorkerAError = (errorMessage: string | null) => {
-      const runEntry = activeRunRef.current.a;
-      if (runEntry && pendingRef.current.has(runEntry.id)) {
-        pendingRef.current.delete(runEntry.id);
-        const fallback = createWorkerErrorResult(runEntry, errorMessage);
-        if (fallback) {
-          const session = sessionRef.current;
-          if (session?.mode === 'stability') {
-            session.resultsA.push(fallback);
-          } else {
-            setResultA(fallback);
-          }
+      const onRoundOrDone = () => {
+        if (pendingRef.current.size === 0) {
+          handleRoundFinished();
         }
-      }
-      activeRunRef.current.a = null;
-      if (pendingRef.current.size === 0) {
-        handleRoundFinished();
-      }
+      };
+
+      return {
+        onReady: () => setReady(true),
+        onResult: (id: string, result: ExecutionResult) => {
+          if (!pendingRef.current.has(id)) {
+            return;
+          }
+          pendingRef.current.delete(id);
+          clearSideRun(activeRunRef, isA);
+          pushSideResult(isA, result, sessionRef.current, setResult);
+          onRoundOrDone();
+        },
+        onError: (errorMessage: string | null) => {
+          const runEntry = getSideRunEntry(activeRunRef, isA);
+          if (runEntry && pendingRef.current.has(runEntry.id)) {
+            pendingRef.current.delete(runEntry.id);
+            const fallback = createWorkerErrorResult(runEntry, errorMessage);
+            if (fallback) {
+              pushSideResult(isA, fallback, sessionRef.current, setResult);
+            }
+          }
+          clearSideRun(activeRunRef, isA);
+          onRoundOrDone();
+        },
+      };
     };
 
-    const handleWorkerBError = (errorMessage: string | null) => {
-      const runEntry = activeRunRef.current.b;
-      if (runEntry && pendingRef.current.has(runEntry.id)) {
-        pendingRef.current.delete(runEntry.id);
-        const fallback = createWorkerErrorResult(runEntry, errorMessage);
-        if (fallback) {
-          const session = sessionRef.current;
-          if (session?.mode === 'stability') {
-            session.resultsB.push(fallback);
-          } else {
-            setResultB(fallback);
-          }
-        }
-      }
-      activeRunRef.current.b = null;
-      if (pendingRef.current.size === 0) {
-        handleRoundFinished();
-      }
-    };
+    const sideA = makeSideHandlers(true);
+    const sideB = makeSideHandlers(false);
 
     buildWorker(
       workerARef,
       workerAIdRef,
-      handleWorkerAReady,
-      handleWorkerAResult,
-      handleWorkerAError
+      sideA.onReady,
+      sideA.onResult,
+      sideA.onError
     );
-
     buildWorker(
       workerBRef,
       workerBIdRef,
-      handleWorkerBReady,
-      handleWorkerBResult,
-      handleWorkerBError
+      sideB.onReady,
+      sideB.onResult,
+      sideB.onError
     );
   }, [handleRoundFinished]);
 
   useEffect(() => {
     setupWorkers();
     return () => {
-      workerAIdRef.current += 1;
-      workerBIdRef.current += 1;
-      workerARef.current?.terminate();
-      workerBRef.current?.terminate();
-      workerARef.current = null;
-      workerBRef.current = null;
+      discardWorker(workerARef, workerAIdRef);
+      discardWorker(workerBRef, workerBIdRef);
       pendingRef.current.clear();
       activeRunRef.current = { a: null, b: null };
       sessionRef.current = null;
@@ -322,12 +328,8 @@ export function useJsPerfRunner(
   }, [runState, isReady, startSessionRound]);
 
   const terminate = useCallback(() => {
-    workerAIdRef.current += 1;
-    workerBIdRef.current += 1;
-    workerARef.current?.terminate();
-    workerBRef.current?.terminate();
-    workerARef.current = null;
-    workerBRef.current = null;
+    discardWorker(workerARef, workerAIdRef);
+    discardWorker(workerBRef, workerBIdRef);
     pendingRef.current.clear();
     activeRunRef.current = { a: null, b: null };
     sessionRef.current = null;
