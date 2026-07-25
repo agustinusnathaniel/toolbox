@@ -1,0 +1,39 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run weekly on Monday
+    - cron: '0 6 * * 1'
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v1
+        with:
+          cache: true
+
+      - name: Run pnpm audit
+        run: pnpm audit
+        continue-on-error: true
+
+      - name: Run pnpm audit (production only)
+        run: pnpm audit --prod
+        continue-on-error: true
+
+      - name: Summary
+        run: |
+          echo '## Security Audit Summary' >> $GITHUB_STEP_SUMMARY
+          echo 'Weekly security dependency audit completed.' >> $GITHUB_STEP_SUMMARY

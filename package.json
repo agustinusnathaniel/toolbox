@@ -18,6 +18,8 @@
     "ultracite:fix": "ultracite fix",
     "biome:ci": "biome ci",
     "check:turbo": "turbo run ultracite:check type:check test",
+    "security:audit": "pnpm audit",
+    "security:audit:production": "pnpm audit --prod",
     "release": "cross-env HUSKY=0 commit-and-tag-version",
     "up-interactive": "pnpm up -i",
     "up-latest": "pnpm up-interactive -L",
