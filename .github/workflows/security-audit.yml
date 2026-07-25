@@ -1,0 +1,174 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run weekly on Monday
+    - cron: '0 6 * * 1'
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v1
+        with:
+          cache: true
+
+      - name: Run pnpm audit (full)
+        id: audit-full
+        run: |
+          set -euo pipefail
+          OUTPUT=$(pnpm audit --json 2>&1 || true)
+          echo "audit_output<<JSONEOF" >> "$GITHUB_OUTPUT"
+          echo "$OUTPUT" >> "$GITHUB_OUTPUT"
+          echo "JSONEOF" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Run pnpm audit (production only)
+        id: audit-prod
+        run: |
+          set -euo pipefail
+          OUTPUT=$(pnpm audit --prod --json 2>&1 || true)
+          echo "audit_output<<JSONEOF" >> "$GITHUB_OUTPUT"
+          echo "$OUTPUT" >> "$GITHUB_OUTPUT"
+          echo "JSONEOF" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Parse and summarize audit results
+        id: summary
+        run: |
+          set -euo pipefail
+
+          parse_audit() {
+            local label="$1"
+            local json="$2"
+            local critical=0 high=0 moderate=0 low=0 info=0
+
+            # Try parsing pnpm audit v9+ JSON format
+            if echo "$json" | jq -e '.metadata.vulnerabilities' > /dev/null 2>&1; then
+              critical=$(echo "$json" | jq '.metadata.vulnerabilities.critical // 0')
+              high=$(echo "$json" | jq '.metadata.vulnerabilities.high // 0')
+              moderate=$(echo "$json" | jq '.metadata.vulnerabilities.moderate // 0')
+              low=$(echo "$json" | jq '.metadata.vulnerabilities.low // 0')
+              info=$(echo "$json" | jq '.metadata.vulnerabilities.info // 0')
+            # Fallback: try counting advisory objects
+            elif echo "$json" | jq -e '.[0].severity' > /dev/null 2>&1; then
+              critical=$(echo "$json" | jq '[.[] | select(.severity == "critical")] | length')
+              high=$(echo "$json" | jq '[.[] | select(.severity == "high")] | length')
+              moderate=$(echo "$json" | jq '[.[] | select(.severity == "moderate")] | length')
+              low=$(echo "$json" | jq '[.[] | select(.severity == "low")] | length')
+              info=$(echo "$json" | jq '[.[] | select(.severity == "info")] | length')
+            fi
+
+            echo "critical=$critical"
+            echo "high=$high"
+            echo "moderate=$moderate"
+            echo "low=$low"
+            echo "info=$info"
+
+            # Return total for caller
+            echo "$((critical + high + moderate + low + info))"
+          }
+
+          FULL_JSON='${{ steps.audit-full.outputs.audit_output }}'
+          PROD_JSON='${{ steps.audit-prod.outputs.audit_output }}'
+
+          echo "## Security Audit Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$FULL_JSON" ]; then
+            echo "### Full Audit (all dependencies)" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            parse_audit "full" "$FULL_JSON" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Full audit: no output" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$PROD_JSON" ]; then
+            echo "### Production Audit" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            parse_audit "prod" "$PROD_JSON" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Production audit: no output" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Audit run: $(date -u)_" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check for critical vulnerabilities
+        id: check-critical
+        run: |
+          set -euo pipefail
+          FULL_JSON='${{ steps.audit-full.outputs.audit_output }}'
+          PROD_JSON='${{ steps.audit-prod.outputs.audit_output }}'
+
+          has_critical=0
+          for json in "$FULL_JSON" "$PROD_JSON"; do
+            if [ -z "$json" ]; then
+              continue
+            fi
+            if echo "$json" | jq -e '.metadata.vulnerabilities.critical' > /dev/null 2>&1; then
+              c=$(echo "$json" | jq '.metadata.vulnerabilities.critical // 0')
+              if [ "$c" -gt 0 ]; then
+                has_critical=1
+              fi
+            fi
+          done
+
+          echo "has_critical=$has_critical" >> "$GITHUB_OUTPUT"
+
+      - name: Create issue for critical vulnerabilities
+        if: steps.check-critical.outputs.has_critical == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if ! command -v gh &> /dev/null; then
+            echo "gh CLI not available, skipping issue creation"
+            exit 0
+          fi
+
+          FULL_JSON='${{ steps.audit-full.outputs.audit_output }}'
+          PROD_JSON='${{ steps.audit-prod.outputs.audit_output }}'
+
+          BODY="## Critical Vulnerabilities Detected
+
+          Automatic security audit found critical vulnerabilities in dependencies.
+
+          ### Full Audit
+          \`\`\`
+          $(echo "$FULL_JSON" | jq -r '.advisories // .vulnerabilities // [] | to_entries[] | "\(.key): \(.value)"' 2>/dev/null || echo "See audit logs")
+          \`\`\`
+
+          ### Production Audit
+          \`\`\`
+          $(echo "$PROD_JSON" | jq -r '.advisories // .vulnerabilities // [] | to_entries[] | "\(.key): \(.value)"' 2>/dev/null || echo "See audit logs")
+          \`\`\`
+
+          _This issue was automatically created by the Security Audit workflow._
+
+          **Action required:** Review and patch critical vulnerabilities as soon as possible.
+          "
+
+          gh issue create \
+            --title "Security: Critical vulnerabilities found in dependencies" \
+            --label "security" \
+            --body "$BODY" \
+            --repo ${{ github.repository }} || \
+            echo "Failed to create issue (may already exist or permissions issue)"
