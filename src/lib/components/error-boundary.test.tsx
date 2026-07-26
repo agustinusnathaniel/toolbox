@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
+import { useCallback, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ErrorBoundary } from './error-boundary';
+import { ErrorBoundary, ErrorFallback } from './error-boundary';
 
 /** A component that throws on render. */
 function Bomb({ shouldThrow }: { shouldThrow?: boolean }) {
@@ -32,11 +33,7 @@ describe('ErrorBoundary', () => {
     );
 
     expect(screen.getByText('Something went wrong')).toBeDefined();
-    expect(
-      screen.getByText(
-        'This tool encountered an error. Try refreshing the page.'
-      )
-    ).toBeDefined();
+    expect(screen.getByText('This tool encountered an error.')).toBeDefined();
 
     consoleSpy.mockRestore();
   });
@@ -78,6 +75,51 @@ describe('ErrorBoundary', () => {
       error,
       expect.any(Object)
     );
+
+    consoleSpy.mockRestore();
+  });
+
+  it('ErrorFallback renders Try again button when onReset is provided', () => {
+    const onReset = vi.fn();
+    const { container } = render(<ErrorFallback onReset={onReset} />);
+    const button = container.querySelector('button');
+    expect(button?.textContent).toBe('Try again');
+    if (button) {
+      fireEvent.click(button);
+    }
+    expect(onReset).toHaveBeenCalledOnce();
+  });
+
+  it('remounts children after reset via onReset callback', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+
+    function TestCase() {
+      const [shouldThrow, setShouldThrow] = useState(true);
+      const handleReset = useCallback(() => {
+        setShouldThrow(false);
+      }, []);
+      return (
+        <ErrorBoundary onReset={handleReset}>
+          <Bomb shouldThrow={shouldThrow} />
+        </ErrorBoundary>
+      );
+    }
+
+    const { container } = render(<TestCase />);
+
+    // Error state is shown
+    expect(container.querySelector('h3')?.textContent).toBe(
+      'Something went wrong'
+    );
+
+    // Click Try again — the parent changes shouldThrow to false
+    const resetButton = container.querySelector('button');
+    if (resetButton) {
+      fireEvent.click(resetButton);
+    }
+
+    // Children are remounted and render successfully
+    expect(container.textContent).toContain('all good');
 
     consoleSpy.mockRestore();
   });
