@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, useMatches } from '@tanstack/react-router';
 
+import { ErrorBoundary } from '@/lib/components/error-boundary';
 import { Heading } from '@/lib/components/ui/heading';
 
 export const Route = createFileRoute('/_tools')({
@@ -18,7 +19,9 @@ function ToolLayout() {
           {meta?.pageTitle}
         </Heading>
       </div>
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </div>
   );
 }
