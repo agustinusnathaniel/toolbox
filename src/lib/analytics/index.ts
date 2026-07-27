@@ -100,3 +100,18 @@ export function trackToolAction(
     },
   });
 }
+
+export function trackToolError(
+  toolId: string,
+  toolName: string,
+  errorMessage: string
+): void {
+  analytics.track({
+    name: 'tool_error',
+    properties: {
+      error_message: errorMessage,
+      tool_id: toolId,
+      tool_name: toolName,
+    },
+  });
+}

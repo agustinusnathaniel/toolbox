@@ -2,12 +2,21 @@ import { TriangleAlertIcon } from 'lucide-react';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { trackToolError } from '@/lib/analytics';
+
 export type ErrorBoundaryProps = {
   children: ReactNode;
   fallbackTitle?: string;
   fallbackDescription?: string;
   fallbackIcon?: ReactNode;
   onReset?: () => void;
+  /**
+   * Tool identifier passed to analytics when an error is caught.
+   * When provided, the error is tracked via the analytics module.
+   */
+  toolId?: string;
+  /** Human-readable tool name for analytics error tracking. */
+  toolName?: string;
 };
 
 type ErrorBoundaryState = {
@@ -29,8 +38,13 @@ export class ErrorBoundary extends Component<
     return { error, hasError: true, remountKey: 0 };
   }
 
-  componentDidCatch(_error: Error, _errorInfo: ErrorInfo): void {
-    console.error('Tool error boundary caught an error:', _error, _errorInfo);
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    console.error('Tool error boundary caught an error:', error, errorInfo);
+
+    const { toolId, toolName } = this.props;
+    if (toolId && toolName) {
+      trackToolError(toolId, toolName, error.message);
+    }
   }
 
   private readonly handleReset = (): void => {

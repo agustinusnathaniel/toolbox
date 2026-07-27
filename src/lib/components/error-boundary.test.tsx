@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { useCallback, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { analytics } from '@/lib/analytics';
+
 import { ErrorBoundary, ErrorFallback } from './error-boundary';
 
 /** A component that throws on render. */
@@ -121,6 +123,51 @@ describe('ErrorBoundary', () => {
     // Children are remounted and render successfully
     expect(container.textContent).toContain('all good');
 
+    consoleSpy.mockRestore();
+  });
+
+  it('tracks error via analytics when toolId and toolName are provided', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+
+    const tracker = { page: vi.fn(), track: vi.fn() };
+    const unsubscribe = analytics.addTracker(tracker);
+
+    render(
+      <ErrorBoundary toolId="test-tool" toolName="Test Tool">
+        <Bomb shouldThrow />
+      </ErrorBoundary>
+    );
+
+    expect(tracker.track).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'tool_error',
+        properties: {
+          error_message: '💣 intentional crash',
+          tool_id: 'test-tool',
+          tool_name: 'Test Tool',
+        },
+      })
+    );
+
+    unsubscribe();
+    consoleSpy.mockRestore();
+  });
+
+  it('does not track via analytics when toolId is omitted', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+
+    const tracker = { page: vi.fn(), track: vi.fn() };
+    const unsubscribe = analytics.addTracker(tracker);
+
+    render(
+      <ErrorBoundary>
+        <Bomb shouldThrow />
+      </ErrorBoundary>
+    );
+
+    expect(tracker.track).not.toHaveBeenCalled();
+
+    unsubscribe();
     consoleSpy.mockRestore();
   });
 });

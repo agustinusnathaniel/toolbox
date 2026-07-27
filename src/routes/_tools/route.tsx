@@ -10,7 +10,9 @@ export const Route = createFileRoute('/_tools')({
 function ToolLayout() {
   const match = useMatches();
   const leafMatch = match.at(-1);
-  const meta = leafMatch?.staticData?.meta;
+  const meta = leafMatch?.staticData?.meta as
+    | { pageTitle: string; slug: string }
+    | undefined;
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -19,7 +21,7 @@ function ToolLayout() {
           {meta?.pageTitle}
         </Heading>
       </div>
-      <ErrorBoundary>
+      <ErrorBoundary toolId={meta?.slug} toolName={meta?.pageTitle}>
         <Outlet />
       </ErrorBoundary>
     </div>

@@ -6,6 +6,7 @@ import {
   trackToolAction,
   trackToolCompletion,
   trackToolEntry,
+  trackToolError,
 } from './index';
 
 function createMockTracker() {
@@ -242,6 +243,28 @@ describe('trackToolAction', () => {
         name: 'tool_action',
         properties: {
           action: 'compress',
+          tool_id: 'my-tool',
+          tool_name: 'My Tool',
+        },
+      })
+    );
+
+    unsubscribe();
+  });
+});
+
+describe('trackToolError', () => {
+  test('fires tool_error event with error message and tool metadata', () => {
+    const tracker = createMockTracker();
+    const unsubscribe = analytics.addTracker(tracker);
+
+    trackToolError('my-tool', 'My Tool', 'Something crashed');
+
+    expect(tracker.track).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'tool_error',
+        properties: {
+          error_message: 'Something crashed',
           tool_id: 'my-tool',
           tool_name: 'My Tool',
         },
