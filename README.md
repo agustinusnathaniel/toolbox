@@ -26,8 +26,8 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 
 ### Prerequisites
 
-- Node.js ^24.11.x
-- pnpm@10.24.0
+- Node.js ^24.16.x
+- pnpm@11.8.0
 
 ### Installation
 
@@ -67,14 +67,24 @@ pnpm test:ui       # Run tests with UI
 ```
 toolbox/
 ├── src/
-│   ├── routes/          # TanStack Router file-based routes
-│   │   └── _tools/      # Individual tool routes
+│   ├── routes/             # TanStack Router file-based routes
+│   │   └── _tools/         # Individual tool routes
 │   └── lib/
-│       ├── components/  # UI primitives
-│       ├── analytics/   # Event tracking
-│       └── utils/       # Shared utilities
-├── public/              # Static assets
-└── docs/                # (reserved for future ADRs)
+│       ├── analytics/      # Event tracking
+│       ├── components/     # Shared UI components
+│       │   ├── animations/ # Animation wrappers (stagger-children)
+│       │   ├── global-command-menu/  # Command palette
+│       │   └── ui/         # shadcn/IntentUI component primitives
+│       ├── hooks/          # Shared React hooks
+│       ├── js-perf-comp-core/  # JS perf comparison engine (grandfathered)
+│       ├── layout/         # Root layout, sidebar, footer
+│       ├── navigation/     # Tool registry
+│       ├── pages/          # Info pages (changelog)
+│       ├── styles/         # CSS, design tokens, globals
+│       ├── tools/          # Per-tool business logic (adapters/)
+│       └── utils/          # Shared utilities
+├── content/                # MDX content (changelog)
+└── public/                 # Static assets
 ```
 
 ## Documentation
