@@ -8,8 +8,8 @@ We build for longevity and clarity. Our code should be readable by humans and ea
 
 ### 1. Requirements
 
-- **Node.js**: ^24.11.x
-- **Package Manager**: pnpm@10.24.0
+- **Node.js**: ^24.16.x
+- **Package Manager**: pnpm@11.8.0
 
 ### 2. Getting Started
 
@@ -27,16 +27,16 @@ The app will be available at `http://localhost:3000`.
 - Use descriptive branch names: `feature/xxx`, `fix/xxx`, `chore/xxx`.
 - **Commits**: Follow [Conventional Commits](https://www.conventionalcommits.org/).
   - Example: `feat(wa-link): add country code search filtering`
-  - Enforced by `commitlint` and `husky`.
+  - Enforced by `commitlint` via `.vite-hooks/` (set up by `vp config`).
 
 ## Code Standards
 
 ### Linting & Formatting
 
-We use **Biome** for both linting and formatting. It is significantly faster than ESLint/Prettier.
+We use **Ultracite** (wrapping Biome) for both linting and formatting.
 
-- Run `pnpm biome:check` to see issues.
-- Run `pnpm biome:fix` to auto-fix.
+- Run `pnpm ultracite:check` to see issues.
+- Run `pnpm ultracite:fix` to auto-fix.
 - Your editor should have the Biome extension installed for real-time feedback.
 
 ### TypeScript
@@ -189,7 +189,7 @@ function ToolPage() {
 
 ## Pull Request Process
 
-1. Ensure `pnpm check` (linting + type check + tests) passes.
+1. Ensure `pnpm check:turbo` (ultracite:check + type:check + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm test`).
 2. Provide a clear description of changes in the PR.
 3. Include screenshots for UI changes.
 4. Update `SPEC.md` if any architectural invariants are changed.

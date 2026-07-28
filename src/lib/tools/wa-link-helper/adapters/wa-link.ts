@@ -24,8 +24,6 @@ export const countryCodeOptions: Array<CountryOption> = Object.keys(
   };
 });
 
-export const getCountryOptions = (): Array<CountryOption> => countryCodeOptions;
-
 export interface WALinkInputs {
   countryCode?: string;
   phoneNumber?: string;

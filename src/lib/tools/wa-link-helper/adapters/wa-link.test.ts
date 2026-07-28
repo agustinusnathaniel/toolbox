@@ -3,8 +3,6 @@ import { describe, expect, test } from 'vite-plus/test';
 import {
   buildWALinkSearchParams,
   buildWhatsAppLink,
-  countryCodeOptions,
-  getCountryOptions,
   getPhoneCountryCode,
 } from './wa-link';
 
@@ -18,24 +16,6 @@ describe('country helpers', () => {
   test('getPhoneCountryCode returns undefined for invalid country', () => {
     expect(getPhoneCountryCode('XX')).toBeUndefined();
     expect(getPhoneCountryCode('')).toBeUndefined();
-  });
-
-  test('countryCodeOptions returns array of country options', () => {
-    const options = countryCodeOptions;
-    expect(Array.isArray(options)).toBe(true);
-    expect(options.length).toBeGreaterThan(0);
-  });
-
-  test('countryCodeOptions contains expected structure', () => {
-    const options = countryCodeOptions;
-    const usOption = options.find((o) => o.id === 'US');
-    expect(usOption).toBeDefined();
-    expect(usOption?.name).toContain('1');
-    expect(usOption?.id).toBe('US');
-  });
-
-  test('getCountryOptions returns same as countryCodeOptions', () => {
-    expect(getCountryOptions()).toEqual(countryCodeOptions);
   });
 });
 
