@@ -8,9 +8,11 @@ import {
   IconQrCode,
 } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
+import { PaletteIcon } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
+import { Route as ColorConverterRoute } from '@/routes/_tools/color-converter/index';
 import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
 import { Route as JsPerfRoute } from '@/routes/_tools/js-perf/index';
 import { Route as QrcodeRoute } from '@/routes/_tools/qrcode/index';
@@ -48,6 +50,13 @@ const tools: Array<ToolDefinition> = [
     route: WaLinkHelperRoute,
     showInMobile: true,
     slug: 'wa-link-helper',
+  },
+  {
+    icon: <PaletteIcon />,
+    mobileTitle: 'Color',
+    route: ColorConverterRoute,
+    showInMobile: true,
+    slug: 'color-converter',
   },
   {
     icon: <IconCamera />,
