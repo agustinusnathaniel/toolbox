@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
+import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
@@ -39,6 +40,12 @@ const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
   path: '/add-to-calendar/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsColorConverterIndexRoute =
+  ToolsColorConverterIndexRouteImport.update({
+    id: '/color-converter/',
+    path: '/color-converter/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
   id: '/ev-charging/',
   path: '/ev-charging/',
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
+  '/color-converter/': typeof ToolsColorConverterIndexRoute
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
+  '/color-converter': typeof ToolsColorConverterIndexRoute
   '/ev-charging': typeof ToolsEvChargingIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
@@ -98,6 +107,7 @@ export interface FileRoutesById {
   '/_tools': typeof ToolsRouteRouteWithChildren
   '/changelog': typeof ChangelogRoute
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
+  '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/'
     | '/changelog'
     | '/add-to-calendar/'
+    | '/color-converter/'
     | '/ev-charging/'
     | '/js-perf/'
     | '/qrcode/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/changelog'
     | '/add-to-calendar'
+    | '/color-converter'
     | '/ev-charging'
     | '/js-perf'
     | '/qrcode'
@@ -134,6 +146,7 @@ export interface FileRouteTypes {
     | '/_tools'
     | '/changelog'
     | '/_tools/add-to-calendar/'
+    | '/_tools/color-converter/'
     | '/_tools/ev-charging/'
     | '/_tools/js-perf/'
     | '/_tools/qrcode/'
@@ -176,6 +189,13 @@ declare module '@tanstack/react-router' {
       path: '/add-to-calendar'
       fullPath: '/add-to-calendar/'
       preLoaderRoute: typeof ToolsAddToCalendarIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/color-converter/': {
+      id: '/_tools/color-converter/'
+      path: '/color-converter'
+      fullPath: '/color-converter/'
+      preLoaderRoute: typeof ToolsColorConverterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/ev-charging/': {
@@ -225,6 +245,7 @@ declare module '@tanstack/react-router' {
 
 interface ToolsRouteRouteChildren {
   ToolsAddToCalendarIndexRoute: typeof ToolsAddToCalendarIndexRoute
+  ToolsColorConverterIndexRoute: typeof ToolsColorConverterIndexRoute
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
@@ -235,6 +256,7 @@ interface ToolsRouteRouteChildren {
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsAddToCalendarIndexRoute: ToolsAddToCalendarIndexRoute,
+  ToolsColorConverterIndexRoute: ToolsColorConverterIndexRoute,
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
