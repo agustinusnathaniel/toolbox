@@ -1,8 +1,8 @@
 'use client';
 
 import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { Check, Copy, Pipette } from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -73,6 +73,16 @@ function ColorConverterPage() {
     [trackAction]
   );
 
+  const colorInputRef = useRef<HTMLInputElement>(null);
+
+  const handleColorPicker = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInput(e.target.value);
+      trackAction('color_picker');
+    },
+    [trackAction]
+  );
+
   const swatchColor = parsed ? parsed.hex : '#000000';
 
   return (
@@ -81,10 +91,27 @@ function ColorConverterPage() {
         <CardHeader />
         <CardContent className="flex flex-col gap-6">
           <div className="flex gap-4">
-            <div
-              className="size-16 shrink-0 rounded-lg border shadow-xs"
+            <button
+              aria-label="Pick a color"
+              className="relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border shadow-xs transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
+              onClick={() => colorInputRef.current?.click()}
               style={{ backgroundColor: swatchColor }}
-            />
+              title="Pick a color"
+              type="button"
+            >
+              <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100">
+                <Pipette className="size-5 text-white drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.6)]" />
+              </span>
+              <input
+                aria-hidden="true"
+                className="absolute inset-0 size-0 opacity-0"
+                onChange={handleColorPicker}
+                ref={colorInputRef}
+                tabIndex={-1}
+                type="color"
+                value={swatchColor}
+              />
+            </button>
             <div className="flex flex-1 flex-col gap-1">
               <label className="text-muted-fg text-sm" htmlFor="color-input">
                 Enter a color value

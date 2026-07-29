@@ -36,25 +36,23 @@ const OKLCH_REGEX = /^oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)\s*\)$/;
 
 function parseHex(hex: string): RgbColor | null {
   const cleaned = hex.replace('#', '');
-  if (cleaned.length === 3) {
-    const r = Number.parseInt(cleaned[0] + cleaned[0], 16);
-    const g = Number.parseInt(cleaned[1] + cleaned[1], 16);
-    const b = Number.parseInt(cleaned[2] + cleaned[2], 16);
-    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-      return null;
-    }
-    return { b, g, r };
+  if (cleaned.length !== 3 && cleaned.length !== 6) {
+    return null;
   }
-  if (cleaned.length === 6) {
-    const r = Number.parseInt(cleaned.slice(0, 2), 16);
-    const g = Number.parseInt(cleaned.slice(2, 4), 16);
-    const b = Number.parseInt(cleaned.slice(4, 6), 16);
-    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-      return null;
-    }
-    return { b, g, r };
+  const expanded =
+    cleaned.length === 3
+      ? cleaned
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : cleaned;
+  const r = Number.parseInt(expanded.slice(0, 2), 16);
+  const g = Number.parseInt(expanded.slice(2, 4), 16);
+  const b = Number.parseInt(expanded.slice(4, 6), 16);
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+    return null;
   }
-  return null;
+  return { b, g, r };
 }
 
 export function hexToRgb(hex: string): RgbColor | null {
@@ -318,7 +316,7 @@ export function formatColorString(
     return `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
   }
   if (format === 'hsl') {
-    return `hsl(${Math.round(color.hsl.h)}, ${Math.round(color.hsl.s)}%, ${Math.round(color.hsl.l)}%)`;
+    return `hsl(${color.hsl.h}, ${color.hsl.s}%, ${color.hsl.l}%)`;
   }
   return `oklch(${(color.oklch.l * 100).toFixed(1)}% ${color.oklch.c.toFixed(4)} ${color.oklch.h.toFixed(1)})`;
 }
