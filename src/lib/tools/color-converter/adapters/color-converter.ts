@@ -247,14 +247,11 @@ export function parseColor(input: string): ParsedColor | null {
     };
   }
 
-  if (RGB_REGEX.test(trimmed)) {
-    const match = trimmed.match(RGB_REGEX);
-    if (!match) {
-      return null;
-    }
-    const r = Number.parseInt(match[1], 10);
-    const g = Number.parseInt(match[2], 10);
-    const b = Number.parseInt(match[3], 10);
+  const rgbMatch = trimmed.match(RGB_REGEX);
+  if (rgbMatch) {
+    const r = Number.parseInt(rgbMatch[1], 10);
+    const g = Number.parseInt(rgbMatch[2], 10);
+    const b = Number.parseInt(rgbMatch[3], 10);
     if (r > 255 || g > 255 || b > 255) {
       return null;
     }
@@ -269,7 +266,8 @@ export function parseColor(input: string): ParsedColor | null {
     };
   }
 
-  if (HSL_REGEX.test(trimmed)) {
+  const hslMatch = trimmed.match(HSL_REGEX);
+  if (hslMatch) {
     const rgb = hslStringToRgb(trimmed);
     if (!rgb) {
       return null;
@@ -286,7 +284,8 @@ export function parseColor(input: string): ParsedColor | null {
     };
   }
 
-  if (OKLCH_REGEX.test(trimmed)) {
+  const oklchMatch = trimmed.match(OKLCH_REGEX);
+  if (oklchMatch) {
     const rgb = oklchStringToRgb(trimmed);
     if (!rgb) {
       return null;
