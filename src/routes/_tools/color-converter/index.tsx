@@ -1,13 +1,28 @@
 'use client';
 
+import { parseColor as parseColorStately } from '@react-stately/color';
 import { createFileRoute } from '@tanstack/react-router';
 import { Check, Copy, Pipette } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import { ColorArea } from '@/lib/components/ui/color-area';
+import { ColorField } from '@/lib/components/ui/color-field';
+import { ColorPicker } from '@/lib/components/ui/color-picker';
+import {
+  ColorSlider,
+  ColorSliderTrack,
+} from '@/lib/components/ui/color-slider';
+import { ColorThumb } from '@/lib/components/ui/color-thumb';
+import { Input } from '@/lib/components/ui/input';
+import {
+  Popover,
+  PopoverBody,
+  PopoverContent,
+} from '@/lib/components/ui/popover';
 import type { ColorFormat } from '@/lib/tools/color-converter/adapters/color-converter';
 import {
   formatColorString,
@@ -73,16 +88,6 @@ function ColorConverterPage() {
     [trackAction]
   );
 
-  const colorInputRef = useRef<HTMLInputElement>(null);
-
-  const handleColorPicker = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInput(e.target.value);
-      trackAction('color_picker');
-    },
-    [trackAction]
-  );
-
   const swatchColor = parsed ? parsed.hex : '#000000';
 
   return (
@@ -91,27 +96,46 @@ function ColorConverterPage() {
         <CardHeader />
         <CardContent className="flex flex-col gap-6">
           <div className="flex gap-4">
-            <button
-              aria-label="Pick a color"
-              className="relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border shadow-xs transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
-              onClick={() => colorInputRef.current?.click()}
-              style={{ backgroundColor: swatchColor }}
-              title="Pick a color"
-              type="button"
+            <ColorPicker
+              onChange={(c) => {
+                setInput(c.toString('hex'));
+                trackAction('color_picker');
+              }}
+              value={parseColorStately(swatchColor)}
             >
-              <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100">
-                <Pipette className="size-5 text-white drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.6)]" />
-              </span>
-              <input
-                aria-hidden="true"
-                className="absolute inset-0 size-0 opacity-0"
-                onChange={handleColorPicker}
-                ref={colorInputRef}
-                tabIndex={-1}
-                type="color"
-                value={swatchColor}
-              />
-            </button>
+              <Popover>
+                <button
+                  aria-label="Pick a color"
+                  className="relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border shadow-xs transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
+                  style={{ backgroundColor: swatchColor }}
+                  title="Pick a color"
+                  type="button"
+                >
+                  <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100">
+                    <Pipette className="size-5 text-white drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.6)]" />
+                  </span>
+                </button>
+                <PopoverContent className="[--gutter:--spacing(1)]">
+                  <PopoverBody>
+                    <div className="space-y-(--gutter)">
+                      <ColorArea
+                        colorSpace="hsb"
+                        xChannel="saturation"
+                        yChannel="brightness"
+                      />
+                      <ColorSlider channel="hue" colorSpace="hsb">
+                        <ColorSliderTrack>
+                          <ColorThumb />
+                        </ColorSliderTrack>
+                      </ColorSlider>
+                      <ColorField aria-label="Color">
+                        <Input />
+                      </ColorField>
+                    </div>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            </ColorPicker>
             <div className="flex flex-1 flex-col gap-1">
               <label className="text-muted-fg text-sm" htmlFor="color-input">
                 Enter a color value
@@ -213,7 +237,7 @@ function ColorConverterPage() {
             'Type or paste a color value in any format',
             'The tool auto-detects the format and converts it',
             'Copy any conversion result with the copy button',
-            'Click preset swatches to try common colors',
+            'Click the color swatch to open the visual color picker',
           ],
         }}
       />
