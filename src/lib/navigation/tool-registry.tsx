@@ -1,5 +1,6 @@
 import {
   IconBolt,
+  IconBrackets,
   IconBrandWhatsapp,
   IconCalendar,
   IconCamera,
@@ -15,6 +16,7 @@ import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/ind
 import { Route as ColorConverterRoute } from '@/routes/_tools/color-converter/index';
 import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
 import { Route as JsPerfRoute } from '@/routes/_tools/js-perf/index';
+import { Route as JsonFormatterRoute } from '@/routes/_tools/json-formatter/index';
 import { Route as QrcodeRoute } from '@/routes/_tools/qrcode/index';
 import { Route as UaCheckRoute } from '@/routes/_tools/ua-check/index';
 import { Route as WaLinkHelperRoute } from '@/routes/_tools/wa-link-helper/index';
@@ -57,6 +59,13 @@ const tools: Array<ToolDefinition> = [
     route: ColorConverterRoute,
     showInMobile: true,
     slug: 'color-converter',
+  },
+  {
+    icon: <IconBrackets />,
+    mobileTitle: 'JSON',
+    route: JsonFormatterRoute,
+    showInMobile: true,
+    slug: 'json-formatter',
   },
   {
     icon: <IconCamera />,
