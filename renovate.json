@@ -9,5 +9,9 @@
   "timezone": "Asia/Jakarta",
   "schedule": ["before 1am on the first day of the month"],
   "rangeStrategy": "bump",
+  "vulnerabilityAlerts": {
+    "rangeStrategy": "bump",
+    "labels": ["security"]
+  },
   "ignoreDeps": ["node", "pnpm"]
 }
