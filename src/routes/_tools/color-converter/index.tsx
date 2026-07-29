@@ -2,7 +2,7 @@
 
 import { parseColor as parseColorStately } from '@react-stately/color';
 import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy, Pipette } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
@@ -16,6 +16,7 @@ import {
   ColorSlider,
   ColorSliderTrack,
 } from '@/lib/components/ui/color-slider';
+import { ColorSwatch } from '@/lib/components/ui/color-swatch';
 import { ColorThumb } from '@/lib/components/ui/color-thumb';
 import { Input } from '@/lib/components/ui/input';
 import {
@@ -104,17 +105,10 @@ function ColorConverterPage() {
               value={parseColorStately(swatchColor)}
             >
               <Popover>
-                <button
-                  aria-label="Pick a color"
-                  className="relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border shadow-xs transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
-                  style={{ backgroundColor: swatchColor }}
-                  title="Pick a color"
-                  type="button"
-                >
-                  <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100">
-                    <Pipette className="size-5 text-white drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.6)]" />
-                  </span>
-                </button>
+                <Button data-slot="control" intent="plain">
+                  <ColorSwatch />
+                  Select color
+                </Button>
                 <PopoverContent className="[--gutter:--spacing(1)]">
                   <PopoverBody>
                     <div className="space-y-(--gutter)">
