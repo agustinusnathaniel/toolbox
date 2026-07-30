@@ -98,7 +98,7 @@ graph TD
 1. Create route at `src/routes/_tools/<tool-name>/index.tsx`
 2. Add `staticData: { meta: { pageTitle, description, slug } }` to the route (navigation auto-discovers routes via `tool-registry.tsx`)
 3. Extract business logic to `src/lib/tools/<tool-name>/`
-4. Add tool card to homepage catalog in `src/routes/index.tsx`
+4. Add tool to navigation registry in `src/lib/navigation/tool-registry.tsx`
 5. (Optional) Add analytics tracking with `useToolTracking`
 
 See **CONTRIBUTING.md** for detailed instructions.

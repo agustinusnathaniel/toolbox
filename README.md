@@ -13,6 +13,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **JS Performance Comparator** — Compare JavaScript snippet execution in sandboxed runtimes
 - **EV Charging Estimator** — Estimate how much kWh you need to charge your EV, accounting for charging losses
 - **JSON Formatter** — Format, validate, and minify JSON
+- **Color Converter** — Convert colors between HEX, RGB, HSL, and OKLCH formats
 - **Add to Calendar** — Generate Add to Calendar links for Google Calendar events
 
 ## Tech Stack
