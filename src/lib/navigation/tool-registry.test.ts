@@ -5,7 +5,7 @@ import { getToolNavItem, getToolNavItems } from './tool-registry';
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(8);
+    expect(items).toHaveLength(9);
   });
 
   test('each item has required fields', () => {
@@ -35,12 +35,13 @@ describe('getToolNavItems', () => {
     const items = getToolNavItems();
     expect(items[0].slug).toBe('wa-link-helper');
     expect(items[1].slug).toBe('color-converter');
-    expect(items[2].slug).toBe('zippy-img');
-    expect(items[3].slug).toBe('ua-check');
-    expect(items[4].slug).toBe('qrcode');
-    expect(items[5].slug).toBe('js-perf');
-    expect(items[6].slug).toBe('add-to-calendar');
-    expect(items[7].slug).toBe('ev-charging');
+    expect(items[2].slug).toBe('json-formatter');
+    expect(items[3].slug).toBe('zippy-img');
+    expect(items[4].slug).toBe('ua-check');
+    expect(items[5].slug).toBe('qrcode');
+    expect(items[6].slug).toBe('js-perf');
+    expect(items[7].slug).toBe('add-to-calendar');
+    expect(items[8].slug).toBe('ev-charging');
   });
 });
 
