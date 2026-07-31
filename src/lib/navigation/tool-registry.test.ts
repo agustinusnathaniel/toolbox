@@ -1,6 +1,11 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { getToolNavItem, getToolNavItems } from './tool-registry';
+import {
+  getToolNavCategories,
+  getToolNavItem,
+  getToolNavItems,
+  TOOL_CATEGORIES,
+} from './tool-registry';
 
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
@@ -16,6 +21,7 @@ describe('getToolNavItems', () => {
       expect(item.description).toBeTruthy();
       expect(item.path).toBeTruthy();
       expect(item.icon).toBeDefined();
+      expect(item.category).toBeTruthy();
     }
   });
 
@@ -56,5 +62,27 @@ describe('getToolNavItem', () => {
 
   test('returns undefined for invalid slug', () => {
     expect(getToolNavItem('nonexistent')).toBeUndefined();
+  });
+});
+
+describe('getToolNavCategories', () => {
+  test('groups every tool into a category', () => {
+    const categories = getToolNavCategories();
+    const total = categories.reduce(
+      (sum, group) => sum + group.items.length,
+      0
+    );
+    expect(total).toBe(getToolNavItems().length);
+  });
+
+  test('categories follow TOOL_CATEGORIES display order', () => {
+    const categories = getToolNavCategories();
+    expect(categories.map((g) => g.category)).toEqual([...TOOL_CATEGORIES]);
+  });
+
+  test('each category has at least one tool', () => {
+    for (const group of getToolNavCategories()) {
+      expect(group.items.length).toBeGreaterThan(0);
+    }
   });
 });

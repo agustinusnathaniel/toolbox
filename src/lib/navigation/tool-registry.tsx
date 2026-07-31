@@ -24,7 +24,26 @@ import { Route as UaCheckRoute } from '@/routes/_tools/ua-check/index';
 import { Route as WaLinkHelperRoute } from '@/routes/_tools/wa-link-helper/index';
 import { Route as ZippyImgRoute } from '@/routes/_tools/zippy-img/index';
 
+export type ToolCategory =
+  | 'Links & Sharing'
+  | 'Text & Data'
+  | 'Design & Media'
+  | 'Developer'
+  | 'Calculators'
+  | 'Security';
+
+/** Display order of sidebar categories (most-used first). */
+export const TOOL_CATEGORIES: ReadonlyArray<ToolCategory> = [
+  'Links & Sharing',
+  'Text & Data',
+  'Design & Media',
+  'Developer',
+  'Calculators',
+  'Security',
+];
+
 export interface ToolNavItem {
+  category: ToolCategory;
   description: string;
   icon: JSX.Element;
   path: ToOptions['to'];
@@ -33,6 +52,7 @@ export interface ToolNavItem {
 }
 
 interface ToolDefinition {
+  category: ToolCategory;
   icon: JSX.Element;
   mobileTitle?: string;
   route: { options: { staticData?: { meta?: unknown } } };
@@ -47,8 +67,10 @@ function staticMeta<T>(value: T | undefined): T {
   return value;
 }
 
+// Order defines homepage grid + keyboard shortcuts (1..N) — keep stable.
 const tools: Array<ToolDefinition> = [
   {
+    category: 'Links & Sharing',
     icon: <IconBrandWhatsapp />,
     mobileTitle: 'WA Link',
     route: WaLinkHelperRoute,
@@ -56,6 +78,7 @@ const tools: Array<ToolDefinition> = [
     slug: 'wa-link-helper',
   },
   {
+    category: 'Design & Media',
     icon: <PaletteIcon />,
     mobileTitle: 'Color',
     route: ColorConverterRoute,
@@ -63,6 +86,7 @@ const tools: Array<ToolDefinition> = [
     slug: 'color-converter',
   },
   {
+    category: 'Text & Data',
     icon: <IconBrackets />,
     mobileTitle: 'JSON',
     route: JsonFormatterRoute,
@@ -70,38 +94,55 @@ const tools: Array<ToolDefinition> = [
     slug: 'json-formatter',
   },
   {
+    category: 'Design & Media',
     icon: <IconCamera />,
     route: ZippyImgRoute,
-    showInMobile: true,
     slug: 'zippy-img',
   },
-  { icon: <IconDeviceDesktop />, route: UaCheckRoute, slug: 'ua-check' },
   {
+    category: 'Developer',
+    icon: <IconDeviceDesktop />,
+    route: UaCheckRoute,
+    slug: 'ua-check',
+  },
+  {
+    category: 'Links & Sharing',
     icon: <IconQrCode />,
     mobileTitle: 'QR Code',
     route: QrcodeRoute,
     showInMobile: true,
     slug: 'qrcode',
   },
-  { icon: <IconCodeLines />, route: JsPerfRoute, slug: 'js-perf' },
   {
+    category: 'Developer',
+    icon: <IconCodeLines />,
+    route: JsPerfRoute,
+    slug: 'js-perf',
+  },
+  {
+    category: 'Links & Sharing',
     icon: <IconCalendar />,
     route: AddToCalendarRoute,
     slug: 'add-to-calendar',
   },
-  { icon: <IconBolt />, route: EvChargingRoute, slug: 'ev-charging' },
   {
+    category: 'Calculators',
+    icon: <IconBolt />,
+    route: EvChargingRoute,
+    slug: 'ev-charging',
+  },
+  {
+    category: 'Text & Data',
     icon: <Binary />,
     mobileTitle: 'Base64',
     route: Base64Route,
-    showInMobile: true,
     slug: 'base64',
   },
   {
+    category: 'Security',
     icon: <KeyRound />,
     mobileTitle: 'Password',
     route: PasswordGeneratorRoute,
-    showInMobile: true,
     slug: 'password-generator',
   },
 ];
@@ -116,6 +157,7 @@ function buildNavItems(filter?: { mobile?: boolean }): Array<ToolNavItem> {
           | undefined
       );
       return {
+        category: t.category,
         description: meta.description,
         icon: t.icon,
         path: `/${t.slug}` as ToOptions['to'],
@@ -139,4 +181,14 @@ export function getMobileNavItems(): Array<ToolNavItem> {
 
 export function getToolNavItem(slug: string): ToolNavItem | undefined {
   return allNavItems.find((item) => item.slug === slug);
+}
+
+export function getToolNavCategories(): Array<{
+  category: ToolCategory;
+  items: Array<ToolNavItem>;
+}> {
+  return TOOL_CATEGORIES.map((category) => ({
+    category,
+    items: allNavItems.filter((item) => item.category === category),
+  })).filter((group) => group.items.length > 0);
 }
