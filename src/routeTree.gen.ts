@@ -18,6 +18,7 @@ import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/co
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
 import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/json-formatter/index'
+import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
@@ -68,6 +69,12 @@ const ToolsJsonFormatterIndexRoute = ToolsJsonFormatterIndexRouteImport.update({
   path: '/json-formatter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsPasswordGeneratorIndexRoute =
+  ToolsPasswordGeneratorIndexRouteImport.update({
+    id: '/password-generator/',
+    path: '/password-generator/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsQrcodeIndexRoute = ToolsQrcodeIndexRouteImport.update({
   id: '/qrcode/',
   path: '/qrcode/',
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
   '/json-formatter/': typeof ToolsJsonFormatterIndexRoute
+  '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
@@ -112,6 +120,7 @@ export interface FileRoutesByTo {
   '/ev-charging': typeof ToolsEvChargingIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
   '/json-formatter': typeof ToolsJsonFormatterIndexRoute
+  '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
@@ -128,6 +137,7 @@ export interface FileRoutesById {
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
   '/_tools/json-formatter/': typeof ToolsJsonFormatterIndexRoute
+  '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/ev-charging/'
     | '/js-perf/'
     | '/json-formatter/'
+    | '/password-generator/'
     | '/qrcode/'
     | '/ua-check/'
     | '/wa-link-helper/'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/ev-charging'
     | '/js-perf'
     | '/json-formatter'
+    | '/password-generator'
     | '/qrcode'
     | '/ua-check'
     | '/wa-link-helper'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
     | '/_tools/ev-charging/'
     | '/_tools/js-perf/'
     | '/_tools/json-formatter/'
+    | '/_tools/password-generator/'
     | '/_tools/qrcode/'
     | '/_tools/ua-check/'
     | '/_tools/wa-link-helper/'
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsJsonFormatterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/password-generator/': {
+      id: '/_tools/password-generator/'
+      path: '/password-generator'
+      fullPath: '/password-generator/'
+      preLoaderRoute: typeof ToolsPasswordGeneratorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/qrcode/': {
       id: '/_tools/qrcode/'
       path: '/qrcode'
@@ -288,6 +308,7 @@ interface ToolsRouteRouteChildren {
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
   ToolsJsonFormatterIndexRoute: typeof ToolsJsonFormatterIndexRoute
+  ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
@@ -301,6 +322,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
   ToolsJsonFormatterIndexRoute: ToolsJsonFormatterIndexRoute,
+  ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
