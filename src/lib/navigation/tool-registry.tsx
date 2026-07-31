@@ -9,10 +9,11 @@ import {
   IconQrCode,
 } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
-import { PaletteIcon } from 'lucide-react';
+import { Binary, PaletteIcon } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
+import { Route as Base64Route } from '@/routes/_tools/base64/index';
 import { Route as ColorConverterRoute } from '@/routes/_tools/color-converter/index';
 import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
 import { Route as JsPerfRoute } from '@/routes/_tools/js-perf/index';
@@ -88,6 +89,13 @@ const tools: Array<ToolDefinition> = [
     slug: 'add-to-calendar',
   },
   { icon: <IconBolt />, route: EvChargingRoute, slug: 'ev-charging' },
+  {
+    icon: <Binary />,
+    mobileTitle: 'Base64',
+    route: Base64Route,
+    showInMobile: true,
+    slug: 'base64',
+  },
 ];
 
 function buildNavItems(filter?: { mobile?: boolean }): Array<ToolNavItem> {

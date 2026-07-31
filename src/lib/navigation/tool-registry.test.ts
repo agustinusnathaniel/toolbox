@@ -5,7 +5,7 @@ import { getToolNavItem, getToolNavItems } from './tool-registry';
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(10);
   });
 
   test('each item has required fields', () => {
@@ -42,6 +42,7 @@ describe('getToolNavItems', () => {
     expect(items[6].slug).toBe('js-perf');
     expect(items[7].slug).toBe('add-to-calendar');
     expect(items[8].slug).toBe('ev-charging');
+    expect(items[9].slug).toBe('base64');
   });
 });
 
