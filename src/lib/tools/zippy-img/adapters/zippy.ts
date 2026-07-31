@@ -26,6 +26,9 @@ function getImageDimensions(
     const img = new Image();
 
     img.onload = () => {
+      if (typeof source !== 'string') {
+        URL.revokeObjectURL(img.src);
+      }
       resolve({
         height: img.naturalHeight,
         size: typeof source === 'string' ? undefined : source.size,
@@ -39,14 +42,6 @@ function getImageDimensions(
       img.src = source;
     } else {
       img.src = URL.createObjectURL(source);
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        resolve({
-          height: img.naturalHeight,
-          size: source.size,
-          width: img.naturalWidth,
-        });
-      };
     }
   });
 }
