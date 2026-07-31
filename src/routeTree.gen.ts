@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
+import { Route as ToolsBase64IndexRouteImport } from './routes/_tools/base64/index'
 import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
@@ -39,6 +40,11 @@ const ChangelogRoute = ChangelogRouteImport.update({
 const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
   id: '/add-to-calendar/',
   path: '/add-to-calendar/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsBase64IndexRoute = ToolsBase64IndexRouteImport.update({
+  id: '/base64/',
+  path: '/base64/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 const ToolsColorConverterIndexRoute =
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
+  '/base64/': typeof ToolsBase64IndexRoute
   '/color-converter/': typeof ToolsColorConverterIndexRoute
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
+  '/base64': typeof ToolsBase64IndexRoute
   '/color-converter': typeof ToolsColorConverterIndexRoute
   '/ev-charging': typeof ToolsEvChargingIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/_tools': typeof ToolsRouteRouteWithChildren
   '/changelog': typeof ChangelogRoute
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
+  '/_tools/base64/': typeof ToolsBase64IndexRoute
   '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/'
     | '/changelog'
     | '/add-to-calendar/'
+    | '/base64/'
     | '/color-converter/'
     | '/ev-charging/'
     | '/js-perf/'
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/'
     | '/changelog'
     | '/add-to-calendar'
+    | '/base64'
     | '/color-converter'
     | '/ev-charging'
     | '/js-perf'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/_tools'
     | '/changelog'
     | '/_tools/add-to-calendar/'
+    | '/_tools/base64/'
     | '/_tools/color-converter/'
     | '/_tools/ev-charging/'
     | '/_tools/js-perf/'
@@ -201,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/add-to-calendar'
       fullPath: '/add-to-calendar/'
       preLoaderRoute: typeof ToolsAddToCalendarIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/base64/': {
+      id: '/_tools/base64/'
+      path: '/base64'
+      fullPath: '/base64/'
+      preLoaderRoute: typeof ToolsBase64IndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/color-converter/': {
@@ -264,6 +283,7 @@ declare module '@tanstack/react-router' {
 
 interface ToolsRouteRouteChildren {
   ToolsAddToCalendarIndexRoute: typeof ToolsAddToCalendarIndexRoute
+  ToolsBase64IndexRoute: typeof ToolsBase64IndexRoute
   ToolsColorConverterIndexRoute: typeof ToolsColorConverterIndexRoute
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
@@ -276,6 +296,7 @@ interface ToolsRouteRouteChildren {
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsAddToCalendarIndexRoute: ToolsAddToCalendarIndexRoute,
+  ToolsBase64IndexRoute: ToolsBase64IndexRoute,
   ToolsColorConverterIndexRoute: ToolsColorConverterIndexRoute,
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
