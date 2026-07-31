@@ -8,15 +8,19 @@ import { SidebarTrigger } from './ui/sidebar';
 
 const homeItem = { href: '/' as const, icon: <IconGlobe />, label: 'Home' };
 
+const MAX_MOBILE_TOOLS = 4;
+
 export const MobileBottomNav = () => {
   const { location } = useRouterState();
   const currentPath = location.pathname;
 
-  const toolItems = getMobileNavItems().map((item) => ({
-    href: item.path,
-    icon: item.icon,
-    label: item.title,
-  }));
+  const toolItems = getMobileNavItems()
+    .slice(0, MAX_MOBILE_TOOLS)
+    .map((item) => ({
+      href: item.path,
+      icon: item.icon,
+      label: item.title,
+    }));
 
   const navItems = [homeItem, ...toolItems];
 

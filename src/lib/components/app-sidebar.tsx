@@ -20,9 +20,9 @@ import {
   useSidebar,
 } from '@/lib/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
-import { getToolNavItems } from '@/lib/navigation/tool-registry';
+import { getToolNavCategories } from '@/lib/navigation/tool-registry';
 
-const navigation = getToolNavItems();
+const navCategories = getToolNavCategories();
 
 export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { setIsOpenOnMobile } = useSidebar();
@@ -50,20 +50,22 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarSectionGroup>
-          <SidebarSection label="Tools">
-            {navigation.map((item) => (
-              <SidebarItem
-                href={item.path}
-                isCurrent={location.pathname === item.path}
-                key={item.slug}
-                onClick={handleMobileClose}
-                tooltip={item.title}
-              >
-                {item.icon}
-                <SidebarLabel>{item.title}</SidebarLabel>
-              </SidebarItem>
-            ))}
-          </SidebarSection>
+          {navCategories.map(({ category, items }) => (
+            <SidebarSection key={category} label={category}>
+              {items.map((item) => (
+                <SidebarItem
+                  href={item.path}
+                  isCurrent={location.pathname === item.path}
+                  key={item.slug}
+                  onClick={handleMobileClose}
+                  tooltip={item.title}
+                >
+                  {item.icon}
+                  <SidebarLabel>{item.title}</SidebarLabel>
+                </SidebarItem>
+              ))}
+            </SidebarSection>
+          ))}
           <SidebarSection label="More">
             <SidebarItem
               href="/changelog"
