@@ -25,7 +25,7 @@ type UrlQRCardProps = {
   svgRef: React.RefObject<SVGSVGElement | null>;
   qrSize: number;
   urlState: UrlState;
-  onSaveQR: (size: number) => void;
+  onSaveQR: () => void;
   onCopyShareableLink: () => void;
   onUpdateUrlField: <K extends keyof UrlState>(
     field: K,
@@ -61,7 +61,7 @@ export function UrlQRCard({
                 value={urlState.value || ' '}
               />
             </div>
-            <Button intent="primary" onPress={() => onSaveQR(qrSize)}>
+            <Button intent="primary" onPress={onSaveQR}>
               Save QR Code
             </Button>
             <Button intent="outline" onPress={onCopyShareableLink}>

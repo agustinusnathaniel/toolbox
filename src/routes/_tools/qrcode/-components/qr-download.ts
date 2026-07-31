@@ -1,9 +1,8 @@
 import { toast } from 'sonner';
 
-export function svgToPngDownload(
-  svgElement: SVGSVGElement,
-  size: number
-): void {
+const EXPORT_SIZE = 2000;
+
+export function svgToPngDownload(svgElement: SVGSVGElement): void {
   const svgData = new XMLSerializer().serializeToString(svgElement);
   const svgBlob = new Blob([svgData], {
     type: 'image/svg+xml;charset=utf-8',
@@ -12,10 +11,9 @@ export function svgToPngDownload(
 
   const img = new Image();
   img.onload = () => {
-    const scale = 2000 / size;
     const resizedCanvas = document.createElement('canvas');
-    resizedCanvas.width = size * scale;
-    resizedCanvas.height = size * scale;
+    resizedCanvas.width = EXPORT_SIZE;
+    resizedCanvas.height = EXPORT_SIZE;
     const ctx = resizedCanvas.getContext('2d');
     if (!ctx) {
       toast.error('Failed to create canvas');
