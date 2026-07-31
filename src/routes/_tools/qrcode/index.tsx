@@ -116,9 +116,9 @@ function QRCodeGeneratorPage() {
             trackAction('copy_shareable');
             handleCopyShareableLink();
           }}
-          onSaveQR={(size) => {
+          onSaveQR={() => {
             trackAction('save_qr');
-            handleSaveQR(size);
+            handleSaveQR();
           }}
           onUpdateUrlField={updateUrlField}
           qrSize={qrSize}
@@ -133,9 +133,9 @@ function QRCodeGeneratorPage() {
             trackAction('copy_shareable');
             handleCopyShareableLink();
           }}
-          onSaveQR={(size) => {
+          onSaveQR={() => {
             trackAction('save_qr');
-            handleSaveQR(size);
+            handleSaveQR();
           }}
           onUpdateVCardField={updateVCardField}
           qrSize={qrSize}

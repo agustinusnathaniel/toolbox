@@ -66,13 +66,13 @@ export function useQRCodeForm(search: SearchParams = {}) {
     setVcardState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSaveQR = (size: number) => {
+  const handleSaveQR = () => {
     const svg = svgRef.current;
     if (!svg) {
       toast.error('QR code not ready');
       return;
     }
-    svgToPngDownload(svg, size);
+    svgToPngDownload(svg);
   };
 
   const handleCopyShareableLink = () => {

@@ -76,7 +76,7 @@ describe('svgToPngDownload', () => {
     const m = setupMocks({ getContextResult: { drawImage: vi.fn() } });
 
     const svg = { nodeType: 1 } as unknown as SVGSVGElement;
-    svgToPngDownload(svg, 200);
+    svgToPngDownload(svg);
 
     const onload = m.getCapturedOnload();
     expect(onload).not.toBeNull();
@@ -95,7 +95,7 @@ describe('svgToPngDownload', () => {
     const m = setupMocks({ getContextResult: null });
 
     const svg = { nodeType: 1 } as unknown as SVGSVGElement;
-    svgToPngDownload(svg, 200);
+    svgToPngDownload(svg);
 
     const onload = m.getCapturedOnload();
     expect(onload).not.toBeNull();
