@@ -10,7 +10,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(11);
+    expect(items).toHaveLength(12);
   });
 
   test('each item has required fields', () => {
@@ -50,6 +50,7 @@ describe('getToolNavItems', () => {
     expect(items[8].slug).toBe('ev-charging');
     expect(items[9].slug).toBe('base64');
     expect(items[10].slug).toBe('password-generator');
+    expect(items[11].slug).toBe('hash-generator');
   });
 });
 

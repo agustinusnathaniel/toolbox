@@ -17,6 +17,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **Add to Calendar** — Generate Add to Calendar links for Google Calendar events
 - **Base64 Encoder/Decoder** — Encode and decode text between UTF-8 and Base64
 - **Password Generator** — Generate strong, random passwords with selectable character sets
+- **Hash Generator** — Compute SHA-1, SHA-256, SHA-384, or SHA-512 hashes of text or files entirely in your browser
 
 ## Tech Stack
 

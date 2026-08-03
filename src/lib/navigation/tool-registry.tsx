@@ -9,13 +9,14 @@ import {
   IconQrCode,
 } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
-import { Binary, KeyRound, PaletteIcon } from 'lucide-react';
+import { Binary, Fingerprint, KeyRound, PaletteIcon } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
 import { Route as Base64Route } from '@/routes/_tools/base64/index';
 import { Route as ColorConverterRoute } from '@/routes/_tools/color-converter/index';
 import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
+import { Route as HashGeneratorRoute } from '@/routes/_tools/hash-generator/index';
 import { Route as JsPerfRoute } from '@/routes/_tools/js-perf/index';
 import { Route as JsonFormatterRoute } from '@/routes/_tools/json-formatter/index';
 import { Route as PasswordGeneratorRoute } from '@/routes/_tools/password-generator/index';
@@ -144,6 +145,12 @@ const tools: Array<ToolDefinition> = [
     mobileTitle: 'Password',
     route: PasswordGeneratorRoute,
     slug: 'password-generator',
+  },
+  {
+    category: 'Security',
+    icon: <Fingerprint />,
+    route: HashGeneratorRoute,
+    slug: 'hash-generator',
   },
 ];
 

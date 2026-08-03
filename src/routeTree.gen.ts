@@ -16,6 +16,7 @@ import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add
 import { Route as ToolsBase64IndexRouteImport } from './routes/_tools/base64/index'
 import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
+import { Route as ToolsHashGeneratorIndexRouteImport } from './routes/_tools/hash-generator/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
 import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/json-formatter/index'
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
@@ -57,6 +58,11 @@ const ToolsColorConverterIndexRoute =
 const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
   id: '/ev-charging/',
   path: '/ev-charging/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsHashGeneratorIndexRoute = ToolsHashGeneratorIndexRouteImport.update({
+  id: '/hash-generator/',
+  path: '/hash-generator/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 const ToolsJsPerfIndexRoute = ToolsJsPerfIndexRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/base64/': typeof ToolsBase64IndexRoute
   '/color-converter/': typeof ToolsColorConverterIndexRoute
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
+  '/hash-generator/': typeof ToolsHashGeneratorIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
   '/json-formatter/': typeof ToolsJsonFormatterIndexRoute
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/base64': typeof ToolsBase64IndexRoute
   '/color-converter': typeof ToolsColorConverterIndexRoute
   '/ev-charging': typeof ToolsEvChargingIndexRoute
+  '/hash-generator': typeof ToolsHashGeneratorIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
   '/json-formatter': typeof ToolsJsonFormatterIndexRoute
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/_tools/base64/': typeof ToolsBase64IndexRoute
   '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
+  '/_tools/hash-generator/': typeof ToolsHashGeneratorIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
   '/_tools/json-formatter/': typeof ToolsJsonFormatterIndexRoute
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/base64/'
     | '/color-converter/'
     | '/ev-charging/'
+    | '/hash-generator/'
     | '/js-perf/'
     | '/json-formatter/'
     | '/password-generator/'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/base64'
     | '/color-converter'
     | '/ev-charging'
+    | '/hash-generator'
     | '/js-perf'
     | '/json-formatter'
     | '/password-generator'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/_tools/base64/'
     | '/_tools/color-converter/'
     | '/_tools/ev-charging/'
+    | '/_tools/hash-generator/'
     | '/_tools/js-perf/'
     | '/_tools/json-formatter/'
     | '/_tools/password-generator/'
@@ -249,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsEvChargingIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/hash-generator/': {
+      id: '/_tools/hash-generator/'
+      path: '/hash-generator'
+      fullPath: '/hash-generator/'
+      preLoaderRoute: typeof ToolsHashGeneratorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/js-perf/': {
       id: '/_tools/js-perf/'
       path: '/js-perf'
@@ -306,6 +325,7 @@ interface ToolsRouteRouteChildren {
   ToolsBase64IndexRoute: typeof ToolsBase64IndexRoute
   ToolsColorConverterIndexRoute: typeof ToolsColorConverterIndexRoute
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
+  ToolsHashGeneratorIndexRoute: typeof ToolsHashGeneratorIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
   ToolsJsonFormatterIndexRoute: typeof ToolsJsonFormatterIndexRoute
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
@@ -320,6 +340,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsBase64IndexRoute: ToolsBase64IndexRoute,
   ToolsColorConverterIndexRoute: ToolsColorConverterIndexRoute,
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
+  ToolsHashGeneratorIndexRoute: ToolsHashGeneratorIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
   ToolsJsonFormatterIndexRoute: ToolsJsonFormatterIndexRoute,
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
