@@ -9,7 +9,13 @@ import {
   IconQrCode,
 } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
-import { Binary, Fingerprint, KeyRound, PaletteIcon } from 'lucide-react';
+import {
+  Binary,
+  Fingerprint,
+  KeyRound,
+  PaletteIcon,
+  ScanLine,
+} from 'lucide-react';
 import type { JSX } from 'react';
 
 import { Route as AddToCalendarRoute } from '@/routes/_tools/add-to-calendar/index';
@@ -19,6 +25,7 @@ import { Route as EvChargingRoute } from '@/routes/_tools/ev-charging/index';
 import { Route as HashGeneratorRoute } from '@/routes/_tools/hash-generator/index';
 import { Route as JsPerfRoute } from '@/routes/_tools/js-perf/index';
 import { Route as JsonFormatterRoute } from '@/routes/_tools/json-formatter/index';
+import { Route as JwtDecoderRoute } from '@/routes/_tools/jwt-decoder/index';
 import { Route as PasswordGeneratorRoute } from '@/routes/_tools/password-generator/index';
 import { Route as QrcodeRoute } from '@/routes/_tools/qrcode/index';
 import { Route as UaCheckRoute } from '@/routes/_tools/ua-check/index';
@@ -151,6 +158,12 @@ const tools: Array<ToolDefinition> = [
     icon: <Fingerprint />,
     route: HashGeneratorRoute,
     slug: 'hash-generator',
+  },
+  {
+    category: 'Developer',
+    icon: <ScanLine />,
+    route: JwtDecoderRoute,
+    slug: 'jwt-decoder',
   },
 ];
 
