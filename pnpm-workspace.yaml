@@ -8,8 +8,12 @@ overrides:
   "vitest": 'catalog:'
   "serialize-javascript@>=5.0.0 <7.0.3": ">=7.0.3"
   "dompurify@<3.4.12": ">=3.4.12"
-  "brace-expansion@<5.0.8": ">=5.0.8"
+  "brace-expansion@<5.0.9": ">=5.0.9"
   "esbuild@>=0.27.3 <0.28.1": ">=0.28.1"
+  "fast-uri@>=3.0.0 <3.1.5": ">=3.1.5"
+  "postcss@<=8.5.22": ">=8.5.23"
+  "undici@>=7.0.0 <7.29.0": "7.29.0"
+  "sharp@<0.35.0": "0.35.3"
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
   vitest: 4.1.10
