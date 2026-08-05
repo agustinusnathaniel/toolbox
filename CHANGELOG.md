@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.6...v1.7.0) (2026-08-05)
+
+### Features
+
+* **base-64:** add Base64 Encoder/Decoder tool with UTF-8 support ([#26](https://github.com/agustinusnathaniel/toolbox/issues/26)) ([0939123](https://github.com/agustinusnathaniel/toolbox/commit/0939123df3aa2d85cebc92c0e08a0b97ebb9b0bd))
+* **color-converter:** add Color Converter tool with HEX/RGB/HSL/OKLCH support ([#20](https://github.com/agustinusnathaniel/toolbox/issues/20)) ([505369d](https://github.com/agustinusnathaniel/toolbox/commit/505369db2d8f3eae713d3ef95ea16ef48a48be83))
+* **hash-generator:** add Hash Generator tool with Web Crypto hashing ([#28](https://github.com/agustinusnathaniel/toolbox/issues/28)) ([95ffca8](https://github.com/agustinusnathaniel/toolbox/commit/95ffca8e439cc3a7eaab3bad2e1ae53ed0a340b0))
+* **json-formatter:** add JSON Formatter tool with format, validate, and minify support ([#22](https://github.com/agustinusnathaniel/toolbox/issues/22)) ([947b34a](https://github.com/agustinusnathaniel/toolbox/commit/947b34a00159ca46031f2bd33ea9c5afa3e48b7f))
+* **jwt-decoder:** add JWT Decoder tool with HMAC signature verification ([#30](https://github.com/agustinusnathaniel/toolbox/issues/30)) ([04a07c0](https://github.com/agustinusnathaniel/toolbox/commit/04a07c043838926e497258965b14f3306b6cb4d4))
+* **password-generator:** add Password Generator tool with Web Crypto randomness ([#27](https://github.com/agustinusnathaniel/toolbox/issues/27)) ([6145a68](https://github.com/agustinusnathaniel/toolbox/commit/6145a68a5cc66d4bf4a6837fd5a9bdd5727dc88b))
+
+### Bug Fixes
+
+* **deps:** harden transitive dependencies with pnpm overrides ([#29](https://github.com/agustinusnathaniel/toolbox/issues/29)) ([883e8b5](https://github.com/agustinusnathaniel/toolbox/commit/883e8b511699cdfd58e04a257bc64b5c7a888dd6))
+* **security:** sync HSTS header across all deployment configs ([#16](https://github.com/agustinusnathaniel/toolbox/issues/16)) ([aefe459](https://github.com/agustinusnathaniel/toolbox/commit/aefe459ed369e2a43f13d22d9a745463d59c47d1))
+* wrap startViewTransition in try/catch via pnpm patch ([#10](https://github.com/agustinusnathaniel/toolbox/issues/10)) ([50faf04](https://github.com/agustinusnathaniel/toolbox/commit/50faf048b52b45e91b10f10d59fa7998c069688c))
 ## [1.6.6](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.5...v1.6.6) (2026-07-07)
 
 ## [1.6.5](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.4...v1.6.5) (2026-06-19)
