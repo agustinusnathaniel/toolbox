@@ -17,7 +17,7 @@ overrides:
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
   vitest: 4.1.10
-  vite-plus: ^0.2.5
+  vite-plus: ^0.2.7
 peerDependencyRules:
   allowAny:
     - vite
@@ -25,5 +25,3 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
-patchedDependencies:
-  '@tanstack/router-core@1.171.15': patches/@tanstack__router-core@1.171.15.patch
