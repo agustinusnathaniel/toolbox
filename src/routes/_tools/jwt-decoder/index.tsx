@@ -49,12 +49,14 @@ function JwtDecoderPage() {
   const [verifyResult, setVerifyResult] = useState<JwtVerifyResult | null>(
     null
   );
-  const [copied, setCopied] = useState(false);
+  const [copiedField, setCopiedField] = useState<'header' | 'payload' | null>(
+    null
+  );
 
   const handleDecode = useCallback(() => {
     setResult(decodeJwt(token));
     setVerifyResult(null);
-    setCopied(false);
+    setCopiedField(null);
     trackAction('decode');
   }, [token, trackAction]);
 
@@ -64,11 +66,11 @@ function JwtDecoderPage() {
   }, [secret, token, trackAction]);
 
   const handleCopy = useCallback(
-    async (text: string) => {
+    async (field: 'header' | 'payload', text: string) => {
       await copyToClipboard(text, 'Copied');
-      setCopied(true);
+      setCopiedField(field);
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
+      setTimeout(() => setCopiedField(null), 1500);
     },
     [trackAction]
   );
@@ -160,10 +162,10 @@ function JwtDecoderPage() {
                   <Button
                     aria-label="Copy header"
                     intent="outline"
-                    onPress={() => handleCopy(result.headerRaw)}
+                    onPress={() => handleCopy('header', result.headerRaw)}
                     size="sq-sm"
                   >
-                    {copied ? (
+                    {copiedField === 'header' ? (
                       <Check className="size-4 text-success" />
                     ) : (
                       <Copy className="size-4" />
@@ -181,10 +183,10 @@ function JwtDecoderPage() {
                   <Button
                     aria-label="Copy payload"
                     intent="outline"
-                    onPress={() => handleCopy(result.payloadRaw)}
+                    onPress={() => handleCopy('payload', result.payloadRaw)}
                     size="sq-sm"
                   >
-                    {copied ? (
+                    {copiedField === 'payload' ? (
                       <Check className="size-4 text-success" />
                     ) : (
                       <Copy className="size-4" />

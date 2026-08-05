@@ -69,6 +69,12 @@ describe('decodeJwt', () => {
     expect(result.isValid).toBe(false);
     expect(result.error).toBeTruthy();
   });
+
+  test('rejects null JSON payload with a clean error', () => {
+    const result = decodeJwt('eyJhbGciOiJIUzI1NiJ9.bnVsbA.sig');
+    expect(result.isValid).toBe(false);
+    expect(result.error).toContain('JSON objects');
+  });
 });
 
 describe('verifyJwtSignature', () => {

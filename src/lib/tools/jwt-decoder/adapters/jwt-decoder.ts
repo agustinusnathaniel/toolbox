@@ -74,6 +74,14 @@ export function decodeJwt(token: string): JwtDecodeResult {
     const payloadText = new TextDecoder().decode(payloadBytes);
     const header = JSON.parse(headerText) as Record<string, unknown>;
     const payload = JSON.parse(payloadText) as Record<string, unknown>;
+    if (
+      typeof header !== 'object' ||
+      header === null ||
+      typeof payload !== 'object' ||
+      payload === null
+    ) {
+      throw new Error('header and payload must be JSON objects');
+    }
     const claims: Array<DecodedClaim> = Object.entries(payload).map(
       ([key, value]) => ({
         key,
