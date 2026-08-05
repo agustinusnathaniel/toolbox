@@ -1,7 +1,4 @@
-export type {
-  ComparisonMetrics,
-  ComparisonVerdict,
-} from './metrics';
+export type { ComparisonVerdict } from './metrics';
 // biome-ignore lint/performance/noBarrelFile: internal library entry point
 export { buildComparisonMetrics } from './metrics';
 export type {

@@ -1,4 +1,4 @@
-export interface DecodedClaim {
+interface DecodedClaim {
   key: string;
   value: string;
 }

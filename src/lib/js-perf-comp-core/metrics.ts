@@ -7,7 +7,7 @@ interface ConfidenceInterval {
   lowMs: number;
 }
 
-export interface ComparisonMetrics {
+interface ComparisonMetrics {
   absoluteDeltaMs: number;
   aInterval: ConfidenceInterval | null;
   bInterval: ConfidenceInterval | null;
