@@ -19,6 +19,7 @@ import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-cha
 import { Route as ToolsHashGeneratorIndexRouteImport } from './routes/_tools/hash-generator/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
 import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/json-formatter/index'
+import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-decoder/index'
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
@@ -75,6 +76,11 @@ const ToolsJsonFormatterIndexRoute = ToolsJsonFormatterIndexRouteImport.update({
   path: '/json-formatter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsJwtDecoderIndexRoute = ToolsJwtDecoderIndexRouteImport.update({
+  id: '/jwt-decoder/',
+  path: '/jwt-decoder/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsPasswordGeneratorIndexRoute =
   ToolsPasswordGeneratorIndexRouteImport.update({
     id: '/password-generator/',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/hash-generator/': typeof ToolsHashGeneratorIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
   '/json-formatter/': typeof ToolsJsonFormatterIndexRoute
+  '/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/hash-generator': typeof ToolsHashGeneratorIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
   '/json-formatter': typeof ToolsJsonFormatterIndexRoute
+  '/jwt-decoder': typeof ToolsJwtDecoderIndexRoute
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/_tools/hash-generator/': typeof ToolsHashGeneratorIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
   '/_tools/json-formatter/': typeof ToolsJsonFormatterIndexRoute
+  '/_tools/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/hash-generator/'
     | '/js-perf/'
     | '/json-formatter/'
+    | '/jwt-decoder/'
     | '/password-generator/'
     | '/qrcode/'
     | '/ua-check/'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/hash-generator'
     | '/js-perf'
     | '/json-formatter'
+    | '/jwt-decoder'
     | '/password-generator'
     | '/qrcode'
     | '/ua-check'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/_tools/hash-generator/'
     | '/_tools/js-perf/'
     | '/_tools/json-formatter/'
+    | '/_tools/jwt-decoder/'
     | '/_tools/password-generator/'
     | '/_tools/qrcode/'
     | '/_tools/ua-check/'
@@ -282,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsJsonFormatterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/jwt-decoder/': {
+      id: '/_tools/jwt-decoder/'
+      path: '/jwt-decoder'
+      fullPath: '/jwt-decoder/'
+      preLoaderRoute: typeof ToolsJwtDecoderIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/password-generator/': {
       id: '/_tools/password-generator/'
       path: '/password-generator'
@@ -328,6 +347,7 @@ interface ToolsRouteRouteChildren {
   ToolsHashGeneratorIndexRoute: typeof ToolsHashGeneratorIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
   ToolsJsonFormatterIndexRoute: typeof ToolsJsonFormatterIndexRoute
+  ToolsJwtDecoderIndexRoute: typeof ToolsJwtDecoderIndexRoute
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
@@ -343,6 +363,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsHashGeneratorIndexRoute: ToolsHashGeneratorIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
   ToolsJsonFormatterIndexRoute: ToolsJsonFormatterIndexRoute,
+  ToolsJwtDecoderIndexRoute: ToolsJwtDecoderIndexRoute,
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
