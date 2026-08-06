@@ -1,6 +1,6 @@
 'use client';
 
-import { IconGlobe, IconSearch } from '@intentui/icons';
+import { IconGlobe, IconSearch, IconStar } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useState } from 'react';
@@ -18,6 +18,7 @@ import {
 import { Input, InputGroup } from '@/lib/components/ui/input';
 import { Text } from '@/lib/components/ui/text';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
+import { usePinnedTools } from '@/lib/hooks/use-pinned-tools';
 import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
 const toolNavItems = getToolNavItems();
@@ -30,6 +31,11 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { pinnedSlugs } = usePinnedTools();
+
+  const pinnedNavItems = toolNavItems.filter((item) =>
+    pinnedSlugs.includes(item.slug)
+  );
 
   const handleNavigate = useCallback(
     (path: ToOptions['to']) => {
@@ -58,6 +64,23 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
       >
         <CommandMenuSearch placeholder="Type a command or search..." />
         <CommandMenuList>
+          {pinnedNavItems.length > 0 && (
+            <CommandMenuSection label="Pinned">
+              {pinnedNavItems.map((item) => (
+                <CommandMenuItem
+                  key={item.slug}
+                  onAction={() => handleNavigate(item.path)}
+                  textValue={item.title}
+                >
+                  <IconStar />
+                  <CommandMenuLabel>{item.title}</CommandMenuLabel>
+                  <CommandMenuDescription className="col-start-2 row-start-2 ms-0">
+                    {item.description}
+                  </CommandMenuDescription>
+                </CommandMenuItem>
+              ))}
+            </CommandMenuSection>
+          )}
           <CommandMenuSection label="Navigation">
             <CommandMenuItem
               onAction={() => handleNavigate('/')}
