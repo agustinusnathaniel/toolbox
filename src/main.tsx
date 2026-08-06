@@ -12,6 +12,8 @@ import { analytics } from '@/lib/analytics';
 import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
 import { ReloadPrompt } from '@/lib/components/reload-prompt';
 import { buttonStyles } from '@/lib/components/ui/button';
+import { Link } from '@/lib/components/ui/link';
+import { Loader } from '@/lib/components/ui/loader';
 
 analytics.addTracker(createUmamiTracker());
 
@@ -43,16 +45,6 @@ const CardTitle = lazy(() =>
 const Container = lazy(() =>
   import('@/lib/components/ui/container').then((m) => ({
     default: m.Container,
-  }))
-);
-const Link = lazy(() =>
-  import('@/lib/components/ui/link').then((m) => ({
-    default: m.Link,
-  }))
-);
-const Loader = lazy(() =>
-  import('@/lib/components/ui/loader').then((m) => ({
-    default: m.Loader,
   }))
 );
 
