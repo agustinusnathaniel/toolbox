@@ -726,7 +726,7 @@ const SidebarLabel = ({ className, ref, ...props }: React.ComponentProps<typeof 
         data-slot="sidebar-label"
         tabIndex={-1}
         ref={ref}
-        slot="label"
+        slot="description"
         className={twMerge("col-start-2 truncate pe-6 outline-hidden", className)}
         {...props}
       >
