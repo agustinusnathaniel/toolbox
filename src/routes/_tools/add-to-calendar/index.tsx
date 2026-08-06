@@ -16,6 +16,7 @@ import {
 import { CalendarFormFields } from './-components/calendar-form-fields';
 import { CalendarResultCards } from './-components/calendar-result-cards';
 import { useCalendarForm } from './-components/use-calendar-form';
+import { meta } from './-meta';
 
 const searchSchema = z.object({
   desc: z.string().optional(),
@@ -24,12 +25,6 @@ const searchSchema = z.object({
   start: z.string().optional(),
   title: z.string().optional(),
 });
-
-const meta = {
-  description: 'Generate Add to Calendar links for Google Calendar events.',
-  pageTitle: 'Add to Calendar',
-  slug: 'add-to-calendar',
-} as const;
 
 export const Route = createFileRoute('/_tools/add-to-calendar/')({
   component: AddToCalendarPage,

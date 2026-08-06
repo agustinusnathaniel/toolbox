@@ -12,11 +12,7 @@ import type { Base64Result } from '@/lib/tools/base64/adapters/base64';
 import { decodeBase64, encodeBase64 } from '@/lib/tools/base64/adapters/base64';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
-const meta = {
-  description: 'Encode and decode text between UTF-8 and Base64.',
-  pageTitle: 'Base64 Encoder/Decoder',
-  slug: 'base64',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/base64/')({
   component: Base64Page,

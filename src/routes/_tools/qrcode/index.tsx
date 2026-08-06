@@ -11,6 +11,7 @@ import { Button } from '@/lib/components/ui/button';
 import { UrlQRCard } from './-components/url-qr-card';
 import { useQRCodeForm } from './-components/use-qrcode-form';
 import { VCardQRCard } from './-components/vcard-qr-card';
+import { meta } from './-meta';
 
 const searchSchema = z.object({
   bg: z.string().optional(),
@@ -33,12 +34,6 @@ const searchSchema = z.object({
   value: z.string().optional(),
   wb: z.string().optional(),
 });
-
-const meta = {
-  description: 'Generate QR codes for URLs or vCard contact information.',
-  pageTitle: 'QR Code Generator',
-  slug: 'qrcode',
-} as const;
 
 export const Route = createFileRoute('/_tools/qrcode/')({
   component: QRCodeGeneratorPage,

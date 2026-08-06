@@ -8,11 +8,7 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 
-const meta = {
-  description: 'Check your browser and device user agent information.',
-  pageTitle: 'UA Check',
-  slug: 'ua-check',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/ua-check/')({
   component: UACheckPage,

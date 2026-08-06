@@ -18,12 +18,7 @@ import {
 } from '@/lib/tools/jwt-decoder/adapters/jwt-decoder';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
-const meta = {
-  description:
-    'Decode JSON Web Tokens (JWT) and verify HMAC signatures entirely in your browser. No token ever leaves your device.',
-  pageTitle: 'JWT Decoder',
-  slug: 'jwt-decoder',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/jwt-decoder/')({
   component: JwtDecoderPage,

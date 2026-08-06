@@ -8,6 +8,7 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Note } from '@/lib/components/ui/note';
 
 import { ChargingForm } from './-components/charging-form';
+import { meta } from './-meta';
 
 const searchSchema = z.object({
   cal: z.coerce.number().min(0.5).max(1.5).optional(),
@@ -19,13 +20,6 @@ const searchSchema = z.object({
   type: z.enum(['ac-l1', 'ac-l2', 'dc-fast', 'dc-ultra']).optional(),
   usable: z.coerce.number().min(1).max(100).optional(),
 });
-
-const meta = {
-  description:
-    'Estimate how much kWh you need to charge your EV, accounting for charging losses.',
-  pageTitle: 'EV Charging Estimator',
-  slug: 'ev-charging',
-} as const;
 
 export const Route = createFileRoute('/_tools/ev-charging/')({
   component: EVChargingEstimatorPage,

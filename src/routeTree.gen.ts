@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as ChangelogRouteImport } from './routes/changelog'
+import { Route as HomepageIndexRouteImport } from './routes/homepage/index'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
 import { Route as ToolsBase64IndexRouteImport } from './routes/_tools/base64/index'
 import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
@@ -38,6 +39,11 @@ const ToolsRouteRoute = ToolsRouteRouteImport.update({
 const ChangelogRoute = ChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomepageIndexRoute = HomepageIndexRouteImport.update({
+  id: '/homepage/',
+  path: '/homepage/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
@@ -111,6 +117,7 @@ const ToolsZippyImgIndexRoute = ToolsZippyImgIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
+  '/homepage/': typeof HomepageIndexRoute
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/base64/': typeof ToolsBase64IndexRoute
   '/color-converter/': typeof ToolsColorConverterIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
+  '/homepage': typeof HomepageIndexRoute
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
   '/base64': typeof ToolsBase64IndexRoute
   '/color-converter': typeof ToolsColorConverterIndexRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_tools': typeof ToolsRouteRouteWithChildren
   '/changelog': typeof ChangelogRoute
+  '/homepage/': typeof HomepageIndexRoute
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/_tools/base64/': typeof ToolsBase64IndexRoute
   '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/changelog'
+    | '/homepage/'
     | '/add-to-calendar/'
     | '/base64/'
     | '/color-converter/'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/changelog'
+    | '/homepage'
     | '/add-to-calendar'
     | '/base64'
     | '/color-converter'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_tools'
     | '/changelog'
+    | '/homepage/'
     | '/_tools/add-to-calendar/'
     | '/_tools/base64/'
     | '/_tools/color-converter/'
@@ -220,6 +232,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ToolsRouteRoute: typeof ToolsRouteRouteWithChildren
   ChangelogRoute: typeof ChangelogRoute
+  HomepageIndexRoute: typeof HomepageIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/changelog'
       fullPath: '/changelog'
       preLoaderRoute: typeof ChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/homepage/': {
+      id: '/homepage/'
+      path: '/homepage'
+      fullPath: '/homepage/'
+      preLoaderRoute: typeof HomepageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_tools/add-to-calendar/': {
@@ -379,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ToolsRouteRoute: ToolsRouteRouteWithChildren,
   ChangelogRoute: ChangelogRoute,
+  HomepageIndexRoute: HomepageIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

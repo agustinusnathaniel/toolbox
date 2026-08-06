@@ -16,13 +16,7 @@ import {
   MAX_SIZE_MB,
   useZippyImg,
 } from './-components/use-zippy-img';
-
-const meta = {
-  description:
-    'Compress images securely in your browser with no server upload.',
-  pageTitle: 'Zippy Image',
-  slug: 'zippy-img',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/zippy-img/')({
   component: ZippyImgPage,

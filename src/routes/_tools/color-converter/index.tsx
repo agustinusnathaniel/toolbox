@@ -31,18 +31,14 @@ import {
   parseColor,
 } from '@/lib/tools/color-converter/adapters/color-converter';
 
+import { meta } from './-meta';
+
 const FORMATS: Array<{ key: ColorFormat; label: string }> = [
   { key: 'hex', label: 'HEX' },
   { key: 'rgb', label: 'RGB' },
   { key: 'hsl', label: 'HSL' },
   { key: 'oklch', label: 'OKLCH' },
 ];
-
-const meta = {
-  description: 'Convert colors between HEX, RGB, HSL, and OKLCH formats.',
-  pageTitle: 'Color Converter',
-  slug: 'color-converter',
-} as const;
 
 export const Route = createFileRoute('/_tools/color-converter/')({
   component: ColorConverterPage,

@@ -16,11 +16,7 @@ import {
 } from '@/lib/tools/json-formatter/adapters/json-formatter';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
-const meta = {
-  description: 'Format, validate, and minify JSON.',
-  pageTitle: 'JSON Formatter',
-  slug: 'json-formatter',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/json-formatter/')({
   component: JsonFormatterPage,

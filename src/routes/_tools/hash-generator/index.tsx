@@ -27,12 +27,7 @@ import {
 } from '@/lib/tools/hash-generator/adapters/hash-generator';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
-const meta = {
-  description:
-    'Compute SHA-1, SHA-256, SHA-384, or SHA-512 hashes of text or files entirely in your browser.',
-  pageTitle: 'Hash Generator',
-  slug: 'hash-generator',
-} as const;
+import { meta } from './-meta';
 
 const ALGORITHM_OPTIONS = HASH_ALGORITHMS.map((algorithm) => ({
   id: algorithm,
