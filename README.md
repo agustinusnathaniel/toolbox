@@ -2,6 +2,12 @@
 
 A unified web platform for focused utility tools. Compress images, generate QR codes, check user agents, and more — all in one place, all browser-based.
 
+## Entry Points
+
+- `/` remains the PWA app/catalog entry.
+- `/homepage` is the shareable/promotional marketing landing page.
+- Existing tool routes remain the direct utility entry points.
+
 ---
 
 ## Features

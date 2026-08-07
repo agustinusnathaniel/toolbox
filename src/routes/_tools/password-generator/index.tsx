@@ -19,11 +19,7 @@ import {
 } from '@/lib/tools/password-generator/adapters/password-generator';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
-const meta = {
-  description: 'Generate strong, random passwords entirely in your browser.',
-  pageTitle: 'Password Generator',
-  slug: 'password-generator',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/password-generator/')({
   component: PasswordGeneratorPage,

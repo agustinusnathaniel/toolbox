@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vite-plus/test';
 
+import { TOOL_CATEGORIES, TOOL_DEFINITIONS } from './tool-catalog';
 import {
   getToolNavCategories,
   getToolNavItem,
   getToolNavItems,
-  TOOL_CATEGORIES,
 } from './tool-registry';
 
 describe('getToolNavItems', () => {
@@ -52,6 +52,16 @@ describe('getToolNavItems', () => {
     expect(items[10].slug).toBe('password-generator');
     expect(items[11].slug).toBe('hash-generator');
     expect(items[12].slug).toBe('jwt-decoder');
+  });
+});
+
+describe('tool catalog metadata', () => {
+  test('exposes route-owned metadata without loading route implementations', () => {
+    for (const definition of TOOL_DEFINITIONS) {
+      expect(definition.description).toBeTruthy();
+      expect(definition.pageTitle).toBeTruthy();
+      expect(definition.slug).toBeTruthy();
+    }
   });
 });
 

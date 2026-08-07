@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [Unreleased]
+
+### Features
+
+* **homepage:** add shareable marketing landing page
+
 ## [1.7.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.6...v1.7.0) (2026-08-05)
 
 ### Features

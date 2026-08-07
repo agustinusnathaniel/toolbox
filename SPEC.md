@@ -38,7 +38,7 @@ toolbox/
 Each tool lives as a route under `src/routes/_tools/<tool-name>/`. The root layout provides:
 
 - Global navigation sidebar
-- Tool-specific headings via `staticData.pageTitle`
+- Tool-specific headings via `staticData.meta.pageTitle`
 - Consistent page structure
 
 #### 2. Core Logic
@@ -51,9 +51,13 @@ Business logic is co-located with routes under `src/lib/tools/<tool-name>/`:
 
 #### 3. Metadata System
 
-Each route defines its own metadata via `staticData.meta` (with `pageTitle`, `description`, `slug`) and the `head` export. A shared utility in `src/lib/utils/metadata.ts` provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`). Tool-specific descriptors are co-located with each route.
+Each tool route owns its metadata in `src/routes/_tools/<tool-name>/-meta.ts` (with `pageTitle`, `description`, and `slug`). The route module imports that sidecar for both `staticData.meta` and its `head` export. The leading `-` keeps the sidecar out of TanStack Router's file-route scan. The navigation catalog imports only those lightweight route metadata sidecars, then combines them with navigation-only discovery configuration such as category, icon, order, and mobile label. It never imports tool route implementations, so `/homepage` remains free of tool runtime code. A shared utility in `src/lib/utils/metadata.ts` provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`) and the configured public origin. Set `VITE_PUBLIC_SITE_URL` for the deployment origin; a fixed canonical fallback is used when it is absent so generated URLs do not depend on the request host.
 
-#### 4. Analytics Instrumentation
+#### 4. Route Shells and Marketing Entry
+
+The root route uses the app shell by default. `/` remains the fast PWA utility catalog and keeps the PWA manifest `start_url` at `/`. The promotional `/homepage` route opts into the marketing shell with `staticData.shell: 'marketing'`; that shell intentionally omits the app sidebar, breadcrumbs, command menu, and mobile bottom navigation. Existing tool routes and other informational routes continue to use the default app shell.
+
+#### 5. Analytics Instrumentation
 
 The `src/lib/analytics/` module provides:
 
@@ -96,9 +100,9 @@ graph TD
 ## Tool Addition Workflow
 
 1. Create route at `src/routes/_tools/<tool-name>/index.tsx`
-2. Add `staticData: { meta: { pageTitle, description, slug } }` to the route (navigation auto-discovers routes via `tool-registry.tsx`)
-3. Extract business logic to `src/lib/tools/<tool-name>/`
-4. Add tool to navigation registry in `src/lib/navigation/tool-registry.tsx`
+2. Create `src/routes/_tools/<tool-name>/-meta.ts` with the route's `pageTitle`, `description`, and `slug`; import it into the route's `staticData.meta` and `head`
+3. Import the metadata sidecar and add navigation-only discovery fields to `src/lib/navigation/tool-catalog.tsx`; do not copy title or description strings there
+4. Extract business logic to `src/lib/tools/<tool-name>/`
 5. (Optional) Add analytics tracking with `useToolTracking`
 
 See **CONTRIBUTING.md** for detailed instructions.

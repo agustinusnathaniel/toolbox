@@ -21,13 +21,7 @@ import {
 import { RunActionBar } from './-components/run-action-bar';
 import { SnippetEditors } from './-components/snippet-editors';
 import { useJsPerfRunner } from './-components/use-js-perf-runner';
-
-const meta = {
-  description:
-    'Compare JavaScript snippet execution in parallel sandboxed runtimes.',
-  pageTitle: 'JS Performance Comparator',
-  slug: 'js-perf',
-} as const;
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/js-perf/')({
   component: JsPerfComparatorPage,

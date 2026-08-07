@@ -2,6 +2,7 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
+  useMatches,
 } from '@tanstack/react-router';
 import { lazy, Suspense } from 'react';
 
@@ -9,7 +10,14 @@ import { usePageTracking } from '@/lib/analytics/use-page-tracking';
 import { Providers } from '@/lib/components/providers';
 import { Toast } from '@/lib/components/ui/toast';
 import { Layout } from '@/lib/layout';
+import { MarketingLayout } from '@/lib/layout/marketing-layout';
 import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/utils/metadata';
+
+declare module '@tanstack/react-router' {
+  interface StaticDataRouteOption {
+    shell?: 'app' | 'marketing';
+  }
+}
 
 const TanStackRouterDevtools = lazy(() =>
   import('@tanstack/react-router-devtools').then((m) => ({
@@ -18,25 +26,7 @@ const TanStackRouterDevtools = lazy(() =>
 );
 
 export const Route = createRootRouteWithContext()({
-  component: () => {
-    usePageTracking();
-    return (
-      <>
-        <HeadContent />
-        <Providers>
-          <Toast />
-          <Layout>
-            <Outlet />
-          </Layout>
-        </Providers>
-        {import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS ? (
-          <Suspense>
-            <TanStackRouterDevtools position="bottom-right" />
-          </Suspense>
-        ) : null}
-      </>
-    );
-  },
+  component: RootPage,
   head: () => ({
     links: [
       {
@@ -132,3 +122,29 @@ export const Route = createRootRouteWithContext()({
     ],
   }),
 });
+
+function RootPage() {
+  usePageTracking();
+  const isMarketingRoute = useMatches().some(
+    (match) => match.staticData?.shell === 'marketing'
+  );
+
+  const Shell = isMarketingRoute ? MarketingLayout : Layout;
+
+  return (
+    <>
+      <HeadContent />
+      <Providers>
+        <Toast />
+        <Shell>
+          <Outlet />
+        </Shell>
+      </Providers>
+      {import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS ? (
+        <Suspense>
+          <TanStackRouterDevtools position="bottom-right" />
+        </Suspense>
+      ) : null}
+    </>
+  );
+}
