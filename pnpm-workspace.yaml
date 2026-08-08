@@ -30,9 +30,4 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
-minimumReleaseAgeExclude:
-  - '@biomejs/*'
-  - '@tanstack/*'
-  - 'electron-to-chromium'
-  - terser
-  - ultracite
+minimumReleaseAge: 0

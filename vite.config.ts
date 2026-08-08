@@ -2,6 +2,7 @@ import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import mdx from '@mdx-js/rollup';
 import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
+import { devtools as tanstackDevtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import checker from 'vite-plugin-checker';
@@ -62,6 +63,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: lazyPlugins(() => [
       ValidateEnv(),
+      tanstackDevtools(),
       tanstackStart({
         pages: [
           {
