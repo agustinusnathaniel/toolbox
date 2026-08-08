@@ -24,3 +24,5 @@ coverage/
 **/10x/*
 
 plans/
+
+.freebuff/

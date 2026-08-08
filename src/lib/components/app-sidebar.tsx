@@ -82,11 +82,15 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
 
       <SidebarFooter className="flex flex-row items-center justify-between gap-2 p-2">
         <Button
+          aria-label="Toggle theme"
           className="size-8"
           intent="plain"
           onPress={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         >
-          {resolvedTheme === 'dark' ? <IconSun /> : <IconMoon />}
+          {/* Both icons are rendered and toggled via CSS so the markup is
+              identical on server and client (theme is unknown at SSR time). */}
+          <IconMoon aria-hidden="true" className="dark:hidden" />
+          <IconSun aria-hidden="true" className="hidden dark:block" />
         </Button>
       </SidebarFooter>
       <SidebarRail />

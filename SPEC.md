@@ -2,7 +2,7 @@
 
 ## Overview
 
-Toolbox is a unified web platform that hosts multiple focused utility tools under one branded experience. The platform is built as a single-page application using TanStack Router for routing, with business logic co-located alongside route components.
+Toolbox is a unified web platform that hosts multiple focused utility tools under one branded experience. The platform is built as a single-page application using TanStack Start (SPA mode, built on TanStack Router) for routing and prerendering, with business logic co-located alongside route components.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ Toolbox is a unified web platform that hosts multiple focused utility tools unde
 ```
 toolbox/
 ├── src/
-│   ├── routes/             # TanStack Router file-based routes
+│   ├── routes/             # TanStack Start file-based routes
 │   │   └── _tools/         # Individual tool routes
 │   └── lib/
 │       ├── analytics/      # Event tracking
@@ -84,7 +84,7 @@ Built on:
 
 ```mermaid
 graph TD
-    A[Entry: main.tsx] --> B[TanStack Router]
+    A[Entry: src/router.tsx + getRouter()] --> B[TanStack Start (SPA)]
     B --> C[Root Layout]
     C --> D[Tool Layout]
     D --> E[Tool Route Component]

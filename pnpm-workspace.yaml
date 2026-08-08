@@ -6,6 +6,11 @@ allowBuilds:
 overrides:
   "vite": 'catalog:'
   "vitest": 'catalog:'
+  # Align the bundler toolchain with the TanStack Start SPA reference projects
+  # (cartrack, vrts-pro-cossui). The default lockfile resolution pinned a stale
+  # rolldown RC + rollup 2 that diverged from the working references.
+  "rolldown": "1.2.3"
+  "rollup": "4.62.2"
   "serialize-javascript@>=5.0.0 <7.0.3": ">=7.0.3"
   "dompurify@<3.4.12": ">=3.4.12"
   "brace-expansion@<5.0.9": ">=5.0.9"
@@ -15,9 +20,9 @@ overrides:
   "undici@>=7.0.0 <7.29.0": "7.29.0"
   "sharp@<0.35.0": "0.35.3"
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
+  vite: npm:@voidzero-dev/vite-plus-core@^0.2.8
   vitest: 4.1.10
-  vite-plus: ^0.2.7
+  vite-plus: ^0.2.8
 peerDependencyRules:
   allowAny:
     - vite

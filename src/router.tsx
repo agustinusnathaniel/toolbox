@@ -1,19 +1,13 @@
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { lazy, StrictMode } from 'react';
-import ReactDOM from 'react-dom/client';
-
-// Import the generated route tree
-import { routeTree } from './routeTree.gen';
-
-import '@fontsource-variable/onest';
-import '@/lib/styles/globals.css';
+import { createRouter } from '@tanstack/react-router';
+import { lazy } from 'react';
 
 import { analytics } from '@/lib/analytics';
 import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
-import { ReloadPrompt } from '@/lib/components/reload-prompt';
 import { buttonStyles } from '@/lib/components/ui/button';
 import { Link } from '@/lib/components/ui/link';
 import { Loader } from '@/lib/components/ui/loader';
+
+import { routeTree } from './routeTree.gen';
 
 analytics.addTracker(createUmamiTracker());
 
@@ -75,26 +69,36 @@ const PendingPage = () => (
   </div>
 );
 
-const router = createRouter({
-  defaultNotFoundComponent: NotFoundPage,
-  defaultPendingComponent: PendingPage,
-  defaultPreload: 'intent',
-  defaultPreloadStaleTime: 0,
-  defaultStructuralSharing: true,
-  // View Transition API: errors (InvalidStateError on concurrent transitions)
-  // are caught by a pnpm patch on @tanstack/router-core that falls back to
-  // direct update. CSS animations via .route-transition serve as fallback.
-  // See patches/@tanstack__router-core@1.171.13.patch for the catch clause.
-  defaultViewTransition: {
-    types: ({ pathChanged }) => (pathChanged ? [] : false),
-  },
-  routeTree,
-  scrollRestoration: true,
-});
+export async function getRouter() {
+  const router = createRouter({
+    defaultNotFoundComponent: NotFoundPage,
+    defaultPendingComponent: PendingPage,
+    defaultPreload: 'intent',
+    defaultPreloadStaleTime: 0,
+    defaultStructuralSharing: true,
+    // View Transition API: errors (InvalidStateError on concurrent transitions)
+    // fall back to direct updates; CSS animations via .route-transition serve
+    // as the fallback animation.
+    defaultViewTransition: {
+      types: ({ pathChanged }) => (pathChanged ? [] : false),
+    },
+    routeTree,
+    scrollRestoration: true,
+  });
+
+  if (typeof window !== 'undefined') {
+    // Ensure the initial route's async component chunks are loaded before the
+    // hydration pass, so the client's first render matches the server markup
+    // instead of flashing the pending fallback.
+    await router.load();
+  }
+
+  return router;
+}
 
 declare module '@tanstack/react-router' {
   interface Register {
-    router: typeof router;
+    router: Awaited<ReturnType<typeof getRouter>>;
   }
   interface StaticDataRouteOption {
     meta?: {
@@ -103,17 +107,4 @@ declare module '@tanstack/react-router' {
       slug: string;
     };
   }
-}
-
-const App = () => <RouterProvider router={router} />;
-
-const rootElement = document.getElementById('app');
-if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <App />
-      <ReloadPrompt />
-    </StrictMode>
-  );
 }

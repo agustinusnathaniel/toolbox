@@ -29,7 +29,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 ## Tech Stack
 
 - **React 19** + **Vite** — Cutting-edge performance and latest React features
-- **TanStack Router** — Fully type-safe file-based routing
+- **TanStack Start** (SPA mode) — Fully type-safe file-based routing built on TanStack Router
 - **Tailwind CSS 4** — Modern styling with native OKLCH support
 - **React Aria Components** — Accessible UI primitives out of the box
 - **pnpm** — Fast, efficient package manager
@@ -79,7 +79,7 @@ pnpm test:ui       # Run tests with UI
 ```
 toolbox/
 ├── src/
-│   ├── routes/             # TanStack Router file-based routes
+│   ├── routes/             # TanStack Start file-based routes
 │   │   └── _tools/         # Individual tool routes
 │   └── lib/
 │       ├── analytics/      # Event tracking

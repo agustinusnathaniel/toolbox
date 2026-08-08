@@ -1,5 +1,5 @@
 name = "toolbox-web"
-pages_build_output_dir = "./dist"
+pages_build_output_dir = "./dist/client"
 
 [vars]
 COREPACK_INTEGRITY_KEYS = "0"

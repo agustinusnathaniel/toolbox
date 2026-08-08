@@ -1,4 +1,16 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+function readStoredValue<T>(key: string, defaultValue: T): T {
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored !== null) {
+      return JSON.parse(stored) as T;
+    }
+  } catch {
+    // Ignore invalid JSON or localStorage errors
+  }
+  return defaultValue;
+}
 
 export function usePersistedState<T>(
   key: string,
@@ -9,16 +21,22 @@ export function usePersistedState<T>(
     if (forceValue !== undefined) {
       return forceValue;
     }
-    try {
-      const stored = localStorage.getItem(key);
-      if (stored !== null) {
-        return JSON.parse(stored) as T;
-      }
-    } catch {
-      // Ignore invalid JSON or localStorage errors
+    // During SSR (and the client's initial hydration) there is no reliable
+    // localStorage, so render the default to keep server and client markup
+    // identical. The persisted value is adopted in an effect after mount.
+    if (typeof window === 'undefined') {
+      return defaultValue;
     }
-    return defaultValue;
+    return readStoredValue(key, defaultValue);
   });
+
+  useEffect(() => {
+    if (forceValue !== undefined) {
+      setState(forceValue);
+      return;
+    }
+    setState(readStoredValue(key, defaultValue));
+  }, [defaultValue, forceValue, key]);
 
   const setPersistedState = useCallback(
     (value: T | ((prev: T) => T)) => {
