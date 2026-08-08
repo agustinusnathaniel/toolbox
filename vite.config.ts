@@ -71,6 +71,10 @@ export default defineConfig(({ mode }) => {
             prerender: { enabled: true },
           },
           {
+            path: '/homepage',
+            prerender: { enabled: true },
+          },
+          {
             path: '/changelog',
             prerender: { enabled: true },
           },
