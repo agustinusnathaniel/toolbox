@@ -20,7 +20,7 @@ Toolbox is a collection of focused browser-based utility tools. Every tool does 
 1. **Privacy-first** — all tools work without a server. No backend infrastructure.
 2. **Developer experience** — clear patterns, consistent conventions. If it's awkward, simplify it.
 3. **Accessibility** — keyboard navigation and screen reader support are required, not optional.
-4. **Performance** — TanStack Router auto-code-splits per route. Keep bundles lean. PWA caching in production builds.
+4. **Performance** — TanStack Start auto-code-splits per route (SPA mode). Keep bundles lean. PWA caching in production builds.
 
 When a tradeoff is required: **Privacy > convenience. Correctness > speed. Simplicity > configurability.**
 

@@ -218,20 +218,18 @@ export function HomepagePage() {
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
 
   return (
     <Button
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      aria-label="Toggle theme"
       intent="plain"
-      onPress={() => setTheme(isDark ? 'light' : 'dark')}
+      onPress={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       size="sq-sm"
     >
-      {isDark ? (
-        <IconSun aria-hidden="true" />
-      ) : (
-        <IconMoon aria-hidden="true" />
-      )}
+      {/* Both icons are rendered and toggled via CSS so the markup is
+          identical on server and client (theme is unknown at SSR time). */}
+      <IconMoon aria-hidden="true" className="dark:hidden" />
+      <IconSun aria-hidden="true" className="hidden dark:block" />
     </Button>
   );
 }

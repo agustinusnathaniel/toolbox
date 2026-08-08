@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./toast.css";
+@import "@fontsource-variable/onest";
 @plugin "tailwindcss-react-aria-components";
 
 @variant dark (&:is(.dark *));
