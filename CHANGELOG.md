@@ -2,12 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [Unreleased]
+## [1.7.1](https://github.com/agustinusnathaniel/toolbox/compare/v1.7.0...v1.7.1) (2026-08-08)
 
 ### Features
 
-* **homepage:** add shareable marketing landing page
+* add pinned tools with homepage and command menu sections ([#32](https://github.com/agustinusnathaniel/toolbox/issues/32)) ([8857547](https://github.com/agustinusnathaniel/toolbox/commit/885754768f76d06094b64badd0864fb9d5584b48))
+* **homepage:** add marketing landing page ([#34](https://github.com/agustinusnathaniel/toolbox/issues/34)) ([b8e42bb](https://github.com/agustinusnathaniel/toolbox/commit/b8e42bba9f6ea6e4cb5455d181634781fbab0084))
 
+### Bug Fixes
+
+* mobile sidebar issue ([#33](https://github.com/agustinusnathaniel/toolbox/issues/33)) ([55b0fdb](https://github.com/agustinusnathaniel/toolbox/commit/55b0fdb6bb0703e5586a4671dbc8076c5c1d89f0))
 ## [1.7.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.6.6...v1.7.0) (2026-08-05)
 
 ### Features
