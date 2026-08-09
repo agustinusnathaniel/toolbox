@@ -1,9 +1,10 @@
 'use client';
 
 import { parseColor as parseColorStately } from '@react-stately/color';
-import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy } from 'lucide-react';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Check, Copy, Link } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -33,10 +34,15 @@ import {
   PRESET_COLORS,
   parseColor,
 } from '@/lib/tools/color-converter/adapters/color-converter';
+import { buildColorParams } from '@/lib/tools/color-converter/adapters/color-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
+
+const searchSchema = z.object({
+  c: z.string().optional(),
+});
 
 const FORMATS: Array<{ key: ColorFormat; label: string }> = [
   { key: 'hex', label: 'HEX' },
@@ -56,11 +62,13 @@ export function copyColorValue(
 export const Route = createFileRoute('/_tools/color-converter/')({
   component: ColorConverterPage,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 function ColorConverterPage() {
   const { trackAction } = useToolTracking('color-converter', 'Color Converter');
-  const [input, setInput] = useState('#ff0000');
+  const search = useSearch({ from: '/_tools/color-converter/' });
+  const [input, setInput] = useState(search.c ?? '#ff0000');
   const [copied, setCopied] = useState<ColorFormat | null>(null);
 
   const parsed = parseColor(input);
@@ -87,6 +95,16 @@ function ColorConverterPage() {
     },
     [trackAction]
   );
+
+  const handleCopyLink = useCallback(async () => {
+    const params = buildColorParams(input);
+    const url = `${window.location.origin}${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }`;
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_link');
+    }
+  }, [input, trackAction]);
 
   const swatchColor = parsed ? parsed.hex : '#000000';
 
@@ -142,6 +160,14 @@ function ColorConverterPage() {
                 value={input}
               />
             </div>
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sq-sm"
+            >
+              <Link className="size-4" />
+            </Button>
           </div>
 
           {!parsed && input.trim() && (
