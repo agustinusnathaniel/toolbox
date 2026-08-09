@@ -98,7 +98,7 @@ export function useQRCodeForm(search: SearchParams = {}) {
     const url = queryString
       ? `${window.location.origin}${window.location.pathname}?${queryString}`
       : `${window.location.origin}${window.location.pathname}`;
-    copyToClipboard(url, 'Copied Shareable Link');
+    return copyToClipboard(url, 'Copied Shareable Link');
   };
 
   return {

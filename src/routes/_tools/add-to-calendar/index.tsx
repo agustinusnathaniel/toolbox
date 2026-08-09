@@ -12,6 +12,7 @@ import {
   CardDescription,
   CardHeader,
 } from '@/lib/components/ui/card';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { CalendarFormFields } from './-components/calendar-form-fields';
 import { CalendarResultCards } from './-components/calendar-result-cards';
@@ -28,18 +29,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/_tools/add-to-calendar/')({
   component: AddToCalendarPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
   validateSearch: searchSchema,
 });
 
@@ -58,17 +48,20 @@ function AddToCalendarPage() {
     handleGenerateEmbed: rawEmbed,
   } = useCalendarForm();
 
-  const handleCopyLink = () => {
-    trackAction('copy_link');
-    rawCopyLink();
+  const handleCopyLink = async () => {
+    if (await rawCopyLink()) {
+      trackAction('copy_link');
+    }
   };
-  const handleCopyShareableLink = () => {
-    trackAction('copy_shareable');
-    rawShareable();
+  const handleCopyShareableLink = async () => {
+    if (await rawShareable()) {
+      trackAction('copy_shareable');
+    }
   };
-  const handleGenerateEmbed = () => {
-    trackAction('generate_embed');
-    rawEmbed();
+  const handleGenerateEmbed = async () => {
+    if (await rawEmbed()) {
+      trackAction('generate_embed');
+    }
   };
 
   useEffect(() => {

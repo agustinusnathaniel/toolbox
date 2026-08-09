@@ -5,16 +5,11 @@ import {
   IconCalendar,
   IconCamera,
   IconCodeLines,
+  IconColorPalette,
   IconDeviceDesktop,
   IconQrCode,
 } from '@intentui/icons';
-import {
-  Binary,
-  Fingerprint,
-  KeyRound,
-  PaletteIcon,
-  ScanLine,
-} from 'lucide-react';
+import { Binary, Fingerprint, KeyRound, ScanLine } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { meta as addToCalendarMeta } from '@/routes/_tools/add-to-calendar/-meta';
@@ -74,7 +69,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Design & Media',
-    icon: <PaletteIcon />,
+    icon: <IconColorPalette />,
     mobileTitle: 'Color',
     showInMobile: true,
     ...colorConverterMeta,

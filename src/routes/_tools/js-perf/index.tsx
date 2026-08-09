@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Separator } from '@/lib/components/ui/separator';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import { DEFAULT_RUN_POLICY, isRunable } from '@/lib/js-perf-comp-core';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
 import { ComparatorConfigBar } from './-components/comparator-config-bar';
@@ -25,18 +26,7 @@ import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/js-perf/')({
   component: JsPerfComparatorPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';

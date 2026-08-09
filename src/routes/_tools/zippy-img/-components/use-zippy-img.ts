@@ -4,8 +4,10 @@ import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 import {
+  type CompressionSummary,
   compressImage,
   downloadFiles,
+  summarizeCompression,
 } from '@/lib/tools/zippy-img/adapters/zippy';
 
 export const MAX_FILES = 2;
@@ -79,18 +81,24 @@ export function useZippyImg(
           return { compressed, file: item.file, progress: 100 };
         } catch {
           toast.error(`Failed to compress "${item.file.name}"`);
-          return { compressed: undefined, file: item.file, progress: 0 };
+          return { compressed: undefined, file: item.file, progress: 100 };
         }
       })
     );
 
     setInputs(results);
     setIsCompressing(false);
-    const successCount = results.filter(
-      (r) => r.compressed !== undefined
-    ).length;
-    trackComplete(successCount > 0);
-    toast.success('Compression complete');
+    const summary = summarizeCompression(results);
+    trackComplete(summary.succeeded > 0);
+    if (summary.outcome === 'all-success') {
+      toast.success('Compression complete');
+    } else if (summary.outcome === 'partial') {
+      toast.info(
+        `Compression finished: ${summary.succeeded} of ${summary.total} files succeeded`
+      );
+    } else {
+      toast.error('Compression failed for all files');
+    }
   }, [trackAction, trackComplete, inputs]);
 
   const handleDownload = useCallback(() => {
@@ -109,6 +117,9 @@ export function useZippyImg(
   }, []);
 
   const allDone = inputs.length > 0 && inputs.every((i) => i.progress >= 100);
+  const compressionSummary: CompressionSummary | null = allDone
+    ? summarizeCompression(inputs)
+    : null;
   const hasCompressed = inputs.some((i) => i.compressed !== undefined);
   const compressedItems = inputs.filter(
     (i): i is CompressedItem => i.compressed !== undefined
@@ -129,6 +140,7 @@ export function useZippyImg(
   return {
     allDone,
     compressedItems,
+    compressionSummary,
     executeCompress,
     handleDownload,
     handleFilesSelected,

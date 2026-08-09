@@ -1,7 +1,7 @@
 import { saveAs } from 'file-saver';
 import { describe, expect, test, vi } from 'vite-plus/test';
 
-import { downloadFiles, formatFileSize } from './zippy';
+import { downloadFiles, formatFileSize, summarizeCompression } from './zippy';
 
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
 
@@ -43,5 +43,34 @@ describe('formatFileSize', () => {
   test('formats large values', () => {
     expect(formatFileSize(100 * 1024 * 1024)).toBe('100.00 MB');
     expect(formatFileSize(500 * 1024 * 1024)).toBe('500.00 MB');
+  });
+});
+
+describe('summarizeCompression', () => {
+  const file = new File(['compressed'], 'compressed.jpg', {
+    type: 'image/jpeg',
+  });
+
+  test('distinguishes all-success, partial, and all-failure outcomes', () => {
+    expect(
+      summarizeCompression([{ compressed: file }, { compressed: file }])
+    ).toEqual({
+      failed: 0,
+      outcome: 'all-success',
+      succeeded: 2,
+      total: 2,
+    });
+    expect(summarizeCompression([{ compressed: file }, {}])).toEqual({
+      failed: 1,
+      outcome: 'partial',
+      succeeded: 1,
+      total: 2,
+    });
+    expect(summarizeCompression([{}])).toEqual({
+      failed: 1,
+      outcome: 'all-failure',
+      succeeded: 0,
+      total: 1,
+    });
   });
 });

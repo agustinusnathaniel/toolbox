@@ -72,26 +72,18 @@ Tools live as routes under `src/routes/_tools/<tool-name>/`. Business logic shou
 
 ### Step 1: Create the Route
 
-Create a new directory at `src/routes/_tools/<tool-name>/` and add an `index.tsx` file:
+Create a new directory at `src/routes/_tools/<tool-name>/`, add an `index.tsx` file, and add a `-meta.ts` sidecar:
 
 ```typescript
 import { createFileRoute } from '@tanstack/react-router';
 
-const meta = {
-  pageTitle: '<Tool Display Name>',
-  description: '<What this tool does in 1 sentence>',
-  slug: '<tool-slug>',
-} as const;
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
+
+import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/<tool-name>/')({
   component: ToolPage,
-  staticData: { meta },
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-    ],
-  }),
+  ...createToolRouteMetadata(meta),
 });
 
 function ToolPage() {
@@ -101,27 +93,21 @@ function ToolPage() {
 
 ### Step 2: Define route metadata
 
-In your new route file (`src/routes/_tools/<tool-name>/index.tsx`), define metadata as a const:
+In `src/routes/_tools/<tool-name>/-meta.ts`, define route-owned metadata as a const:
 
 ```ts
-const meta = {
+export const meta = {
   pageTitle: '<Tool Display Name>',
   description: '<What this tool does in 1 sentence>',
   slug: '<tool-slug>',
 } as const;
 ```
 
-Pass the metadata to the route's `staticData` and `head()` function:
+Pass the metadata through the typed helper in the route:
 
 ```ts
 export const Route = createFileRoute('/_tools/<tool-name>/')({
-  staticData: { meta },
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { name: 'description', content: meta.description },
-    ],
-  }),
+  ...createToolRouteMetadata(meta),
   // ...
 });
 ```
@@ -183,7 +169,7 @@ function ToolPage() {
 ### Route Conventions
 
 - Routes live under `src/routes/_tools/<tool-name>/index.tsx`.
-- Use `staticData.pageTitle` for the heading shown in the tool layout.
+- Use `staticData.meta.pageTitle` for the heading shown in the tool layout.
 - Use the `head` export for per-route metadata (title, description, OG tags).
 - All routes are client components (`'use client'`) currently.
 

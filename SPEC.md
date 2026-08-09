@@ -51,7 +51,7 @@ Business logic is co-located with routes under `src/lib/tools/<tool-name>/`:
 
 #### 3. Metadata System
 
-Each tool route owns its metadata in `src/routes/_tools/<tool-name>/-meta.ts` (with `pageTitle`, `description`, and `slug`). The route module imports that sidecar for both `staticData.meta` and its `head` export. The leading `-` keeps the sidecar out of TanStack Router's file-route scan. The navigation catalog imports only those lightweight route metadata sidecars, then combines them with navigation-only discovery configuration such as category, icon, order, and mobile label. It never imports tool route implementations, so `/homepage` remains free of tool runtime code. A shared utility in `src/lib/utils/metadata.ts` provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`) and the configured public origin. Set `VITE_PUBLIC_SITE_URL` for the deployment origin; a fixed canonical fallback is used when it is absent so generated URLs do not depend on the request host.
+Each tool route owns its metadata in `src/routes/_tools/<tool-name>/-meta.ts` (with `pageTitle`, `description`, and `slug`). The route module passes that sidecar through `createToolRouteMetadata` from `src/lib/utils/metadata.ts`, which supplies both `staticData.meta` and the standard `head` tags. The leading `-` keeps the sidecar out of TanStack Router's file-route scan. The navigation catalog imports only those lightweight route metadata sidecars, then combines them with navigation-only discovery configuration such as category, icon, order, and mobile label. It never imports tool route implementations, so `/homepage` remains free of tool runtime code. The same utility provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`) and the configured public origin. Set `VITE_PUBLIC_SITE_URL` for the deployment origin; a fixed canonical fallback is used when it is absent so generated URLs do not depend on the request host.
 
 #### 4. Route Shells and Marketing Entry
 
@@ -100,7 +100,7 @@ graph TD
 ## Tool Addition Workflow
 
 1. Create route at `src/routes/_tools/<tool-name>/index.tsx`
-2. Create `src/routes/_tools/<tool-name>/-meta.ts` with the route's `pageTitle`, `description`, and `slug`; import it into the route's `staticData.meta` and `head`
+2. Create `src/routes/_tools/<tool-name>/-meta.ts` with the route's `pageTitle`, `description`, and `slug`; pass it to `createToolRouteMetadata` in the route
 3. Import the metadata sidecar and add navigation-only discovery fields to `src/lib/navigation/tool-catalog.tsx`; do not copy title or description strings there
 4. Extract business logic to `src/lib/tools/<tool-name>/`
 5. (Optional) Add analytics tracking with `useToolTracking`

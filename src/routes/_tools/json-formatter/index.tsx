@@ -15,23 +15,13 @@ import {
   validateJson,
 } from '@/lib/tools/json-formatter/adapters/json-formatter';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/json-formatter/')({
   component: JsonFormatterPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function JsonFormatterPage() {
@@ -71,10 +61,12 @@ function JsonFormatterPage() {
     if (!(result?.isValid && result.formatted)) {
       return;
     }
-    await copyToClipboard(result.formatted, 'Copied JSON');
-    setCopied(true);
-    trackAction('copy');
-    setTimeout(() => setCopied(false), 1500);
+    const copied = await copyToClipboard(result.formatted, 'Copied JSON');
+    if (copied) {
+      setCopied(true);
+      trackAction('copy');
+      setTimeout(() => setCopied(false), 1500);
+    }
   }, [result, trackAction]);
 
   const actionLabel: Record<string, string> = {

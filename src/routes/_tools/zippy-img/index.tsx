@@ -7,6 +7,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { CompressionResults } from './-components/compression-results';
 import { FileQueue } from './-components/file-queue';
@@ -20,18 +21,7 @@ import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/zippy-img/')({
   component: ZippyImgPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function ZippyImgPage() {
@@ -45,6 +35,7 @@ function ZippyImgPage() {
     allDone,
     hasCompressed,
     compressedItems,
+    compressionSummary,
     totalOriginal,
     totalCompressed,
     totalSavings,
@@ -53,6 +44,14 @@ function ZippyImgPage() {
     handleDownload,
     handleRemove,
   } = useZippyImg(trackAction, trackComplete);
+  let compressionMessage = '';
+  if (compressionSummary?.outcome === 'all-success') {
+    compressionMessage = `Compression complete: ${compressionSummary.succeeded} files ready to download.`;
+  } else if (compressionSummary?.outcome === 'partial') {
+    compressionMessage = `Compression partially complete: ${compressionSummary.succeeded} succeeded, ${compressionSummary.failed} failed.`;
+  } else if (compressionSummary) {
+    compressionMessage = 'Compression failed for all selected files.';
+  }
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
@@ -95,6 +94,11 @@ function ZippyImgPage() {
               </Button>
             )}
           </div>
+          {compressionSummary && (
+            <p aria-live="polite" className="text-muted-fg text-sm">
+              {compressionMessage}
+            </p>
+          )}
         </CardContent>
       </Card>
 

@@ -26,6 +26,7 @@ import {
   hashText,
 } from '@/lib/tools/hash-generator/adapters/hash-generator';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
@@ -36,18 +37,7 @@ const ALGORITHM_OPTIONS = HASH_ALGORITHMS.map((algorithm) => ({
 
 export const Route = createFileRoute('/_tools/hash-generator/')({
   component: HashGeneratorPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function HashGeneratorPage() {
@@ -82,10 +72,11 @@ function HashGeneratorPage() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    await copyToClipboard(result.output, 'Copied hash');
-    setCopied(true);
-    trackAction('copy');
-    setTimeout(() => setCopied(false), 1500);
+    if (await copyToClipboard(result.output, 'Copied hash')) {
+      setCopied(true);
+      trackAction('copy');
+      setTimeout(() => setCopied(false), 1500);
+    }
   }, [result, trackAction]);
 
   const showError = result && !result.isValid;

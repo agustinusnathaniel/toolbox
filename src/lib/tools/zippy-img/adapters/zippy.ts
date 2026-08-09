@@ -7,6 +7,31 @@ export interface CompressionOptions {
   onProgress?: (progress: number) => void;
 }
 
+export type CompressionOutcome = 'all-failure' | 'all-success' | 'partial';
+
+export interface CompressionSummary {
+  failed: number;
+  outcome: CompressionOutcome;
+  succeeded: number;
+  total: number;
+}
+
+export function summarizeCompression(
+  results: ReadonlyArray<{ compressed?: File }>
+): CompressionSummary {
+  const succeeded = results.filter((result) => result.compressed).length;
+  const total = results.length;
+  const failed = total - succeeded;
+  let outcome: CompressionOutcome = 'partial';
+  if (succeeded === 0) {
+    outcome = 'all-failure';
+  } else if (failed === 0) {
+    outcome = 'all-success';
+  }
+
+  return { failed, outcome, succeeded, total };
+}
+
 export function formatFileSize(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} B`;

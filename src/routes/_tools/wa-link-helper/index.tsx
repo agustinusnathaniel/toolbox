@@ -33,6 +33,7 @@ import {
   countryCodeOptions,
 } from '@/lib/tools/wa-link-helper/adapters/wa-link';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
@@ -52,18 +53,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/_tools/wa-link-helper/')({
   component: WALinkHelperPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
   validateSearch: searchSchema,
 });
 
@@ -130,7 +120,7 @@ function WALinkHelperPage() {
 
   const { isValid, errors } = form.formState;
 
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
     if (!(isPhoneValid && link)) {
       toast('Invalid Phone Number', {
         description:
@@ -138,12 +128,12 @@ function WALinkHelperPage() {
       });
       return;
     }
-    trackAction('copy_link');
-    copyToClipboard(link, 'Copied Link');
+    if (await copyToClipboard(link, 'Copied Link')) {
+      trackAction('copy_link');
+    }
   };
 
-  const handleCopyShareableLink = () => {
-    trackAction('copy_shareable');
+  const handleCopyShareableLink = async () => {
     navigate({
       replace: true,
       search: (prev) => ({
@@ -156,7 +146,9 @@ function WALinkHelperPage() {
       }),
     });
     const url = window.location.href;
-    copyToClipboard(url, 'Copied Shareable Link');
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_shareable');
+    }
   };
 
   return (
