@@ -24,12 +24,17 @@ import {
   PopoverBody,
   PopoverContent,
 } from '@/lib/components/ui/popover';
-import type { ColorFormat } from '@/lib/tools/color-converter/adapters/color-converter';
+import type {
+  ColorFormat,
+  ParsedColor,
+} from '@/lib/tools/color-converter/adapters/color-converter';
 import {
   formatColorString,
   PRESET_COLORS,
   parseColor,
 } from '@/lib/tools/color-converter/adapters/color-converter';
+import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
@@ -40,20 +45,17 @@ const FORMATS: Array<{ key: ColorFormat; label: string }> = [
   { key: 'oklch', label: 'OKLCH' },
 ];
 
+export function copyColorValue(
+  parsed: ParsedColor,
+  format: ColorFormat,
+  copy: typeof copyToClipboard = copyToClipboard
+): Promise<boolean> {
+  return copy(formatColorString(parsed, format), 'Copied');
+}
+
 export const Route = createFileRoute('/_tools/color-converter/')({
   component: ColorConverterPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function ColorConverterPage() {
@@ -68,8 +70,9 @@ function ColorConverterPage() {
       if (!parsed) {
         return;
       }
-      const str = formatColorString(parsed, format);
-      await navigator.clipboard.writeText(str);
+      if (!(await copyColorValue(parsed, format))) {
+        return;
+      }
       setCopied(format);
       trackAction(`copy_${format}`);
       setTimeout(() => setCopied(null), 1500);

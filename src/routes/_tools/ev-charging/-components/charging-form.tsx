@@ -214,11 +214,12 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
     }
   }, [result, onComplete]);
 
-  const handleCopyShareableLink = () => {
-    onTrack('copy_shareable');
+  const handleCopyShareableLink = async () => {
     const params = buildChargingSearchParams(watchedValues);
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-    copyToClipboard(url, 'Copied Shareable Link');
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      onTrack('copy_shareable');
+    }
   };
 
   return (

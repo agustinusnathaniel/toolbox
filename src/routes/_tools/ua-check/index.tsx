@@ -7,23 +7,13 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/ua-check/')({
   component: UACheckPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 interface InfoRowProps {

@@ -11,23 +11,13 @@ import { Card, CardContent } from '@/lib/components/ui/card';
 import type { Base64Result } from '@/lib/tools/base64/adapters/base64';
 import { decodeBase64, encodeBase64 } from '@/lib/tools/base64/adapters/base64';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/base64/')({
   component: Base64Page,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function Base64Page() {
@@ -59,10 +49,12 @@ function Base64Page() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    await copyToClipboard(result.output, 'Copied Base64 result');
-    setCopied(true);
-    trackAction('copy');
-    setTimeout(() => setCopied(false), 1500);
+    const copied = await copyToClipboard(result.output, 'Copied Base64 result');
+    if (copied) {
+      setCopied(true);
+      trackAction('copy');
+      setTimeout(() => setCopied(false), 1500);
+    }
   }, [result, trackAction]);
 
   const label = activeAction === 'encode' ? 'Encoded' : 'Decoded';

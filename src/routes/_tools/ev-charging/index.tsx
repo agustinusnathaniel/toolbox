@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Note } from '@/lib/components/ui/note';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { ChargingForm } from './-components/charging-form';
 import { meta } from './-meta';
@@ -23,18 +24,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/_tools/ev-charging/')({
   component: EVChargingEstimatorPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
   validateSearch: searchSchema,
 });
 

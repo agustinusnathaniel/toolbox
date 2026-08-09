@@ -18,23 +18,13 @@ import {
   strengthLabel,
 } from '@/lib/tools/password-generator/adapters/password-generator';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/password-generator/')({
   component: PasswordGeneratorPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function PasswordGeneratorPage() {
@@ -66,10 +56,11 @@ function PasswordGeneratorPage() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    await copyToClipboard(result.output, 'Copied password');
-    setCopied(true);
-    trackAction('copy');
-    setTimeout(() => setCopied(false), 1500);
+    if (await copyToClipboard(result.output, 'Copied password')) {
+      setCopied(true);
+      trackAction('copy');
+      setTimeout(() => setCopied(false), 1500);
+    }
   }, [result, trackAction]);
 
   const entropy = useMemo(() => estimateEntropy(options), [options]);

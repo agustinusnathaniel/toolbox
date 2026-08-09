@@ -98,9 +98,7 @@ export function useCalendarForm() {
 
   const { isValid, errors } = form.formState;
 
-  const handleCopyLink = () => {
-    copyToClipboard(linkResult.url, 'Copied Link');
-  };
+  const handleCopyLink = () => copyToClipboard(linkResult.url, 'Copied Link');
 
   const handleGenerateEmbed = () => {
     const escapedUrl = linkResult.url
@@ -109,7 +107,7 @@ export function useCalendarForm() {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
     const embed = `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" style="border:1px solid black;padding:6px;border-radius:6px;text-decoration:none;color:white;font-weight:400;background-color:black;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">Add to Google Calendar</a>`;
-    copyToClipboard(embed, 'Copied Embed Code');
+    return copyToClipboard(embed, 'Copied Embed Code');
   };
 
   const handleCopyShareableLink = () => {
@@ -127,7 +125,7 @@ export function useCalendarForm() {
       }),
     });
     const url = window.location.href;
-    copyToClipboard(url, 'Copied Shareable Link');
+    return copyToClipboard(url, 'Copied Shareable Link');
   };
 
   return {

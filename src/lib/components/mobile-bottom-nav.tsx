@@ -27,14 +27,14 @@ export const MobileBottomNav = () => {
   return (
     <nav
       aria-label="Mobile bottom navigation"
-      className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t bg-navbar/80 py-2.5 backdrop-blur-xs md:hidden"
+      className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t bg-navbar/80 px-1 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur-xs md:hidden"
     >
       {navItems.map(({ href, icon, label }) => {
         const isActive = currentPath === href;
         return (
           <Link
             aria-current={isActive ? 'page' : undefined}
-            className={`flex flex-col items-center gap-1 px-3 py-1 font-medium text-xs transition-colors ${isActive ? 'text-primary' : 'text-muted-fg hover:text-fg'}`}
+            className={`flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-1 font-medium text-xs transition-colors ${isActive ? 'text-primary' : 'text-muted-fg hover:text-fg'}`}
             href={href}
             key={href}
           >
@@ -43,8 +43,12 @@ export const MobileBottomNav = () => {
           </Link>
         );
       })}
-      <SidebarTrigger>
-        <div className="flex flex-col items-center gap-1 px-3 py-1 font-medium text-muted-fg text-xs">
+      <SidebarTrigger
+        aria-label="More navigation"
+        className="sm:size-11 sm:*:[svg]:size-5"
+        size="sq-md"
+      >
+        <div className="flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-1 font-medium text-muted-fg text-xs">
           <IconHamburger className="size-5" />
           <span>More</span>
         </div>

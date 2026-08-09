@@ -17,23 +17,13 @@ import {
   verifyJwtSignature,
 } from '@/lib/tools/jwt-decoder/adapters/jwt-decoder';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
 export const Route = createFileRoute('/_tools/jwt-decoder/')({
   component: JwtDecoderPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
 });
 
 function JwtDecoderPage() {
@@ -62,10 +52,11 @@ function JwtDecoderPage() {
 
   const handleCopy = useCallback(
     async (field: 'header' | 'payload', text: string) => {
-      await copyToClipboard(text, 'Copied');
-      setCopiedField(field);
-      trackAction('copy');
-      setTimeout(() => setCopiedField(null), 1500);
+      if (await copyToClipboard(text, 'Copied')) {
+        setCopiedField(field);
+        trackAction('copy');
+        setTimeout(() => setCopiedField(null), 1500);
+      }
     },
     [trackAction]
   );

@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
+import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { UrlQRCard } from './-components/url-qr-card';
 import { useQRCodeForm } from './-components/use-qrcode-form';
@@ -37,18 +38,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/_tools/qrcode/')({
   component: QRCodeGeneratorPage,
-  head: () => ({
-    meta: [
-      { title: meta.pageTitle },
-      { content: meta.description, name: 'description' },
-      { content: meta.pageTitle, property: 'og:title' },
-      { content: meta.description, property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-    ],
-  }),
-  staticData: {
-    meta,
-  },
+  ...createToolRouteMetadata(meta),
   validateSearch: searchSchema,
 });
 
@@ -107,9 +97,10 @@ function QRCodeGeneratorPage() {
 
       {mode === 'url' && (
         <UrlQRCard
-          onCopyShareableLink={() => {
-            trackAction('copy_shareable');
-            handleCopyShareableLink();
+          onCopyShareableLink={async () => {
+            if (await handleCopyShareableLink()) {
+              trackAction('copy_shareable');
+            }
           }}
           onSaveQR={() => {
             trackAction('save_qr');
@@ -124,9 +115,10 @@ function QRCodeGeneratorPage() {
 
       {mode === 'vcard' && (
         <VCardQRCard
-          onCopyShareableLink={() => {
-            trackAction('copy_shareable');
-            handleCopyShareableLink();
+          onCopyShareableLink={async () => {
+            if (await handleCopyShareableLink()) {
+              trackAction('copy_shareable');
+            }
           }}
           onSaveQR={() => {
             trackAction('save_qr');
