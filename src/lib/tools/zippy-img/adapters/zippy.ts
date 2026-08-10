@@ -7,7 +7,7 @@ export interface CompressionOptions {
   onProgress?: (progress: number) => void;
 }
 
-export type CompressionOutcome = 'all-failure' | 'all-success' | 'partial';
+type CompressionOutcome = 'all-failure' | 'all-success' | 'partial';
 
 export interface CompressionSummary {
   failed: number;
