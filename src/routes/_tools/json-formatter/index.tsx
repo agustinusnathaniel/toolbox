@@ -1,8 +1,9 @@
 'use client';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy, FileJson } from 'lucide-react';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Check, Copy, FileJson, Link } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -14,19 +15,26 @@ import {
   minifyJson,
   validateJson,
 } from '@/lib/tools/json-formatter/adapters/json-formatter';
+import { buildJsonParams } from '@/lib/tools/json-formatter/adapters/json-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
+const searchSchema = z.object({
+  input: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_tools/json-formatter/')({
   component: JsonFormatterPage,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 function JsonFormatterPage() {
   const { trackAction } = useToolTracking('json-formatter', 'JSON Formatter');
-  const [input, setInput] = useState('');
+  const search = useSearch({ from: '/_tools/json-formatter/' });
+  const [input, setInput] = useState(search.input ?? '');
   const [result, setResult] = useState<JsonFormatterResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeAction, setActiveAction] = useState<
@@ -69,6 +77,16 @@ function JsonFormatterPage() {
     }
   }, [result, trackAction]);
 
+  const handleCopyLink = useCallback(async () => {
+    const params = buildJsonParams(input);
+    const url = `${window.location.origin}${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }`;
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_link');
+    }
+  }, [input, trackAction]);
+
   const actionLabel: Record<string, string> = {
     format: 'Formatted',
     minify: 'Minified',
@@ -107,6 +125,15 @@ function JsonFormatterPage() {
             </Button>
             <Button intent="outline" onPress={handleMinify} size="sm">
               Minify
+            </Button>
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sm"
+            >
+              <Link className="size-4" />
+              Copy link
             </Button>
           </div>
 
