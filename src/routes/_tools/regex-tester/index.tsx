@@ -11,11 +11,11 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { Input } from '@/lib/components/ui/input';
 import { Textarea } from '@/lib/components/ui/textarea';
-import { testRegex } from '@/lib/tools/regex-tester/adapters/regex';
 import { buildRegexParams } from '@/lib/tools/regex-tester/adapters/regex-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useRegexTester } from './-components/use-regex-tester';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -38,10 +38,7 @@ function RegexTesterPage() {
   const [input, setInput] = useState(search.input ?? '');
   const [copiedMatches, setCopiedMatches] = useState(false);
 
-  const result = useMemo(
-    () => testRegex(pattern, flags, input),
-    [pattern, flags, input]
-  );
+  const { result } = useRegexTester(pattern, flags, input);
 
   const previousInput = useRef<{
     flags: string;
@@ -181,7 +178,25 @@ function RegexTesterPage() {
             </Button>
           </div>
 
-          {result.error && (
+          {result.timedOut && (
+            <div
+              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
+              role="alert"
+            >
+              <p className="font-medium text-danger text-sm">
+                Pattern took too long
+              </p>
+              <p className="mt-1 whitespace-pre-wrap text-danger/80 text-xs">
+                {result.error}
+              </p>
+              <p className="mt-1 text-danger/80 text-xs">
+                This usually means catastrophic backtracking. Try simplifying
+                the pattern or reducing the input length.
+              </p>
+            </div>
+          )}
+
+          {result.error && !result.timedOut && (
             <div
               className="rounded-lg border border-danger/30 bg-danger/5 p-3"
               role="alert"
@@ -195,7 +210,7 @@ function RegexTesterPage() {
             </div>
           )}
 
-          {!result.error && (
+          {!(result.error || result.timedOut) && (
             <div className="flex flex-col gap-3">
               <span className="text-muted-fg text-sm">{matchLabel}</span>
 
