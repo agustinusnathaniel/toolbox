@@ -196,6 +196,21 @@ function RegexTesterPage() {
             </div>
           )}
 
+          {result.truncated && (
+            <div
+              className="rounded-lg border border-warning/30 bg-warning/5 p-3"
+              role="alert"
+            >
+              <p className="font-medium text-sm text-warning">
+                Showing first {result.matches.length.toLocaleString()} matches
+              </p>
+              <p className="mt-1 text-warning/80 text-xs">
+                The pattern produced more matches than can be shown at once.
+                Refine the pattern or use a shorter input to see all matches.
+              </p>
+            </div>
+          )}
+
           {result.error && !result.timedOut && (
             <div
               className="rounded-lg border border-danger/30 bg-danger/5 p-3"

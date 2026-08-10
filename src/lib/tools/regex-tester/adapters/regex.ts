@@ -1,3 +1,6 @@
+/** Maximum matches stored/rendered. Total count still reported via matchCount. */
+export const MAX_MATCHES = 5000;
+
 interface RegexMatch {
   full: string;
   groups: Array<string | undefined>;
@@ -10,6 +13,7 @@ export interface RegexTestResult {
   matchCount: number;
   matches: Array<RegexMatch>;
   timedOut?: boolean;
+  truncated?: boolean;
 }
 
 export function testRegex(
@@ -36,11 +40,13 @@ export function testRegex(
   const matches: Array<RegexMatch> = [];
   let match: RegExpExecArray | null = regex.exec(input);
   while (match !== null) {
-    matches.push({
-      full: match[0],
-      groups: match.slice(1),
-      index: match.index,
-    });
+    if (matches.length < MAX_MATCHES) {
+      matches.push({
+        full: match[0],
+        groups: match.slice(1),
+        index: match.index,
+      });
+    }
 
     if (match[0] === '' && regex.lastIndex === match.index) {
       regex.lastIndex += 1;
@@ -48,5 +54,10 @@ export function testRegex(
     match = regex.exec(input);
   }
 
-  return { isValid: true, matchCount: matches.length, matches };
+  return {
+    isValid: true,
+    matchCount: matches.length,
+    matches,
+    truncated: matches.length === MAX_MATCHES,
+  };
 }
