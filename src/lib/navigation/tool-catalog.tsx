@@ -9,7 +9,7 @@ import {
   IconDeviceDesktop,
   IconQrCode,
 } from '@intentui/icons';
-import { Binary, Fingerprint, KeyRound, ScanLine } from 'lucide-react';
+import { Binary, Fingerprint, KeyRound, Regex, ScanLine } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { meta as addToCalendarMeta } from '@/routes/_tools/add-to-calendar/-meta';
@@ -22,6 +22,7 @@ import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta'
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
+import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
 import { meta as zippyImgMeta } from '@/routes/_tools/zippy-img/-meta';
@@ -134,5 +135,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <ScanLine />,
     ...jwtDecoderMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Regex />,
+    ...regexTesterMeta,
   },
 ];
