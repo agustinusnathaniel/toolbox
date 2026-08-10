@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { testRegex } from './regex';
+import { MAX_MATCHES, testRegex } from './regex';
 
 describe('testRegex', () => {
   test('returns valid empty result for empty pattern', () => {
@@ -85,5 +85,19 @@ describe('testRegex', () => {
     expect(result.isValid).toBe(true);
     expect(result.matchCount).toBe(1);
     expect(result.matches[0].index).toBe(2);
+  });
+
+  test('caps stored matches at MAX_MATCHES but reports truncation', () => {
+    const result = testRegex('.', 'g', 'a'.repeat(MAX_MATCHES + 10));
+    expect(result.isValid).toBe(true);
+    expect(result.matches.length).toBe(MAX_MATCHES);
+    expect(result.truncated).toBe(true);
+  });
+
+  test('does not report truncation below the cap', () => {
+    const result = testRegex('.', 'g', 'a'.repeat(100));
+    expect(result.isValid).toBe(true);
+    expect(result.matches.length).toBe(100);
+    expect(result.truncated).toBe(false);
   });
 });
