@@ -1,4 +1,4 @@
-export interface RegexMatch {
+interface RegexMatch {
   full: string;
   groups: Array<string | undefined>;
   index: number;
@@ -9,6 +9,7 @@ export interface RegexTestResult {
   isValid: boolean;
   matchCount: number;
   matches: Array<RegexMatch>;
+  timedOut?: boolean;
 }
 
 export function testRegex(
