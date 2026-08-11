@@ -1,8 +1,9 @@
 'use client';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { Binary, Check, Copy } from 'lucide-react';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Binary, Check, Copy, Link } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -10,19 +11,26 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import type { Base64Result } from '@/lib/tools/base64/adapters/base64';
 import { decodeBase64, encodeBase64 } from '@/lib/tools/base64/adapters/base64';
+import { buildBase64Params } from '@/lib/tools/base64/adapters/base64-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
+const searchSchema = z.object({
+  input: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_tools/base64/')({
   component: Base64Page,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 function Base64Page() {
   const { trackAction } = useToolTracking('base64', 'Base64 Encoder/Decoder');
-  const [input, setInput] = useState('');
+  const search = useSearch({ from: '/_tools/base64/' });
+  const [input, setInput] = useState(search.input ?? '');
   const [result, setResult] = useState<Base64Result | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeAction, setActiveAction] = useState<'encode' | 'decode' | null>(
@@ -57,6 +65,16 @@ function Base64Page() {
     }
   }, [result, trackAction]);
 
+  const handleCopyLink = useCallback(async () => {
+    const params = buildBase64Params(input);
+    const url = `${window.location.origin}${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }`;
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_link');
+    }
+  }, [input, trackAction]);
+
   const label = activeAction === 'encode' ? 'Encoded' : 'Decoded';
   const showResult = result && input.trim();
   const showError = result && !result.isValid;
@@ -88,6 +106,15 @@ function Base64Page() {
             </Button>
             <Button intent="outline" onPress={handleDecode} size="sm">
               Decode
+            </Button>
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sm"
+            >
+              <Link className="size-4" />
+              Copy link
             </Button>
           </div>
 

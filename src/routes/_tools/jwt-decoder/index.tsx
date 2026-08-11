@@ -1,8 +1,9 @@
 'use client';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy, ScanLine, ShieldCheck } from 'lucide-react';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Check, Copy, Link, ScanLine, ShieldCheck } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -16,19 +17,26 @@ import {
   decodeJwt,
   verifyJwtSignature,
 } from '@/lib/tools/jwt-decoder/adapters/jwt-decoder';
+import { buildJwtParams } from '@/lib/tools/jwt-decoder/adapters/jwt-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
+const searchSchema = z.object({
+  token: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_tools/jwt-decoder/')({
   component: JwtDecoderPage,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 function JwtDecoderPage() {
   const { trackAction } = useToolTracking('jwt-decoder', 'JWT Decoder');
-  const [token, setToken] = useState('');
+  const search = useSearch({ from: '/_tools/jwt-decoder/' });
+  const [token, setToken] = useState(search.token ?? '');
   const [secret, setSecret] = useState('');
   const [result, setResult] = useState<JwtDecodeResult | null>(null);
   const [verifyResult, setVerifyResult] = useState<JwtVerifyResult | null>(
@@ -61,6 +69,16 @@ function JwtDecoderPage() {
     [trackAction]
   );
 
+  const handleCopyLink = useCallback(async () => {
+    const params = buildJwtParams(token);
+    const url = `${window.location.origin}${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }`;
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_link');
+    }
+  }, [token, trackAction]);
+
   const showError = result && !result.isValid;
   const showResult = result?.isValid;
 
@@ -89,6 +107,15 @@ function JwtDecoderPage() {
             <Button onPress={handleDecode} size="sm">
               <ScanLine className="size-4" />
               Decode
+            </Button>
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sm"
+            >
+              <Link className="size-4" />
+              Copy link
             </Button>
           </div>
 
