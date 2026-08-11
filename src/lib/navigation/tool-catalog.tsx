@@ -13,6 +13,7 @@ import {
   Binary,
   Clock,
   Fingerprint,
+  GitCompare,
   KeyRound,
   Regex,
   ScanLine,
@@ -30,6 +31,7 @@ import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
 import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
+import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
@@ -153,5 +155,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Clock />,
     ...timestampConverterMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <GitCompare />,
+    mobileTitle: 'Diff',
+    ...textDiffMeta,
   },
 ];

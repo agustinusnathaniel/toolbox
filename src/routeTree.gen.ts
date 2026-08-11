@@ -24,6 +24,7 @@ import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-de
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex-tester/index'
+import { Route as ToolsTextDiffIndexRouteImport } from './routes/_tools/text-diff/index'
 import { Route as ToolsTimestampConverterIndexRouteImport } from './routes/_tools/timestamp-converter/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
@@ -105,6 +106,11 @@ const ToolsRegexTesterIndexRoute = ToolsRegexTesterIndexRouteImport.update({
   path: '/regex-tester/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsTextDiffIndexRoute = ToolsTextDiffIndexRouteImport.update({
+  id: '/text-diff/',
+  path: '/text-diff/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsTimestampConverterIndexRoute =
   ToolsTimestampConverterIndexRouteImport.update({
     id: '/timestamp-converter/',
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/regex-tester/': typeof ToolsRegexTesterIndexRoute
+  '/text-diff/': typeof ToolsTextDiffIndexRoute
   '/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/regex-tester': typeof ToolsRegexTesterIndexRoute
+  '/text-diff': typeof ToolsTextDiffIndexRoute
   '/timestamp-converter': typeof ToolsTimestampConverterIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/regex-tester/': typeof ToolsRegexTesterIndexRoute
+  '/_tools/text-diff/': typeof ToolsTextDiffIndexRoute
   '/_tools/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/password-generator/'
     | '/qrcode/'
     | '/regex-tester/'
+    | '/text-diff/'
     | '/timestamp-converter/'
     | '/ua-check/'
     | '/wa-link-helper/'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/password-generator'
     | '/qrcode'
     | '/regex-tester'
+    | '/text-diff'
     | '/timestamp-converter'
     | '/ua-check'
     | '/wa-link-helper'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/_tools/password-generator/'
     | '/_tools/qrcode/'
     | '/_tools/regex-tester/'
+    | '/_tools/text-diff/'
     | '/_tools/timestamp-converter/'
     | '/_tools/ua-check/'
     | '/_tools/wa-link-helper/'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsRegexTesterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/text-diff/': {
+      id: '/_tools/text-diff/'
+      path: '/text-diff'
+      fullPath: '/text-diff/'
+      preLoaderRoute: typeof ToolsTextDiffIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/timestamp-converter/': {
       id: '/_tools/timestamp-converter/'
       path: '/timestamp-converter'
@@ -410,6 +429,7 @@ interface ToolsRouteRouteChildren {
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsRegexTesterIndexRoute: typeof ToolsRegexTesterIndexRoute
+  ToolsTextDiffIndexRoute: typeof ToolsTextDiffIndexRoute
   ToolsTimestampConverterIndexRoute: typeof ToolsTimestampConverterIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
@@ -428,6 +448,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsRegexTesterIndexRoute: ToolsRegexTesterIndexRoute,
+  ToolsTextDiffIndexRoute: ToolsTextDiffIndexRoute,
   ToolsTimestampConverterIndexRoute: ToolsTimestampConverterIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
