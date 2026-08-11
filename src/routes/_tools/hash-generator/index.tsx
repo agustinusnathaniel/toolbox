@@ -1,8 +1,9 @@
 'use client';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy, Fingerprint, UploadIcon } from 'lucide-react';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Check, Copy, Fingerprint, Link, UploadIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -25,6 +26,10 @@ import {
   hashBytes,
   hashText,
 } from '@/lib/tools/hash-generator/adapters/hash-generator';
+import {
+  buildHashParams,
+  buildHashStateFromSearch,
+} from '@/lib/tools/hash-generator/adapters/hash-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
@@ -35,15 +40,24 @@ const ALGORITHM_OPTIONS = HASH_ALGORITHMS.map((algorithm) => ({
   label: algorithm,
 }));
 
+const searchSchema = z.object({
+  algorithm: z.string().optional(),
+  text: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_tools/hash-generator/')({
   component: HashGeneratorPage,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 function HashGeneratorPage() {
   const { trackAction } = useToolTracking('hash-generator', 'Hash Generator');
-  const [algorithm, setAlgorithm] = useState<HashAlgorithm>('SHA-256');
-  const [text, setText] = useState('');
+  const search = useSearch({ from: '/_tools/hash-generator/' });
+  const [algorithm, setAlgorithm] = useState<HashAlgorithm>(
+    () => buildHashStateFromSearch(search).algorithm
+  );
+  const [text, setText] = useState(() => buildHashStateFromSearch(search).text);
   const [result, setResult] = useState<HashResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -78,6 +92,16 @@ function HashGeneratorPage() {
       setTimeout(() => setCopied(false), 1500);
     }
   }, [result, trackAction]);
+
+  const handleCopyLink = useCallback(async () => {
+    const params = buildHashParams(text, algorithm);
+    const url = `${window.location.origin}${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }`;
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_link');
+    }
+  }, [algorithm, text, trackAction]);
 
   const showError = result && !result.isValid;
   const showResult = result?.isValid;
@@ -130,6 +154,15 @@ function HashGeneratorPage() {
             <Button onPress={handleHashText} size="sm">
               <Fingerprint className="size-4" />
               Hash text
+            </Button>
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sm"
+            >
+              <Link className="size-4" />
+              Copy link
             </Button>
           </div>
 
