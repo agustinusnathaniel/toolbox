@@ -24,6 +24,7 @@ import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-de
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex-tester/index'
+import { Route as ToolsTimestampConverterIndexRouteImport } from './routes/_tools/timestamp-converter/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
@@ -104,6 +105,12 @@ const ToolsRegexTesterIndexRoute = ToolsRegexTesterIndexRouteImport.update({
   path: '/regex-tester/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsTimestampConverterIndexRoute =
+  ToolsTimestampConverterIndexRouteImport.update({
+    id: '/timestamp-converter/',
+    path: '/timestamp-converter/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsUaCheckIndexRoute = ToolsUaCheckIndexRouteImport.update({
   id: '/ua-check/',
   path: '/ua-check/',
@@ -135,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/regex-tester/': typeof ToolsRegexTesterIndexRoute
+  '/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/zippy-img/': typeof ToolsZippyImgIndexRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/regex-tester': typeof ToolsRegexTesterIndexRoute
+  '/timestamp-converter': typeof ToolsTimestampConverterIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
   '/zippy-img': typeof ToolsZippyImgIndexRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/regex-tester/': typeof ToolsRegexTesterIndexRoute
+  '/_tools/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/_tools/zippy-img/': typeof ToolsZippyImgIndexRoute
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/password-generator/'
     | '/qrcode/'
     | '/regex-tester/'
+    | '/timestamp-converter/'
     | '/ua-check/'
     | '/wa-link-helper/'
     | '/zippy-img/'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/password-generator'
     | '/qrcode'
     | '/regex-tester'
+    | '/timestamp-converter'
     | '/ua-check'
     | '/wa-link-helper'
     | '/zippy-img'
@@ -235,6 +247,7 @@ export interface FileRouteTypes {
     | '/_tools/password-generator/'
     | '/_tools/qrcode/'
     | '/_tools/regex-tester/'
+    | '/_tools/timestamp-converter/'
     | '/_tools/ua-check/'
     | '/_tools/wa-link-helper/'
     | '/_tools/zippy-img/'
@@ -354,6 +367,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsRegexTesterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/timestamp-converter/': {
+      id: '/_tools/timestamp-converter/'
+      path: '/timestamp-converter'
+      fullPath: '/timestamp-converter/'
+      preLoaderRoute: typeof ToolsTimestampConverterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/ua-check/': {
       id: '/_tools/ua-check/'
       path: '/ua-check'
@@ -390,6 +410,7 @@ interface ToolsRouteRouteChildren {
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsRegexTesterIndexRoute: typeof ToolsRegexTesterIndexRoute
+  ToolsTimestampConverterIndexRoute: typeof ToolsTimestampConverterIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
   ToolsZippyImgIndexRoute: typeof ToolsZippyImgIndexRoute
@@ -407,6 +428,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsRegexTesterIndexRoute: ToolsRegexTesterIndexRoute,
+  ToolsTimestampConverterIndexRoute: ToolsTimestampConverterIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
   ToolsZippyImgIndexRoute: ToolsZippyImgIndexRoute,
