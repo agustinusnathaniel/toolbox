@@ -18,12 +18,14 @@ import {
   KeyRound,
   Regex,
   ScanLine,
+  Table2,
 } from 'lucide-react';
 import type { JSX } from 'react';
 
 import { meta as addToCalendarMeta } from '@/routes/_tools/add-to-calendar/-meta';
 import { meta as base64Meta } from '@/routes/_tools/base64/-meta';
 import { meta as colorConverterMeta } from '@/routes/_tools/color-converter/-meta';
+import { meta as csvConverterMeta } from '@/routes/_tools/csv-converter/-meta';
 import { meta as evChargingMeta } from '@/routes/_tools/ev-charging/-meta';
 import { meta as hashGeneratorMeta } from '@/routes/_tools/hash-generator/-meta';
 import { meta as jsPerfMeta } from '@/routes/_tools/js-perf/-meta';
@@ -168,5 +170,12 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Dices />,
     ...uuidGeneratorMeta,
+  },
+  {
+    category: 'Text & Data',
+    icon: <Table2 />,
+    mobileTitle: 'CSV',
+    showInMobile: true,
+    ...csvConverterMeta,
   },
 ];

@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(17);
+    expect(items).toHaveLength(18);
   });
 
   test('each item has required fields', () => {
@@ -78,7 +78,7 @@ describe('getMobileNavItems', () => {
     expect(items.map((item) => item.slug)).toEqual(
       mobileDefinitions.map((definition) => definition.slug)
     );
-    expect(items.length).toBeLessThanOrEqual(4);
+    expect(items.length).toBeLessThanOrEqual(5);
   });
 
   test('maps mobile labels with a page title fallback', () => {
