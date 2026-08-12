@@ -12,6 +12,7 @@ import {
 import {
   Binary,
   Clock,
+  Dices,
   Fingerprint,
   GitCompare,
   KeyRound,
@@ -34,6 +35,7 @@ import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
+import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
 import { meta as zippyImgMeta } from '@/routes/_tools/zippy-img/-meta';
 
@@ -161,5 +163,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     icon: <GitCompare />,
     mobileTitle: 'Diff',
     ...textDiffMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Dices />,
+    ...uuidGeneratorMeta,
   },
 ];
