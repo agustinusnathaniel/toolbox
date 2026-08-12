@@ -18,9 +18,14 @@ export interface TextDiffResult {
   isValid: boolean;
   lines: Array<TextDiffLine>;
   removedCount: number;
+  timedOut?: boolean;
+  truncated?: boolean;
 }
 
 export const TEXT_DIFF_MAX_CHARS = 500_000;
+
+/** Maximum lines stored/rendered. Counts still reported via addedCount/removedCount. */
+export const MAX_DIFF_LINES = 20_000;
 
 export function diffTexts(original: string, modified: string): TextDiffResult {
   if (
@@ -73,7 +78,18 @@ export function diffTexts(original: string, modified: string): TextDiffResult {
     }
   }
 
-  return { addedCount, isValid: true, lines, removedCount };
+  const truncated = lines.length > MAX_DIFF_LINES;
+  if (truncated) {
+    lines.length = MAX_DIFF_LINES;
+  }
+
+  return {
+    addedCount,
+    isValid: true,
+    lines,
+    removedCount,
+    ...(truncated ? { truncated: true } : {}),
+  };
 }
 
 function pushSplitLines(
