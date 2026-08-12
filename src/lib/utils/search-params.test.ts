@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vite-plus/test';
 import { z } from 'zod';
 
-import { parseSearchParams } from './search-params';
+import { parseSearchParams, stringifySearchParams } from './search-params';
 
 const uuidSearchSchema = z.object({
   count: z.string().optional(),
@@ -18,6 +18,8 @@ const textDiffSchema = z.object({
   modified: z.string().optional(),
   original: z.string().optional(),
 });
+
+const LEADING_QUESTION_MARK = /^\?/;
 
 describe('parseSearchParams', () => {
   test('preserves numeric-looking values as strings (no JSON coercion)', () => {
@@ -59,5 +61,33 @@ describe('parseSearchParams', () => {
   test('handles empty and absent search', () => {
     expect(parseSearchParams('')).toEqual({});
     expect(parseSearchParams('?')).toEqual({});
+  });
+});
+
+describe('stringifySearchParams', () => {
+  test('emits string values raw without JSON quotes', () => {
+    expect(
+      stringifySearchParams({ count: '3', uppercase: '1', version: 'v7' })
+    ).toBe('?count=3&uppercase=1&version=v7');
+  });
+
+  test('drops undefined values and emits empty string for empty search', () => {
+    expect(stringifySearchParams({ count: '3', hyphens: undefined })).toBe(
+      '?count=3'
+    );
+    expect(stringifySearchParams({})).toBe('');
+  });
+
+  test('round-trips through parseSearchParams', () => {
+    const original = { count: '3', uppercase: '1', version: 'v7' };
+    const reparsed = parseSearchParams(
+      stringifySearchParams(original).replace(LEADING_QUESTION_MARK, '')
+    );
+    expect(reparsed).toEqual(original);
+  });
+
+  test('serializes non-string values as JSON (symmetric for coerce routes)', () => {
+    expect(stringifySearchParams({ rate: 0.5 })).toBe('?rate=0.5');
+    expect(parseSearchParams('rate=0.5')).toEqual({ rate: '0.5' });
   });
 });
