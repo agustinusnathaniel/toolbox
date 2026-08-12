@@ -6,6 +6,7 @@ import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
 import { buttonStyles } from '@/lib/components/ui/button';
 import { Link } from '@/lib/components/ui/link';
 import { Loader } from '@/lib/components/ui/loader';
+import { parseSearchParams } from '@/lib/utils/search-params';
 
 import { routeTree } from './routeTree.gen';
 
@@ -82,6 +83,10 @@ export async function getRouter() {
     defaultViewTransition: {
       types: ({ pathChanged }) => (pathChanged ? [] : false),
     },
+    // Keep search values as strings. The default parseSearchWith(JSON.parse)
+    // coerces `?count=3` to the number 3, which fails every tool's z.string()
+    // search schema and triggers the error boundary (see search-params.ts).
+    parseSearch: parseSearchParams,
     routeTree,
     scrollRestoration: true,
   });
