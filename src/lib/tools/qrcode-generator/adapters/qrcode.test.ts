@@ -127,7 +127,7 @@ describe('generateVCardString', () => {
     expect(result).toBe(['BEGIN:VCARD', 'VERSION:3.0', 'END:VCARD'].join('\n'));
   });
 
-  test('handles special characters in name and organization', () => {
+  test('escapes special characters in name and organization', () => {
     const result = generateVCardString({
       companyName: 'Foo & Bar, LLC',
       firstName: 'José',
@@ -135,6 +135,42 @@ describe('generateVCardString', () => {
     });
 
     expect(result).toContain('N:Peña;José');
-    expect(result).toContain('ORG:Foo & Bar, LLC');
+    expect(result).toContain('ORG:Foo & Bar\\, LLC');
+  });
+
+  test('generates N line with only first name (empty family)', () => {
+    const result = generateVCardString({ firstName: 'John' });
+
+    expect(result).toContain('N:;John');
+  });
+
+  test('generates N line with only last name (empty given, trailing semicolon)', () => {
+    const result = generateVCardString({ lastName: 'Doe' });
+
+    expect(result).toContain('N:Doe;');
+  });
+
+  test('escapes semicolons and commas in values', () => {
+    const result = generateVCardString({
+      firstName: 'John',
+      lastName: 'Smith;Jr',
+      streetAddress: 'Apt 5, Bldg 2',
+    });
+
+    expect(result).toContain('N:Smith\\;Jr;John');
+    expect(result).toContain('Apt 5\\, Bldg 2');
+  });
+
+  test('neutralizes newline injection in values', () => {
+    const result = generateVCardString({
+      firstName: 'John',
+      jobTitle: 'CEO\nTEL;TYPE=CELL:+15551234567',
+      lastName: 'Doe',
+    });
+
+    expect(result).toContain('TITLE:CEO\\nTEL\\;TYPE=CELL:+15551234567');
+    expect(
+      result.split('\n').find((line) => line.startsWith('TEL;TYPE=CELL'))
+    ).toBeUndefined();
   });
 });
