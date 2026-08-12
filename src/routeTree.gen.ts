@@ -27,6 +27,7 @@ import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex
 import { Route as ToolsTextDiffIndexRouteImport } from './routes/_tools/text-diff/index'
 import { Route as ToolsTimestampConverterIndexRouteImport } from './routes/_tools/timestamp-converter/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
+import { Route as ToolsUuidGeneratorIndexRouteImport } from './routes/_tools/uuid-generator/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
 
@@ -122,6 +123,11 @@ const ToolsUaCheckIndexRoute = ToolsUaCheckIndexRouteImport.update({
   path: '/ua-check/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsUuidGeneratorIndexRoute = ToolsUuidGeneratorIndexRouteImport.update({
+  id: '/uuid-generator/',
+  path: '/uuid-generator/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsWaLinkHelperIndexRoute = ToolsWaLinkHelperIndexRouteImport.update({
   id: '/wa-link-helper/',
   path: '/wa-link-helper/',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/text-diff/': typeof ToolsTextDiffIndexRoute
   '/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
+  '/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/text-diff': typeof ToolsTextDiffIndexRoute
   '/timestamp-converter': typeof ToolsTimestampConverterIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
+  '/uuid-generator': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
   '/zippy-img': typeof ToolsZippyImgIndexRoute
 }
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/_tools/text-diff/': typeof ToolsTextDiffIndexRoute
   '/_tools/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
+  '/_tools/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/_tools/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/text-diff/'
     | '/timestamp-converter/'
     | '/ua-check/'
+    | '/uuid-generator/'
     | '/wa-link-helper/'
     | '/zippy-img/'
   fileRoutesByTo: FileRoutesByTo
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/text-diff'
     | '/timestamp-converter'
     | '/ua-check'
+    | '/uuid-generator'
     | '/wa-link-helper'
     | '/zippy-img'
   id:
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/_tools/text-diff/'
     | '/_tools/timestamp-converter/'
     | '/_tools/ua-check/'
+    | '/_tools/uuid-generator/'
     | '/_tools/wa-link-helper/'
     | '/_tools/zippy-img/'
   fileRoutesById: FileRoutesById
@@ -400,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsUaCheckIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/uuid-generator/': {
+      id: '/_tools/uuid-generator/'
+      path: '/uuid-generator'
+      fullPath: '/uuid-generator/'
+      preLoaderRoute: typeof ToolsUuidGeneratorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/wa-link-helper/': {
       id: '/_tools/wa-link-helper/'
       path: '/wa-link-helper'
@@ -432,6 +451,7 @@ interface ToolsRouteRouteChildren {
   ToolsTextDiffIndexRoute: typeof ToolsTextDiffIndexRoute
   ToolsTimestampConverterIndexRoute: typeof ToolsTimestampConverterIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
+  ToolsUuidGeneratorIndexRoute: typeof ToolsUuidGeneratorIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
   ToolsZippyImgIndexRoute: typeof ToolsZippyImgIndexRoute
 }
@@ -451,6 +471,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsTextDiffIndexRoute: ToolsTextDiffIndexRoute,
   ToolsTimestampConverterIndexRoute: ToolsTimestampConverterIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
+  ToolsUuidGeneratorIndexRoute: ToolsUuidGeneratorIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
   ToolsZippyImgIndexRoute: ToolsZippyImgIndexRoute,
 }

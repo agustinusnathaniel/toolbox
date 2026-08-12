@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(16);
+    expect(items).toHaveLength(17);
   });
 
   test('each item has required fields', () => {
