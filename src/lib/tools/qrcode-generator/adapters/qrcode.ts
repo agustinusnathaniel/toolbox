@@ -14,6 +14,14 @@ export interface VCardFormData {
   websiteURL?: string;
 }
 
+function escapeVCardText(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r?\n/g, '\\n');
+}
+
 function buildAddressLine(
   streetAddress?: string,
   city?: string,
@@ -25,11 +33,11 @@ function buildAddressLine(
     return;
   }
   const parts = [
-    streetAddress || '',
-    city || '',
-    state || '',
-    postalCode || '',
-    country || '',
+    escapeVCardText(streetAddress || ''),
+    escapeVCardText(city || ''),
+    escapeVCardText(state || ''),
+    escapeVCardText(postalCode || ''),
+    escapeVCardText(country || ''),
   ];
   return `ADR;TYPE=WORK,PREF:;;${parts.join(';')}`;
 }
@@ -54,15 +62,19 @@ export const generateVCardString = (data: VCardFormData): string => {
   const lines: Array<string | undefined> = [
     'BEGIN:VCARD',
     firstName || lastName
-      ? `N:${lastName || ''}${lastName ? ';' : ''}${firstName || ''}`
+      ? `N:${escapeVCardText(lastName ?? '')};${escapeVCardText(firstName ?? '')}`
       : undefined,
-    mobilePhoneNumber ? `TEL;TYPE=work,VOICE:${mobilePhoneNumber}` : undefined,
-    otherPhoneNumber ? `TEL;TYPE=home,VOICE:${otherPhoneNumber}` : undefined,
-    emailAddress ? `EMAIL:${emailAddress}` : undefined,
-    companyName ? `ORG:${companyName}` : undefined,
-    jobTitle ? `TITLE:${jobTitle}` : undefined,
+    mobilePhoneNumber
+      ? `TEL;TYPE=work,VOICE:${escapeVCardText(mobilePhoneNumber)}`
+      : undefined,
+    otherPhoneNumber
+      ? `TEL;TYPE=home,VOICE:${escapeVCardText(otherPhoneNumber)}`
+      : undefined,
+    emailAddress ? `EMAIL:${escapeVCardText(emailAddress)}` : undefined,
+    companyName ? `ORG:${escapeVCardText(companyName)}` : undefined,
+    jobTitle ? `TITLE:${escapeVCardText(jobTitle)}` : undefined,
     buildAddressLine(streetAddress, city, state, postalCode, country),
-    websiteURL ? `URL:${websiteURL}` : undefined,
+    websiteURL ? `URL:${escapeVCardText(websiteURL)}` : undefined,
     'VERSION:3.0',
     'END:VCARD',
   ];
