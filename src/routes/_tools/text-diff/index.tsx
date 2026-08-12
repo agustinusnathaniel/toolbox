@@ -11,14 +11,13 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import type {
   TextDiffLine,
-  TextDiffResult,
   TextDiffWordChunk,
 } from '@/lib/tools/text-diff/adapters/text-diff';
-import { diffTexts } from '@/lib/tools/text-diff/adapters/text-diff';
 import { buildTextDiffParams } from '@/lib/tools/text-diff/adapters/text-diff-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useTextDiff } from './-components/use-text-diff';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -66,18 +65,25 @@ function TextDiffPage() {
   const search = useSearch({ from: '/_tools/text-diff/' });
   const [original, setOriginal] = useState(search.original ?? '');
   const [modified, setModified] = useState(search.modified ?? '');
-  const [result, setResult] = useState<TextDiffResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeAction, setActiveAction] = useState<'compare' | 'swap' | null>(
     null
   );
+  const [compareTrigger, setCompareTrigger] = useState(0);
+
+  const { computing, result, setResult } = useTextDiff(
+    original,
+    modified,
+    compareTrigger
+  );
 
   const handleCompare = useCallback(() => {
-    setResult(diffTexts(original, modified));
+    setResult(null);
     setActiveAction('compare');
     setCopied(false);
+    setCompareTrigger((trigger) => trigger + 1);
     trackAction('compare');
-  }, [original, modified, trackAction]);
+  }, [setResult, trackAction]);
 
   const handleSwap = useCallback(() => {
     setOriginal(modified);
@@ -85,7 +91,7 @@ function TextDiffPage() {
     setResult(null);
     setActiveAction(null);
     trackAction('swap');
-  }, [modified, original, trackAction]);
+  }, [modified, original, setResult, trackAction]);
 
   const handleCopyDiff = useCallback(async () => {
     if (!result) {
@@ -161,11 +167,16 @@ function TextDiffPage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button onPress={handleCompare} size="sm">
               <GitCompare className="size-4" />
               Compare
             </Button>
+            {computing && (
+              <span aria-live="polite" className="text-muted-fg text-xs">
+                Comparing…
+              </span>
+            )}
             <Button intent="outline" onPress={handleSwap} size="sm">
               <ArrowLeftRight className="size-4" />
               Swap
@@ -199,7 +210,21 @@ function TextDiffPage() {
             </div>
           )}
 
-          {result?.isValid && (
+          {result?.timedOut && (
+            <div
+              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
+              role="alert"
+            >
+              <p className="font-medium text-danger text-sm">
+                Comparison timed out
+              </p>
+              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
+                {result.error}
+              </pre>
+            </div>
+          )}
+
+          {result?.isValid && !result.timedOut && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-muted-fg text-sm">
@@ -218,6 +243,11 @@ function TextDiffPage() {
                   )}
                 </Button>
               </div>
+              {result.truncated && (
+                <p className="text-muted-fg text-xs">
+                  Showing first 20,000 lines.
+                </p>
+              )}
               <div className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50 font-mono text-sm">
                 {result.lines.map((line, index) => (
                   <div
@@ -261,7 +291,7 @@ function TextDiffPage() {
           },
           {
             answer:
-              'Each side can be up to 500,000 characters. Larger inputs are rejected to keep the page responsive.',
+              'Each side can be up to 500,000 characters. Large or heavily-changed inputs are computed in the background so the page stays responsive; comparisons that take too long show a timeout message.',
             question: 'What is the largest input supported?',
           },
         ]}

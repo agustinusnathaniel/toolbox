@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { diffTexts, TEXT_DIFF_MAX_CHARS } from './text-diff';
+import { diffTexts, MAX_DIFF_LINES, TEXT_DIFF_MAX_CHARS } from './text-diff';
 
 describe('diffTexts', () => {
   test('returns all unchanged lines for identical text', () => {
@@ -141,5 +141,23 @@ describe('diffTexts', () => {
     const belowLimit = 'x'.repeat(TEXT_DIFF_MAX_CHARS - 1);
     const result = diffTexts(atLimit, belowLimit);
     expect(result.isValid).toBe(true);
+  });
+
+  test('truncates lines beyond MAX_DIFF_LINES but keeps full counts', () => {
+    const manyLines = 'line\n'.repeat(MAX_DIFF_LINES + 2000);
+    const result = diffTexts(manyLines, manyLines);
+    expect(result.isValid).toBe(true);
+    expect(result.lines).toHaveLength(MAX_DIFF_LINES);
+    expect(result.truncated).toBe(true);
+    expect(result.addedCount).toBe(0);
+    expect(result.removedCount).toBe(0);
+  });
+
+  test('does not truncate when lines fit within MAX_DIFF_LINES', () => {
+    const fewLines = 'line\n'.repeat(MAX_DIFF_LINES - 1);
+    const result = diffTexts(fewLines, fewLines);
+    expect(result.isValid).toBe(true);
+    expect(result.lines).toHaveLength(MAX_DIFF_LINES - 1);
+    expect(result.truncated).toBeUndefined();
   });
 });
