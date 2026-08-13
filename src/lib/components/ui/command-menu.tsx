@@ -10,7 +10,7 @@ import { Modal, ModalContext, ModalOverlay } from "react-aria-components/Modal"
 import { SearchField, type SearchFieldProps } from "react-aria-components/SearchField"
 import { twMerge } from "tailwind-merge"
 import { cx } from "@/lib/styles/primitive"
-import { DropdownKeyboard } from "./dropdown"
+import { DropdownKeyboard, dropdownItemStyles } from "./dropdown"
 import { Loader } from "./loader"
 
 interface CommandMenuProviderProps {
@@ -198,7 +198,12 @@ interface CommandMenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
 
 const CommandMenuItem = ({ className, textValue: _textValue, ...props }: CommandMenuItemProps) => (
   <button
-    className={twMerge("items-center gap-y-0.5", className)}
+    className={dropdownItemStyles({
+      className: twMerge(
+        "text-start hover:bg-accent hover:text-accent-fg focus-visible:bg-accent focus-visible:text-accent-fg focus-visible:outline-none",
+        className,
+      ),
+    })}
     role="menuitem"
     type="button"
     {...props}
@@ -208,7 +213,11 @@ const CommandMenuItem = ({ className, textValue: _textValue, ...props }: Command
 interface CommandMenuDescriptionProps extends React.ComponentProps<"span"> {}
 
 const CommandMenuDescription = ({ className, ...props }: CommandMenuDescriptionProps) => (
-  <span className={twMerge("col-start-3 row-start-1 ms-auto", className)} {...props} />
+  <span
+    className={twMerge("col-start-2 row-start-2 font-normal text-muted-fg text-sm", className)}
+    slot="description"
+    {...props}
+  />
 )
 
 const CommandMenuSeparator = ({ className, ...props }: React.ComponentProps<"hr">) => (
@@ -227,7 +236,11 @@ const CommandMenuFooter = ({ className, ...props }: React.ComponentProps<"div">)
 )
 
 const CommandMenuLabel = ({ className, ...props }: React.ComponentProps<"span">) => (
-  <span className={className} {...props} />
+  <span
+    className={twMerge("col-start-2 [&:has(+svg)]:pe-6", className)}
+    slot="label"
+    {...props}
+  />
 )
 
 const CommandMenuShortcut = ({ className, ...props }: React.ComponentProps<typeof DropdownKeyboard>) => (
