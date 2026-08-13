@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.8.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.7.1...v1.8.0) (2026-08-13)
+
+### Features
+
+* add regex tester tool ([#39](https://github.com/agustinusnathaniel/toolbox/issues/39)) ([8b74274](https://github.com/agustinusnathaniel/toolbox/commit/8b74274895eef4b80aa7d733d91c90796da42ffd))
+* add shareable URL state to base64, hash generator, and JWT decoder ([#42](https://github.com/agustinusnathaniel/toolbox/issues/42)) ([8a318ce](https://github.com/agustinusnathaniel/toolbox/commit/8a318cead5a63d62b8de7fa0f23fb950e9450df5))
+* add shareable URL state to color converter and JSON formatter ([#38](https://github.com/agustinusnathaniel/toolbox/issues/38)) ([767a7d3](https://github.com/agustinusnathaniel/toolbox/commit/767a7d35f593830690dbc976404adad08027ac39))
+* add UUID generator tool ([#46](https://github.com/agustinusnathaniel/toolbox/issues/46)) ([ae7061d](https://github.com/agustinusnathaniel/toolbox/commit/ae7061d970548b4b3f6a0b3f7c9548ba2c665a3a))
+* **csv-converter:** add CSV to JSON and JSON to CSV converter tool ([#49](https://github.com/agustinusnathaniel/toolbox/issues/49)) ([3a120cd](https://github.com/agustinusnathaniel/toolbox/commit/3a120cdcafc4fa56e4f7d6fe3abfa9520c5f82c4))
+* **text-diff:** add text diff tool with inline word highlighting ([#45](https://github.com/agustinusnathaniel/toolbox/issues/45)) ([e3ec819](https://github.com/agustinusnathaniel/toolbox/commit/e3ec8197ddad0b9175557ebcd7cad7cde61c5131))
+* **timestamp-converter:** add timestamp and date converter tool ([#44](https://github.com/agustinusnathaniel/toolbox/issues/44)) ([33e427c](https://github.com/agustinusnathaniel/toolbox/commit/33e427c5202337934585bc32d5b55422de21ad4c))
+* **ua-check:** add interactive UA parser with shareable URL state ([#43](https://github.com/agustinusnathaniel/toolbox/issues/43)) ([3a62e4c](https://github.com/agustinusnathaniel/toolbox/commit/3a62e4c8ad05f6689b7adc70b7606e6b8b8d10c2))
+
+### Bug Fixes
+
+* **deps:** pin js-yaml and nanoid to patched versions ([#37](https://github.com/agustinusnathaniel/toolbox/issues/37)) ([4921a0e](https://github.com/agustinusnathaniel/toolbox/commit/4921a0e182f6e7c3a0e6ae7520a576a7b86c2781))
+* **qrcode:** escape vCard fields per RFC 2426 to prevent injection ([#48](https://github.com/agustinusnathaniel/toolbox/issues/48)) ([7583310](https://github.com/agustinusnathaniel/toolbox/commit/758331060bc39e4a11cbb5d1fe250259b6cd2adb))
+* **regex-tester:** cap match collection to prevent tab freeze on high match counts ([#41](https://github.com/agustinusnathaniel/toolbox/issues/41)) ([e6c40d3](https://github.com/agustinusnathaniel/toolbox/commit/e6c40d39a4b6cb2a79e2be49ea80943fe376bf18))
+* **regex-tester:** run matching in worker with deadline to prevent tab freeze ([#40](https://github.com/agustinusnathaniel/toolbox/issues/40)) ([a104ca7](https://github.com/agustinusnathaniel/toolbox/commit/a104ca776594765b29e3f85b694dd05ceea08920))
+* **text-diff:** run diff in worker with deadline to prevent tab freeze ([#47](https://github.com/agustinusnathaniel/toolbox/issues/47)) ([c437be2](https://github.com/agustinusnathaniel/toolbox/commit/c437be2801165ab3c6406eb79c763456978ae034))
+* **toolbox:** polish metadata navigation clipboard and outcomes ([#36](https://github.com/agustinusnathaniel/toolbox/issues/36)) ([a38d25f](https://github.com/agustinusnathaniel/toolbox/commit/a38d25f85915c63a53b21f3a7efb35ec0f331234))
 ## [1.7.1](https://github.com/agustinusnathaniel/toolbox/compare/v1.7.0...v1.7.1) (2026-08-08)
 
 ### Features
