@@ -11,7 +11,6 @@ import {
   CommandMenuSearch,
 } from '@/lib/components/ui/command-menu';
 import { dropdownItemStyles } from '@/lib/components/ui/dropdown';
-import { Input, InputGroup } from '@/lib/components/ui/input';
 import { Text } from '@/lib/components/ui/text';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { usePinnedTools } from '@/lib/hooks/use-pinned-tools';
@@ -264,10 +263,10 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
 
 export const CommandMenuTrigger = () => (
   <GlobalCommandMenu>
-    <InputGroup className="w-40">
-      <IconSearch />
-      <Input placeholder="Search..." readOnly />
+    <div className="flex h-9 w-40 items-center gap-2 rounded-lg border border-input px-2.5 text-muted-fg sm:h-8 sm:px-2">
+      <IconSearch className="size-4 shrink-0" />
+      <span className="min-w-0 flex-1 truncate text-sm">Search...</span>
       <Text>⌘K</Text>
-    </InputGroup>
+    </div>
   </GlobalCommandMenu>
 );
