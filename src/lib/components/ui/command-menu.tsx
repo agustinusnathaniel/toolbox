@@ -78,6 +78,7 @@ const CommandMenu = ({
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === shortcut && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
         onOpenChange?.(true)
       }
     }

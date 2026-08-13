@@ -79,6 +79,10 @@ export default defineConfig(({ mode }) => {
             prerender: { enabled: true },
           },
         ],
+        prerender: {
+          retryCount: 2,
+          retryDelay: 1000,
+        },
         spa: {
           enabled: true,
           prerender: {

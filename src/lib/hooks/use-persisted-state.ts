@@ -12,6 +12,10 @@ function readStoredValue<T>(key: string, defaultValue: T): T {
   return defaultValue;
 }
 
+function areValuesEqual<T>(first: T, second: T): boolean {
+  return JSON.stringify(first) === JSON.stringify(second);
+}
+
 export function usePersistedState<T>(
   key: string,
   defaultValue: T,
@@ -32,10 +36,17 @@ export function usePersistedState<T>(
 
   useEffect(() => {
     if (forceValue !== undefined) {
-      setState(forceValue);
+      // Keep the current reference when callers recreate an equivalent value.
+      setState((current) =>
+        areValuesEqual(current, forceValue) ? current : forceValue
+      );
       return;
     }
-    setState(readStoredValue(key, defaultValue));
+    const nextValue = readStoredValue(key, defaultValue);
+    // Avoid a render loop when JSON parsing creates a new object or array.
+    setState((current) =>
+      areValuesEqual(current, nextValue) ? current : nextValue
+    );
   }, [defaultValue, forceValue, key]);
 
   const setPersistedState = useCallback(
