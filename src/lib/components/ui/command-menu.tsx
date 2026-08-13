@@ -2,30 +2,42 @@
 
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
 import { createContext, use, useEffect } from "react"
+import { Autocomplete, type AutocompleteProps, useFilter } from "react-aria-components/Autocomplete"
 import { Button } from "react-aria-components/Button"
+import { Collection } from "react-aria-components/Collection"
+import {
+  type CollectionRenderer,
+  CollectionRendererContext,
+  DefaultCollectionRenderer,
+} from "react-aria-components/CollectionBuilder"
 import { Dialog, OverlayTriggerStateContext } from "react-aria-components/Dialog"
+import { Header } from "react-aria-components/Header"
 import { Input } from "react-aria-components/Input"
+import type { MenuProps, MenuTriggerProps } from "react-aria-components/Menu"
+import { Menu as MenuPrimitive, MenuSection } from "react-aria-components/Menu"
 import type { ModalOverlayProps } from "react-aria-components/Modal"
 import { Modal, ModalContext, ModalOverlay } from "react-aria-components/Modal"
 import { SearchField, type SearchFieldProps } from "react-aria-components/SearchField"
 import { twMerge } from "tailwind-merge"
 import { cx } from "@/lib/styles/primitive"
-import { DropdownKeyboard, dropdownItemStyles } from "./dropdown"
+import { DropdownKeyboard } from "./dropdown"
 import { Loader } from "./loader"
+import { MenuDescription, MenuItem, MenuLabel, type MenuSectionProps, MenuSeparator } from "./menu"
 
 interface CommandMenuProviderProps {
-  escapeButton?: boolean
   isPending?: boolean
-  onQueryChange?: (value: string) => void
+  escapeButton?: boolean
 }
 
 const CommandMenuContext = createContext<CommandMenuProviderProps | undefined>(undefined)
 
 const useCommandMenu = () => {
   const context = use(CommandMenuContext)
+
   if (!context) {
-    throw new Error("useCommandMenu must be used within a <CommandMenu />")
+    throw new Error("useCommandMenu must be used within a <CommandMenuProvider />")
   }
+
   return context
 }
 
@@ -39,52 +51,47 @@ const sizes = {
   "3xl": "sm:max-w-3xl",
 }
 
-interface CommandMenuProps extends CommandMenuProviderProps {
-  "aria-label"?: string
-  children?: React.ReactNode
-  className?: string
+interface CommandMenuProps extends AutocompleteProps, MenuTriggerProps, CommandMenuProviderProps {
   isDismissable?: boolean
-  isOpen?: boolean
-  onOpenChange?: (isOpen: boolean) => void
-  overlay?: Pick<ModalOverlayProps, "className">
+  "aria-label"?: string
   shortcut?: string
+  className?: string
   size?: keyof typeof sizes
+  overlay?: Pick<ModalOverlayProps, "className">
 }
 
 const CommandMenu = ({
-  "aria-label": ariaLabel,
-  children,
-  className,
-  escapeButton = true,
-  isDismissable = true,
-  isOpen,
-  isPending,
   onOpenChange,
-  onQueryChange,
+  className,
+  isDismissable = true,
+  escapeButton = true,
+  isPending,
   overlay,
-  shortcut,
   size = "lg",
+  shortcut,
+  ...props
 }: CommandMenuProps) => {
+  const { contains } = useFilter({ sensitivity: "base" })
+  const filter = (textValue: string, inputValue: string) => contains(textValue, inputValue)
   useEffect(() => {
     if (!shortcut) return
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === shortcut && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === shortcut && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
         onOpenChange?.(true)
       }
     }
 
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
-  }, [onOpenChange, shortcut])
-
+  }, [shortcut, onOpenChange])
   return (
-    <CommandMenuContext value={{ escapeButton, isPending, onQueryChange }}>
-      <ModalContext value={{ isOpen, onOpenChange }}>
+    <CommandMenuContext value={{ isPending: isPending, escapeButton: escapeButton }}>
+      <ModalContext value={{ isOpen: props.isOpen, onOpenChange: onOpenChange }}>
         <ModalOverlay
+          {...props}
           isDismissable={isDismissable}
-          isOpen={isOpen}
           className={cx(
             "fixed inset-0 z-50 h-(--visual-viewport-height,100vh) w-screen overflow-hidden bg-black/15",
             "grid grid-rows-[1fr_auto] justify-items-center text-center sm:grid-rows-[1fr_auto_3fr]",
@@ -92,7 +99,6 @@ const CommandMenu = ({
             "exiting:fade-out exiting:animate-out exiting:ease-in",
             overlay?.className,
           )}
-          onOpenChange={onOpenChange}
         >
           <Modal
             className={cx(
@@ -106,10 +112,10 @@ const CommandMenu = ({
             )}
           >
             <Dialog
-              aria-label={ariaLabel ?? "Command Menu"}
+              aria-label={props["aria-label"] ?? "Command Menu"}
               className="flex max-h-[inherit] flex-col overflow-hidden outline-hidden"
             >
-              {children}
+              <Autocomplete filter={filter} {...props} />
             </Dialog>
           </Modal>
         </ModalOverlay>
@@ -120,18 +126,17 @@ const CommandMenu = ({
 
 interface CommandMenuSearchProps extends SearchFieldProps {
   placeholder?: string
+  className?: string
 }
 
 const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSearchProps) => {
   const state = use(OverlayTriggerStateContext)!
-  const { escapeButton, isPending, onQueryChange } = useCommandMenu()
-
+  const { isPending, escapeButton } = useCommandMenu()
   return (
     <SearchField
       aria-label="Quick search"
       autoFocus
       className={cx("flex w-full items-center px-2.5 py-1", className)}
-      onChange={onQueryChange}
       {...props}
     >
       {isPending ? (
@@ -158,93 +163,101 @@ const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSear
   )
 }
 
-const CommandMenuList = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div
-    aria-label="Command results"
-    className={twMerge(
-      "grid max-h-full flex-1 content-start overflow-y-auto border-t p-2 sm:max-h-110 *:[[role=group]]:mb-6 *:[[role=group]]:last:mb-0",
-      className,
-    )}
-    role="menu"
-    {...props}
-  />
-)
-
-interface CommandMenuSectionProps extends React.ComponentProps<"div"> {
-  label?: string
+const CommandMenuList = <T extends object>({ className, ...props }: MenuProps<T>) => {
+  return (
+    <CollectionRendererContext.Provider value={renderer}>
+      <MenuPrimitive
+        className={cx(
+          "grid max-h-full flex-1 grid-cols-[auto_1fr] content-start overflow-y-auto border-t p-2 sm:max-h-110 *:[[role=group]]:mb-6 *:[[role=group]]:last:mb-0",
+          className,
+        )}
+        {...props}
+      />
+    </CollectionRendererContext.Provider>
+  )
 }
 
-const CommandMenuSection = ({ className, label, ...props }: CommandMenuSectionProps) => (
-  <div
-    aria-label={label}
-    className={twMerge(
-      "col-span-full grid grid-cols-[auto_1fr] content-start gap-y-0.25",
-      className,
-    )}
-    role="group"
-    {...props}
-  >
-    {label && (
-      <div className="col-span-full mb-1 block min-w-(--trigger-width) truncate px-2.5 text-muted-fg text-xs">
-        {label}
-      </div>
-    )}
-    {props.children}
-  </div>
-)
-
-interface CommandMenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  textValue?: string
-}
-
-const CommandMenuItem = ({ className, textValue: _textValue, ...props }: CommandMenuItemProps) => (
-  <button
-    className={dropdownItemStyles({
-      className: twMerge(
-        "text-start hover:bg-accent hover:text-accent-fg focus-visible:bg-accent focus-visible:text-accent-fg focus-visible:outline-none",
+const CommandMenuSection = <T extends object>({
+  className,
+  ref,
+  ...props
+}: MenuSectionProps<T>) => {
+  return (
+    <MenuSection
+      ref={ref}
+      className={twMerge(
+        "col-span-full grid grid-cols-[auto_1fr] content-start gap-y-0.25",
         className,
-      ),
-    })}
-    role="menuitem"
-    type="button"
-    {...props}
-  />
+      )}
+      {...props}
+    >
+      {"label" in props && (
+        <Header className="col-span-full mb-1 block min-w-(--trigger-width) truncate px-2.5 text-muted-fg text-xs">
+          {props.label}
+        </Header>
+      )}
+      <Collection items={props.items}>{props.children}</Collection>
+    </MenuSection>
+  )
+}
+
+const CommandMenuItem = ({ className, ...props }: React.ComponentProps<typeof MenuItem>) => {
+  const textValue =
+    props.textValue || (typeof props.children === "string" ? props.children : undefined)
+  return (
+    <MenuItem
+      {...props}
+      textValue={textValue}
+      className={cx("items-center gap-y-0.5", className)}
+    />
+  )
+}
+
+interface CommandMenuDescriptionProps extends React.ComponentProps<typeof MenuDescription> {}
+
+const CommandMenuDescription = ({ className, ...props }: CommandMenuDescriptionProps) => {
+  return (
+    <MenuDescription className={twMerge("col-start-3 row-start-1 ms-auto", className)} {...props} />
+  )
+}
+
+const renderer: CollectionRenderer = {
+  CollectionRoot(props) {
+    if (props.collection.size === 0) {
+      return (
+        <div className="col-span-full p-4 text-center text-muted-fg text-sm">No results found.</div>
+      )
+    }
+    return <DefaultCollectionRenderer.CollectionRoot {...props} />
+  },
+  CollectionBranch: DefaultCollectionRenderer.CollectionBranch,
+}
+
+const CommandMenuSeparator = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof MenuSeparator>) => (
+  <MenuSeparator className={twMerge("-mx-2", className)} {...props} />
 )
 
-interface CommandMenuDescriptionProps extends React.ComponentProps<"span"> {}
+const CommandMenuFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
+  return (
+    <div
+      className={twMerge(
+        "col-span-full flex-none border-t px-2 py-1.5 text-muted-fg text-sm",
+        "*:[kbd]:inset-ring *:[kbd]:inset-ring-fg/10 *:[kbd]:mx-1 *:[kbd]:inline-grid *:[kbd]:h-4 *:[kbd]:min-w-4 *:[kbd]:place-content-center *:[kbd]:rounded-xs *:[kbd]:bg-secondary",
+        className,
+      )}
+      {...props}
+    />
+  )
+}
 
-const CommandMenuDescription = ({ className, ...props }: CommandMenuDescriptionProps) => (
-  <span
-    className={twMerge("col-start-2 row-start-2 font-normal text-muted-fg text-sm", className)}
-    slot="description"
-    {...props}
-  />
-)
-
-const CommandMenuSeparator = ({ className, ...props }: React.ComponentProps<"hr">) => (
-  <hr className={twMerge("-mx-2", className)} {...props} />
-)
-
-const CommandMenuFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div
-    className={twMerge(
-      "col-span-full flex-none border-t px-2 py-1.5 text-muted-fg text-sm",
-      "*:[kbd]:inset-ring *:[kbd]:inset-ring-fg/10 *:[kbd]:mx-1 *:[kbd]:inline-grid *:[kbd]:h-4 *:[kbd]:min-w-4 *:[kbd]:place-content-center *:[kbd]:rounded-xs *:[kbd]:bg-secondary",
-      className,
-    )}
-    {...props}
-  />
-)
-
-const CommandMenuLabel = ({ className, ...props }: React.ComponentProps<"span">) => (
-  <span
-    className={twMerge("col-start-2 [&:has(+svg)]:pe-6", className)}
-    slot="label"
-    {...props}
-  />
-)
-
-const CommandMenuShortcut = ({ className, ...props }: React.ComponentProps<typeof DropdownKeyboard>) => (
+const CommandMenuLabel = MenuLabel
+const CommandMenuShortcut = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownKeyboard>) => (
   <DropdownKeyboard
     className={twMerge(
       "gap-0.5 font-sans text-[10.5px] uppercase *:inset-ring *:inset-ring-muted-fg/20 *:grid *:size-5.5 *:place-content-center *:rounded-xs *:bg-bg",
