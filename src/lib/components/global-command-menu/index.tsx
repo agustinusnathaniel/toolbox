@@ -3,7 +3,7 @@
 import { IconGlobe, IconSearch, IconStar } from '@intentui/icons';
 import type { ToOptions } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import {
   CommandMenu,
@@ -19,10 +19,22 @@ import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
 const toolNavItems = getToolNavItems();
 
-const CommandResultList = ({ children }: { children: React.ReactNode }) => (
+interface CommandResultListProps {
+  children: React.ReactNode;
+  listRef: React.RefObject<HTMLDivElement | null>;
+  onKeyDown: React.KeyboardEventHandler<HTMLDivElement>;
+}
+
+const CommandResultList = ({
+  children,
+  listRef,
+  onKeyDown,
+}: CommandResultListProps) => (
   <div
     aria-label="Command results"
     className="grid max-h-full flex-1 content-start overflow-y-auto border-t p-2 sm:max-h-110"
+    onKeyDown={onKeyDown}
+    ref={listRef}
     role="menu"
   >
     {children}
@@ -93,6 +105,7 @@ interface GlobalCommandMenuProps {
 const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const resultListRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { pinnedSlugs } = usePinnedTools();
@@ -125,6 +138,42 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
     'Open toolbox catalog and tool overview'
   );
 
+  const handleCommandKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+        return;
+      }
+
+      const items = Array.from(
+        resultListRef.current?.querySelectorAll<HTMLButtonElement>(
+          '[role="menuitem"]'
+        ) ?? []
+      );
+      if (items.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const activeIndex = items.indexOf(
+        document.activeElement as HTMLButtonElement
+      );
+      let nextIndex = activeIndex;
+      if (event.key === 'Home') {
+        nextIndex = 0;
+      } else if (event.key === 'End') {
+        nextIndex = items.length - 1;
+      } else if (event.key === 'ArrowDown') {
+        nextIndex = (activeIndex + 1) % items.length;
+      } else {
+        nextIndex = (activeIndex - 1 + items.length) % items.length;
+      }
+
+      items[nextIndex]?.focus();
+    },
+    []
+  );
+
   return (
     <>
       <button
@@ -147,9 +196,13 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
       >
         <CommandMenuSearch
           onChange={setQuery}
+          onKeyDown={handleCommandKeyDown}
           placeholder="Type a command or search..."
         />
-        <CommandResultList>
+        <CommandResultList
+          listRef={resultListRef}
+          onKeyDown={handleCommandKeyDown}
+        >
           {filteredPinnedNavItems.length > 0 && (
             <CommandResultSection label="Pinned">
               {filteredPinnedNavItems.map((item) => (
