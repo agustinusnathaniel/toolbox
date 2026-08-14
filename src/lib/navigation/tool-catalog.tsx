@@ -11,6 +11,7 @@ import {
 } from '@intentui/icons';
 import {
   Binary,
+  CaseSensitive,
   Clock,
   Dices,
   Fingerprint,
@@ -24,6 +25,7 @@ import type { JSX } from 'react';
 
 import { meta as addToCalendarMeta } from '@/routes/_tools/add-to-calendar/-meta';
 import { meta as base64Meta } from '@/routes/_tools/base64/-meta';
+import { meta as caseConverterMeta } from '@/routes/_tools/case-converter/-meta';
 import { meta as colorConverterMeta } from '@/routes/_tools/color-converter/-meta';
 import { meta as csvConverterMeta } from '@/routes/_tools/csv-converter/-meta';
 import { meta as evChargingMeta } from '@/routes/_tools/ev-charging/-meta';
@@ -159,6 +161,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Clock />,
     ...timestampConverterMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <CaseSensitive />,
+    ...caseConverterMeta,
   },
   {
     category: 'Developer',

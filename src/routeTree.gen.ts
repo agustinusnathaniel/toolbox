@@ -15,6 +15,7 @@ import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as HomepageIndexRouteImport } from './routes/homepage/index'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
 import { Route as ToolsBase64IndexRouteImport } from './routes/_tools/base64/index'
+import { Route as ToolsCaseConverterIndexRouteImport } from './routes/_tools/case-converter/index'
 import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
 import { Route as ToolsCsvConverterIndexRouteImport } from './routes/_tools/csv-converter/index'
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
@@ -59,6 +60,11 @@ const ToolsAddToCalendarIndexRoute = ToolsAddToCalendarIndexRouteImport.update({
 const ToolsBase64IndexRoute = ToolsBase64IndexRouteImport.update({
   id: '/base64/',
   path: '/base64/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsCaseConverterIndexRoute = ToolsCaseConverterIndexRouteImport.update({
+  id: '/case-converter/',
+  path: '/case-converter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 const ToolsColorConverterIndexRoute =
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/homepage/': typeof HomepageIndexRoute
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/base64/': typeof ToolsBase64IndexRoute
+  '/case-converter/': typeof ToolsCaseConverterIndexRoute
   '/color-converter/': typeof ToolsColorConverterIndexRoute
   '/csv-converter/': typeof ToolsCsvConverterIndexRoute
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/homepage': typeof HomepageIndexRoute
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
   '/base64': typeof ToolsBase64IndexRoute
+  '/case-converter': typeof ToolsCaseConverterIndexRoute
   '/color-converter': typeof ToolsColorConverterIndexRoute
   '/csv-converter': typeof ToolsCsvConverterIndexRoute
   '/ev-charging': typeof ToolsEvChargingIndexRoute
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/homepage/': typeof HomepageIndexRoute
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/_tools/base64/': typeof ToolsBase64IndexRoute
+  '/_tools/case-converter/': typeof ToolsCaseConverterIndexRoute
   '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
   '/_tools/csv-converter/': typeof ToolsCsvConverterIndexRoute
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/homepage/'
     | '/add-to-calendar/'
     | '/base64/'
+    | '/case-converter/'
     | '/color-converter/'
     | '/csv-converter/'
     | '/ev-charging/'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/homepage'
     | '/add-to-calendar'
     | '/base64'
+    | '/case-converter'
     | '/color-converter'
     | '/csv-converter'
     | '/ev-charging'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/homepage/'
     | '/_tools/add-to-calendar/'
     | '/_tools/base64/'
+    | '/_tools/case-converter/'
     | '/_tools/color-converter/'
     | '/_tools/csv-converter/'
     | '/_tools/ev-charging/'
@@ -338,6 +350,13 @@ declare module '@tanstack/react-router' {
       path: '/base64'
       fullPath: '/base64/'
       preLoaderRoute: typeof ToolsBase64IndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/case-converter/': {
+      id: '/_tools/case-converter/'
+      path: '/case-converter'
+      fullPath: '/case-converter/'
+      preLoaderRoute: typeof ToolsCaseConverterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/color-converter/': {
@@ -458,6 +477,7 @@ declare module '@tanstack/react-router' {
 interface ToolsRouteRouteChildren {
   ToolsAddToCalendarIndexRoute: typeof ToolsAddToCalendarIndexRoute
   ToolsBase64IndexRoute: typeof ToolsBase64IndexRoute
+  ToolsCaseConverterIndexRoute: typeof ToolsCaseConverterIndexRoute
   ToolsColorConverterIndexRoute: typeof ToolsColorConverterIndexRoute
   ToolsCsvConverterIndexRoute: typeof ToolsCsvConverterIndexRoute
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
@@ -479,6 +499,7 @@ interface ToolsRouteRouteChildren {
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsAddToCalendarIndexRoute: ToolsAddToCalendarIndexRoute,
   ToolsBase64IndexRoute: ToolsBase64IndexRoute,
+  ToolsCaseConverterIndexRoute: ToolsCaseConverterIndexRoute,
   ToolsColorConverterIndexRoute: ToolsColorConverterIndexRoute,
   ToolsCsvConverterIndexRoute: ToolsCsvConverterIndexRoute,
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
