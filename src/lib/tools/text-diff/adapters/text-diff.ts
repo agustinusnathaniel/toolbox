@@ -1,31 +1,30 @@
-import type { Change } from 'diff';
-import { diffLines, diffWordsWithSpace } from 'diff';
-
-export interface TextDiffWordChunk {
-  text: string;
-  type: 'added' | 'removed' | 'unchanged';
-}
-
-export interface TextDiffLine {
-  chunks?: Array<TextDiffWordChunk>;
-  content: string;
-  type: 'added' | 'removed' | 'unchanged';
-}
+import {
+  type FileContents,
+  type FileDiffMetadata,
+  parseDiffFromFile,
+} from '@pierre/diffs';
 
 export interface TextDiffResult {
   addedCount: number;
   error?: string;
+  fileDiff: FileDiffMetadata | null;
   isValid: boolean;
-  lines: Array<TextDiffLine>;
   removedCount: number;
   timedOut?: boolean;
-  truncated?: boolean;
 }
 
 export const TEXT_DIFF_MAX_CHARS = 500_000;
 
-/** Maximum lines stored/rendered. Counts still reported via addedCount/removedCount. */
-export const MAX_DIFF_LINES = 20_000;
+export const TEXT_DIFF_FILENAME = 'text.txt';
+
+/**
+ * Builds the FileContents object used for both sides of the diff. A plain
+ * `.txt` name keeps the renderer in plain-text mode (no code syntax
+ * highlighting), matching the tool's text-first use case.
+ */
+export function toFileContents(contents: string): FileContents {
+  return { contents, name: TEXT_DIFF_FILENAME };
+}
 
 export function diffTexts(original: string, modified: string): TextDiffResult {
   if (
@@ -35,138 +34,69 @@ export function diffTexts(original: string, modified: string): TextDiffResult {
     return {
       addedCount: 0,
       error: `Each input is limited to ${TEXT_DIFF_MAX_CHARS.toLocaleString()} characters.`,
+      fileDiff: null,
       isValid: false,
-      lines: [],
       removedCount: 0,
     };
   }
 
-  const parts = diffLines(original, modified);
-  const lines: Array<TextDiffLine> = [];
+  const fileDiff = parseDiffFromFile(
+    toFileContents(original),
+    toFileContents(modified)
+  );
+
   let addedCount = 0;
   let removedCount = 0;
-
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-    if (part.added) {
-      addedCount += pushSplitLines(lines, 'added', part.value);
-      continue;
+  for (const hunk of fileDiff.hunks) {
+    for (const content of hunk.hunkContent) {
+      if (content.type !== 'change') {
+        continue;
+      }
+      addedCount += content.additions;
+      removedCount += content.deletions;
     }
-    if (!part.removed) {
-      pushSplitLines(lines, 'unchanged', part.value);
-      continue;
-    }
-    const next = parts[i + 1];
-    if (!next?.added) {
-      removedCount += pushSplitLines(lines, 'removed', part.value);
-      continue;
-    }
-    i++; // consume the paired added part
-    const paired = linesWithChunks(part.value, next.value);
-    if (paired === null) {
-      removedCount += pushSplitLines(lines, 'removed', part.value);
-      addedCount += pushSplitLines(lines, 'added', next.value);
-      continue;
-    }
-    for (const line of paired.removed) {
-      lines.push({ type: 'removed', ...line });
-      removedCount++;
-    }
-    for (const line of paired.added) {
-      lines.push({ type: 'added', ...line });
-      addedCount++;
-    }
-  }
-
-  const truncated = lines.length > MAX_DIFF_LINES;
-  if (truncated) {
-    lines.length = MAX_DIFF_LINES;
   }
 
   return {
     addedCount,
+    fileDiff,
     isValid: true,
-    lines,
     removedCount,
-    ...(truncated ? { truncated: true } : {}),
   };
 }
 
-function pushSplitLines(
-  lines: Array<TextDiffLine>,
-  type: TextDiffLine['type'],
-  value: string
-): number {
-  const contents = splitLines(value);
-  for (const content of contents) {
-    lines.push({ content, type });
-  }
-  return contents.length;
-}
+/**
+ * Builds the copyable +/- diff text from a parsed diff. Only changed lines are
+ * included; unchanged context lines are skipped. Lines are emitted in the
+ * order they appear in the diff: deletions first, then additions, per change
+ * block.
+ */
+const TRAILING_NEWLINE = /\n$/;
 
-function linesWithChunks(
-  removedValue: string,
-  addedValue: string
-): {
-  added: Array<{ chunks: Array<TextDiffWordChunk>; content: string }>;
-  removed: Array<{ chunks: Array<TextDiffWordChunk>; content: string }>;
-} | null {
-  const wordParts = diffWordsWithSpace(removedValue, addedValue);
-  const removedStream = wordParts.filter((part) => !part.added);
-  const addedStream = wordParts.filter((part) => !part.removed);
-  const removedLines = splitChunksByLine(removedStream);
-  const addedLines = splitChunksByLine(addedStream);
-  if (removedLines.length !== addedLines.length || removedLines.length === 0) {
-    return null; // fall back to line-level diff (no inline chunks)
-  }
-  return {
-    added: addedLines.map((chunks) => ({
-      chunks,
-      content: chunks.map((c) => c.text).join(''),
-    })),
-    removed: removedLines.map((chunks) => ({
-      chunks,
-      content: chunks.map((c) => c.text).join(''),
-    })),
-  };
-}
-
-function splitChunksByLine(
-  parts: Array<Change>
-): Array<Array<TextDiffWordChunk>> {
-  const lines: Array<Array<TextDiffWordChunk>> = [];
-  let current: Array<TextDiffWordChunk> = [];
-  for (const part of parts) {
-    let type: TextDiffWordChunk['type'];
-    if (part.added) {
-      type = 'added';
-    } else if (part.removed) {
-      type = 'removed';
-    } else {
-      type = 'unchanged';
-    }
-    const segments = part.value.split('\n');
-    for (let i = 0; i < segments.length; i++) {
-      if (i > 0) {
-        lines.push(current);
-        current = [];
+export function buildCopyDiffText(fileDiff: FileDiffMetadata): string {
+  const lines: Array<string> = [];
+  for (const hunk of fileDiff.hunks) {
+    for (const content of hunk.hunkContent) {
+      if (content.type !== 'change') {
+        continue;
       }
-      const segment = segments[i];
-      if (segment.length > 0) {
-        current.push({ text: segment, type });
+      for (const line of fileDiff.deletionLines.slice(
+        content.deletionLineIndex,
+        content.deletionLineIndex + content.deletions
+      )) {
+        lines.push(`-${trimLineEnding(line)}`);
+      }
+      for (const line of fileDiff.additionLines.slice(
+        content.additionLineIndex,
+        content.additionLineIndex + content.additions
+      )) {
+        lines.push(`+${trimLineEnding(line)}`);
       }
     }
   }
-  if (current.length > 0) {
-    lines.push(current);
-  }
-  return lines;
+  return lines.join('\n');
 }
 
-function splitLines(value: string): Array<string> {
-  const lines = value.split('\n');
-  if (lines.at(-1) === '') {
-    lines.pop();
-  }
-  return lines;
+function trimLineEnding(line: string): string {
+  return line.replace(TRAILING_NEWLINE, '');
 }

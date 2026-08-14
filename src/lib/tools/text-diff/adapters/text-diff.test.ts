@@ -1,121 +1,68 @@
+import type { FileDiffMetadata } from '@pierre/diffs';
 import { describe, expect, test } from 'vite-plus/test';
 
-import { diffTexts, MAX_DIFF_LINES, TEXT_DIFF_MAX_CHARS } from './text-diff';
+import {
+  buildCopyDiffText,
+  diffTexts,
+  TEXT_DIFF_FILENAME,
+  TEXT_DIFF_MAX_CHARS,
+  toFileContents,
+} from './text-diff';
+
+function diffFileDiff(original: string, modified: string): FileDiffMetadata {
+  const result = diffTexts(original, modified);
+  expect(result.isValid).toBe(true);
+  expect(result.fileDiff).not.toBeNull();
+  return result.fileDiff as FileDiffMetadata;
+}
 
 describe('diffTexts', () => {
-  test('returns all unchanged lines for identical text', () => {
+  test('returns an empty diff for identical text', () => {
     const result = diffTexts('alpha\nbeta', 'alpha\nbeta');
     expect(result.isValid).toBe(true);
-    expect(result.lines.map((line) => line.type)).toEqual([
-      'unchanged',
-      'unchanged',
-    ]);
-    expect(result.lines.map((line) => line.content)).toEqual(['alpha', 'beta']);
-    expect(result.lines.every((line) => line.type === 'unchanged')).toBe(true);
     expect(result.addedCount).toBe(0);
     expect(result.removedCount).toBe(0);
+    expect(result.fileDiff).not.toBeNull();
   });
 
   test('flags added lines', () => {
     const result = diffTexts('alpha\n', 'alpha\nbeta\n');
     expect(result.isValid).toBe(true);
-    expect(result.lines.map((line) => line.type)).toEqual([
-      'unchanged',
-      'added',
-    ]);
-    expect(result.lines.map((line) => line.content)).toEqual(['alpha', 'beta']);
     expect(result.addedCount).toBe(1);
     expect(result.removedCount).toBe(0);
+    expect(buildCopyDiffText(result.fileDiff as FileDiffMetadata)).toBe(
+      '+beta'
+    );
   });
 
   test('flags removed lines', () => {
     const result = diffTexts('alpha\nbeta\n', 'alpha\n');
     expect(result.isValid).toBe(true);
-    expect(result.lines.map((line) => line.type)).toEqual([
-      'unchanged',
-      'removed',
-    ]);
-    expect(result.lines.map((line) => line.content)).toEqual(['alpha', 'beta']);
     expect(result.removedCount).toBe(1);
     expect(result.addedCount).toBe(0);
+    expect(buildCopyDiffText(result.fileDiff as FileDiffMetadata)).toBe(
+      '-beta'
+    );
   });
 
-  test('falls back to line-level diff when appended line has no trailing newline', () => {
-    const result = diffTexts('alpha', 'alpha\nbeta');
-    expect(result.isValid).toBe(true);
-    expect(result.lines.map((line) => line.type)).toEqual([
-      'removed',
-      'added',
-      'added',
-    ]);
-    expect(result.lines.map((line) => line.content)).toEqual([
-      'alpha',
-      'alpha',
-      'beta',
-    ]);
-    expect(result.addedCount).toBe(2);
-    expect(result.removedCount).toBe(1);
-  });
-
-  test('marks replaced word with inline chunks on both sides', () => {
+  test('counts replaced lines on both sides', () => {
     const result = diffTexts('hello world', 'hello there');
     expect(result.isValid).toBe(true);
-    expect(result.lines[0].type).toBe('removed');
-    expect(result.lines[0].chunks).toEqual([
-      { text: 'hello ', type: 'unchanged' },
-      { text: 'world', type: 'removed' },
-    ]);
-    expect(result.lines[0].content).toBe('hello world');
-    expect(result.lines[1].type).toBe('added');
-    expect(result.lines[1].chunks).toEqual([
-      { text: 'hello ', type: 'unchanged' },
-      { text: 'there', type: 'added' },
-    ]);
-    expect(result.lines[1].content).toBe('hello there');
-  });
-
-  test('marks inserted word with inline chunk on added side', () => {
-    const result = diffTexts('hello world', 'hello brave world');
-    expect(result.isValid).toBe(true);
-    expect(result.lines[0].type).toBe('removed');
-    expect(result.lines[0].chunks).toEqual([
-      { text: 'hello ', type: 'unchanged' },
-      { text: 'world', type: 'unchanged' },
-    ]);
-    expect(result.lines[0].content).toBe('hello world');
-    expect(result.lines[1].type).toBe('added');
-    expect(result.lines[1].chunks).toEqual([
-      { text: 'hello ', type: 'unchanged' },
-      { text: 'brave ', type: 'added' },
-      { text: 'world', type: 'unchanged' },
-    ]);
-    expect(result.lines[1].content).toBe('hello brave world');
+    expect(result.removedCount).toBe(1);
+    expect(result.addedCount).toBe(1);
   });
 
   test('handles multi-line blocks', () => {
     const result = diffTexts('a\nb\nc', 'a\nB\nc');
     expect(result.isValid).toBe(true);
-    expect(result.lines.map((line) => line.type)).toEqual([
-      'unchanged',
-      'removed',
-      'added',
-      'unchanged',
-    ]);
-    expect(result.lines.map((line) => line.content)).toEqual([
-      'a',
-      'b',
-      'B',
-      'c',
-    ]);
     expect(result.removedCount).toBe(1);
     expect(result.addedCount).toBe(1);
+    expect(result.fileDiff?.hunks).toHaveLength(1);
   });
 
   test('treats trailing newline difference as a change', () => {
     const result = diffTexts('a', 'a\n');
     expect(result.isValid).toBe(true);
-    expect(result.lines.map((line) => line.type)).toEqual(['removed', 'added']);
-    expect(result.lines.map((line) => line.content)).toEqual(['a', 'a']);
     expect(result.removedCount).toBe(1);
     expect(result.addedCount).toBe(1);
   });
@@ -123,9 +70,9 @@ describe('diffTexts', () => {
   test('returns valid empty result for empty inputs', () => {
     const result = diffTexts('', '');
     expect(result.isValid).toBe(true);
-    expect(result.lines).toHaveLength(0);
     expect(result.addedCount).toBe(0);
     expect(result.removedCount).toBe(0);
+    expect(result.fileDiff).not.toBeNull();
   });
 
   test('rejects oversized input', () => {
@@ -133,7 +80,7 @@ describe('diffTexts', () => {
     const result = diffTexts(oversized, 'small');
     expect(result.isValid).toBe(false);
     expect(result.error).toBeTruthy();
-    expect(result.lines).toHaveLength(0);
+    expect(result.fileDiff).toBeNull();
   });
 
   test('accepts input at the size limit', () => {
@@ -142,22 +89,51 @@ describe('diffTexts', () => {
     const result = diffTexts(atLimit, belowLimit);
     expect(result.isValid).toBe(true);
   });
+});
 
-  test('truncates lines beyond MAX_DIFF_LINES but keeps full counts', () => {
-    const manyLines = 'line\n'.repeat(MAX_DIFF_LINES + 2000);
-    const result = diffTexts(manyLines, manyLines);
-    expect(result.isValid).toBe(true);
-    expect(result.lines).toHaveLength(MAX_DIFF_LINES);
-    expect(result.truncated).toBe(true);
-    expect(result.addedCount).toBe(0);
-    expect(result.removedCount).toBe(0);
+describe('toFileContents', () => {
+  test('uses the plain-text filename', () => {
+    expect(toFileContents('abc')).toEqual({
+      contents: 'abc',
+      name: TEXT_DIFF_FILENAME,
+    });
+  });
+});
+
+describe('buildCopyDiffText', () => {
+  test('returns empty string for identical text', () => {
+    expect(buildCopyDiffText(diffFileDiff('alpha\nbeta', 'alpha\nbeta'))).toBe(
+      ''
+    );
   });
 
-  test('does not truncate when lines fit within MAX_DIFF_LINES', () => {
-    const fewLines = 'line\n'.repeat(MAX_DIFF_LINES - 1);
-    const result = diffTexts(fewLines, fewLines);
-    expect(result.isValid).toBe(true);
-    expect(result.lines).toHaveLength(MAX_DIFF_LINES - 1);
-    expect(result.truncated).toBeUndefined();
+  test('emits +/- lines for a single-line replacement', () => {
+    expect(buildCopyDiffText(diffFileDiff('hello world', 'hello there'))).toBe(
+      '-hello world\n+hello there'
+    );
+  });
+
+  test('emits changed lines only, skipping context', () => {
+    expect(buildCopyDiffText(diffFileDiff('a\nb\nc\nd', 'a\nB\nc\nd'))).toBe(
+      '-b\n+B'
+    );
+  });
+
+  test('emits deletions before additions per change block', () => {
+    expect(buildCopyDiffText(diffFileDiff('x\n1\ny\n2', 'x\n1\ny\n3'))).toBe(
+      '-2\n+3'
+    );
+  });
+
+  test('handles multiple change blocks in order', () => {
+    expect(
+      buildCopyDiffText(diffFileDiff('a\n1\nb\n2\nc\n3', 'a\nX\nb\n2\nc\nY'))
+    ).toBe('-1\n+X\n-3\n+Y');
+  });
+
+  test('strips trailing newlines from emitted lines', () => {
+    expect(buildCopyDiffText(diffFileDiff('line1\n', 'line2\n'))).toBe(
+      '-line1\n+line2'
+    );
   });
 });

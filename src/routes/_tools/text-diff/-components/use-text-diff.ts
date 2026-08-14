@@ -24,8 +24,8 @@ export const TEXT_DIFF_TIMEOUT_ERROR =
 const TIMEOUT_RESULT: TextDiffResult = {
   addedCount: 0,
   error: TEXT_DIFF_TIMEOUT_ERROR,
+  fileDiff: null,
   isValid: true,
-  lines: [],
   removedCount: 0,
   timedOut: true,
 };

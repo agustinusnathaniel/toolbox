@@ -1,18 +1,17 @@
 'use client';
 
+import { FileDiff, Virtualizer } from '@pierre/diffs/react';
 import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { ArrowLeftRight, Check, Copy, GitCompare, Link } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useTheme } from 'next-themes';
+import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import type {
-  TextDiffLine,
-  TextDiffWordChunk,
-} from '@/lib/tools/text-diff/adapters/text-diff';
+import { buildCopyDiffText } from '@/lib/tools/text-diff/adapters/text-diff';
 import { buildTextDiffParams } from '@/lib/tools/text-diff/adapters/text-diff-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
@@ -31,38 +30,10 @@ export const Route = createFileRoute('/_tools/text-diff/')({
   validateSearch: searchSchema,
 });
 
-function lineClassName(type: TextDiffLine['type']): string {
-  if (type === 'added') {
-    return 'bg-success/10 text-success';
-  }
-  if (type === 'removed') {
-    return 'bg-danger/10 text-danger';
-  }
-  return 'text-muted-fg';
-}
-
-function lineMarker(type: TextDiffLine['type']): string {
-  if (type === 'added') {
-    return '+';
-  }
-  if (type === 'removed') {
-    return '-';
-  }
-  return ' ';
-}
-
-function chunkClassName(type: TextDiffWordChunk['type']): string | undefined {
-  if (type === 'added') {
-    return 'rounded-sm bg-success/25';
-  }
-  if (type === 'removed') {
-    return 'rounded-sm bg-danger/25';
-  }
-}
-
 function TextDiffPage() {
   const { trackAction } = useToolTracking('text-diff', 'Text Diff');
   const search = useSearch({ from: '/_tools/text-diff/' });
+  const { resolvedTheme } = useTheme();
   const [original, setOriginal] = useState(search.original ?? '');
   const [modified, setModified] = useState(search.modified ?? '');
   const [copied, setCopied] = useState(false);
@@ -70,6 +41,7 @@ function TextDiffPage() {
     null
   );
   const [compareTrigger, setCompareTrigger] = useState(0);
+  const [viewMode, setViewMode] = useState<'split' | 'unified'>('unified');
 
   const { computing, result, setResult } = useTextDiff(
     original,
@@ -94,13 +66,10 @@ function TextDiffPage() {
   }, [modified, original, setResult, trackAction]);
 
   const handleCopyDiff = useCallback(async () => {
-    if (!result) {
+    if (!result?.fileDiff) {
       return;
     }
-    const diffText = result.lines
-      .filter((line) => line.type !== 'unchanged')
-      .map((line) => `${line.type === 'added' ? '+' : '-'}${line.content}`)
-      .join('\n');
+    const diffText = buildCopyDiffText(result.fileDiff);
     const copied = await copyToClipboard(diffText, 'Copied Diff');
     if (copied) {
       setCopied(true);
@@ -122,6 +91,21 @@ function TextDiffPage() {
   const showHint =
     original.trim() && modified.trim() && !result && !activeAction;
   const showError = result && !result.isValid;
+  const fileDiff = result?.isValid && !result.timedOut ? result.fileDiff : null;
+
+  const fileDiffOptions = useMemo(
+    () => ({
+      diffIndicators: 'classic' as const,
+      diffStyle: viewMode,
+      disableFileHeader: true,
+      lineDiffType: 'word' as const,
+      overflow: 'wrap' as const,
+      theme: { dark: 'pierre-dark', light: 'pierre-light' },
+      themeType:
+        resolvedTheme === 'dark' ? ('dark' as const) : ('light' as const),
+    }),
+    [resolvedTheme, viewMode]
+  );
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
@@ -224,54 +208,56 @@ function TextDiffPage() {
             </div>
           )}
 
-          {result?.isValid && !result.timedOut && (
+          {fileDiff && (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-muted-fg text-sm">
-                  {result.addedCount} additions, {result.removedCount} deletions
+                  {result?.addedCount ?? 0} additions,{' '}
+                  {result?.removedCount ?? 0} deletions
                 </span>
-                <Button
-                  aria-label="Copy diff"
-                  intent="outline"
-                  onPress={handleCopyDiff}
-                  size="sq-sm"
-                >
-                  {copied ? (
-                    <Check className="size-4 text-success" />
-                  ) : (
-                    <Copy className="size-4" />
-                  )}
-                </Button>
-              </div>
-              {result.truncated && (
-                <p className="text-muted-fg text-xs">
-                  Showing first 20,000 lines.
-                </p>
-              )}
-              <div className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50 font-mono text-sm">
-                {result.lines.map((line, index) => (
-                  <div
-                    className={`flex gap-2 whitespace-pre-wrap break-all px-3 py-0.5 ${lineClassName(line.type)}`}
-                    /* biome-ignore lint/suspicious/noArrayIndexKey: static diff result, keys stay positional */
-                    key={`${line.type}-${index}`}
+                <div className="flex items-center gap-2">
+                  <fieldset
+                    aria-label="Diff view"
+                    className="flex rounded-lg border border-input p-0.5"
                   >
-                    <span className="w-4 shrink-0 select-none text-center opacity-70">
-                      {lineMarker(line.type)}
-                    </span>
-                    {line.chunks
-                      ? line.chunks.map((chunk, chunkIndex) => (
-                          <span
-                            className={chunkClassName(chunk.type)}
-                            /* biome-ignore lint/suspicious/noArrayIndexKey: static chunk list, keys stay positional */
-                            key={`${chunk.type}-${chunkIndex}`}
-                          >
-                            {chunk.text}
-                          </span>
-                        ))
-                      : line.content}
-                  </div>
-                ))}
+                    <Button
+                      aria-pressed={viewMode === 'unified'}
+                      intent={viewMode === 'unified' ? 'primary' : 'plain'}
+                      onPress={() => setViewMode('unified')}
+                      size="sq-xs"
+                    >
+                      Unified
+                    </Button>
+                    <Button
+                      aria-pressed={viewMode === 'split'}
+                      intent={viewMode === 'split' ? 'primary' : 'plain'}
+                      onPress={() => setViewMode('split')}
+                      size="sq-xs"
+                    >
+                      Split
+                    </Button>
+                  </fieldset>
+                  <Button
+                    aria-label="Copy diff"
+                    intent="outline"
+                    onPress={handleCopyDiff}
+                    size="sq-sm"
+                  >
+                    {copied ? (
+                      <Check className="size-4 text-success" />
+                    ) : (
+                      <Copy className="size-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
+              <Virtualizer className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50">
+                <FileDiff
+                  disableWorkerPool
+                  fileDiff={fileDiff}
+                  options={fileDiffOptions}
+                />
+              </Virtualizer>
             </div>
           )}
         </CardContent>
@@ -286,7 +272,7 @@ function TextDiffPage() {
           },
           {
             answer:
-              'Green lines were added, red lines were removed, and highlighted words show the exact text that changed within a line.',
+              'Green lines were added, red lines were removed, and highlighted words show the exact text that changed within a line. Switch between Unified and Split views to see the diff side by side.',
             question: 'What do the colors mean?',
           },
           {

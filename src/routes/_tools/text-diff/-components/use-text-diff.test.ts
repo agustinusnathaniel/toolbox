@@ -22,8 +22,8 @@ interface FakeWorker {
 
 const VALID_RESULT: TextDiffResult = {
   addedCount: 0,
+  fileDiff: null,
   isValid: true,
-  lines: [],
   removedCount: 0,
 };
 
@@ -88,8 +88,8 @@ describe('useTextDiff', () => {
     const request = worker.postMessage.mock.calls[0][0];
     const diffResult: TextDiffResult = {
       addedCount: 1,
+      fileDiff: null,
       isValid: true,
-      lines: [{ content: 'b', type: 'added' }],
       removedCount: 0,
     };
     respond(worker, { id: request.id, result: diffResult });
