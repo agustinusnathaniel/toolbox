@@ -31,6 +31,7 @@
     "@hookform/resolvers": "^5.7.1",
     "@intentui/icons": "^1.11.3",
     "@monaco-editor/react": "^4.7.0",
+    "@pierre/diffs": "^1.3.5",
     "@react-stately/color": "^3.10.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router": "^1.170.23",
