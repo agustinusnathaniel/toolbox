@@ -13,9 +13,19 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { buildCopyDiffText } from '@/lib/tools/text-diff/adapters/text-diff';
 import { buildTextDiffParams } from '@/lib/tools/text-diff/adapters/text-diff-params';
+import {
+  type DiffViewMode,
+  isSplitViewUsable,
+  resolveDiffViewMode,
+} from '@/lib/tools/text-diff/adapters/text-diff-view-mode';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import {
+  DiffViewControl,
+  SPLIT_VIEW_UNAVAILABLE_HINT_ID,
+} from './-components/diff-view-control';
+import { useContainerWidth } from './-components/use-container-width';
 import { useTextDiff } from './-components/use-text-diff';
 import { meta } from './-meta';
 
@@ -41,7 +51,12 @@ function TextDiffPage() {
     null
   );
   const [compareTrigger, setCompareTrigger] = useState(0);
-  const [viewMode, setViewMode] = useState<'split' | 'unified'>('unified');
+  const [viewMode, setViewMode] = useState<DiffViewMode>('unified');
+
+  const { ref: diffContainerRef, width: diffContainerWidth } =
+    useContainerWidth<HTMLDivElement>();
+  const splitViewUsable = isSplitViewUsable(diffContainerWidth);
+  const effectiveMode = resolveDiffViewMode(viewMode, splitViewUsable);
 
   const { computing, result, setResult } = useTextDiff(
     original,
@@ -96,7 +111,7 @@ function TextDiffPage() {
   const fileDiffOptions = useMemo(
     () => ({
       diffIndicators: 'classic' as const,
-      diffStyle: viewMode,
+      diffStyle: effectiveMode,
       disableFileHeader: true,
       lineDiffType: 'word' as const,
       overflow: 'wrap' as const,
@@ -104,7 +119,7 @@ function TextDiffPage() {
       themeType:
         resolvedTheme === 'dark' ? ('dark' as const) : ('light' as const),
     }),
-    [resolvedTheme, viewMode]
+    [effectiveMode, resolvedTheme]
   );
 
   return (
@@ -210,54 +225,50 @@ function TextDiffPage() {
 
           {fileDiff && (
             <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-muted-fg text-sm">
-                  {result?.addedCount ?? 0} additions,{' '}
-                  {result?.removedCount ?? 0} deletions
-                </span>
-                <div className="flex items-center gap-2">
-                  <fieldset
-                    aria-label="Diff view"
-                    className="flex rounded-lg border border-input p-0.5"
-                  >
+              <div className="flex flex-col gap-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-muted-fg text-sm">
+                    {result?.addedCount ?? 0} additions,{' '}
+                    {result?.removedCount ?? 0} deletions
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <DiffViewControl
+                      effectiveMode={effectiveMode}
+                      onModeChange={setViewMode}
+                      splitDisabled={!splitViewUsable}
+                    />
                     <Button
-                      aria-pressed={viewMode === 'unified'}
-                      intent={viewMode === 'unified' ? 'primary' : 'plain'}
-                      onPress={() => setViewMode('unified')}
-                      size="sq-xs"
+                      aria-label="Copy diff"
+                      intent="outline"
+                      onPress={handleCopyDiff}
+                      size="sq-sm"
                     >
-                      Unified
+                      {copied ? (
+                        <Check className="size-4 text-success" />
+                      ) : (
+                        <Copy className="size-4" />
+                      )}
                     </Button>
-                    <Button
-                      aria-pressed={viewMode === 'split'}
-                      intent={viewMode === 'split' ? 'primary' : 'plain'}
-                      onPress={() => setViewMode('split')}
-                      size="sq-xs"
-                    >
-                      Split
-                    </Button>
-                  </fieldset>
-                  <Button
-                    aria-label="Copy diff"
-                    intent="outline"
-                    onPress={handleCopyDiff}
-                    size="sq-sm"
-                  >
-                    {copied ? (
-                      <Check className="size-4 text-success" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
-                  </Button>
+                  </div>
                 </div>
+                {!splitViewUsable && (
+                  <p
+                    className="text-muted-fg text-xs"
+                    id={SPLIT_VIEW_UNAVAILABLE_HINT_ID}
+                  >
+                    Split view needs a wider screen — showing Unified instead.
+                  </p>
+                )}
               </div>
-              <Virtualizer className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50">
-                <FileDiff
-                  disableWorkerPool
-                  fileDiff={fileDiff}
-                  options={fileDiffOptions}
-                />
-              </Virtualizer>
+              <div className="min-w-0" ref={diffContainerRef}>
+                <Virtualizer className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50">
+                  <FileDiff
+                    disableWorkerPool
+                    fileDiff={fileDiff}
+                    options={fileDiffOptions}
+                  />
+                </Virtualizer>
+              </div>
             </div>
           )}
         </CardContent>
