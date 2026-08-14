@@ -4,8 +4,10 @@ import { describe, expect, test } from 'vite-plus/test';
 import {
   buildCopyDiffText,
   diffTexts,
+  isNoDifferenceOutcome,
   TEXT_DIFF_FILENAME,
   TEXT_DIFF_MAX_CHARS,
+  type TextDiffResult,
   toFileContents,
 } from './text-diff';
 
@@ -88,6 +90,66 @@ describe('diffTexts', () => {
     const belowLimit = 'x'.repeat(TEXT_DIFF_MAX_CHARS - 1);
     const result = diffTexts(atLimit, belowLimit);
     expect(result.isValid).toBe(true);
+  });
+});
+
+describe('isNoDifferenceOutcome', () => {
+  test('is true for identical non-empty inputs', () => {
+    const result = diffTexts('alpha\nbeta', 'alpha\nbeta');
+    expect(result.isValid).toBe(true);
+    expect(isNoDifferenceOutcome('alpha\nbeta', 'alpha\nbeta', result)).toBe(
+      true
+    );
+  });
+
+  test('is false for empty-vs-empty input (distinct from empty state)', () => {
+    const result = diffTexts('', '');
+    expect(result.isValid).toBe(true);
+    expect(isNoDifferenceOutcome('', '', result)).toBe(false);
+  });
+
+  test('is false when a line was added', () => {
+    const result = diffTexts('alpha\n', 'alpha\nbeta\n');
+    expect(result.addedCount).toBe(1);
+    expect(isNoDifferenceOutcome('alpha\n', 'alpha\nbeta\n', result)).toBe(
+      false
+    );
+  });
+
+  test('is false when a line was removed', () => {
+    const result = diffTexts('alpha\nbeta\n', 'alpha\n');
+    expect(result.removedCount).toBe(1);
+    expect(isNoDifferenceOutcome('alpha\nbeta\n', 'alpha\n', result)).toBe(
+      false
+    );
+  });
+
+  test('is false for a replacement on both sides', () => {
+    const result = diffTexts('hello world', 'hello there');
+    expect(result.removedCount).toBe(1);
+    expect(result.addedCount).toBe(1);
+    expect(isNoDifferenceOutcome('hello world', 'hello there', result)).toBe(
+      false
+    );
+  });
+
+  test('is false for an invalid (oversized) result', () => {
+    const oversized = 'x'.repeat(TEXT_DIFF_MAX_CHARS + 1);
+    const result = diffTexts(oversized, 'small');
+    expect(result.isValid).toBe(false);
+    expect(isNoDifferenceOutcome(oversized, 'small', result)).toBe(false);
+  });
+
+  test('is false for a timed-out result', () => {
+    const timeoutResult: TextDiffResult = {
+      addedCount: 0,
+      error: 'timed out',
+      fileDiff: null,
+      isValid: true,
+      removedCount: 0,
+      timedOut: true,
+    };
+    expect(isNoDifferenceOutcome('a', 'b', timeoutResult)).toBe(false);
   });
 });
 

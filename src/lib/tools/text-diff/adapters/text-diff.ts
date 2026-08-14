@@ -66,6 +66,26 @@ export function diffTexts(original: string, modified: string): TextDiffResult {
 }
 
 /**
+ * True when a completed comparison found no differences AND there was actual
+ * content to compare. Empty-vs-empty input, invalid input (too large), and
+ * worker timeouts all return false — those states render their own messages
+ * and must never show the "no differences" success state.
+ */
+export function isNoDifferenceOutcome(
+  original: string,
+  modified: string,
+  result: TextDiffResult
+): boolean {
+  if (!result.isValid || result.timedOut) {
+    return false;
+  }
+  if (result.addedCount > 0 || result.removedCount > 0) {
+    return false;
+  }
+  return original.trim() !== '' || modified.trim() !== '';
+}
+
+/**
  * Builds the copyable +/- diff text from a parsed diff. Only changed lines are
  * included; unchanged context lines are skipped. Lines are emitted in the
  * order they appear in the diff: deletions first, then additions, per change

@@ -10,7 +10,10 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { buildCopyDiffText } from '@/lib/tools/text-diff/adapters/text-diff';
+import {
+  buildCopyDiffText,
+  isNoDifferenceOutcome,
+} from '@/lib/tools/text-diff/adapters/text-diff';
 import { buildTextDiffParams } from '@/lib/tools/text-diff/adapters/text-diff-params';
 import {
   type DiffViewMode,
@@ -110,6 +113,8 @@ function TextDiffPage() {
     original.trim() && modified.trim() && !result && !activeAction;
   const showError = result && !result.isValid;
   const fileDiff = result?.isValid && !result.timedOut ? result.fileDiff : null;
+  const showNoDifferences =
+    result !== null && isNoDifferenceOutcome(original, modified, result);
 
   const fileDiffOptions = useMemo(
     () => ({
@@ -226,7 +231,7 @@ function TextDiffPage() {
             </div>
           )}
 
-          {fileDiff && (
+          {fileDiff && !showNoDifferences && (
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-1.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -269,6 +274,17 @@ function TextDiffPage() {
                   fileDiff={fileDiff}
                   options={fileDiffOptions}
                 />
+              </div>
+            </div>
+          )}
+
+          {showNoDifferences && (
+            <div className="flex flex-col gap-2" role="status">
+              <span className="text-muted-fg text-sm">
+                0 additions, 0 deletions
+              </span>
+              <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed bg-(--card-bg)/50 p-4">
+                <p className="text-muted-fg text-sm">No differences found</p>
               </div>
             </div>
           )}
