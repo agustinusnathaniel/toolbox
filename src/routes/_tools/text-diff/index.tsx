@@ -1,7 +1,15 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { ArrowLeftRight, Check, Copy, GitCompare, Link } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Check,
+  Columns2,
+  Copy,
+  GitCompare,
+  Link,
+  Rows3,
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
@@ -13,6 +21,7 @@ import type {
   TextDiffLine,
   TextDiffWordChunk,
 } from '@/lib/tools/text-diff/adapters/text-diff';
+import { buildSideBySideRows } from '@/lib/tools/text-diff/adapters/text-diff';
 import { buildTextDiffParams } from '@/lib/tools/text-diff/adapters/text-diff-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
@@ -51,6 +60,32 @@ function lineMarker(type: TextDiffLine['type']): string {
   return ' ';
 }
 
+function DiffSideCell({ line }: { line: TextDiffLine | undefined }) {
+  if (!line) {
+    return <div aria-hidden="true" className="px-3 py-0.5" />;
+  }
+  return (
+    <div
+      className={`flex gap-2 whitespace-pre-wrap break-all px-3 py-0.5 ${lineClassName(line.type)}`}
+    >
+      <span className="w-4 shrink-0 select-none text-center opacity-70">
+        {lineMarker(line.type)}
+      </span>
+      {line.chunks
+        ? line.chunks.map((chunk, chunkIndex) => (
+            <span
+              className={chunkClassName(chunk.type)}
+              /* biome-ignore lint/suspicious/noArrayIndexKey: static chunk list, keys stay positional */
+              key={`${chunk.type}-${chunkIndex}`}
+            >
+              {chunk.text}
+            </span>
+          ))
+        : line.content}
+    </div>
+  );
+}
+
 function chunkClassName(type: TextDiffWordChunk['type']): string | undefined {
   if (type === 'added') {
     return 'rounded-sm bg-success/25';
@@ -70,6 +105,7 @@ function TextDiffPage() {
     null
   );
   const [compareTrigger, setCompareTrigger] = useState(0);
+  const [view, setView] = useState<'unified' | 'side-by-side'>('unified');
 
   const { computing, result, setResult } = useTextDiff(
     original,
@@ -226,10 +262,38 @@ function TextDiffPage() {
 
           {result?.isValid && !result.timedOut && (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-fg text-sm">
-                  {result.addedCount} additions, {result.removedCount} deletions
-                </span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <span className="text-muted-fg text-sm">
+                    {result.addedCount} additions, {result.removedCount}{' '}
+                    deletions
+                  </span>
+                  {/* biome-ignore lint/a11y/useSemanticElements: button group, fieldset would add unwanted form semantics */}
+                  <div
+                    aria-label="Diff view"
+                    className="flex items-center gap-1"
+                    role="group"
+                  >
+                    <Button
+                      aria-pressed={view === 'unified'}
+                      intent={view === 'unified' ? 'primary' : 'outline'}
+                      onPress={() => setView('unified')}
+                      size="sm"
+                    >
+                      <Rows3 className="size-4" />
+                      Unified
+                    </Button>
+                    <Button
+                      aria-pressed={view === 'side-by-side'}
+                      intent={view === 'side-by-side' ? 'primary' : 'outline'}
+                      onPress={() => setView('side-by-side')}
+                      size="sm"
+                    >
+                      <Columns2 className="size-4" />
+                      Side by side
+                    </Button>
+                  </div>
+                </div>
                 <Button
                   aria-label="Copy diff"
                   intent="outline"
@@ -248,30 +312,62 @@ function TextDiffPage() {
                   Showing first 20,000 lines.
                 </p>
               )}
-              <div className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50 font-mono text-sm">
-                {result.lines.map((line, index) => (
+              {view === 'unified' ? (
+                <div className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50 font-mono text-sm">
+                  {result.lines.map((line, index) => (
+                    <div
+                      className={`flex gap-2 whitespace-pre-wrap break-all px-3 py-0.5 ${lineClassName(line.type)}`}
+                      /* biome-ignore lint/suspicious/noArrayIndexKey: static diff result, keys stay positional */
+                      key={`${line.type}-${index}`}
+                    >
+                      <span className="w-4 shrink-0 select-none text-center opacity-70">
+                        {lineMarker(line.type)}
+                      </span>
+                      {line.chunks
+                        ? line.chunks.map((chunk, chunkIndex) => (
+                            <span
+                              className={chunkClassName(chunk.type)}
+                              /* biome-ignore lint/suspicious/noArrayIndexKey: static chunk list, keys stay positional */
+                              key={`${chunk.type}-${chunkIndex}`}
+                            >
+                              {chunk.text}
+                            </span>
+                          ))
+                        : line.content}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  {/* biome-ignore lint/a11y/useSemanticElements: diff cell group, fieldset would add unwanted form semantics */}
                   <div
-                    className={`flex gap-2 whitespace-pre-wrap break-all px-3 py-0.5 ${lineClassName(line.type)}`}
-                    /* biome-ignore lint/suspicious/noArrayIndexKey: static diff result, keys stay positional */
-                    key={`${line.type}-${index}`}
+                    aria-label="Side-by-side diff"
+                    className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50 font-mono text-sm"
+                    role="group"
                   >
-                    <span className="w-4 shrink-0 select-none text-center opacity-70">
-                      {lineMarker(line.type)}
-                    </span>
-                    {line.chunks
-                      ? line.chunks.map((chunk, chunkIndex) => (
-                          <span
-                            className={chunkClassName(chunk.type)}
-                            /* biome-ignore lint/suspicious/noArrayIndexKey: static chunk list, keys stay positional */
-                            key={`${chunk.type}-${chunkIndex}`}
+                    <div className="grid grid-cols-2">
+                      <div className="border-input border-b px-3 py-0.5 font-medium text-muted-fg">
+                        Original
+                      </div>
+                      <div className="border-input border-b border-l px-3 py-0.5 font-medium text-muted-fg">
+                        Modified
+                      </div>
+                      {buildSideBySideRows(result.lines).map(
+                        (row, rowIndex) => (
+                          <div
+                            className="contents"
+                            /* biome-ignore lint/suspicious/noArrayIndexKey: static side-by-side rows, keys stay positional */
+                            key={rowIndex}
                           >
-                            {chunk.text}
-                          </span>
-                        ))
-                      : line.content}
+                            <DiffSideCell line={row.left} />
+                            <DiffSideCell line={row.right} />
+                          </div>
+                        )
+                      )}
+                    </div>
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
           )}
         </CardContent>

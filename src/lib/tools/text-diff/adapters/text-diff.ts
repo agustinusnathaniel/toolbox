@@ -27,6 +27,47 @@ export const TEXT_DIFF_MAX_CHARS = 500_000;
 /** Maximum lines stored/rendered. Counts still reported via addedCount/removedCount. */
 export const MAX_DIFF_LINES = 20_000;
 
+export interface TextDiffSideBySideRow {
+  /** Original-side line; absent for pure insertions. */
+  left?: TextDiffLine;
+  /** Modified-side line; absent for pure deletions. */
+  right?: TextDiffLine;
+}
+
+/**
+ * Pair the unified line stream into side-by-side rows.
+ * unchanged lines occupy both sides; a removed run followed by its added run is
+ * zipped 1:1 from the top (shorter run padded with missing sides); pure additions
+ * get an empty left side; pure deletions an empty right side.
+ */
+export function buildSideBySideRows(
+  lines: Array<TextDiffLine>
+): Array<TextDiffSideBySideRow> {
+  const rows: Array<TextDiffSideBySideRow> = [];
+  const pendingRemoved: Array<TextDiffLine> = [];
+
+  for (const line of lines) {
+    if (line.type === 'added') {
+      rows.push({ left: pendingRemoved.shift(), right: line });
+      continue;
+    }
+    if (line.type === 'unchanged') {
+      for (const removed of pendingRemoved.splice(0)) {
+        rows.push({ left: removed });
+      }
+      rows.push({ left: line, right: line });
+      continue;
+    }
+    pendingRemoved.push(line);
+  }
+
+  for (const removed of pendingRemoved.splice(0)) {
+    rows.push({ left: removed });
+  }
+
+  return rows;
+}
+
 export function diffTexts(original: string, modified: string): TextDiffResult {
   if (
     original.length > TEXT_DIFF_MAX_CHARS ||
