@@ -25,6 +25,12 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **Password Generator** — Generate strong, random passwords with selectable character sets
 - **Hash Generator** — Compute SHA-1, SHA-256, SHA-384, or SHA-512 hashes of text or files entirely in your browser
 - **JWT Decoder** — Decode JSON Web Tokens and verify HMAC signatures entirely in your browser
+- **Regex Tester** — Test regular expressions with live match highlighting and flags
+- **Timestamp Converter** — Convert between Unix timestamps and human-readable dates
+- **Text Diff** — Compare two texts with inline word-level highlighting
+- **UUID Generator** — Generate UUID v4 and v7 identifiers in bulk with configurable formatting
+- **CSV Converter** — Convert between CSV and JSON with configurable mode
+- **Case Converter** — Convert text between camelCase, PascalCase, snake_case, kebab-case, and more
 
 ## Tech Stack
 

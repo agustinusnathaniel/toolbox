@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(18);
+    expect(items).toHaveLength(19);
   });
 
   test('each item has required fields', () => {
@@ -55,6 +55,7 @@ describe('getToolNavItems', () => {
     expect(items[12].slug).toBe('jwt-decoder');
     expect(items[13].slug).toBe('regex-tester');
     expect(items[14].slug).toBe('timestamp-converter');
+    expect(items[15].slug).toBe('case-converter');
   });
 });
 
