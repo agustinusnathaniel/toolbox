@@ -1,6 +1,5 @@
 'use client';
 
-import { FileDiff, Virtualizer } from '@pierre/diffs/react';
 import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { ArrowLeftRight, Check, Copy, GitCompare, Link } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -25,6 +24,7 @@ import {
   DiffViewControl,
   SPLIT_VIEW_UNAVAILABLE_HINT_ID,
 } from './-components/diff-view-control';
+import { DiffViewer } from './-components/diff-viewer';
 import { useContainerWidth } from './-components/use-container-width';
 import { useTextDiff } from './-components/use-text-diff';
 import { meta } from './-meta';
@@ -70,6 +70,9 @@ function TextDiffPage() {
     setCopied(false);
     setCompareTrigger((trigger) => trigger + 1);
     trackAction('compare');
+    // Preload the lazy diff renderer chunk while the worker computes, so the
+    // Suspense fallback in DiffViewer rarely shows on the first compare.
+    import('@pierre/diffs/react').catch(() => undefined);
   }, [setResult, trackAction]);
 
   const handleSwap = useCallback(() => {
@@ -261,13 +264,11 @@ function TextDiffPage() {
                 )}
               </div>
               <div className="min-w-0" ref={diffContainerRef}>
-                <Virtualizer className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50">
-                  <FileDiff
-                    disableWorkerPool
-                    fileDiff={fileDiff}
-                    options={fileDiffOptions}
-                  />
-                </Virtualizer>
+                <DiffViewer
+                  className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50"
+                  fileDiff={fileDiff}
+                  options={fileDiffOptions}
+                />
               </div>
             </div>
           )}
