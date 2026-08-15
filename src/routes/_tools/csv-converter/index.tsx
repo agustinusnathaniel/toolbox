@@ -17,14 +17,7 @@ import {
   SelectTrigger,
 } from '@/lib/components/ui/select';
 import { Textarea } from '@/lib/components/ui/textarea';
-import type {
-  CsvConverterResult,
-  CsvMode,
-} from '@/lib/tools/csv-converter/adapters/csv-converter';
-import {
-  csvToJson,
-  jsonToCsv,
-} from '@/lib/tools/csv-converter/adapters/csv-converter';
+import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
 import {
   buildCsvParams,
   buildCsvStateFromSearch,
@@ -32,6 +25,7 @@ import {
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useCsvConverter } from './-components/use-csv-converter';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -54,28 +48,37 @@ function CsvConverterPage() {
   const { trackAction } = useToolTracking('csv-converter', 'CSV Converter');
   const search = useSearch({ from: '/_tools/csv-converter/' });
   const [state, setState] = useState(() => buildCsvStateFromSearch(search));
-  const [result, setResult] = useState<CsvConverterResult | null>(null);
+  const [convertTrigger, setConvertTrigger] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  const handleModeChange = useCallback((mode: CsvMode) => {
-    setState((prev) => ({ ...prev, mode }));
-    setResult(null);
-  }, []);
+  const { computing, result, setResult } = useCsvConverter(
+    state.input,
+    state.mode,
+    convertTrigger
+  );
 
-  const handleInputChange = useCallback((input: string) => {
-    setState((prev) => ({ ...prev, input }));
-    setResult(null);
-  }, []);
+  const handleModeChange = useCallback(
+    (mode: CsvMode) => {
+      setState((prev) => ({ ...prev, mode }));
+      setResult(null);
+    },
+    [setResult]
+  );
+
+  const handleInputChange = useCallback(
+    (input: string) => {
+      setState((prev) => ({ ...prev, input }));
+      setResult(null);
+    },
+    [setResult]
+  );
 
   const handleConvert = useCallback(() => {
-    const res =
-      state.mode === 'json-to-csv'
-        ? jsonToCsv(state.input)
-        : csvToJson(state.input);
-    setResult(res);
+    setResult(null);
+    setConvertTrigger((trigger) => trigger + 1);
     setCopied(false);
     trackAction('convert');
-  }, [state, trackAction]);
+  }, [setResult, trackAction]);
 
   const handleCopy = useCallback(async () => {
     if (!(result?.isValid && result.output)) {
@@ -118,10 +121,17 @@ function CsvConverterPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button intent="primary" onPress={handleConvert} size="sm">
-              <ArrowUpDown className="size-4" />
-              Convert
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button intent="primary" onPress={handleConvert} size="sm">
+                <ArrowUpDown className="size-4" />
+                Convert
+              </Button>
+              {computing && (
+                <span aria-live="polite" className="text-muted-fg text-xs">
+                  Converting…
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -192,6 +202,20 @@ function CsvConverterPage() {
             </div>
           )}
 
+          {result?.timedOut && (
+            <div
+              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
+              role="alert"
+            >
+              <p className="font-medium text-danger text-sm">
+                Conversion timed out
+              </p>
+              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
+                {result.error}
+              </pre>
+            </div>
+          )}
+
           {result?.isValid && result.output && (
             <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
               {result.output}
@@ -211,6 +235,11 @@ function CsvConverterPage() {
             answer:
               'CSV to JSON treats the first row as headers and keeps all values as strings. JSON to CSV flattens each object into a row and unions keys across all rows.',
             question: 'How does the conversion handle headers?',
+          },
+          {
+            answer:
+              'Conversions run in the background so the page stays responsive; conversions that take too long show a timeout message.',
+            question: 'What is the largest input supported?',
           },
         ]}
         howItWorks={{
