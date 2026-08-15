@@ -156,7 +156,7 @@ function CsvConverterPage() {
             <Button
               aria-label="Copy output"
               intent="outline"
-              isDisabled={!result?.isValid}
+              isDisabled={!result?.isValid || result?.timedOut}
               onPress={handleCopy}
               size="sm"
             >
