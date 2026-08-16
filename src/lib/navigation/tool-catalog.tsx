@@ -11,6 +11,7 @@ import {
 } from '@intentui/icons';
 import {
   Binary,
+  Braces,
   CaseSensitive,
   Clock,
   Dices,
@@ -32,6 +33,7 @@ import { meta as evChargingMeta } from '@/routes/_tools/ev-charging/-meta';
 import { meta as hashGeneratorMeta } from '@/routes/_tools/hash-generator/-meta';
 import { meta as jsPerfMeta } from '@/routes/_tools/js-perf/-meta';
 import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta';
+import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
@@ -184,5 +186,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     mobileTitle: 'CSV',
     showInMobile: true,
     ...csvConverterMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Braces />,
+    ...jsonToTsMeta,
   },
 ];
