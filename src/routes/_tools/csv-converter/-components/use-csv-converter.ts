@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type Dispatch, type SetStateAction, useEffect } from 'react';
 
+import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
 import type {
   CsvConverterResult,
   CsvMode,
@@ -45,78 +39,25 @@ export function useCsvConverter(
   trigger: number,
   workerFactory: () => Worker = () => new CsvConverterWorker()
 ): UseCsvConverterReturn {
-  const workerFactoryRef = useRef(workerFactory);
-  workerFactoryRef.current = workerFactory;
-
-  const workerRef = useRef<Worker | null>(null);
-  const latestIdRef = useRef<string | null>(null);
-  const deadlineRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [result, setResult] = useState<CsvConverterState | null>(null);
-  const [computing, setComputing] = useState(false);
-
-  const clearDeadline = useCallback(() => {
-    if (deadlineRef.current !== null) {
-      clearTimeout(deadlineRef.current);
-      deadlineRef.current = null;
-    }
-  }, []);
-
-  const attachWorker = useCallback(
-    (worker: Worker) => {
-      worker.onmessage = (event: MessageEvent<CsvConverterResponse>) => {
-        if (event.data.id !== latestIdRef.current) {
-          return;
-        }
-        clearDeadline();
-        setResult(event.data.result);
-        setComputing(false);
-      };
-      workerRef.current = worker;
-    },
-    [clearDeadline]
-  );
-
-  const handleTimeout = useCallback(() => {
-    workerRef.current?.terminate();
-    latestIdRef.current = null;
-    const replacement = workerFactoryRef.current();
-    attachWorker(replacement);
-    setResult(TIMEOUT_RESULT);
-    setComputing(false);
-  }, [attachWorker]);
-
-  useEffect(() => {
-    const worker = workerFactoryRef.current();
-    attachWorker(worker);
-
-    return () => {
-      clearDeadline();
-      workerRef.current?.terminate();
-      workerRef.current = null;
-      latestIdRef.current = null;
-    };
-  }, [attachWorker, clearDeadline]);
+  const { computing, result, setResult, postRequest } = useWorkerDeadline<
+    CsvConverterRequest,
+    CsvConverterResponse,
+    CsvConverterState
+  >({
+    buildRequest: (id) => ({ id, input, mode }),
+    deadlineMs: CSV_CONVERTER_EXECUTION_DEADLINE_MS,
+    extractId: (response) => response.id,
+    extractResult: (response) => response.result,
+    timeoutResult: TIMEOUT_RESULT,
+    workerFactory,
+  });
 
   useEffect(() => {
     if (trigger <= 0) {
       return;
     }
-    clearDeadline();
-    const id = crypto.randomUUID();
-    latestIdRef.current = id;
-    const request: CsvConverterRequest = { id, input, mode };
-    workerRef.current?.postMessage(request);
-    setComputing(true);
-    deadlineRef.current = setTimeout(
-      handleTimeout,
-      CSV_CONVERTER_EXECUTION_DEADLINE_MS
-    );
-
-    return () => {
-      clearDeadline();
-    };
-  }, [clearDeadline, handleTimeout, input, mode, trigger]);
+    postRequest();
+  }, [postRequest, trigger]);
 
   return { computing, result, setResult };
 }

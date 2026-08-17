@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 
+import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
 import type { RegexTestResult } from '@/lib/tools/regex-tester/adapters/regex';
 
 import type {
@@ -38,85 +39,28 @@ export function useRegexTester(
   input: string,
   workerFactory: () => Worker = () => new RegexTesterWorker()
 ): UseRegexTesterReturn {
-  const workerFactoryRef = useRef(workerFactory);
-  workerFactoryRef.current = workerFactory;
+  const { result, postRequest } = useWorkerDeadline<
+    RegexTesterRequest,
+    RegexTesterResponse,
+    RegexTestResult
+  >({
+    buildRequest: (id) => ({ flags, id, input, pattern }),
+    deadlineMs: REGEX_EXECUTION_DEADLINE_MS,
+    extractId: (response) => response.id,
+    extractResult: (response) => response.result,
+    timeoutResult: TIMEOUT_RESULT,
+    workerFactory,
+  });
 
-  const workerRef = useRef<Worker | null>(null);
-  const latestIdRef = useRef<string | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const deadlineRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [result, setResult] = useState<RegexTestResult>(EMPTY_RESULT);
-
-  const clearDebounce = useCallback(() => {
-    if (debounceRef.current !== null) {
-      clearTimeout(debounceRef.current);
-      debounceRef.current = null;
-    }
-  }, []);
-
-  const clearDeadline = useCallback(() => {
-    if (deadlineRef.current !== null) {
-      clearTimeout(deadlineRef.current);
-      deadlineRef.current = null;
-    }
-  }, []);
-
-  const attachWorker = useCallback(
-    (worker: Worker) => {
-      worker.onmessage = (event: MessageEvent<RegexTesterResponse>) => {
-        if (event.data.id !== latestIdRef.current) {
-          return;
-        }
-        clearDeadline();
-        setResult(event.data.result);
-      };
-      workerRef.current = worker;
-    },
-    [clearDeadline]
-  );
-
-  const handleTimeout = useCallback(() => {
-    workerRef.current?.terminate();
-    latestIdRef.current = null;
-    const replacement = workerFactoryRef.current();
-    attachWorker(replacement);
-    setResult(TIMEOUT_RESULT);
-  }, [attachWorker]);
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: params are captured by the buildRequest closure; they are listed to re-arm the debounce timer
   useEffect(() => {
-    const worker = workerFactoryRef.current();
-    attachWorker(worker);
-
-    return () => {
-      clearDebounce();
-      clearDeadline();
-      workerRef.current?.terminate();
-      workerRef.current = null;
-      latestIdRef.current = null;
-    };
-  }, [attachWorker, clearDeadline, clearDebounce]);
-
-  useEffect(() => {
-    clearDebounce();
-    debounceRef.current = setTimeout(() => {
-      clearDebounce();
-      clearDeadline();
-      const id = crypto.randomUUID();
-      latestIdRef.current = id;
-      const request: RegexTesterRequest = { flags, id, input, pattern };
-      workerRef.current?.postMessage(request);
-      deadlineRef.current = setTimeout(
-        handleTimeout,
-        REGEX_EXECUTION_DEADLINE_MS
-      );
+    const timeout = setTimeout(() => {
+      postRequest();
     }, REGEX_DEBOUNCE_MS);
-
     return () => {
-      clearDebounce();
-      clearDeadline();
+      clearTimeout(timeout);
     };
-  }, [clearDeadline, clearDebounce, flags, handleTimeout, input, pattern]);
+  }, [flags, input, pattern, postRequest]);
 
-  return { result };
+  return { result: result ?? EMPTY_RESULT };
 }
