@@ -1,8 +1,9 @@
 'use client';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { Check, Copy, KeyRound } from 'lucide-react';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Check, Copy, KeyRound, Link } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -17,14 +18,28 @@ import {
   generatePassword,
   strengthLabel,
 } from '@/lib/tools/password-generator/adapters/password-generator';
+import {
+  buildPasswordParams,
+  buildPasswordStateFromSearch,
+} from '@/lib/tools/password-generator/adapters/password-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
 
+const searchSchema = z.object({
+  digits: z.string().optional(),
+  excludeAmbiguous: z.string().optional(),
+  length: z.string().optional(),
+  lowercase: z.string().optional(),
+  symbols: z.string().optional(),
+  uppercase: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_tools/password-generator/')({
   component: PasswordGeneratorPage,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 function PasswordGeneratorPage() {
@@ -32,19 +47,12 @@ function PasswordGeneratorPage() {
     'password-generator',
     'Password Generator'
   );
-  const [length, setLength] = useState(20);
-  const [lowercase, setLowercase] = useState(true);
-  const [uppercase, setUppercase] = useState(true);
-  const [digits, setDigits] = useState(true);
-  const [symbols, setSymbols] = useState(false);
-  const [excludeAmbiguous, setExcludeAmbiguous] = useState(false);
+  const search = useSearch({ from: '/_tools/password-generator/' });
+  const [options, setOptions] = useState(() =>
+    buildPasswordStateFromSearch(search)
+  );
   const [result, setResult] = useState<PasswordResult | null>(null);
   const [copied, setCopied] = useState(false);
-
-  const options = useMemo(
-    () => ({ digits, excludeAmbiguous, length, lowercase, symbols, uppercase }),
-    [digits, excludeAmbiguous, length, lowercase, symbols, uppercase]
-  );
 
   const handleGenerate = useCallback(() => {
     setResult(generatePassword(options));
@@ -63,6 +71,16 @@ function PasswordGeneratorPage() {
     }
   }, [result, trackAction]);
 
+  const handleCopyLink = useCallback(async () => {
+    const params = buildPasswordParams(options);
+    const url = `${window.location.origin}${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }`;
+    if (await copyToClipboard(url, 'Copied Shareable Link')) {
+      trackAction('copy_link');
+    }
+  }, [options, trackAction]);
+
   const entropy = useMemo(() => estimateEntropy(options), [options]);
   const strength = strengthLabel(entropy);
 
@@ -76,8 +94,10 @@ function PasswordGeneratorPage() {
               <NumberField
                 maxValue={128}
                 minValue={8}
-                onChange={(v) => setLength(v ?? 20)}
-                value={length}
+                onChange={(v) =>
+                  setOptions((prev) => ({ ...prev, length: v ?? prev.length }))
+                }
+                value={options.length}
               >
                 <NumberInput id="password-length" />
               </NumberField>
@@ -88,24 +108,58 @@ function PasswordGeneratorPage() {
             </Button>
           </div>
 
+          <div className="flex flex-wrap gap-2">
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sm"
+            >
+              <Link className="size-4" />
+              Copy link
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <Checkbox isSelected={lowercase} onChange={setLowercase}>
+            <Checkbox
+              isSelected={options.lowercase}
+              onChange={(selected) =>
+                setOptions((prev) => ({ ...prev, lowercase: selected }))
+              }
+            >
               Lowercase (a-z)
             </Checkbox>
-            <Checkbox isSelected={uppercase} onChange={setUppercase}>
+            <Checkbox
+              isSelected={options.uppercase}
+              onChange={(selected) =>
+                setOptions((prev) => ({ ...prev, uppercase: selected }))
+              }
+            >
               Uppercase (A-Z)
             </Checkbox>
-            <Checkbox isSelected={digits} onChange={setDigits}>
+            <Checkbox
+              isSelected={options.digits}
+              onChange={(selected) =>
+                setOptions((prev) => ({ ...prev, digits: selected }))
+              }
+            >
               Digits (0-9)
             </Checkbox>
-            <Checkbox isSelected={symbols} onChange={setSymbols}>
+            <Checkbox
+              isSelected={options.symbols}
+              onChange={(selected) =>
+                setOptions((prev) => ({ ...prev, symbols: selected }))
+              }
+            >
               Symbols (!@#...)
             </Checkbox>
           </div>
 
           <Checkbox
-            isSelected={excludeAmbiguous}
-            onChange={setExcludeAmbiguous}
+            isSelected={options.excludeAmbiguous}
+            onChange={(selected) =>
+              setOptions((prev) => ({ ...prev, excludeAmbiguous: selected }))
+            }
           >
             Exclude ambiguous characters (I, l, 1, O, 0, o)
           </Checkbox>
