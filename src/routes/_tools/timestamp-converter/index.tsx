@@ -10,6 +10,7 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { convertTimestamp } from '@/lib/tools/timestamp-converter/adapters/timestamp-converter';
 import { buildTimestampParams } from '@/lib/tools/timestamp-converter/adapters/timestamp-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
@@ -109,15 +110,10 @@ function TimestampConverterPage() {
     trackAction('use_now');
   }, [trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildTimestampParams(input);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [input, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildTimestampParams(input),
+    trackAction
+  );
 
   const hasInput = input.trim().length > 0;
 

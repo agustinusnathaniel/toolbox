@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { JsonFormatterResult } from '@/lib/tools/json-formatter/adapters/json-formatter';
 import {
   formatJson,
@@ -77,15 +78,10 @@ function JsonFormatterPage() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildJsonParams(input);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [input, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildJsonParams(input),
+    trackAction
+  );
 
   const actionLabel: Record<string, string> = {
     format: 'Formatted',

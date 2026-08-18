@@ -17,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   HashAlgorithm,
   HashResult,
@@ -93,15 +94,10 @@ function HashGeneratorPage() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildHashParams(text, algorithm);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [algorithm, text, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildHashParams(text, algorithm),
+    trackAction
+  );
 
   const showError = result && !result.isValid;
   const showResult = result?.isValid;

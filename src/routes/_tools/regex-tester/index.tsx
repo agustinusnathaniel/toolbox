@@ -11,6 +11,7 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { Input } from '@/lib/components/ui/input';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { buildRegexParams } from '@/lib/tools/regex-tester/adapters/regex-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
@@ -80,15 +81,11 @@ function RegexTesterPage() {
     return segs;
   }, [input, result.matches]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildRegexParams(pattern, flags, input);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('share');
-    }
-  }, [input, pattern, flags, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildRegexParams(pattern, flags, input),
+    trackAction,
+    'share'
+  );
 
   const handleCopyMatches = useCallback(async () => {
     if (result.matches.length === 0) {

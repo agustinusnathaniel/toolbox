@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { JsonToTsResult } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
 import { jsonToTypescript } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
 import {
@@ -56,15 +57,10 @@ function JsonToTsPage() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildJsonToTsParams(input);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [input, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildJsonToTsParams(input),
+    trackAction
+  );
 
   const showResult = result && input.trim();
   const showError = result && !result.isValid;

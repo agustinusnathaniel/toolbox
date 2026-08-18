@@ -10,6 +10,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import {
   buildCopyDiffText,
   isNoDifferenceOutcome,
@@ -99,15 +100,10 @@ function TextDiffPage() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildTextDiffParams(original, modified);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [modified, original, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildTextDiffParams(original, modified),
+    trackAction
+  );
 
   const showHint =
     original.trim() && modified.trim() && !result && !activeAction;
