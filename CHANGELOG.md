@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.8.0...v1.9.0) (2026-08-18)
+
+### Features
+
+* **case-converter:** add case converter tool with shareable URL state ([#51](https://github.com/agustinusnathaniel/toolbox/issues/51)) ([ed224f6](https://github.com/agustinusnathaniel/toolbox/commit/ed224f68d4649841edc2470f18962ab2ec3f51de))
+* **json-to-ts:** add JSON to TypeScript interface generator with shareable URL state ([#54](https://github.com/agustinusnathaniel/toolbox/issues/54)) ([1f22b49](https://github.com/agustinusnathaniel/toolbox/commit/1f22b49fd528342c5faeec794289bc27fa654932))
+* **password-generator:** add shareable URL state ([#55](https://github.com/agustinusnathaniel/toolbox/issues/55)) ([d3d61a9](https://github.com/agustinusnathaniel/toolbox/commit/d3d61a9d8f8a8d9bc42e98f4bb7974676a686a50))
+* **text-diff:** adopt @pierre/diffs rendering with split view ([#52](https://github.com/agustinusnathaniel/toolbox/issues/52)) ([3458d5f](https://github.com/agustinusnathaniel/toolbox/commit/3458d5f45784dd7668bf0bdb2264d83b10a24166))
+
+### Bug Fixes
+
+* **csv-converter:** run conversion in worker with deadline to prevent tab freeze ([#53](https://github.com/agustinusnathaniel/toolbox/issues/53)) ([23bb475](https://github.com/agustinusnathaniel/toolbox/commit/23bb47543dde4770ef716583e2a621c0a11a3ba5))
+* **search:** prevent global command menu crash ([#50](https://github.com/agustinusnathaniel/toolbox/issues/50)) ([44dbaf7](https://github.com/agustinusnathaniel/toolbox/commit/44dbaf7ddfc192802d283a8f131983233c00cda3))
 ## [1.8.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.7.1...v1.8.0) (2026-08-13)
 
 ### Features
