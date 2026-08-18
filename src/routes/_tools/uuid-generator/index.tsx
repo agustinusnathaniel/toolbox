@@ -18,6 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   UuidOptions,
@@ -56,7 +57,7 @@ function UuidGeneratorPage() {
     buildUuidStateFromSearch(search)
   );
   const [result, setResult] = useState<UuidResult | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { copiedKey, copy } = useCopyFeedback<number>();
 
   const count = useMemo(() => options.count, [options.count]);
   const version = useMemo(() => options.version, [options.version]);
@@ -65,19 +66,16 @@ function UuidGeneratorPage() {
 
   const handleGenerate = useCallback(() => {
     setResult(generateUuids(options));
-    setCopiedIndex(null);
     trackAction('generate');
   }, [options, trackAction]);
 
   const handleCopy = useCallback(
     async (uuid: string, index: number) => {
-      if (await copyToClipboard(uuid, 'Copied UUID')) {
-        setCopiedIndex(index);
+      if (await copy(uuid, index, 'Copied UUID')) {
         trackAction('copy');
-        setTimeout(() => setCopiedIndex(null), 1500);
       }
     },
-    [trackAction]
+    [copy, trackAction]
   );
 
   const handleCopyAll = useCallback(async () => {
@@ -201,7 +199,7 @@ function UuidGeneratorPage() {
                     onPress={() => handleCopy(uuid, index)}
                     size="sq-sm"
                   >
-                    {copiedIndex === index ? (
+                    {copiedKey === index ? (
                       <Check className="size-4 text-success" />
                     ) : (
                       <Copy className="size-4" />

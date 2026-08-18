@@ -10,6 +10,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import {
   buildCopyDiffText,
@@ -21,7 +22,6 @@ import {
   isSplitViewUsable,
   resolveDiffViewMode,
 } from '@/lib/tools/text-diff/adapters/text-diff-view-mode';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import {
@@ -50,7 +50,7 @@ function TextDiffPage() {
   const { resolvedTheme } = useTheme();
   const [original, setOriginal] = useState(search.original ?? '');
   const [modified, setModified] = useState(search.modified ?? '');
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
   const [activeAction, setActiveAction] = useState<'compare' | 'swap' | null>(
     null
   );
@@ -71,7 +71,6 @@ function TextDiffPage() {
   const handleCompare = useCallback(() => {
     setResult(null);
     setActiveAction('compare');
-    setCopied(false);
     setCompareTrigger((trigger) => trigger + 1);
     trackAction('compare');
     // Preload the lazy diff renderer chunk while the worker computes, so the
@@ -92,13 +91,10 @@ function TextDiffPage() {
       return;
     }
     const diffText = buildCopyDiffText(result.fileDiff);
-    const copied = await copyToClipboard(diffText, 'Copied Diff');
-    if (copied) {
-      setCopied(true);
+    if (await copy(diffText, 'copy', 'Copied Diff')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildTextDiffParams(original, modified),
@@ -247,7 +243,7 @@ function TextDiffPage() {
                       onPress={handleCopyDiff}
                       size="sq-sm"
                     >
-                      {copied ? (
+                      {copiedKey === 'copy' ? (
                         <Check className="size-4 text-success" />
                       ) : (
                         <Copy className="size-4" />

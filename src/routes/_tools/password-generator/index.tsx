@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/lib/components/ui/card';
 import { Checkbox } from '@/lib/components/ui/checkbox';
 import { Label } from '@/lib/components/ui/field';
 import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { PasswordResult } from '@/lib/tools/password-generator/adapters/password-generator';
 import {
@@ -23,7 +24,6 @@ import {
   buildPasswordParams,
   buildPasswordStateFromSearch,
 } from '@/lib/tools/password-generator/adapters/password-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -53,11 +53,10 @@ function PasswordGeneratorPage() {
     buildPasswordStateFromSearch(search)
   );
   const [result, setResult] = useState<PasswordResult | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
 
   const handleGenerate = useCallback(() => {
     setResult(generatePassword(options));
-    setCopied(false);
     trackAction('generate');
   }, [options, trackAction]);
 
@@ -65,12 +64,10 @@ function PasswordGeneratorPage() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    if (await copyToClipboard(result.output, 'Copied password')) {
-      setCopied(true);
+    if (await copy(result.output, 'copy', 'Copied password')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildPasswordParams(options),
@@ -178,7 +175,7 @@ function PasswordGeneratorPage() {
                   onPress={handleCopy}
                   size="sq-sm"
                 >
-                  {copied ? (
+                  {copiedKey === 'copy' ? (
                     <Check className="size-4 text-success" />
                   ) : (
                     <Copy className="size-4" />

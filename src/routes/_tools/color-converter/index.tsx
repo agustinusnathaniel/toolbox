@@ -25,6 +25,7 @@ import {
   PopoverBody,
   PopoverContent,
 } from '@/lib/components/ui/popover';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   ColorFormat,
@@ -70,7 +71,7 @@ function ColorConverterPage() {
   const { trackAction } = useToolTracking('color-converter', 'Color Converter');
   const search = useSearch({ from: '/_tools/color-converter/' });
   const [input, setInput] = useState(search.c ?? '#ff0000');
-  const [copied, setCopied] = useState<ColorFormat | null>(null);
+  const { copiedKey, copy } = useCopyFeedback<ColorFormat>();
 
   const parsed = parseColor(input);
 
@@ -79,14 +80,11 @@ function ColorConverterPage() {
       if (!parsed) {
         return;
       }
-      if (!(await copyColorValue(parsed, format))) {
-        return;
+      if (await copy(formatColorString(parsed, format), format)) {
+        trackAction(`copy_${format}`);
       }
-      setCopied(format);
-      trackAction(`copy_${format}`);
-      setTimeout(() => setCopied(null), 1500);
     },
-    [parsed, trackAction]
+    [parsed, copy, trackAction]
   );
 
   const handlePreset = useCallback(
@@ -194,7 +192,7 @@ function ColorConverterPage() {
                       onPress={() => handleCopy(key)}
                       size="sq-sm"
                     >
-                      {copied === key ? (
+                      {copiedKey === key ? (
                         <Check className="size-4 text-success" />
                       ) : (
                         <Copy className="size-4" />

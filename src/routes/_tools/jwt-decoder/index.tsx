@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   JwtDecodeResult,
@@ -19,7 +20,6 @@ import {
   verifyJwtSignature,
 } from '@/lib/tools/jwt-decoder/adapters/jwt-decoder';
 import { buildJwtParams } from '@/lib/tools/jwt-decoder/adapters/jwt-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -43,14 +43,11 @@ function JwtDecoderPage() {
   const [verifyResult, setVerifyResult] = useState<JwtVerifyResult | null>(
     null
   );
-  const [copiedField, setCopiedField] = useState<'header' | 'payload' | null>(
-    null
-  );
+  const { copiedKey, copy } = useCopyFeedback<'header' | 'payload'>();
 
   const handleDecode = useCallback(() => {
     setResult(decodeJwt(token));
     setVerifyResult(null);
-    setCopiedField(null);
     trackAction('decode');
   }, [token, trackAction]);
 
@@ -61,13 +58,11 @@ function JwtDecoderPage() {
 
   const handleCopy = useCallback(
     async (field: 'header' | 'payload', text: string) => {
-      if (await copyToClipboard(text, 'Copied')) {
-        setCopiedField(field);
+      if (await copy(text, field, 'Copied')) {
         trackAction('copy');
-        setTimeout(() => setCopiedField(null), 1500);
       }
     },
-    [trackAction]
+    [copy, trackAction]
   );
 
   const handleCopyLink = useCopyShareableLink(
@@ -174,7 +169,7 @@ function JwtDecoderPage() {
                     onPress={() => handleCopy('header', result.headerRaw)}
                     size="sq-sm"
                   >
-                    {copiedField === 'header' ? (
+                    {copiedKey === 'header' ? (
                       <Check className="size-4 text-success" />
                     ) : (
                       <Copy className="size-4" />
@@ -195,7 +190,7 @@ function JwtDecoderPage() {
                     onPress={() => handleCopy('payload', result.payloadRaw)}
                     size="sq-sm"
                   >
-                    {copiedField === 'payload' ? (
+                    {copiedKey === 'payload' ? (
                       <Check className="size-4 text-success" />
                     ) : (
                       <Copy className="size-4" />

@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { JsonToTsResult } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
 import { jsonToTypescript } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
@@ -16,7 +17,6 @@ import {
   buildJsonToTsParams,
   buildJsonToTsStateFromSearch,
 } from '@/lib/tools/json-to-ts/adapters/json-to-ts-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -36,12 +36,11 @@ function JsonToTsPage() {
   const search = useSearch({ from: '/_tools/json-to-ts/' });
   const [input, setInput] = useState(buildJsonToTsStateFromSearch(search));
   const [result, setResult] = useState<JsonToTsResult | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
 
   const handleGenerate = useCallback(() => {
     const res = jsonToTypescript(input);
     setResult(res);
-    setCopied(false);
     trackAction('generate');
   }, [input, trackAction]);
 
@@ -49,13 +48,10 @@ function JsonToTsPage() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    const copied = await copyToClipboard(result.output, 'Copied TypeScript');
-    if (copied) {
-      setCopied(true);
+    if (await copy(result.output, 'copy', 'Copied TypeScript')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildJsonToTsParams(input),
@@ -133,7 +129,7 @@ function JsonToTsPage() {
                   onPress={handleCopy}
                   size="sq-sm"
                 >
-                  {copied ? (
+                  {copiedKey === 'copy' ? (
                     <Check className="size-4 text-success" />
                   ) : (
                     <Copy className="size-4" />

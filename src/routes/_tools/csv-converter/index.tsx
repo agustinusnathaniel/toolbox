@@ -17,13 +17,13 @@ import {
   SelectTrigger,
 } from '@/lib/components/ui/select';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
 import {
   buildCsvParams,
   buildCsvStateFromSearch,
 } from '@/lib/tools/csv-converter/adapters/csv-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { useCsvConverter } from './-components/use-csv-converter';
@@ -50,7 +50,7 @@ function CsvConverterPage() {
   const search = useSearch({ from: '/_tools/csv-converter/' });
   const [state, setState] = useState(() => buildCsvStateFromSearch(search));
   const [convertTrigger, setConvertTrigger] = useState(0);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
 
   const { computing, result, setResult } = useCsvConverter(
     state.input,
@@ -77,7 +77,6 @@ function CsvConverterPage() {
   const handleConvert = useCallback(() => {
     setResult(null);
     setConvertTrigger((trigger) => trigger + 1);
-    setCopied(false);
     trackAction('convert');
   }, [setResult, trackAction]);
 
@@ -85,12 +84,10 @@ function CsvConverterPage() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    if (await copyToClipboard(result.output, 'Copied Output')) {
-      setCopied(true);
+    if (await copy(result.output, 'copy', 'Copied Output')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildCsvParams(state),
@@ -156,7 +153,7 @@ function CsvConverterPage() {
               onPress={handleCopy}
               size="sm"
             >
-              {copied ? (
+              {copiedKey === 'copy' ? (
                 <Check className="size-4 text-success" />
               ) : (
                 <Copy className="size-4" />

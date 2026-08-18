@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { JsonFormatterResult } from '@/lib/tools/json-formatter/adapters/json-formatter';
 import {
@@ -17,7 +18,6 @@ import {
   validateJson,
 } from '@/lib/tools/json-formatter/adapters/json-formatter';
 import { buildJsonParams } from '@/lib/tools/json-formatter/adapters/json-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -37,7 +37,7 @@ function JsonFormatterPage() {
   const search = useSearch({ from: '/_tools/json-formatter/' });
   const [input, setInput] = useState(search.input ?? '');
   const [result, setResult] = useState<JsonFormatterResult | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
   const [activeAction, setActiveAction] = useState<
     'format' | 'validate' | 'minify' | null
   >(null);
@@ -46,7 +46,6 @@ function JsonFormatterPage() {
     const res = formatJson(input);
     setResult(res);
     setActiveAction('format');
-    setCopied(false);
     trackAction('format');
   }, [input, trackAction]);
 
@@ -54,7 +53,6 @@ function JsonFormatterPage() {
     const res = validateJson(input);
     setResult(res);
     setActiveAction('validate');
-    setCopied(false);
     trackAction('validate');
   }, [input, trackAction]);
 
@@ -62,7 +60,6 @@ function JsonFormatterPage() {
     const res = minifyJson(input);
     setResult(res);
     setActiveAction('minify');
-    setCopied(false);
     trackAction('minify');
   }, [input, trackAction]);
 
@@ -70,13 +67,10 @@ function JsonFormatterPage() {
     if (!(result?.isValid && result.formatted)) {
       return;
     }
-    const copied = await copyToClipboard(result.formatted, 'Copied JSON');
-    if (copied) {
-      setCopied(true);
+    if (await copy(result.formatted, 'copy', 'Copied JSON')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildJsonParams(input),
@@ -161,7 +155,7 @@ function JsonFormatterPage() {
                   onPress={handleCopy}
                   size="sq-sm"
                 >
-                  {copied ? (
+                  {copiedKey === 'copy' ? (
                     <Check className="size-4 text-success" />
                   ) : (
                     <Copy className="size-4" />

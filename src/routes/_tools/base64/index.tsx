@@ -9,11 +9,11 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { Base64Result } from '@/lib/tools/base64/adapters/base64';
 import { decodeBase64, encodeBase64 } from '@/lib/tools/base64/adapters/base64';
 import { buildBase64Params } from '@/lib/tools/base64/adapters/base64-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -33,7 +33,7 @@ function Base64Page() {
   const search = useSearch({ from: '/_tools/base64/' });
   const [input, setInput] = useState(search.input ?? '');
   const [result, setResult] = useState<Base64Result | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
   const [activeAction, setActiveAction] = useState<'encode' | 'decode' | null>(
     null
   );
@@ -42,7 +42,6 @@ function Base64Page() {
     const res = encodeBase64(input);
     setResult(res);
     setActiveAction('encode');
-    setCopied(false);
     trackAction('encode');
   }, [input, trackAction]);
 
@@ -50,7 +49,6 @@ function Base64Page() {
     const res = decodeBase64(input);
     setResult(res);
     setActiveAction('decode');
-    setCopied(false);
     trackAction('decode');
   }, [input, trackAction]);
 
@@ -58,13 +56,10 @@ function Base64Page() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    const copied = await copyToClipboard(result.output, 'Copied Base64 result');
-    if (copied) {
-      setCopied(true);
+    if (await copy(result.output, 'copy', 'Copied Base64 result')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildBase64Params(input),
@@ -142,7 +137,7 @@ function Base64Page() {
                   onPress={handleCopy}
                   size="sq-sm"
                 >
-                  {copied ? (
+                  {copiedKey === 'copy' ? (
                     <Check className="size-4 text-success" />
                   ) : (
                     <Copy className="size-4" />

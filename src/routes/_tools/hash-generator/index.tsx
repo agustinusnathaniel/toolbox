@@ -17,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   HashAlgorithm,
@@ -31,7 +32,6 @@ import {
   buildHashParams,
   buildHashStateFromSearch,
 } from '@/lib/tools/hash-generator/adapters/hash-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -61,13 +61,12 @@ function HashGeneratorPage() {
   const [text, setText] = useState(() => buildHashStateFromSearch(search).text);
   const [result, setResult] = useState<HashResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback();
 
   const handleHashText = useCallback(async () => {
     const res = await hashText({ algorithm, text });
     setResult(res);
     setFileName(null);
-    setCopied(false);
     trackAction('hash-text');
   }, [algorithm, text, trackAction]);
 
@@ -77,7 +76,6 @@ function HashGeneratorPage() {
       const res = await hashBytes(new Uint8Array(buffer), algorithm);
       setResult(res);
       setFileName(`${file.name} (${file.size} bytes)`);
-      setCopied(false);
       trackAction('hash-file');
     },
     [algorithm, trackAction]
@@ -87,12 +85,10 @@ function HashGeneratorPage() {
     if (!(result?.isValid && result.output)) {
       return;
     }
-    if (await copyToClipboard(result.output, 'Copied hash')) {
-      setCopied(true);
+    if (await copy(result.output, 'copy', 'Copied hash')) {
       trackAction('copy');
-      setTimeout(() => setCopied(false), 1500);
     }
-  }, [result, trackAction]);
+  }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
     () => buildHashParams(text, algorithm),
@@ -215,7 +211,7 @@ function HashGeneratorPage() {
                   onPress={handleCopy}
                   size="sq-sm"
                 >
-                  {copied ? (
+                  {copiedKey === 'copy' ? (
                     <Check className="size-4 text-success" />
                   ) : (
                     <Copy className="size-4" />
