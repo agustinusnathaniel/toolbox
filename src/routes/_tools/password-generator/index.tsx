@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/lib/components/ui/card';
 import { Checkbox } from '@/lib/components/ui/checkbox';
 import { Label } from '@/lib/components/ui/field';
 import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { PasswordResult } from '@/lib/tools/password-generator/adapters/password-generator';
 import {
   estimateEntropy,
@@ -71,15 +72,10 @@ function PasswordGeneratorPage() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildPasswordParams(options);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [options, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildPasswordParams(options),
+    trackAction
+  );
 
   const entropy = useMemo(() => estimateEntropy(options), [options]);
   const strength = strengthLabel(entropy);

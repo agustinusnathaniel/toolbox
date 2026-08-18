@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { Base64Result } from '@/lib/tools/base64/adapters/base64';
 import { decodeBase64, encodeBase64 } from '@/lib/tools/base64/adapters/base64';
 import { buildBase64Params } from '@/lib/tools/base64/adapters/base64-params';
@@ -65,15 +66,10 @@ function Base64Page() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildBase64Params(input);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [input, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildBase64Params(input),
+    trackAction
+  );
 
   const label = activeAction === 'encode' ? 'Encoded' : 'Decoded';
   const showResult = result && input.trim();

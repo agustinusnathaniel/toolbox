@@ -17,6 +17,7 @@ import {
   SelectTrigger,
 } from '@/lib/components/ui/select';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
 import {
   buildCsvParams,
@@ -91,15 +92,10 @@ function CsvConverterPage() {
     }
   }, [result, trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildCsvParams(state);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [state, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildCsvParams(state),
+    trackAction
+  );
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">

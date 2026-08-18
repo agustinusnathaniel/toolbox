@@ -10,9 +10,9 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 import { buildUaParams } from '@/lib/tools/ua-check/adapters/ua-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -67,15 +67,10 @@ function UACheckPage() {
     trackAction('use_my_ua');
   }, [trackAction]);
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildUaParams(uaInput);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [uaInput, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildUaParams(uaInput),
+    trackAction
+  );
 
   const hasInput = uaInput.trim().length > 0;
 

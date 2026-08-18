@@ -9,6 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   JwtDecodeResult,
   JwtVerifyResult,
@@ -69,15 +70,10 @@ function JwtDecoderPage() {
     [trackAction]
   );
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildJwtParams(token);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [token, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildJwtParams(token),
+    trackAction
+  );
 
   const showError = result && !result.isValid;
   const showResult = result?.isValid;

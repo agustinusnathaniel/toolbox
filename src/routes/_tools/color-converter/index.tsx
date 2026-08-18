@@ -25,6 +25,7 @@ import {
   PopoverBody,
   PopoverContent,
 } from '@/lib/components/ui/popover';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
   ColorFormat,
   ParsedColor,
@@ -96,15 +97,10 @@ function ColorConverterPage() {
     [trackAction]
   );
 
-  const handleCopyLink = useCallback(async () => {
-    const params = buildColorParams(input);
-    const url = `${window.location.origin}${window.location.pathname}${
-      params.toString() ? `?${params.toString()}` : ''
-    }`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_link');
-    }
-  }, [input, trackAction]);
+  const handleCopyLink = useCopyShareableLink(
+    () => buildColorParams(input),
+    trackAction
+  );
 
   const swatchColor = parsed ? parsed.hex : '#000000';
 
