@@ -10,6 +10,7 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { CaseFormat } from '@/lib/tools/case-converter/adapters/case-converter';
 import { convertCase } from '@/lib/tools/case-converter/adapters/case-converter';
@@ -17,7 +18,6 @@ import {
   buildCaseParams,
   buildCaseStateFromSearch,
 } from '@/lib/tools/case-converter/adapters/case-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -99,19 +99,17 @@ function CaseConverterPage() {
   const [input, setInput] = useState(
     () => buildCaseStateFromSearch(search).input
   );
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, copy } = useCopyFeedback();
 
   const result = useMemo(() => convertCase(input), [input]);
 
   const handleCopy = useCallback(
     async (key: string, value: string, label: string) => {
-      if (await copyToClipboard(value, label)) {
-        setCopiedKey(key);
+      if (await copy(value, key, label)) {
         trackAction('copy');
-        setTimeout(() => setCopiedKey(null), 1500);
       }
     },
-    [trackAction]
+    [copy, trackAction]
   );
 
   const handleCopyLink = useCopyShareableLink(

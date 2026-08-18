@@ -10,10 +10,10 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { convertTimestamp } from '@/lib/tools/timestamp-converter/adapters/timestamp-converter';
 import { buildTimestampParams } from '@/lib/tools/timestamp-converter/adapters/timestamp-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -85,7 +85,7 @@ function TimestampConverterPage() {
   );
   const search = useSearch({ from: '/_tools/timestamp-converter/' });
   const [input, setInput] = useState(search.ts ?? '');
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, copy } = useCopyFeedback();
 
   const result = useMemo(() => convertTimestamp(input), [input]);
 
@@ -96,13 +96,11 @@ function TimestampConverterPage() {
 
   const handleCopy = useCallback(
     async (key: string, value: string, label: string) => {
-      if (await copyToClipboard(value, label)) {
-        setCopiedKey(key);
+      if (await copy(value, key, label)) {
         trackAction('copy');
-        setTimeout(() => setCopiedKey(null), 1500);
       }
     },
-    [trackAction]
+    [copy, trackAction]
   );
 
   const handleUseNow = useCallback(() => {
