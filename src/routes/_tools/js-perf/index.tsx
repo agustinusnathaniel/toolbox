@@ -1,32 +1,51 @@
 'use client';
 
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useSearch } from '@tanstack/react-router';
+import { Check, Link } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
+import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Separator } from '@/lib/components/ui/separator';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import { DEFAULT_RUN_POLICY, isRunable } from '@/lib/js-perf-comp-core';
+import {
+  buildJsPerfParams,
+  buildJsPerfStateFromSearch,
+} from '@/lib/tools/js-perf/adapters/js-perf-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
 import { ComparatorConfigBar } from './-components/comparator-config-bar';
 import { ComparisonResults } from './-components/comparison-results';
-import {
-  DEFAULT_PRESET,
-  PRESETS,
-  STABILITY_DEFAULT_ROUNDS,
-} from './-components/presets';
+import { DEFAULT_PRESET, PRESETS } from './-components/presets';
 import { RunActionBar } from './-components/run-action-bar';
 import { SnippetEditors } from './-components/snippet-editors';
 import { useJsPerfRunner } from './-components/use-js-perf-runner';
 import { meta } from './-meta';
 
+const searchSchema = z.object({
+  codeA: z.string().optional(),
+  codeB: z.string().optional(),
+  iterations: z.string().optional(),
+  preset: z.string().optional(),
+  setupA: z.string().optional(),
+  setupB: z.string().optional(),
+  stabilityMode: z.string().optional(),
+  stabilityRounds: z.string().optional(),
+  teardownA: z.string().optional(),
+  teardownB: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_tools/js-perf/')({
   component: JsPerfComparatorPage,
   ...createToolRouteMetadata(meta),
+  validateSearch: searchSchema,
 });
 
 const STORAGE_KEY_PRESET = 'toolbox:js-perf-preset';
@@ -37,28 +56,50 @@ function JsPerfComparatorPage() {
     'js-perf',
     'JS Perf Comparator'
   );
+  const search = useSearch({ from: '/_tools/js-perf/' });
+  const initialState = buildJsPerfStateFromSearch(search);
   const [selectedPreset, setSelectedPreset] = usePersistedState(
     STORAGE_KEY_PRESET,
-    DEFAULT_PRESET.name
+    initialState.preset
   );
   const [iterations, setIterations] = usePersistedState(
     STORAGE_KEY_ITERATIONS,
-    DEFAULT_RUN_POLICY.defaultIterations
+    initialState.iterations
   );
 
   const currentPreset =
     PRESETS.find((p) => p.name === selectedPreset) ?? DEFAULT_PRESET;
-  const [codeA, setCodeA] = useState(currentPreset.codeA);
-  const [codeB, setCodeB] = useState(currentPreset.codeB);
-  const [stabilityModeEnabled, setStabilityModeEnabled] = useState(false);
-  const [stabilityRounds, setStabilityRounds] = useState(
-    STABILITY_DEFAULT_ROUNDS
+  const [codeA, setCodeA] = useState(initialState.codeA || currentPreset.codeA);
+  const [codeB, setCodeB] = useState(initialState.codeB || currentPreset.codeB);
+  const [stabilityModeEnabled, setStabilityModeEnabled] = useState(
+    initialState.stabilityMode
   );
-  const [setupA, setSetupA] = useState('');
-  const [teardownA, setTeardownA] = useState('');
-  const [setupB, setSetupB] = useState('');
-  const [teardownB, setTeardownB] = useState('');
+  const [stabilityRounds, setStabilityRounds] = useState(
+    initialState.stabilityRounds
+  );
+  const [setupA, setSetupA] = useState(initialState.setupA);
+  const [teardownA, setTeardownA] = useState(initialState.teardownA);
+  const [setupB, setSetupB] = useState(initialState.setupB);
+  const [teardownB, setTeardownB] = useState(initialState.teardownB);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const { copiedKey } = useCopyFeedback();
+  const handleCopyLink = useCopyShareableLink(
+    () =>
+      buildJsPerfParams({
+        codeA,
+        codeB,
+        iterations,
+        preset: selectedPreset,
+        setupA,
+        setupB,
+        stabilityMode: stabilityModeEnabled,
+        stabilityRounds,
+        teardownA,
+        teardownB,
+      }),
+    trackAction
+  );
 
   const runner = useJsPerfRunner({
     codeA,
@@ -128,6 +169,22 @@ function JsPerfComparatorPage() {
             stabilityModeEnabled={stabilityModeEnabled}
             stabilityRounds={stabilityRounds}
           />
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              aria-label="Copy shareable link"
+              intent="outline"
+              onPress={handleCopyLink}
+              size="sm"
+            >
+              {copiedKey === 'copy' ? (
+                <Check className="size-4" />
+              ) : (
+                <Link className="size-4" />
+              )}
+              {copiedKey === 'copy' ? 'Copied!' : 'Copy link'}
+            </Button>
+          </div>
 
           <Separator />
 
