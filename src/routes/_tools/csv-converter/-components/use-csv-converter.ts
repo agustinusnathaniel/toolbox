@@ -25,7 +25,7 @@ const TIMEOUT_RESULT: CsvConverterResult & { timedOut: true } = {
   timedOut: true,
 };
 
-export type CsvConverterState = CsvConverterResult & { timedOut?: boolean };
+type CsvConverterState = CsvConverterResult & { timedOut?: boolean };
 
 export interface UseCsvConverterReturn {
   computing: boolean;
