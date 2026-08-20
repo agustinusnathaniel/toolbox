@@ -13,7 +13,7 @@ export interface UuidResult {
   uuids: Array<string>;
 }
 
-export const UUID_MAX_COUNT = 1000;
+const UUID_MAX_COUNT = 1000;
 
 export const UUID_VERSION_OPTIONS: ReadonlyArray<{
   id: UuidVersion;
