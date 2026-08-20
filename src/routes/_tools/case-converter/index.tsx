@@ -1,11 +1,12 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link as LinkIcon } from 'lucide-react';
+import { Link as LinkIcon } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyRow } from '@/lib/components/copy-row';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
@@ -42,56 +43,6 @@ export const Route = createFileRoute('/_tools/case-converter/')({
   ...createToolRouteMetadata(meta),
   validateSearch: searchSchema,
 });
-
-interface CopyRowProps {
-  copied?: boolean;
-  copyLabel?: string;
-  label: string;
-  mono?: boolean;
-  onCopy?: () => void;
-  value: string | undefined;
-}
-
-const CopyRow = ({
-  copied,
-  copyLabel,
-  label,
-  mono,
-  onCopy,
-  value,
-}: CopyRowProps) => {
-  if (!value) {
-    return null;
-  }
-  return (
-    <div className="flex items-center justify-between gap-4 py-2">
-      <span className="text-muted-fg text-sm">{label}</span>
-      <div className="flex min-w-0 items-center gap-2">
-        <span
-          className={`break-all text-right font-medium text-sm ${
-            mono ? 'font-mono' : ''
-          }`}
-        >
-          {value}
-        </span>
-        {onCopy && copyLabel && (
-          <Button
-            aria-label={copyLabel}
-            intent="outline"
-            onPress={onCopy}
-            size="sq-sm"
-          >
-            {copied ? (
-              <Check className="size-4 text-success" />
-            ) : (
-              <Copy className="size-4" />
-            )}
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-};
 
 function CaseConverterPage() {
   const { trackAction } = useToolTracking('case-converter', 'Case Converter');
