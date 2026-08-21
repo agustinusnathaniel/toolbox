@@ -2,9 +2,11 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import {
   bytesToHex,
+  compareDigests,
   HASH_ALGORITHMS,
   hashBytes,
   hashText,
+  normalizeDigest,
 } from './hash-generator';
 
 const SHA_256_ABC =
@@ -74,5 +76,41 @@ describe('hashBytes', () => {
     const result = await hashBytes(new Uint8Array(0), 'SHA-256');
     expect(result.isValid).toBe(true);
     expect(result.output).toBe(SHA_256_EMPTY);
+  });
+});
+
+describe('normalizeDigest', () => {
+  test('returns lowercase with no whitespace', () => {
+    expect(normalizeDigest('ABC123')).toBe('abc123');
+  });
+
+  test('strips spaces and newlines', () => {
+    expect(normalizeDigest('ba78 16bf\n8f01')).toBe('ba7816bf8f01');
+  });
+
+  test('handles tabs', () => {
+    expect(normalizeDigest('A\tB')).toBe('ab');
+  });
+});
+
+describe('compareDigests', () => {
+  test('matches identical digests', () => {
+    expect(compareDigests(SHA_256_ABC, SHA_256_ABC)).toBe(true);
+  });
+
+  test('matches case-insensitively', () => {
+    expect(compareDigests('ABC123', 'abc123')).toBe(true);
+  });
+
+  test('matches with whitespace in expected', () => {
+    expect(compareDigests(SHA_256_ABC, ` ${SHA_256_ABC}\n`)).toBe(true);
+  });
+
+  test('returns false on mismatch', () => {
+    expect(compareDigests(SHA_256_ABC, SHA_1_ABC)).toBe(false);
+  });
+
+  test('returns false for empty expected', () => {
+    expect(compareDigests(SHA_256_ABC, '')).toBe(false);
   });
 });
