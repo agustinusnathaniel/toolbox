@@ -1,8 +1,5 @@
-// Import jest-dom matchers and vitest's expect directly so their type
-// augmentation merges (TS 7 does not pick it up transitively via vite-plus/test).
-import '@testing-library/jest-dom/vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
 
 import type { DiffViewMode } from '@/lib/tools/text-diff/adapters/text-diff-view-mode';
 
