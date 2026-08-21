@@ -31,8 +31,8 @@ const VALID_RESULT: CsvConverterResult = {
 function createFakeWorker(): FakeWorker {
   return {
     onmessage: null,
-    postMessage: vi.fn(),
-    terminate: vi.fn(),
+    postMessage: vi.fn<(request: CsvConverterRequest) => void>(),
+    terminate: vi.fn<() => void>(),
   };
 }
 
