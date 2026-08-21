@@ -1,12 +1,13 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Fingerprint, Link, UploadIcon } from 'lucide-react';
+import { Check, Copy, Fingerprint, Link, UploadIcon, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
+import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { DropZone } from '@/lib/components/ui/drop-zone';
@@ -24,6 +25,7 @@ import type {
   HashResult,
 } from '@/lib/tools/hash-generator/adapters/hash-generator';
 import {
+  compareDigests,
   HASH_ALGORITHMS,
   hashBytes,
   hashText,
@@ -60,6 +62,7 @@ function HashGeneratorPage() {
   );
   const [text, setText] = useState(() => buildHashStateFromSearch(search).text);
   const [result, setResult] = useState<HashResult | null>(null);
+  const [expected, setExpected] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
   const { copiedKey, copy } = useCopyFeedback();
 
@@ -68,7 +71,14 @@ function HashGeneratorPage() {
     setResult(res);
     setFileName(null);
     trackAction('hash-text');
-  }, [algorithm, text, trackAction]);
+    if (res.isValid && expected.trim()) {
+      trackAction(
+        compareDigests(res.output, expected)
+          ? 'verify-match'
+          : 'verify-mismatch'
+      );
+    }
+  }, [algorithm, text, trackAction, expected]);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -77,8 +87,15 @@ function HashGeneratorPage() {
       setResult(res);
       setFileName(`${file.name} (${file.size} bytes)`);
       trackAction('hash-file');
+      if (res.isValid && expected.trim()) {
+        trackAction(
+          compareDigests(res.output, expected)
+            ? 'verify-match'
+            : 'verify-mismatch'
+        );
+      }
     },
-    [algorithm, trackAction]
+    [algorithm, trackAction, expected]
   );
 
   const handleCopy = useCallback(async () => {
@@ -139,6 +156,21 @@ function HashGeneratorPage() {
               }}
               placeholder="Type or paste text to hash..."
               value={text}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-muted-fg text-sm" htmlFor="hash-expected">
+              Expected hash (optional)
+            </label>
+            <input
+              className="w-full rounded-lg border bg-bg px-3 py-2 font-mono text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
+              id="hash-expected"
+              onChange={(e) => {
+                setExpected(e.target.value);
+              }}
+              placeholder="Paste an expected hash to compare against"
+              value={expected}
             />
           </div>
 
@@ -218,6 +250,20 @@ function HashGeneratorPage() {
                   )}
                 </Button>
               </div>
+              {showResult &&
+                result.isValid &&
+                expected.trim() &&
+                (compareDigests(result.output, expected) ? (
+                  <Badge intent="success" isCircle={false}>
+                    <Check className="size-3" />
+                    Match — digest matches
+                  </Badge>
+                ) : (
+                  <Badge intent="danger" isCircle={false}>
+                    <X className="size-3" />
+                    Mismatch — does not match
+                  </Badge>
+                ))}
               <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
                 {result.output}
               </pre>
@@ -233,6 +279,11 @@ function HashGeneratorPage() {
               'No. Hashing happens entirely in your browser with the native Web Crypto API. Your text or file never leaves your device.',
             question: 'Is my data sent anywhere?',
           },
+          {
+            answer:
+              'Hash your file or text, paste the published digest into the Expected hash field, and the tool tells you if they match. Comparison ignores case and whitespace.',
+            question: 'How do I verify a checksum?',
+          },
         ]}
         howItWorks={{
           description:
@@ -241,6 +292,7 @@ function HashGeneratorPage() {
             'Choose SHA-1, SHA-256, SHA-384, or SHA-512',
             'Type text and click Hash text, or drag & drop a file',
             'Copy the hash with the copy button',
+            'Optionally paste an expected hash to verify a match',
           ],
         }}
       />

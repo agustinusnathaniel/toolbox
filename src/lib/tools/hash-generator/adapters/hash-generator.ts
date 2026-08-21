@@ -40,3 +40,11 @@ export async function hashBytes(
   const digest = await crypto.subtle.digest(algorithm, bytes);
   return { isValid: true, output: bytesToHex(digest) };
 }
+
+export function normalizeDigest(raw: string): string {
+  return raw.toLowerCase().replace(/\s+/g, '');
+}
+
+export function compareDigests(computed: string, expectedRaw: string): boolean {
+  return normalizeDigest(computed) === normalizeDigest(expectedRaw);
+}
