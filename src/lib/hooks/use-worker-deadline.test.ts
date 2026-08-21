@@ -23,8 +23,8 @@ interface FakeWorker {
 function createFakeWorker(): FakeWorker {
   return {
     onmessage: null,
-    postMessage: vi.fn(),
-    terminate: vi.fn(),
+    postMessage: vi.fn<(request: TestRequest) => void>(),
+    terminate: vi.fn<() => void>(),
   };
 }
 

@@ -30,8 +30,8 @@ const VALID_RESULT: TextDiffResult = {
 function createFakeWorker(): FakeWorker {
   return {
     onmessage: null,
-    postMessage: vi.fn(),
-    terminate: vi.fn(),
+    postMessage: vi.fn<(request: TextDiffRequest) => void>(),
+    terminate: vi.fn<() => void>(),
   };
 }
 

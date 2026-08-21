@@ -22,9 +22,9 @@ overrides:
   "nanoid@<3.3.17": ">=3.3.17 <4"
   "sharp@<0.35.0": "0.35.3"
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@^0.2.8
-  vitest: 4.1.10
-  vite-plus: ^0.2.8
+  vite: npm:@voidzero-dev/vite-plus-core@^0.2.9
+  vitest: 4.1.11
+  vite-plus: ^0.2.9
 peerDependencyRules:
   allowAny:
     - vite
@@ -32,4 +32,9 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
+    # vite-plus bundles its own vitest/@vitest/browser-preview copy (currently
+    # 4.1.10) while the catalog pins the standalone vitest to the latest
+    # (4.1.11). The mismatch is internal to vite-plus and harmless; silence it
+    # until vite-plus ships a matching vitest.
+    "@vitest/browser-preview": "*"
 minimumReleaseAge: 0

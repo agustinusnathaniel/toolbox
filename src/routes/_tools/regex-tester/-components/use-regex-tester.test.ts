@@ -29,8 +29,8 @@ const EMPTY_RESULT: RegexTestResult = {
 function createFakeWorker(): FakeWorker {
   return {
     onmessage: null,
-    postMessage: vi.fn(),
-    terminate: vi.fn(),
+    postMessage: vi.fn<(request: RegexTesterRequest) => void>(),
+    terminate: vi.fn<() => void>(),
   };
 }
 
