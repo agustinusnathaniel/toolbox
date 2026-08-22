@@ -45,6 +45,7 @@ const ALGORITHM_OPTIONS = HASH_ALGORITHMS.map((algorithm) => ({
 
 const searchSchema = z.object({
   algorithm: z.string().optional(),
+  expected: z.string().optional(),
   text: z.string().optional(),
 });
 
@@ -62,7 +63,9 @@ function HashGeneratorPage() {
   );
   const [text, setText] = useState(() => buildHashStateFromSearch(search).text);
   const [result, setResult] = useState<HashResult | null>(null);
-  const [expected, setExpected] = useState('');
+  const [expected, setExpected] = useState(
+    () => buildHashStateFromSearch(search).expected
+  );
   const [fileName, setFileName] = useState<string | null>(null);
   const { copiedKey, copy } = useCopyFeedback();
 
@@ -108,7 +111,7 @@ function HashGeneratorPage() {
   }, [result, copy, trackAction]);
 
   const handleCopyLink = useCopyShareableLink(
-    () => buildHashParams(text, algorithm),
+    () => buildHashParams(text, algorithm, expected),
     trackAction
   );
 
