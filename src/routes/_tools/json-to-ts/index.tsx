@@ -11,14 +11,13 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import type { JsonToTsResult } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
-import { jsonToTypescript } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
 import {
   buildJsonToTsParams,
   buildJsonToTsStateFromSearch,
 } from '@/lib/tools/json-to-ts/adapters/json-to-ts-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useJsonToTs } from './-components/use-json-to-ts';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -35,14 +34,15 @@ function JsonToTsPage() {
   const { trackAction } = useToolTracking('json-to-ts', 'JSON to TypeScript');
   const search = useSearch({ from: '/_tools/json-to-ts/' });
   const [input, setInput] = useState(buildJsonToTsStateFromSearch(search));
-  const [result, setResult] = useState<JsonToTsResult | null>(null);
+  const [generateTrigger, setGenerateTrigger] = useState(0);
   const { copiedKey, copy } = useCopyFeedback();
+  const { computing, result, setResult } = useJsonToTs(input, generateTrigger);
 
   const handleGenerate = useCallback(() => {
-    const res = jsonToTypescript(input);
-    setResult(res);
+    setResult(null);
+    setGenerateTrigger((trigger) => trigger + 1);
     trackAction('generate');
-  }, [input, trackAction]);
+  }, [setResult, trackAction]);
 
   const handleCopy = useCallback(async () => {
     if (!(result?.isValid && result.output)) {
@@ -58,7 +58,7 @@ function JsonToTsPage() {
     trackAction
   );
 
-  const showResult = result && input.trim();
+  const showResult = result && input.trim() && !result.timedOut;
   const showError = result && !result.isValid;
 
   return (
@@ -81,11 +81,16 @@ function JsonToTsPage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button onPress={handleGenerate} size="sm">
               <Braces className="size-4" />
               Generate
             </Button>
+            {computing && (
+              <span aria-live="polite" className="text-muted-fg text-xs">
+                Generating…
+              </span>
+            )}
             <Button
               aria-label="Copy shareable link"
               intent="outline"
@@ -110,6 +115,20 @@ function JsonToTsPage() {
             >
               <p className="font-medium text-danger text-sm">
                 Invalid JSON or shape
+              </p>
+              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
+                {result.error}
+              </pre>
+            </div>
+          )}
+
+          {result?.timedOut && (
+            <div
+              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
+              role="alert"
+            >
+              <p className="font-medium text-danger text-sm">
+                Generation timed out
               </p>
               <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
                 {result.error}

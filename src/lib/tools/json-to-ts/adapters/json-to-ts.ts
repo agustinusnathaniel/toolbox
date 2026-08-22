@@ -151,7 +151,16 @@ function emitObjectInterface(
   ctx.interfaces.push(`export interface ${name} {\n${lines.join('\n')}\n}`);
 }
 
+export const JSON_TO_TS_MAX_CHARS = 500_000;
+
 export function jsonToTypescript(input: string): JsonToTsResult {
+  if (input.length > JSON_TO_TS_MAX_CHARS) {
+    return {
+      error: 'Input is limited to 500,000 characters.',
+      isValid: false,
+      output: '',
+    };
+  }
   const trimmed = input.trim();
   if (!trimmed) {
     return { error: 'Input is empty', isValid: false, output: '' };
