@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { jsonToTypescript } from './json-to-ts';
+import { JSON_TO_TS_MAX_CHARS, jsonToTypescript } from './json-to-ts';
 
 describe('jsonToTypescript', () => {
   test('returns an invalid result for empty input', () => {
@@ -164,5 +164,21 @@ export type Root = Item[];
   test('unions mixed top-level array elements', () => {
     const result = jsonToTypescript('[{"id":1},"x"]');
     expect(result.output).toContain('export type Root = Array<Item | string>;');
+  });
+
+  test('rejects input over the character limit', () => {
+    expect(jsonToTypescript('x'.repeat(JSON_TO_TS_MAX_CHARS + 1))).toEqual({
+      error: 'Input is limited to 500,000 characters.',
+      isValid: false,
+      output: '',
+    });
+  });
+
+  test('accepts input at exactly the character limit', () => {
+    const input = `{"a":"${'x'.repeat(JSON_TO_TS_MAX_CHARS - 8)}"}`;
+    expect(input.length).toBe(JSON_TO_TS_MAX_CHARS);
+    const result = jsonToTypescript(input);
+    expect(result.isValid).toBe(true);
+    expect(result.output).toContain('  a: string;');
   });
 });
