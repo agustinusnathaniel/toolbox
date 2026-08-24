@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(20);
+    expect(items).toHaveLength(21);
   });
 
   test('each item has required fields', () => {
@@ -45,17 +45,18 @@ describe('getToolNavItems', () => {
     expect(items[2].slug).toBe('json-formatter');
     expect(items[3].slug).toBe('zippy-img');
     expect(items[4].slug).toBe('ua-check');
-    expect(items[5].slug).toBe('qrcode');
-    expect(items[6].slug).toBe('js-perf');
-    expect(items[7].slug).toBe('add-to-calendar');
-    expect(items[8].slug).toBe('ev-charging');
-    expect(items[9].slug).toBe('base64');
-    expect(items[10].slug).toBe('password-generator');
-    expect(items[11].slug).toBe('hash-generator');
-    expect(items[12].slug).toBe('jwt-decoder');
-    expect(items[13].slug).toBe('regex-tester');
-    expect(items[14].slug).toBe('timestamp-converter');
-    expect(items[15].slug).toBe('case-converter');
+    expect(items[5].slug).toBe('url-codec');
+    expect(items[6].slug).toBe('qrcode');
+    expect(items[7].slug).toBe('js-perf');
+    expect(items[8].slug).toBe('add-to-calendar');
+    expect(items[9].slug).toBe('ev-charging');
+    expect(items[10].slug).toBe('base64');
+    expect(items[11].slug).toBe('password-generator');
+    expect(items[12].slug).toBe('hash-generator');
+    expect(items[13].slug).toBe('jwt-decoder');
+    expect(items[14].slug).toBe('regex-tester');
+    expect(items[15].slug).toBe('timestamp-converter');
+    expect(items[16].slug).toBe('case-converter');
   });
 });
 
@@ -79,7 +80,7 @@ describe('getMobileNavItems', () => {
     expect(items.map((item) => item.slug)).toEqual(
       mobileDefinitions.map((definition) => definition.slug)
     );
-    expect(items.length).toBeLessThanOrEqual(5);
+    expect(items.length).toBeLessThanOrEqual(6);
   });
 
   test('maps mobile labels with a page title fallback', () => {
