@@ -18,6 +18,7 @@ import {
   Fingerprint,
   GitCompare,
   KeyRound,
+  Link2,
   Regex,
   ScanLine,
   Table2,
@@ -41,6 +42,7 @@ import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
+import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
 import { meta as zippyImgMeta } from '@/routes/_tools/zippy-img/-meta';
@@ -109,6 +111,13 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <IconDeviceDesktop />,
     ...uaCheckMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Link2 />,
+    mobileTitle: 'URL Codec',
+    showInMobile: true,
+    ...urlCodecMeta,
   },
   {
     category: 'Links & Sharing',
