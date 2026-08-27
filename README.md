@@ -31,6 +31,8 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **UUID Generator** — Generate UUID v4 and v7 identifiers in bulk with configurable formatting
 - **CSV Converter** — Convert between CSV and JSON with configurable mode
 - **Case Converter** — Convert text between camelCase, PascalCase, snake_case, kebab-case, and more
+- **JSON to TypeScript** — Generate TypeScript interfaces from JSON with shareable links
+- **URL Encoder/Decoder** — Encode and decode URLs in component or full-URL mode with shareable links
 
 ## Tech Stack
 
