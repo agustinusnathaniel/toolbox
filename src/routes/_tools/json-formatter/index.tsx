@@ -11,15 +11,10 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import type { JsonFormatterResult } from '@/lib/tools/json-formatter/adapters/json-formatter';
-import {
-  formatJson,
-  minifyJson,
-  validateJson,
-} from '@/lib/tools/json-formatter/adapters/json-formatter';
 import { buildJsonParams } from '@/lib/tools/json-formatter/adapters/json-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useJsonFormatter } from './-components/use-json-formatter';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -36,32 +31,37 @@ function JsonFormatterPage() {
   const { trackAction } = useToolTracking('json-formatter', 'JSON Formatter');
   const search = useSearch({ from: '/_tools/json-formatter/' });
   const [input, setInput] = useState(search.input ?? '');
-  const [result, setResult] = useState<JsonFormatterResult | null>(null);
   const { copiedKey, copy } = useCopyFeedback();
   const [activeAction, setActiveAction] = useState<
     'format' | 'validate' | 'minify' | null
   >(null);
+  const [trigger, setTrigger] = useState(0);
+  const { computing, result, setResult } = useJsonFormatter(
+    input,
+    activeAction,
+    trigger
+  );
 
   const handleFormat = useCallback(() => {
-    const res = formatJson(input);
-    setResult(res);
+    setResult(null);
     setActiveAction('format');
+    setTrigger((t) => t + 1);
     trackAction('format');
-  }, [input, trackAction]);
+  }, [setResult, trackAction]);
 
   const handleValidate = useCallback(() => {
-    const res = validateJson(input);
-    setResult(res);
+    setResult(null);
     setActiveAction('validate');
+    setTrigger((t) => t + 1);
     trackAction('validate');
-  }, [input, trackAction]);
+  }, [setResult, trackAction]);
 
   const handleMinify = useCallback(() => {
-    const res = minifyJson(input);
-    setResult(res);
+    setResult(null);
     setActiveAction('minify');
+    setTrigger((t) => t + 1);
     trackAction('minify');
-  }, [input, trackAction]);
+  }, [setResult, trackAction]);
 
   const handleCopy = useCallback(async () => {
     if (!(result?.isValid && result.formatted)) {
@@ -82,8 +82,10 @@ function JsonFormatterPage() {
     minify: 'Minified',
   };
   const label = actionLabel[activeAction ?? ''] ?? 'Validated';
-  const showResult = result && input.trim();
-  const showError = result && !result.isValid;
+  const showResult = Boolean(
+    result && input.trim() && !result.timedOut && result.isValid
+  );
+  const showError = Boolean(result && !result.isValid);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
@@ -105,17 +107,32 @@ function JsonFormatterPage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button onPress={handleFormat} size="sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button isDisabled={computing} onPress={handleFormat} size="sm">
               <FileJson className="size-4" />
               Format
             </Button>
-            <Button intent="outline" onPress={handleValidate} size="sm">
+            <Button
+              intent="outline"
+              isDisabled={computing}
+              onPress={handleValidate}
+              size="sm"
+            >
               Validate
             </Button>
-            <Button intent="outline" onPress={handleMinify} size="sm">
+            <Button
+              intent="outline"
+              isDisabled={computing}
+              onPress={handleMinify}
+              size="sm"
+            >
               Minify
             </Button>
+            {computing && (
+              <span aria-live="polite" className="text-muted-fg text-xs">
+                Processing…
+              </span>
+            )}
             <Button
               aria-label="Copy shareable link"
               intent="outline"
@@ -127,13 +144,13 @@ function JsonFormatterPage() {
             </Button>
           </div>
 
-          {input.trim() && !result && (
+          {input.trim() && !result && !computing && (
             <p className="text-muted-fg text-xs">
               Click Format, Validate, or Minify to process your JSON.
             </p>
           )}
 
-          {showError && (
+          {showError && result && (
             <div
               className="rounded-lg border border-danger/30 bg-danger/5 p-3"
               role="alert"
@@ -145,7 +162,21 @@ function JsonFormatterPage() {
             </div>
           )}
 
-          {showResult && result.isValid && (
+          {result?.timedOut && result && (
+            <div
+              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
+              role="alert"
+            >
+              <p className="font-medium text-danger text-sm">
+                Formatting timed out
+              </p>
+              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
+                {result.error}
+              </pre>
+            </div>
+          )}
+
+          {showResult && result && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-muted-fg text-sm">{label}</span>
