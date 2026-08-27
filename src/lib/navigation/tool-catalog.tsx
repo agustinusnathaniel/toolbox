@@ -29,6 +29,7 @@ import { meta as addToCalendarMeta } from '@/routes/_tools/add-to-calendar/-meta
 import { meta as base64Meta } from '@/routes/_tools/base64/-meta';
 import { meta as caseConverterMeta } from '@/routes/_tools/case-converter/-meta';
 import { meta as colorConverterMeta } from '@/routes/_tools/color-converter/-meta';
+import { meta as cronParserMeta } from '@/routes/_tools/cron-parser/-meta';
 import { meta as csvConverterMeta } from '@/routes/_tools/csv-converter/-meta';
 import { meta as evChargingMeta } from '@/routes/_tools/ev-charging/-meta';
 import { meta as hashGeneratorMeta } from '@/routes/_tools/hash-generator/-meta';
@@ -200,5 +201,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Braces />,
     ...jsonToTsMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Clock />,
+    ...cronParserMeta,
   },
 ];
