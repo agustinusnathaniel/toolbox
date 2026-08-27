@@ -15,6 +15,7 @@ import {
   CaseSensitive,
   Clock,
   Dices,
+  FileText,
   Fingerprint,
   GitCompare,
   KeyRound,
@@ -37,6 +38,7 @@ import { meta as jsPerfMeta } from '@/routes/_tools/js-perf/-meta';
 import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta';
 import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
+import { meta as markdownPreviewMeta } from '@/routes/_tools/markdown-preview/-meta';
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
 import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
@@ -206,5 +208,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Clock />,
     ...cronParserMeta,
+  },
+  {
+    category: 'Text & Data',
+    icon: <FileText />,
+    mobileTitle: 'Markdown',
+    ...markdownPreviewMeta,
   },
 ];
