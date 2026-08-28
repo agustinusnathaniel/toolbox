@@ -2,7 +2,7 @@
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { Check, Copy, Link } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
@@ -16,9 +16,9 @@ import {
   buildMarkdownParams,
   buildMarkdownStateFromSearch,
 } from '@/lib/tools/markdown-preview/adapters/markdown-params';
-import { renderMarkdown } from '@/lib/tools/markdown-preview/adapters/markdown-preview';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useMarkdownPreview } from './-components/use-markdown-preview';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -41,8 +41,22 @@ function MarkdownPreviewPage() {
     () => buildMarkdownStateFromSearch(search).input
   );
   const { copiedKey, copy } = useCopyFeedback();
+  const [trigger, setTrigger] = useState(0);
+  const {
+    computing,
+    result: workerResult,
+    setResult,
+  } = useMarkdownPreview(input, trigger);
 
-  const result = useMemo(() => renderMarkdown(input), [input]);
+  useEffect(() => {
+    if (input.trim()) {
+      setTrigger((t) => t + 1);
+    } else {
+      setResult({ html: '', isEmpty: true });
+    }
+  }, [input, setResult]);
+
+  const result = workerResult ?? { html: '', isEmpty: true };
 
   const handleCopyHtml = useCallback(async () => {
     if (result.isEmpty || !result.html) {
@@ -62,6 +76,43 @@ function MarkdownPreviewPage() {
     setInput('');
     trackAction('clear');
   }, [trackAction]);
+
+  const renderPreview = () => {
+    if (computing) {
+      return (
+        <p aria-live="polite" className="text-muted-fg text-sm">
+          Rendering…
+        </p>
+      );
+    }
+    if (result.timedOut) {
+      return (
+        <div
+          className="rounded-lg border border-danger/30 bg-danger/5 p-3"
+          role="alert"
+        >
+          <p className="font-medium text-danger text-sm">Rendering timed out</p>
+          <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
+            {result.error}
+          </pre>
+        </div>
+      );
+    }
+    if (result.isEmpty) {
+      return (
+        <p className="text-muted-fg text-sm">
+          Preview will appear here once you type Markdown.
+        </p>
+      );
+    }
+    return (
+      <div
+        className="markdown-preview prose prose-sm max-w-none rounded-lg border bg-(--card-bg)/50 p-4 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-muted [&_blockquote]:border-l-2 [&_blockquote]:pl-4 [&_blockquote]:text-muted-fg [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm [&_h1]:font-bold [&_h1]:text-2xl [&_h2]:font-bold [&_h2]:text-xl [&_h3]:font-bold [&_h3]:text-lg [&_ol]:list-decimal [&_ol]:pl-6 [&_pre]:overflow-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-3 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:bg-muted [&_th]:px-2 [&_th]:py-1 [&_ul]:list-disc [&_ul]:pl-6"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized via DOMPurify before rendering
+        dangerouslySetInnerHTML={{ __html: result.html }}
+      />
+    );
+  };
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
@@ -85,6 +136,7 @@ function MarkdownPreviewPage() {
             <Button
               aria-label="Copy HTML"
               intent="outline"
+              isDisabled={computing || result.isEmpty || !result.html}
               onPress={handleCopyHtml}
               size="sm"
             >
@@ -119,17 +171,7 @@ function MarkdownPreviewPage() {
       <Card>
         <CardContent className="flex flex-col gap-2">
           <span className="text-muted-fg text-sm">Preview</span>
-          {result.isEmpty ? (
-            <p className="text-muted-fg text-sm">
-              Preview will appear here once you type Markdown.
-            </p>
-          ) : (
-            <div
-              className="markdown-preview prose prose-sm max-w-none rounded-lg border bg-(--card-bg)/50 p-4 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-muted [&_blockquote]:border-l-2 [&_blockquote]:pl-4 [&_blockquote]:text-muted-fg [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm [&_h1]:font-bold [&_h1]:text-2xl [&_h2]:font-bold [&_h2]:text-xl [&_h3]:font-bold [&_h3]:text-lg [&_ol]:list-decimal [&_ol]:pl-6 [&_pre]:overflow-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-3 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:bg-muted [&_th]:px-2 [&_th]:py-1 [&_ul]:list-disc [&_ul]:pl-6"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized via DOMPurify before rendering
-              dangerouslySetInnerHTML={{ __html: result.html }}
-            />
-          )}
+          {renderPreview()}
         </CardContent>
       </Card>
 
