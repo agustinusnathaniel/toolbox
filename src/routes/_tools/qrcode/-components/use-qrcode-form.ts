@@ -26,9 +26,8 @@ const STORAGE_KEY_MODE = 'toolbox:qr-mode';
 const STORAGE_KEY_URL = 'toolbox:qr-url';
 const STORAGE_KEY_VCARD = 'toolbox:qr-vcard';
 
-export function useQRCodeForm(search: SearchParams = {}) {
+function useQRStates(search: SearchParams) {
   const hasSearchParams = Object.keys(search).length > 0;
-
   const [mode, setMode] = usePersistedState<QRMode>(
     STORAGE_KEY_MODE,
     'url',
@@ -44,28 +43,63 @@ export function useQRCodeForm(search: SearchParams = {}) {
     DEFAULT_VCARD_STATE,
     hasSearchParams ? buildVcardStateFromSearch(search) : undefined
   );
+  return { mode, setMode, setUrlState, setVcardState, urlState, vcardState };
+}
 
-  const svgRef = useRef<SVGSVGElement | null>(null);
-
-  const vcardString = useMemo(
-    () => generateVCardString(vcardState as VCardFormData),
-    [vcardState]
-  );
-
+function createUpdateHandlers(
+  setUrlState: React.Dispatch<React.SetStateAction<UrlState>>,
+  setVcardState: React.Dispatch<React.SetStateAction<VCardState>>
+) {
   const updateUrlField = <K extends keyof UrlState>(
     field: K,
     value: UrlState[K]
   ) => {
     setUrlState((prev) => ({ ...prev, [field]: value }));
   };
-
   const updateVCardField = <K extends keyof VCardState>(
     field: K,
     value: VCardState[K]
   ) => {
     setVcardState((prev) => ({ ...prev, [field]: value }));
   };
+  return { updateUrlField, updateVCardField };
+}
 
+function useQRShareableLink(
+  mode: QRMode,
+  urlState: UrlState,
+  vcardState: VCardState
+) {
+  return () => {
+    const params = new URLSearchParams();
+    if (mode !== 'url') {
+      params.set('mode', mode);
+    }
+    const sourceParams =
+      mode === 'url' ? buildUrlParams(urlState) : buildVCardParams(vcardState);
+    for (const [key, value] of sourceParams) {
+      params.set(key, value);
+    }
+    const queryString = params.toString();
+    const url = queryString
+      ? `${window.location.origin}${window.location.pathname}?${queryString}`
+      : `${window.location.origin}${window.location.pathname}`;
+    return copyToClipboard(url, 'Copied Shareable Link');
+  };
+}
+
+export function useQRCodeForm(search: SearchParams = {}) {
+  const { mode, setMode, urlState, setUrlState, vcardState, setVcardState } =
+    useQRStates(search);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const vcardString = useMemo(
+    () => generateVCardString(vcardState as VCardFormData),
+    [vcardState]
+  );
+  const { updateUrlField, updateVCardField } = createUpdateHandlers(
+    setUrlState,
+    setVcardState
+  );
   const handleSaveQR = () => {
     const svg = svgRef.current;
     if (!svg) {
@@ -74,33 +108,11 @@ export function useQRCodeForm(search: SearchParams = {}) {
     }
     svgToPngDownload(svg);
   };
-
-  const handleCopyShareableLink = () => {
-    const params = new URLSearchParams();
-
-    if (mode !== 'url') {
-      params.set('mode', mode);
-    }
-
-    if (mode === 'url') {
-      const urlParams = buildUrlParams(urlState);
-      for (const [key, value] of urlParams) {
-        params.set(key, value);
-      }
-    } else {
-      const vcardParams = buildVCardParams(vcardState);
-      for (const [key, value] of vcardParams) {
-        params.set(key, value);
-      }
-    }
-
-    const queryString = params.toString();
-    const url = queryString
-      ? `${window.location.origin}${window.location.pathname}?${queryString}`
-      : `${window.location.origin}${window.location.pathname}`;
-    return copyToClipboard(url, 'Copied Shareable Link');
-  };
-
+  const handleCopyShareableLink = useQRShareableLink(
+    mode,
+    urlState,
+    vcardState
+  );
   return {
     handleCopyShareableLink,
     handleSaveQR,

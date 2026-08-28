@@ -1,22 +1,26 @@
 'use client';
 
-import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Input } from '@/lib/components/ui/input';
-import { Textarea } from '@/lib/components/ui/textarea';
-import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import { buildRegexParams } from '@/lib/tools/regex-tester/adapters/regex-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
-import { useRegexTester } from './-components/use-regex-tester';
+import { RegexActions } from './-components/regex-actions';
+import {
+  RegexFlagsInput,
+  RegexPatternInput,
+  RegexTestInput,
+} from './-components/regex-inputs';
+import {
+  RegexError,
+  RegexHighlights,
+  RegexMatchList,
+  RegexTimeout,
+  RegexTruncated,
+} from './-components/regex-results';
+import { useRegexPageState } from './-components/use-regex-page';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -32,256 +36,33 @@ export const Route = createFileRoute('/_tools/regex-tester/')({
 });
 
 function RegexTesterPage() {
-  const { trackAction } = useToolTracking('regex-tester', 'Regex Tester');
-  const search = useSearch({ from: '/_tools/regex-tester/' });
-  const [pattern, setPattern] = useState(search.pattern ?? '');
-  const [flags, setFlags] = useState(search.flags ?? '');
-  const [input, setInput] = useState(search.input ?? '');
-  const [copiedMatches, setCopiedMatches] = useState(false);
-
-  const { result } = useRegexTester(pattern, flags, input);
-
-  const previousInput = useRef<{
-    flags: string;
-    input: string;
-    pattern: string;
-  } | null>(null);
-
-  useEffect(() => {
-    const prev = previousInput.current;
-    if (
-      prev !== null &&
-      (prev.pattern !== pattern || prev.flags !== flags || prev.input !== input)
-    ) {
-      trackAction('test');
-    }
-    previousInput.current = { flags, input, pattern };
-  }, [flags, input, pattern, trackAction]);
-
-  const segments = useMemo(() => {
-    const segs: Array<{ matched: boolean; start: number; text: string }> = [];
-    let cursor = 0;
-    for (const match of result.matches) {
-      if (match.full.length === 0) {
-        continue;
-      }
-      if (match.index > cursor) {
-        segs.push({
-          matched: false,
-          start: cursor,
-          text: input.slice(cursor, match.index),
-        });
-      }
-      segs.push({ matched: true, start: match.index, text: match.full });
-      cursor = match.index + match.full.length;
-    }
-    if (cursor < input.length) {
-      segs.push({ matched: false, start: cursor, text: input.slice(cursor) });
-    }
-    return segs;
-  }, [input, result.matches]);
-
-  const handleCopyLink = useCopyShareableLink(
-    () => buildRegexParams(pattern, flags, input),
-    trackAction,
-    'share'
-  );
-
-  const handleCopyMatches = useCallback(async () => {
-    if (result.matches.length === 0) {
-      return;
-    }
-    const text = result.matches.map((match) => match.full).join('\n');
-    if (await copyToClipboard(text, 'Copied Matches')) {
-      setCopiedMatches(true);
-      trackAction('copy');
-      setTimeout(() => setCopiedMatches(false), 1500);
-    }
-  }, [result.matches, trackAction]);
-
-  const matchLabel =
-    result.matchCount === 1 ? '1 match' : `${result.matchCount} matches`;
-
+  const s = useRegexPageState();
+  const hasError = !!(s.result.error || s.result.timedOut);
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="regex-pattern">
-              Pattern
-            </label>
-            <Input
-              aria-label="Regular expression pattern"
-              className="font-mono"
-              id="regex-pattern"
-              onChange={(e) => setPattern(e.target.value)}
-              placeholder="e.g. (\w+)@(\w+)"
-              value={pattern}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="regex-flags">
-              Flags
-            </label>
-            <Input
-              aria-label="Regular expression flags"
-              className="font-mono"
-              id="regex-flags"
-              onChange={(e) => setFlags(e.target.value)}
-              placeholder="gimsuy"
-              value={flags}
-            />
-            <p className="text-muted-fg text-xs">Valid flags: g i m s u y</p>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="regex-input">
-              Test text
-            </label>
-            <Textarea
-              aria-label="Test text"
-              className="min-h-40 font-mono"
-              id="regex-input"
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste or type the text to test against..."
-              value={input}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
-              onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
-            <Button
-              aria-label="Copy matches"
-              intent="outline"
-              isDisabled={result.matches.length === 0}
-              onPress={handleCopyMatches}
-              size="sm"
-            >
-              {copiedMatches ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-              Copy matches
-            </Button>
-          </div>
-
-          {result.timedOut && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Pattern took too long
-              </p>
-              <p className="mt-1 whitespace-pre-wrap text-danger/80 text-xs">
-                {result.error}
-              </p>
-              <p className="mt-1 text-danger/80 text-xs">
-                This usually means catastrophic backtracking. Try simplifying
-                the pattern or reducing the input length.
-              </p>
-            </div>
-          )}
-
-          {result.truncated && (
-            <div
-              className="rounded-lg border border-warning/30 bg-warning/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-sm text-warning">
-                Showing first {result.matches.length.toLocaleString()} matches
-              </p>
-              <p className="mt-1 text-warning/80 text-xs">
-                The pattern produced more matches than can be shown at once.
-                Refine the pattern or use a shorter input to see all matches.
-              </p>
-            </div>
-          )}
-
-          {result.error && !result.timedOut && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Invalid regular expression
-              </p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
-          )}
-
-          {!(result.error || result.timedOut) && (
+          <RegexPatternInput pattern={s.pattern} setPattern={s.setPattern} />
+          <RegexFlagsInput flags={s.flags} setFlags={s.setFlags} />
+          <RegexTestInput input={s.input} setInput={s.setInput} />
+          <RegexActions
+            copiedMatches={s.copiedMatches}
+            disabled={s.result.matches.length === 0}
+            onCopyLink={s.handleCopyLink}
+            onCopyMatches={s.handleCopyMatches}
+          />
+          <RegexTimeout result={s.result} />
+          <RegexTruncated result={s.result} />
+          <RegexError result={s.result} />
+          {!hasError && (
             <div className="flex flex-col gap-3">
-              <span className="text-muted-fg text-sm">{matchLabel}</span>
-
-              {segments.length > 0 && (
-                <pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-                  {segments.map((segment) =>
-                    segment.matched ? (
-                      <mark
-                        className="rounded bg-primary/20 text-fg"
-                        key={segment.start}
-                      >
-                        {segment.text}
-                      </mark>
-                    ) : (
-                      <span key={segment.start}>{segment.text}</span>
-                    )
-                  )}
-                </pre>
-              )}
-
-              {result.matches.length > 0 && (
-                <ol className="flex max-h-80 flex-col gap-2 overflow-auto">
-                  {result.matches.map((match) => (
-                    <li
-                      className="rounded-lg border bg-(--card-bg)/50 p-3"
-                      key={match.index}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <code className="min-w-0 truncate font-mono text-sm">
-                          {match.full}
-                        </code>
-                        <span className="shrink-0 text-muted-fg text-xs">
-                          index {match.index}
-                        </span>
-                      </div>
-                      {match.groups.some((group) => group !== undefined) && (
-                        <div className="mt-1 flex flex-col gap-0.5">
-                          {match.groups
-                            .map((group, groupIndex) => ({ group, groupIndex }))
-                            .filter((entry) => entry.group !== undefined)
-                            .map((entry) => (
-                              <code
-                                className="font-mono text-xs"
-                                key={entry.groupIndex}
-                              >
-                                group {entry.groupIndex + 1}: {entry.group}
-                              </code>
-                            ))}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              )}
+              <span className="text-muted-fg text-sm">{s.matchLabel}</span>
+              <RegexHighlights segments={s.segments} />
+              <RegexMatchList result={s.result} />
             </div>
           )}
         </CardContent>
       </Card>
-
       <ToolHelp
         faq={[
           {

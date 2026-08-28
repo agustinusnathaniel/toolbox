@@ -40,51 +40,52 @@ const defaultPersisted: PersistedCalendar = {
   title: '',
 };
 
-export function useCalendarForm() {
-  const search = useSearch({ from: '/_tools/add-to-calendar/' });
-  const navigate = useNavigate({ from: '/add-to-calendar/' });
-  const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultPersisted);
-
-  const defaultStart = search.start ?? formatLocalDateTimeString();
+function buildDefaults(
+  search: Record<string, unknown>,
+  saved: PersistedCalendar
+) {
+  const defaultStart =
+    (search.start as string | undefined) ?? formatLocalDateTimeString();
   const defaultEnd =
-    search.end ??
+    (search.end as string | undefined) ??
     (() => {
       const d = new Date();
       d.setHours(d.getHours() + 1);
       return formatLocalDateTimeString(d);
     })();
+  return {
+    description: (search.desc as string | undefined) ?? saved.description,
+    end: defaultEnd,
+    location: (search.loc as string | undefined) ?? saved.location,
+    start: defaultStart,
+    title: (search.title as string | undefined) ?? saved.title,
+  };
+}
 
-  const form = useForm<CalendarFormType>({
-    defaultValues: {
-      description: search.desc ?? saved.description,
-      end: defaultEnd,
-      location: search.loc ?? saved.location,
-      start: defaultStart,
-      title: search.title ?? saved.title,
-    },
-    resolver: zodResolver(formSchema),
-  });
-
+function usePersistedSync(
+  form: ReturnType<typeof useForm<CalendarFormType>>,
+  setSaved: (v: PersistedCalendar) => void
+) {
   useEffect(() => {
-    const subscription = form.watch((values) => {
+    const sub = form.watch((values) => {
       setSaved({
         description: values.description ?? '',
         location: values.location ?? '',
         title: values.title ?? '',
       });
     });
-    return () => subscription.unsubscribe();
+    return () => sub.unsubscribe();
   }, [form, setSaved]);
+}
 
-  const [title, description, location, start, end] = form.watch([
-    'title',
-    'description',
-    'location',
-    'start',
-    'end',
-  ]);
-
-  const linkResult = useMemo(
+function useCalendarLink(
+  title: string,
+  description: string | undefined,
+  location: string | undefined,
+  start: string,
+  end: string
+) {
+  return useMemo(
     () =>
       generateGoogleCalendarLink({
         description: description || undefined,
@@ -95,26 +96,49 @@ export function useCalendarForm() {
       }),
     [title, description, location, start, end]
   );
+}
 
+export function useCalendarForm() {
+  const search = useSearch({
+    from: '/_tools/add-to-calendar/',
+  } as never) as Record<string, unknown>;
+  const navigate = useNavigate({ from: '/add-to-calendar/' } as never);
+  const [saved, setSaved] = usePersistedState(STORAGE_KEY, defaultPersisted);
+  const form = useForm<CalendarFormType>({
+    defaultValues: buildDefaults(search, saved),
+    resolver: zodResolver(formSchema),
+  });
+  usePersistedSync(form as never, setSaved);
+  const [title, description, location, start, end] = form.watch([
+    'title',
+    'description',
+    'location',
+    'start',
+    'end',
+  ]);
+  const linkResult = useCalendarLink(
+    title ?? '',
+    description,
+    location,
+    start ?? '',
+    end ?? ''
+  );
   const { isValid, errors } = form.formState;
-
   const handleCopyLink = () => copyToClipboard(linkResult.url, 'Copied Link');
-
   const handleGenerateEmbed = () => {
-    const escapedUrl = linkResult.url
+    const escaped = linkResult.url
       .replace(/&/g, '&amp;')
       .replace(/"/g, '&quot;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
-    const embed = `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" style="border:1px solid black;padding:6px;border-radius:6px;text-decoration:none;color:white;font-weight:400;background-color:black;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">Add to Google Calendar</a>`;
+    const embed = `<a href="${escaped}" target="_blank" rel="noopener noreferrer" style="border:1px solid black;padding:6px;border-radius:6px;text-decoration:none;color:white;font-weight:400;background-color:black;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">Add to Google Calendar</a>`;
     return copyToClipboard(embed, 'Copied Embed Code');
   };
-
   const handleCopyShareableLink = () => {
     navigate({
       replace: true,
-      search: (prev) => ({
-        ...prev,
+      search: ((prev: Record<string, unknown>) => ({
+        ...(prev as Record<string, unknown>),
         ...buildCalendarSearchParams({
           description,
           end,
@@ -122,12 +146,10 @@ export function useCalendarForm() {
           start,
           title,
         }),
-      }),
+      })) as never,
     });
-    const url = window.location.href;
-    return copyToClipboard(url, 'Copied Shareable Link');
+    return copyToClipboard(window.location.href, 'Copied Shareable Link');
   };
-
   return {
     errors,
     form,

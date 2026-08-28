@@ -95,6 +95,21 @@ export function formatStatistics(stats: ExecutionStatistics): string {
  *
  * This provides more stable results for performance benchmarking.
  */
+function filterOutliers(sorted: Array<number>): Array<number> {
+  const q1 = sorted[Math.floor(sorted.length * 0.25)];
+  const q3 = sorted[Math.floor(sorted.length * 0.75)];
+  const iqr = q3 - q1;
+  const lower = q1 - 1.5 * iqr;
+  const upper = q3 + 1.5 * iqr;
+  const filtered = sorted.filter((d) => d >= lower && d <= upper);
+  return filtered.length > 0 ? filtered : sorted;
+}
+
+function calculateMedian(data: Array<number>): number {
+  const mid = Math.floor(data.length / 2);
+  return data.length % 2 === 0 ? (data[mid - 1] + data[mid]) / 2 : data[mid];
+}
+
 export function calculateRobustStatistics(
   durations: Array<number>
 ): ExecutionStatistics {
@@ -109,7 +124,6 @@ export function calculateRobustStatistics(
       stddevMs: 0,
     };
   }
-
   if (n === 1) {
     return {
       iterations: 1,
@@ -120,56 +134,18 @@ export function calculateRobustStatistics(
       stddevMs: 0,
     };
   }
-
-  // Sort for percentile calculations
   const sorted = [...durations].sort((a, b) => a - b);
-
-  // Calculate Q1 (25th percentile) and Q3 (75th percentile)
-  const q1Index = Math.floor(sorted.length * 0.25);
-  const q3Index = Math.floor(sorted.length * 0.75);
-  const q1 = sorted[q1Index];
-  const q3 = sorted[q3Index];
-
-  // Calculate IQR and outlier bounds
-  const iqr = q3 - q1;
-  const lowerBound = q1 - 1.5 * iqr;
-  const upperBound = q3 + 1.5 * iqr;
-
-  // Filter outliers
-  const filtered = sorted.filter((d) => d >= lowerBound && d <= upperBound);
-
-  // Fallback to unfiltered data if all values are outliers
-  const data = filtered.length > 0 ? filtered : sorted;
-
-  // Calculate median
-  const mid = Math.floor(data.length / 2);
-  const medianMs =
-    data.length % 2 === 0 ? (data[mid - 1] + data[mid]) / 2 : data[mid];
-
-  // Use median as the "mean" for display purposes
+  const data = filterOutliers(sorted);
+  const medianMs = calculateMedian(data);
   const meanMs = medianMs;
-  const first = data[0];
-  const last = data.at(-1);
-  const minMs = first === undefined ? 0 : first;
-  const maxMs = last === undefined ? 0 : last;
-
-  // Calculate standard deviation on filtered data
+  const minMs = data[0] ?? 0;
+  const maxMs = data.at(-1) ?? 0;
   const variance =
     data.reduce((sum, d) => sum + (d - meanMs) ** 2, 0) / data.length;
   const stddevMs = Math.sqrt(variance);
-
-  // Calculate margin of error on filtered data
   const zValue = data.length > 30 ? 1.96 : 2.0;
   const marginMs = (zValue * stddevMs) / Math.sqrt(data.length);
-
-  return {
-    iterations: n, // Keep original iteration count for display
-    marginMs,
-    maxMs,
-    meanMs,
-    minMs,
-    stddevMs,
-  };
+  return { iterations: n, marginMs, maxMs, meanMs, minMs, stddevMs };
 }
 
 export function createWorkerErrorResult(

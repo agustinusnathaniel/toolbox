@@ -6,12 +6,11 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
-import { UrlQRCard } from './-components/url-qr-card';
+import { QrCards } from './-components/qr-cards';
+import { QrModeToggle } from './-components/qr-mode-toggle';
 import { useQRCodeForm } from './-components/use-qrcode-form';
-import { VCardQRCard } from './-components/vcard-qr-card';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -44,6 +43,22 @@ export const Route = createFileRoute('/_tools/qrcode/')({
 
 const qrSize = 220;
 
+function useQrCompleteTracker(
+  mode: string,
+  urlValue: string,
+  vcardString: string,
+  trackComplete: (ok: boolean) => void
+) {
+  useEffect(() => {
+    const hasQRData =
+      (mode === 'url' && urlValue.length > 0) ||
+      (mode === 'vcard' && vcardString.length > 0);
+    if (hasQRData) {
+      trackComplete(true);
+    }
+  }, [mode, urlValue, vcardString, trackComplete]);
+}
+
 function QRCodeGeneratorPage() {
   const { trackAction, trackComplete } = useToolTracking(
     'qrcode',
@@ -62,75 +77,23 @@ function QRCodeGeneratorPage() {
     handleSaveQR,
     handleCopyShareableLink,
   } = useQRCodeForm(search);
-
-  useEffect(() => {
-    const hasQRData =
-      (mode === 'url' && urlState.value.length > 0) ||
-      (mode === 'vcard' && vcardString.length > 0);
-    if (hasQRData) {
-      trackComplete(true);
-    }
-  }, [mode, urlState.value, vcardString, trackComplete]);
-
+  useQrCompleteTracker(mode, urlState.value, vcardString, trackComplete);
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
-      <div className="flex gap-2">
-        <Button
-          intent={mode === 'url' ? 'primary' : 'outline'}
-          onPress={() => {
-            setMode('url');
-            trackAction('mode_url');
-          }}
-        >
-          URL QR
-        </Button>
-        <Button
-          intent={mode === 'vcard' ? 'primary' : 'outline'}
-          onPress={() => {
-            setMode('vcard');
-            trackAction('mode_vcard');
-          }}
-        >
-          VCard QR
-        </Button>
-      </div>
-
-      {mode === 'url' && (
-        <UrlQRCard
-          onCopyShareableLink={async () => {
-            if (await handleCopyShareableLink()) {
-              trackAction('copy_shareable');
-            }
-          }}
-          onSaveQR={() => {
-            trackAction('save_qr');
-            handleSaveQR();
-          }}
-          onUpdateUrlField={updateUrlField}
-          qrSize={qrSize}
-          svgRef={svgRef}
-          urlState={urlState}
-        />
-      )}
-
-      {mode === 'vcard' && (
-        <VCardQRCard
-          onCopyShareableLink={async () => {
-            if (await handleCopyShareableLink()) {
-              trackAction('copy_shareable');
-            }
-          }}
-          onSaveQR={() => {
-            trackAction('save_qr');
-            handleSaveQR();
-          }}
-          onUpdateVCardField={updateVCardField}
-          qrSize={qrSize}
-          svgRef={svgRef}
-          vcardState={vcardState}
-          vcardString={vcardString}
-        />
-      )}
+      <QrModeToggle mode={mode} setMode={setMode} trackAction={trackAction} />
+      <QrCards
+        handleCopyShareableLink={handleCopyShareableLink}
+        handleSaveQR={handleSaveQR}
+        mode={mode}
+        qrSize={qrSize}
+        svgRef={svgRef}
+        trackAction={trackAction}
+        updateUrlField={updateUrlField}
+        updateVCardField={updateVCardField}
+        urlState={urlState}
+        vcardState={vcardState}
+        vcardString={vcardString}
+      />
 
       <ToolHelp
         faq={[

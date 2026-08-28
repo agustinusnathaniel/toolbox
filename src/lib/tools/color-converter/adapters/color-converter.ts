@@ -224,84 +224,94 @@ function oklchStringToRgb(oklch: string): RgbColor | null {
   return oklchToRgb(l, c, h);
 }
 
+function tryParseHex(trimmed: string): ParsedColor | null {
+  if (!HEX_REGEX.test(trimmed)) {
+    return null;
+  }
+  const rgb = parseHex(trimmed);
+  if (!rgb) {
+    return null;
+  }
+  return {
+    format: 'hex',
+    hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
+    input: trimmed,
+    oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
+    rgb,
+  };
+}
+
+function tryParseRgb(trimmed: string): ParsedColor | null {
+  const m = trimmed.match(RGB_REGEX);
+  if (!m) {
+    return null;
+  }
+  const r = Number.parseInt(m[1], 10);
+  const g = Number.parseInt(m[2], 10);
+  const b = Number.parseInt(m[3], 10);
+  if (r > 255 || g > 255 || b > 255) {
+    return null;
+  }
+  const rgb: RgbColor = { b, g, r };
+  return {
+    format: 'rgb',
+    hex: rgbToHex(r, g, b),
+    hsl: rgbToHsl(r, g, b),
+    input: trimmed,
+    oklch: rgbToOklch(r, g, b),
+    rgb,
+  };
+}
+
+function tryParseHsl(trimmed: string): ParsedColor | null {
+  if (!trimmed.match(HSL_REGEX)) {
+    return null;
+  }
+  const rgb = hslStringToRgb(trimmed);
+  if (!rgb) {
+    return null;
+  }
+  return {
+    format: 'hsl',
+    hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
+    input: trimmed,
+    oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
+    rgb,
+  };
+}
+
+function tryParseOklch(trimmed: string): ParsedColor | null {
+  if (!trimmed.match(OKLCH_REGEX)) {
+    return null;
+  }
+  const rgb = oklchStringToRgb(trimmed);
+  if (!rgb) {
+    return null;
+  }
+  return {
+    format: 'oklch',
+    hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
+    input: trimmed,
+    oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
+    rgb,
+  };
+}
+
 export function parseColor(input: string): ParsedColor | null {
   const trimmed = input.trim();
-
   if (!trimmed) {
     return null;
   }
-
-  if (HEX_REGEX.test(trimmed)) {
-    const rgb = parseHex(trimmed);
-    if (!rgb) {
-      return null;
-    }
-    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-    return {
-      format: 'hex',
-      hex,
-      hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
-      input: trimmed,
-      oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
-      rgb,
-    };
-  }
-
-  const rgbMatch = trimmed.match(RGB_REGEX);
-  if (rgbMatch) {
-    const r = Number.parseInt(rgbMatch[1], 10);
-    const g = Number.parseInt(rgbMatch[2], 10);
-    const b = Number.parseInt(rgbMatch[3], 10);
-    if (r > 255 || g > 255 || b > 255) {
-      return null;
-    }
-    const rgb: RgbColor = { b, g, r };
-    return {
-      format: 'rgb',
-      hex: rgbToHex(r, g, b),
-      hsl: rgbToHsl(r, g, b),
-      input: trimmed,
-      oklch: rgbToOklch(r, g, b),
-      rgb,
-    };
-  }
-
-  const hslMatch = trimmed.match(HSL_REGEX);
-  if (hslMatch) {
-    const rgb = hslStringToRgb(trimmed);
-    if (!rgb) {
-      return null;
-    }
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-    return {
-      format: 'hsl',
-      hex,
-      hsl,
-      input: trimmed,
-      oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
-      rgb,
-    };
-  }
-
-  const oklchMatch = trimmed.match(OKLCH_REGEX);
-  if (oklchMatch) {
-    const rgb = oklchStringToRgb(trimmed);
-    if (!rgb) {
-      return null;
-    }
-    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-    return {
-      format: 'oklch',
-      hex,
-      hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
-      input: trimmed,
-      oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
-      rgb,
-    };
-  }
-
-  return null;
+  return (
+    tryParseHex(trimmed) ??
+    tryParseRgb(trimmed) ??
+    tryParseHsl(trimmed) ??
+    tryParseOklch(trimmed) ??
+    null
+  );
 }
 
 export function formatColorString(

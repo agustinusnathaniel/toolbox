@@ -1,36 +1,22 @@
 'use client';
 
-import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { ArrowLeftRight, Check, Copy, GitCompare, Link } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { useCallback, useMemo, useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
-import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  buildCopyDiffText,
-  isNoDifferenceOutcome,
-} from '@/lib/tools/text-diff/adapters/text-diff';
-import { buildTextDiffParams } from '@/lib/tools/text-diff/adapters/text-diff-params';
-import {
-  type DiffViewMode,
-  isSplitViewUsable,
-  resolveDiffViewMode,
-} from '@/lib/tools/text-diff/adapters/text-diff-view-mode';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { DiffActions } from './-components/diff-actions';
+import { DiffInputs } from './-components/diff-inputs';
 import {
-  DiffViewControl,
-  SPLIT_VIEW_UNAVAILABLE_HINT_ID,
-} from './-components/diff-view-control';
-import { DiffViewer } from './-components/diff-viewer';
-import { useContainerWidth } from './-components/use-container-width';
-import { useTextDiff } from './-components/use-text-diff';
+  DiffError,
+  DiffHint,
+  DiffResults,
+  DiffTimeout,
+  NoDifferences,
+} from './-components/diff-results';
+import { useTextDiffPageState } from './-components/use-text-diff-page';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -45,244 +31,43 @@ export const Route = createFileRoute('/_tools/text-diff/')({
 });
 
 function TextDiffPage() {
-  const { trackAction } = useToolTracking('text-diff', 'Text Diff');
-  const search = useSearch({ from: '/_tools/text-diff/' });
-  const { resolvedTheme } = useTheme();
-  const [original, setOriginal] = useState(search.original ?? '');
-  const [modified, setModified] = useState(search.modified ?? '');
-  const { copiedKey, copy } = useCopyFeedback();
-  const [activeAction, setActiveAction] = useState<'compare' | 'swap' | null>(
-    null
-  );
-  const [compareTrigger, setCompareTrigger] = useState(0);
-  const [viewMode, setViewMode] = useState<DiffViewMode>('unified');
-
-  const { ref: diffContainerRef, width: diffContainerWidth } =
-    useContainerWidth<HTMLDivElement>();
-  const splitViewUsable = isSplitViewUsable(diffContainerWidth);
-  const effectiveMode = resolveDiffViewMode(viewMode, splitViewUsable);
-
-  const { computing, result, setResult } = useTextDiff(
-    original,
-    modified,
-    compareTrigger
-  );
-
-  const handleCompare = useCallback(() => {
-    setResult(null);
-    setActiveAction('compare');
-    setCompareTrigger((trigger) => trigger + 1);
-    trackAction('compare');
-    // Preload the lazy diff renderer chunk while the worker computes, so the
-    // Suspense fallback in DiffViewer rarely shows on the first compare.
-    import('@pierre/diffs/react').catch(() => undefined);
-  }, [setResult, trackAction]);
-
-  const handleSwap = useCallback(() => {
-    setOriginal(modified);
-    setModified(original);
-    setResult(null);
-    setActiveAction(null);
-    trackAction('swap');
-  }, [modified, original, setResult, trackAction]);
-
-  const handleCopyDiff = useCallback(async () => {
-    if (!result?.fileDiff) {
-      return;
-    }
-    const diffText = buildCopyDiffText(result.fileDiff);
-    if (await copy(diffText, 'copy', 'Copied Diff')) {
-      trackAction('copy');
-    }
-  }, [result, copy, trackAction]);
-
-  const handleCopyLink = useCopyShareableLink(
-    () => buildTextDiffParams(original, modified),
-    trackAction
-  );
-
-  const showHint =
-    original.trim() && modified.trim() && !result && !activeAction;
-  const showError = result && !result.isValid;
-  const fileDiff = result?.isValid && !result.timedOut ? result.fileDiff : null;
-  const showNoDifferences =
-    result !== null && isNoDifferenceOutcome(original, modified, result);
-
-  const fileDiffOptions = useMemo(
-    () => ({
-      diffIndicators: 'classic' as const,
-      diffStyle: effectiveMode,
-      disableFileHeader: true,
-      lineDiffType: 'word' as const,
-      overflow: 'wrap' as const,
-      theme: { dark: 'pierre-dark', light: 'pierre-light' },
-      themeType:
-        resolvedTheme === 'dark' ? ('dark' as const) : ('light' as const),
-    }),
-    [effectiveMode, resolvedTheme]
-  );
-
+  const s = useTextDiffPageState();
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label
-              className="text-muted-fg text-sm"
-              htmlFor="text-diff-original"
-            >
-              Original
-            </label>
-            <textarea
-              className="field-sizing-content min-h-32 w-full rounded-lg border border-input bg-transparent p-3 font-mono text-fg text-sm outline-hidden placeholder:text-muted-fg focus:border-ring/70 focus:ring-3 focus:ring-ring/20"
-              id="text-diff-original"
-              onChange={(e) => {
-                setOriginal(e.target.value);
-                setResult(null);
-                setActiveAction(null);
-              }}
-              placeholder="Paste the original text here..."
-              value={original}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label
-              className="text-muted-fg text-sm"
-              htmlFor="text-diff-modified"
-            >
-              Modified
-            </label>
-            <textarea
-              className="field-sizing-content min-h-32 w-full rounded-lg border border-input bg-transparent p-3 font-mono text-fg text-sm outline-hidden placeholder:text-muted-fg focus:border-ring/70 focus:ring-3 focus:ring-ring/20"
-              id="text-diff-modified"
-              onChange={(e) => {
-                setModified(e.target.value);
-                setResult(null);
-                setActiveAction(null);
-              }}
-              placeholder="Paste the modified text here..."
-              value={modified}
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Button onPress={handleCompare} size="sm">
-              <GitCompare className="size-4" />
-              Compare
-            </Button>
-            {computing && (
-              <span aria-live="polite" className="text-muted-fg text-xs">
-                Comparing…
-              </span>
-            )}
-            <Button intent="outline" onPress={handleSwap} size="sm">
-              <ArrowLeftRight className="size-4" />
-              Swap
-            </Button>
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
-              onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
-          </div>
-
-          {showHint && (
-            <p className="text-muted-fg text-xs">
-              Click Compare to see the differences.
-            </p>
-          )}
-
-          {showError && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">Input too large</p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
-          )}
-
-          {result?.timedOut && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Comparison timed out
-              </p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
-          )}
-
-          {fileDiff && !showNoDifferences && (
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-muted-fg text-sm">
-                    {result?.addedCount ?? 0} additions,{' '}
-                    {result?.removedCount ?? 0} deletions
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <DiffViewControl
-                      effectiveMode={effectiveMode}
-                      onModeChange={setViewMode}
-                      splitDisabled={!splitViewUsable}
-                    />
-                    <Button
-                      aria-label="Copy diff"
-                      intent="outline"
-                      onPress={handleCopyDiff}
-                      size="sq-sm"
-                    >
-                      {copiedKey === 'copy' ? (
-                        <Check className="size-4 text-success" />
-                      ) : (
-                        <Copy className="size-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-                {!splitViewUsable && (
-                  <p
-                    className="text-muted-fg text-xs"
-                    id={SPLIT_VIEW_UNAVAILABLE_HINT_ID}
-                  >
-                    Split view needs a wider screen — showing Unified instead.
-                  </p>
-                )}
-              </div>
-              <div className="min-w-0" ref={diffContainerRef}>
-                <DiffViewer
-                  className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50"
-                  fileDiff={fileDiff}
-                  options={fileDiffOptions}
-                />
-              </div>
-            </div>
-          )}
-
-          {showNoDifferences && (
-            <div className="flex flex-col gap-2" role="status">
-              <span className="text-muted-fg text-sm">
-                0 additions, 0 deletions
-              </span>
-              <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed bg-(--card-bg)/50 p-4">
-                <p className="text-muted-fg text-sm">No differences found</p>
-              </div>
-            </div>
-          )}
+          <DiffInputs
+            modified={s.modified}
+            original={s.original}
+            setActiveAction={s.setActiveAction as never}
+            setModified={s.setModified}
+            setOriginal={s.setOriginal}
+            setResult={s.setResult as never}
+          />
+          <DiffActions
+            computing={s.computing}
+            onCompare={s.handleCompare}
+            onCopyLink={s.handleCopyLink}
+            onSwap={s.handleSwap}
+          />
+          <DiffHint show={!!s.showHint} />
+          <DiffError result={s.result} />
+          <DiffTimeout result={s.result} />
+          <DiffResults
+            computing={s.computing}
+            copiedKey={s.copiedKey}
+            fileDiff={s.fileDiff}
+            fileDiffOptions={s.fileDiffOptions as never}
+            onCopyDiff={s.handleCopyDiff}
+            result={s.result}
+            showError={!!s.showError}
+            showHint={!!s.showHint}
+            showNoDifferences={!!s.showNoDifferences}
+            view={s.view as never}
+          />
+          <NoDifferences show={!!s.showNoDifferences} />
         </CardContent>
       </Card>
-
       <ToolHelp
         faq={[
           {

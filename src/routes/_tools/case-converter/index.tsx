@@ -44,6 +44,64 @@ export const Route = createFileRoute('/_tools/case-converter/')({
   validateSearch: searchSchema,
 });
 
+function CaseInput({
+  input,
+  setInput,
+}: {
+  input: string;
+  setInput: (v: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-muted-fg text-sm" htmlFor="case-input">
+        Input text
+      </label>
+      <Textarea
+        aria-label="Input text"
+        className="min-h-40 font-mono"
+        id="case-input"
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Paste text to convert..."
+        value={input}
+      />
+    </div>
+  );
+}
+
+function CaseResults({
+  result,
+  hasInput,
+  copiedKey,
+  onCopy,
+}: {
+  result: ReturnType<typeof convertCase>;
+  hasInput: boolean;
+  copiedKey: string | null;
+  onCopy: (key: string, value: string, label: string) => void;
+}) {
+  if (!(result.isValid && hasInput)) {
+    return null;
+  }
+  return (
+    <Card>
+      <CardHeader title="Results" />
+      <CardContent className="flex flex-col">
+        {FORMAT_OPTIONS.map(({ key, label }) => (
+          <CopyRow
+            copied={copiedKey === key}
+            copyLabel={`Copy ${label}`}
+            key={key}
+            label={label}
+            mono
+            onCopy={() => onCopy(key, result.formats[key], `Copied ${label}`)}
+            value={result.formats[key]}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 function CaseConverterPage() {
   const { trackAction } = useToolTracking('case-converter', 'Case Converter');
   const search = useSearch({ from: '/_tools/case-converter/' });
@@ -51,9 +109,7 @@ function CaseConverterPage() {
     () => buildCaseStateFromSearch(search).input
   );
   const { copiedKey, copy } = useCopyFeedback();
-
   const result = useMemo(() => convertCase(input), [input]);
-
   const handleCopy = useCallback(
     async (key: string, value: string, label: string) => {
       if (await copy(value, key, label)) {
@@ -62,39 +118,22 @@ function CaseConverterPage() {
     },
     [copy, trackAction]
   );
-
   const handleCopyLink = useCopyShareableLink(
     () => buildCaseParams(input),
     trackAction
   );
-
   const hasInput = input.trim().length > 0;
-
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="case-input">
-              Input text
-            </label>
-            <Textarea
-              aria-label="Input text"
-              className="min-h-40 font-mono"
-              id="case-input"
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste text to convert..."
-              value={input}
-            />
-          </div>
-
+          <CaseInput input={input} setInput={setInput} />
           <div className="flex flex-wrap gap-2">
             <Button intent="outline" onPress={handleCopyLink} size="sm">
               <LinkIcon className="size-4" />
               Copy link
             </Button>
           </div>
-
           {!hasInput && (
             <p className="text-muted-fg text-xs">
               Type or paste text to see all case variants.
@@ -102,27 +141,12 @@ function CaseConverterPage() {
           )}
         </CardContent>
       </Card>
-
-      {result.isValid && hasInput && (
-        <Card>
-          <CardHeader title="Results" />
-          <CardContent className="flex flex-col">
-            {FORMAT_OPTIONS.map(({ key, label }) => (
-              <CopyRow
-                copied={copiedKey === key}
-                copyLabel={`Copy ${label}`}
-                key={key}
-                label={label}
-                mono
-                onCopy={() =>
-                  handleCopy(key, result.formats[key], `Copied ${label}`)
-                }
-                value={result.formats[key]}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      )}
+      <CaseResults
+        copiedKey={copiedKey}
+        hasInput={hasInput}
+        onCopy={handleCopy}
+        result={result}
+      />
 
       <ToolHelp
         faq={[
