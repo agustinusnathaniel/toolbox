@@ -21,6 +21,7 @@ import { Route as ToolsCronParserIndexRouteImport } from './routes/_tools/cron-p
 import { Route as ToolsCsvConverterIndexRouteImport } from './routes/_tools/csv-converter/index'
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
 import { Route as ToolsHashGeneratorIndexRouteImport } from './routes/_tools/hash-generator/index'
+import { Route as ToolsHtmlEntitiesIndexRouteImport } from './routes/_tools/html-entities/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
 import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/json-formatter/index'
 import { Route as ToolsJsonToTsIndexRouteImport } from './routes/_tools/json-to-ts/index'
@@ -95,6 +96,11 @@ const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
 const ToolsHashGeneratorIndexRoute = ToolsHashGeneratorIndexRouteImport.update({
   id: '/hash-generator/',
   path: '/hash-generator/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsHtmlEntitiesIndexRoute = ToolsHtmlEntitiesIndexRouteImport.update({
+  id: '/html-entities/',
+  path: '/html-entities/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 const ToolsJsPerfIndexRoute = ToolsJsPerfIndexRouteImport.update({
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/csv-converter/': typeof ToolsCsvConverterIndexRoute
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/hash-generator/': typeof ToolsHashGeneratorIndexRoute
+  '/html-entities/': typeof ToolsHtmlEntitiesIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
   '/json-formatter/': typeof ToolsJsonFormatterIndexRoute
   '/json-to-ts/': typeof ToolsJsonToTsIndexRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/csv-converter': typeof ToolsCsvConverterIndexRoute
   '/ev-charging': typeof ToolsEvChargingIndexRoute
   '/hash-generator': typeof ToolsHashGeneratorIndexRoute
+  '/html-entities': typeof ToolsHtmlEntitiesIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
   '/json-formatter': typeof ToolsJsonFormatterIndexRoute
   '/json-to-ts': typeof ToolsJsonToTsIndexRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/_tools/csv-converter/': typeof ToolsCsvConverterIndexRoute
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/_tools/hash-generator/': typeof ToolsHashGeneratorIndexRoute
+  '/_tools/html-entities/': typeof ToolsHtmlEntitiesIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
   '/_tools/json-formatter/': typeof ToolsJsonFormatterIndexRoute
   '/_tools/json-to-ts/': typeof ToolsJsonToTsIndexRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/csv-converter/'
     | '/ev-charging/'
     | '/hash-generator/'
+    | '/html-entities/'
     | '/js-perf/'
     | '/json-formatter/'
     | '/json-to-ts/'
@@ -304,6 +314,7 @@ export interface FileRouteTypes {
     | '/csv-converter'
     | '/ev-charging'
     | '/hash-generator'
+    | '/html-entities'
     | '/js-perf'
     | '/json-formatter'
     | '/json-to-ts'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/_tools/csv-converter/'
     | '/_tools/ev-charging/'
     | '/_tools/hash-generator/'
+    | '/_tools/html-entities/'
     | '/_tools/js-perf/'
     | '/_tools/json-formatter/'
     | '/_tools/json-to-ts/'
@@ -441,6 +453,13 @@ declare module '@tanstack/react-router' {
       path: '/hash-generator'
       fullPath: '/hash-generator/'
       preLoaderRoute: typeof ToolsHashGeneratorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/html-entities/': {
+      id: '/_tools/html-entities/'
+      path: '/html-entities'
+      fullPath: '/html-entities/'
+      preLoaderRoute: typeof ToolsHtmlEntitiesIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/js-perf/': {
@@ -560,6 +579,7 @@ interface ToolsRouteRouteChildren {
   ToolsCsvConverterIndexRoute: typeof ToolsCsvConverterIndexRoute
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
   ToolsHashGeneratorIndexRoute: typeof ToolsHashGeneratorIndexRoute
+  ToolsHtmlEntitiesIndexRoute: typeof ToolsHtmlEntitiesIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
   ToolsJsonFormatterIndexRoute: typeof ToolsJsonFormatterIndexRoute
   ToolsJsonToTsIndexRoute: typeof ToolsJsonToTsIndexRoute
@@ -586,6 +606,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsCsvConverterIndexRoute: ToolsCsvConverterIndexRoute,
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
   ToolsHashGeneratorIndexRoute: ToolsHashGeneratorIndexRoute,
+  ToolsHtmlEntitiesIndexRoute: ToolsHtmlEntitiesIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
   ToolsJsonFormatterIndexRoute: ToolsJsonFormatterIndexRoute,
   ToolsJsonToTsIndexRoute: ToolsJsonToTsIndexRoute,

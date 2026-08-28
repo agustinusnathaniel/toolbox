@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(23);
+    expect(items).toHaveLength(24);
   });
 
   test('each item has required fields', () => {
@@ -63,6 +63,7 @@ describe('getToolNavItems', () => {
     expect(items[20].slug).toBe('json-to-ts');
     expect(items[21].slug).toBe('cron-parser');
     expect(items[22].slug).toBe('markdown-preview');
+    expect(items[23].slug).toBe('html-entities');
   });
 });
 

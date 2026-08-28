@@ -34,6 +34,7 @@ import { meta as cronParserMeta } from '@/routes/_tools/cron-parser/-meta';
 import { meta as csvConverterMeta } from '@/routes/_tools/csv-converter/-meta';
 import { meta as evChargingMeta } from '@/routes/_tools/ev-charging/-meta';
 import { meta as hashGeneratorMeta } from '@/routes/_tools/hash-generator/-meta';
+import { meta as htmlEntitiesMeta } from '@/routes/_tools/html-entities/-meta';
 import { meta as jsPerfMeta } from '@/routes/_tools/js-perf/-meta';
 import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta';
 import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
@@ -213,5 +214,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Text & Data',
     icon: <FileText />,
     ...markdownPreviewMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Braces />,
+    ...htmlEntitiesMeta,
   },
 ];
