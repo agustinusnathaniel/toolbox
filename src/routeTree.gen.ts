@@ -36,6 +36,7 @@ import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/
 import { Route as ToolsUrlCodecIndexRouteImport } from './routes/_tools/url-codec/index'
 import { Route as ToolsUuidGeneratorIndexRouteImport } from './routes/_tools/uuid-generator/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
+import { Route as ToolsYamlConverterIndexRouteImport } from './routes/_tools/yaml-converter/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -176,6 +177,11 @@ const ToolsWaLinkHelperIndexRoute = ToolsWaLinkHelperIndexRouteImport.update({
   path: '/wa-link-helper/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsYamlConverterIndexRoute = ToolsYamlConverterIndexRouteImport.update({
+  id: '/yaml-converter/',
+  path: '/yaml-converter/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsZippyImgIndexRoute = ToolsZippyImgIndexRouteImport.update({
   id: '/zippy-img/',
   path: '/zippy-img/',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/url-codec/': typeof ToolsUrlCodecIndexRoute
   '/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
+  '/yaml-converter/': typeof ToolsYamlConverterIndexRoute
   '/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
 export interface FileRoutesByTo {
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/url-codec': typeof ToolsUrlCodecIndexRoute
   '/uuid-generator': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
+  '/yaml-converter': typeof ToolsYamlConverterIndexRoute
   '/zippy-img': typeof ToolsZippyImgIndexRoute
 }
 export interface FileRoutesById {
@@ -269,6 +277,7 @@ export interface FileRoutesById {
   '/_tools/url-codec/': typeof ToolsUrlCodecIndexRoute
   '/_tools/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
+  '/_tools/yaml-converter/': typeof ToolsYamlConverterIndexRoute
   '/_tools/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
 export interface FileRouteTypes {
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/url-codec/'
     | '/uuid-generator/'
     | '/wa-link-helper/'
+    | '/yaml-converter/'
     | '/zippy-img/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/url-codec'
     | '/uuid-generator'
     | '/wa-link-helper'
+    | '/yaml-converter'
     | '/zippy-img'
   id:
     | '__root__'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/_tools/url-codec/'
     | '/_tools/uuid-generator/'
     | '/_tools/wa-link-helper/'
+    | '/_tools/yaml-converter/'
     | '/_tools/zippy-img/'
   fileRoutesById: FileRoutesById
 }
@@ -560,6 +572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsWaLinkHelperIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/yaml-converter/': {
+      id: '/_tools/yaml-converter/'
+      path: '/yaml-converter'
+      fullPath: '/yaml-converter/'
+      preLoaderRoute: typeof ToolsYamlConverterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/zippy-img/': {
       id: '/_tools/zippy-img/'
       path: '/zippy-img'
@@ -594,6 +613,7 @@ interface ToolsRouteRouteChildren {
   ToolsUrlCodecIndexRoute: typeof ToolsUrlCodecIndexRoute
   ToolsUuidGeneratorIndexRoute: typeof ToolsUuidGeneratorIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
+  ToolsYamlConverterIndexRoute: typeof ToolsYamlConverterIndexRoute
   ToolsZippyImgIndexRoute: typeof ToolsZippyImgIndexRoute
 }
 
@@ -621,6 +641,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsUrlCodecIndexRoute: ToolsUrlCodecIndexRoute,
   ToolsUuidGeneratorIndexRoute: ToolsUuidGeneratorIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
+  ToolsYamlConverterIndexRoute: ToolsYamlConverterIndexRoute,
   ToolsZippyImgIndexRoute: ToolsZippyImgIndexRoute,
 }
 

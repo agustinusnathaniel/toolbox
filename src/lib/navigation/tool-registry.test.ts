@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(24);
+    expect(items).toHaveLength(25);
   });
 
   test('each item has required fields', () => {
@@ -43,27 +43,28 @@ describe('getToolNavItems', () => {
     expect(items[0].slug).toBe('wa-link-helper');
     expect(items[1].slug).toBe('color-converter');
     expect(items[2].slug).toBe('json-formatter');
-    expect(items[3].slug).toBe('zippy-img');
-    expect(items[4].slug).toBe('ua-check');
-    expect(items[5].slug).toBe('url-codec');
-    expect(items[6].slug).toBe('qrcode');
-    expect(items[7].slug).toBe('js-perf');
-    expect(items[8].slug).toBe('add-to-calendar');
-    expect(items[9].slug).toBe('ev-charging');
-    expect(items[10].slug).toBe('base64');
-    expect(items[11].slug).toBe('password-generator');
-    expect(items[12].slug).toBe('hash-generator');
-    expect(items[13].slug).toBe('jwt-decoder');
-    expect(items[14].slug).toBe('regex-tester');
-    expect(items[15].slug).toBe('timestamp-converter');
-    expect(items[16].slug).toBe('case-converter');
-    expect(items[17].slug).toBe('text-diff');
-    expect(items[18].slug).toBe('uuid-generator');
-    expect(items[19].slug).toBe('csv-converter');
-    expect(items[20].slug).toBe('json-to-ts');
-    expect(items[21].slug).toBe('cron-parser');
-    expect(items[22].slug).toBe('markdown-preview');
-    expect(items[23].slug).toBe('html-entities');
+    expect(items[3].slug).toBe('yaml-converter');
+    expect(items[4].slug).toBe('zippy-img');
+    expect(items[5].slug).toBe('ua-check');
+    expect(items[6].slug).toBe('url-codec');
+    expect(items[7].slug).toBe('qrcode');
+    expect(items[8].slug).toBe('js-perf');
+    expect(items[9].slug).toBe('add-to-calendar');
+    expect(items[10].slug).toBe('ev-charging');
+    expect(items[11].slug).toBe('base64');
+    expect(items[12].slug).toBe('password-generator');
+    expect(items[13].slug).toBe('hash-generator');
+    expect(items[14].slug).toBe('jwt-decoder');
+    expect(items[15].slug).toBe('regex-tester');
+    expect(items[16].slug).toBe('timestamp-converter');
+    expect(items[17].slug).toBe('case-converter');
+    expect(items[18].slug).toBe('text-diff');
+    expect(items[19].slug).toBe('uuid-generator');
+    expect(items[20].slug).toBe('csv-converter');
+    expect(items[21].slug).toBe('json-to-ts');
+    expect(items[22].slug).toBe('cron-parser');
+    expect(items[23].slug).toBe('markdown-preview');
+    expect(items[24].slug).toBe('html-entities');
   });
 });
 
