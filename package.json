@@ -102,14 +102,14 @@
     "workbox-build": "^7.4.1",
     "workbox-window": "^7.4.1"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@12.0.0",
   "engines": {
     "node": "^24.16.x"
   },
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "24.16.0",
+      "version": "^24.16.0",
       "onFail": "download"
     }
   }
