@@ -25,6 +25,7 @@ import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/in
 import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/json-formatter/index'
 import { Route as ToolsJsonToTsIndexRouteImport } from './routes/_tools/json-to-ts/index'
 import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-decoder/index'
+import { Route as ToolsMarkdownPreviewIndexRouteImport } from './routes/_tools/markdown-preview/index'
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex-tester/index'
@@ -116,6 +117,12 @@ const ToolsJwtDecoderIndexRoute = ToolsJwtDecoderIndexRouteImport.update({
   path: '/jwt-decoder/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsMarkdownPreviewIndexRoute =
+  ToolsMarkdownPreviewIndexRouteImport.update({
+    id: '/markdown-preview/',
+    path: '/markdown-preview/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsPasswordGeneratorIndexRoute =
   ToolsPasswordGeneratorIndexRouteImport.update({
     id: '/password-generator/',
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/json-formatter/': typeof ToolsJsonFormatterIndexRoute
   '/json-to-ts/': typeof ToolsJsonToTsIndexRoute
   '/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
+  '/markdown-preview/': typeof ToolsMarkdownPreviewIndexRoute
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/regex-tester/': typeof ToolsRegexTesterIndexRoute
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/json-formatter': typeof ToolsJsonFormatterIndexRoute
   '/json-to-ts': typeof ToolsJsonToTsIndexRoute
   '/jwt-decoder': typeof ToolsJwtDecoderIndexRoute
+  '/markdown-preview': typeof ToolsMarkdownPreviewIndexRoute
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/regex-tester': typeof ToolsRegexTesterIndexRoute
@@ -241,6 +250,7 @@ export interface FileRoutesById {
   '/_tools/json-formatter/': typeof ToolsJsonFormatterIndexRoute
   '/_tools/json-to-ts/': typeof ToolsJsonToTsIndexRoute
   '/_tools/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
+  '/_tools/markdown-preview/': typeof ToolsMarkdownPreviewIndexRoute
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/regex-tester/': typeof ToolsRegexTesterIndexRoute
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/json-formatter/'
     | '/json-to-ts/'
     | '/jwt-decoder/'
+    | '/markdown-preview/'
     | '/password-generator/'
     | '/qrcode/'
     | '/regex-tester/'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/json-formatter'
     | '/json-to-ts'
     | '/jwt-decoder'
+    | '/markdown-preview'
     | '/password-generator'
     | '/qrcode'
     | '/regex-tester'
@@ -325,6 +337,7 @@ export interface FileRouteTypes {
     | '/_tools/json-formatter/'
     | '/_tools/json-to-ts/'
     | '/_tools/jwt-decoder/'
+    | '/_tools/markdown-preview/'
     | '/_tools/password-generator/'
     | '/_tools/qrcode/'
     | '/_tools/regex-tester/'
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsJwtDecoderIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/markdown-preview/': {
+      id: '/_tools/markdown-preview/'
+      path: '/markdown-preview'
+      fullPath: '/markdown-preview/'
+      preLoaderRoute: typeof ToolsMarkdownPreviewIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/password-generator/': {
       id: '/_tools/password-generator/'
       path: '/password-generator'
@@ -544,6 +564,7 @@ interface ToolsRouteRouteChildren {
   ToolsJsonFormatterIndexRoute: typeof ToolsJsonFormatterIndexRoute
   ToolsJsonToTsIndexRoute: typeof ToolsJsonToTsIndexRoute
   ToolsJwtDecoderIndexRoute: typeof ToolsJwtDecoderIndexRoute
+  ToolsMarkdownPreviewIndexRoute: typeof ToolsMarkdownPreviewIndexRoute
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsRegexTesterIndexRoute: typeof ToolsRegexTesterIndexRoute
@@ -569,6 +590,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsJsonFormatterIndexRoute: ToolsJsonFormatterIndexRoute,
   ToolsJsonToTsIndexRoute: ToolsJsonToTsIndexRoute,
   ToolsJwtDecoderIndexRoute: ToolsJwtDecoderIndexRoute,
+  ToolsMarkdownPreviewIndexRoute: ToolsMarkdownPreviewIndexRoute,
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsRegexTesterIndexRoute: ToolsRegexTesterIndexRoute,
