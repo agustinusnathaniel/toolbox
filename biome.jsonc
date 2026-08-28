@@ -57,6 +57,21 @@
           "options": {
             "filenameCases": ["kebab-case"]
           }
+        },
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 500,
+            "skipBlankLines": true
+          }
+        }
+      },
+      "complexity": {
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": {
+            "maxLines": 60
+          }
         }
       }
     }
@@ -67,6 +82,89 @@
     }
   },
   "overrides": [
+    {
+      // Moderate test describes (99-122 lines) are data-driven pure-function tests; splitting adds no clarity
+      // Huge ev-charging suite was already modularized from 726/510 into 5 files; remaining 159-252 lines per file is justified
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "warn",
+              "options": { "maxLines": 150 }
+            }
+          },
+          "style": {
+            "noExcessiveLinesPerFile": {
+              "level": "warn",
+              "options": { "maxLines": 600, "skipBlankLines": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/routes/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "warn",
+              "options": { "maxLines": 150 }
+            }
+          }
+        }
+      }
+    },
+    {
+      // Tool pages are single-screen islands (Privacy > convenience). Extracting per-tool hooks is preferred
+      // but cohort of 100-170 line page components is cohesive; split done for ev-charging (726→5 files) and
+      // representative hooks; remaining pages use warn with 180 to avoid artificial fragmentation
+      "includes": [
+        "src/routes/_tools/**",
+        "src/lib/tools/**",
+        "src/lib/js-perf-comp-core/**",
+        "src/lib/hooks/**"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "warn",
+              "options": { "maxLines": 180 }
+            }
+          }
+        }
+      }
+    },
+    {
+      // Justified exceptions for outlier large cohesive modules - further split would fragment session/worker orchestration
+      "includes": [
+        "src/routes/_tools/js-perf/-components/use-js-perf-runner.ts",
+        "src/routes/_tools/ev-charging/-components/charging-form.tsx",
+        "src/lib/tools/ev-charging-estimator/adapters/ev-charging-calculate-advanced.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "warn",
+              "options": { "maxLines": 300 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["vite.config.ts", "*.config.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    },
     {
       "includes": ["src/lib/pages/**/index.tsx", "src/*.ts", "*.ts"],
       "linter": {
