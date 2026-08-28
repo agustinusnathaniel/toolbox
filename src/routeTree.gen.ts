@@ -30,6 +30,7 @@ import { Route as ToolsMarkdownPreviewIndexRouteImport } from './routes/_tools/m
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex-tester/index'
+import { Route as ToolsSqlFormatterIndexRouteImport } from './routes/_tools/sql-formatter/index'
 import { Route as ToolsTextDiffIndexRouteImport } from './routes/_tools/text-diff/index'
 import { Route as ToolsTimestampConverterIndexRouteImport } from './routes/_tools/timestamp-converter/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
@@ -146,6 +147,11 @@ const ToolsRegexTesterIndexRoute = ToolsRegexTesterIndexRouteImport.update({
   path: '/regex-tester/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsSqlFormatterIndexRoute = ToolsSqlFormatterIndexRouteImport.update({
+  id: '/sql-formatter/',
+  path: '/sql-formatter/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsTextDiffIndexRoute = ToolsTextDiffIndexRouteImport.update({
   id: '/text-diff/',
   path: '/text-diff/',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/regex-tester/': typeof ToolsRegexTesterIndexRoute
+  '/sql-formatter/': typeof ToolsSqlFormatterIndexRoute
   '/text-diff/': typeof ToolsTextDiffIndexRoute
   '/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/regex-tester': typeof ToolsRegexTesterIndexRoute
+  '/sql-formatter': typeof ToolsSqlFormatterIndexRoute
   '/text-diff': typeof ToolsTextDiffIndexRoute
   '/timestamp-converter': typeof ToolsTimestampConverterIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/regex-tester/': typeof ToolsRegexTesterIndexRoute
+  '/_tools/sql-formatter/': typeof ToolsSqlFormatterIndexRoute
   '/_tools/text-diff/': typeof ToolsTextDiffIndexRoute
   '/_tools/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/password-generator/'
     | '/qrcode/'
     | '/regex-tester/'
+    | '/sql-formatter/'
     | '/text-diff/'
     | '/timestamp-converter/'
     | '/ua-check/'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/password-generator'
     | '/qrcode'
     | '/regex-tester'
+    | '/sql-formatter'
     | '/text-diff'
     | '/timestamp-converter'
     | '/ua-check'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/_tools/password-generator/'
     | '/_tools/qrcode/'
     | '/_tools/regex-tester/'
+    | '/_tools/sql-formatter/'
     | '/_tools/text-diff/'
     | '/_tools/timestamp-converter/'
     | '/_tools/ua-check/'
@@ -530,6 +542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsRegexTesterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/sql-formatter/': {
+      id: '/_tools/sql-formatter/'
+      path: '/sql-formatter'
+      fullPath: '/sql-formatter/'
+      preLoaderRoute: typeof ToolsSqlFormatterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/text-diff/': {
       id: '/_tools/text-diff/'
       path: '/text-diff'
@@ -607,6 +626,7 @@ interface ToolsRouteRouteChildren {
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsRegexTesterIndexRoute: typeof ToolsRegexTesterIndexRoute
+  ToolsSqlFormatterIndexRoute: typeof ToolsSqlFormatterIndexRoute
   ToolsTextDiffIndexRoute: typeof ToolsTextDiffIndexRoute
   ToolsTimestampConverterIndexRoute: typeof ToolsTimestampConverterIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
@@ -635,6 +655,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsRegexTesterIndexRoute: ToolsRegexTesterIndexRoute,
+  ToolsSqlFormatterIndexRoute: ToolsSqlFormatterIndexRoute,
   ToolsTextDiffIndexRoute: ToolsTextDiffIndexRoute,
   ToolsTimestampConverterIndexRoute: ToolsTimestampConverterIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,

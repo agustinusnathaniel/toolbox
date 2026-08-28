@@ -43,6 +43,7 @@ import { meta as markdownPreviewMeta } from '@/routes/_tools/markdown-preview/-m
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
 import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
+import { meta as sqlFormatterMeta } from '@/routes/_tools/sql-formatter/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
@@ -225,5 +226,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Braces />,
     ...htmlEntitiesMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Braces />,
+    ...sqlFormatterMeta,
   },
 ];
