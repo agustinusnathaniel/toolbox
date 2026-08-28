@@ -49,6 +49,7 @@ import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
+import { meta as yamlConverterMeta } from '@/routes/_tools/yaml-converter/-meta';
 import { meta as zippyImgMeta } from '@/routes/_tools/zippy-img/-meta';
 
 export type ToolCategory =
@@ -105,6 +106,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     mobileTitle: 'JSON',
     showInMobile: true,
     ...jsonFormatterMeta,
+  },
+  {
+    category: 'Text & Data',
+    icon: <FileText />,
+    ...yamlConverterMeta,
   },
   {
     category: 'Design & Media',
