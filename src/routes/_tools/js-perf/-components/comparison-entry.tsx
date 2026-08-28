@@ -1,7 +1,7 @@
 import { BadgeCheck, BadgeX } from 'lucide-react';
 
-import type { ExecutionResult } from '@/lib/js-perf-comp-core';
-import { formatDuration } from '@/lib/js-perf-comp-core';
+import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
+import { formatDuration } from '@/lib/js-perf-comp-core/models';
 
 import { StatusBadge } from './status-badge';
 

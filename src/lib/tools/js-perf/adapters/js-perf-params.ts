@@ -1,4 +1,4 @@
-import { DEFAULT_RUN_POLICY } from '@/lib/js-perf-comp-core';
+import { DEFAULT_RUN_POLICY } from '@/lib/js-perf-comp-core/models';
 import {
   DEFAULT_PRESET,
   STABILITY_DEFAULT_ROUNDS,

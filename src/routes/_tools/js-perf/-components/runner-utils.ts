@@ -1,10 +1,10 @@
 import type { RefObject } from 'react';
 
+import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
 import {
-  type ExecutionResult,
   parseWorkerMessage,
   type WorkerOutboundMessage,
-} from '@/lib/js-perf-comp-core';
+} from '@/lib/js-perf-comp-core/worker-api';
 
 import JsPerfWorker from '../-worker/js-perf.worker.ts?worker';
 

@@ -4,13 +4,15 @@ import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten';
 import type {
   ExecutionRequest,
   ExecutionResult,
-  WorkerInboundMessage,
-  WorkerOutboundMessage,
-} from '@/lib/js-perf-comp-core';
+} from '@/lib/js-perf-comp-core/models';
 import {
   calculateRobustStatistics,
   DEFAULT_RUN_POLICY,
-} from '@/lib/js-perf-comp-core';
+} from '@/lib/js-perf-comp-core/models';
+import type {
+  WorkerInboundMessage,
+  WorkerOutboundMessage,
+} from '@/lib/js-perf-comp-core/worker-api';
 
 let quickjsModule: Awaited<ReturnType<typeof getQuickJS>> | null = null;
 

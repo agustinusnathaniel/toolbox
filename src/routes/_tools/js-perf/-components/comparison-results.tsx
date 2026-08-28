@@ -2,9 +2,11 @@ import { Card, CardContent } from '@/lib/components/ui/card';
 import {
   buildComparisonMetrics,
   type ComparisonVerdict,
+} from '@/lib/js-perf-comp-core/metrics';
+import {
   type ExecutionResult,
   formatDuration,
-} from '@/lib/js-perf-comp-core';
+} from '@/lib/js-perf-comp-core/models';
 
 import { ComparisonEntry } from './comparison-entry';
 import { ResultCard } from './result-card';

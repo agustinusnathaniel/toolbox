@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 import { Badge } from '@/lib/components/ui/badge';
-import type { ExecutionResult } from '@/lib/js-perf-comp-core';
+import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
 
 export function StatusBadge({ result }: { result: ExecutionResult | null }) {
   if (!result) {
