@@ -11,7 +11,7 @@ import {
 describe('getToolNavItems', () => {
   test('returns all registered tools', () => {
     const items = getToolNavItems();
-    expect(items).toHaveLength(26);
+    expect(items).toHaveLength(27);
   });
 
   test('each item has required fields', () => {
@@ -66,6 +66,7 @@ describe('getToolNavItems', () => {
     expect(items[23].slug).toBe('markdown-preview');
     expect(items[24].slug).toBe('html-entities');
     expect(items[25].slug).toBe('sql-formatter');
+    expect(items[26].slug).toBe('number-base');
   });
 });
 
