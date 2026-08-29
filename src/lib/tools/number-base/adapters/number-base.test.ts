@@ -54,6 +54,15 @@ describe('isValidForBase', () => {
     expect(isValidForBase('ff', 16)).toBe(true);
     expect(isValidForBase('GHI', 16)).toBe(false);
   });
+
+  test('rejects input longer than 500 digits', () => {
+    expect(isValidForBase('1'.repeat(501), 10)).toBe(false);
+    expect(isValidForBase('1'.repeat(501), 2)).toBe(false);
+  });
+
+  test('allows 500 digits boundary', () => {
+    expect(isValidForBase('1'.repeat(500), 10)).toBe(true);
+  });
 });
 
 describe('convertNumberBase', () => {
@@ -139,5 +148,17 @@ describe('convertNumberBase', () => {
     const r = convertNumberBase('-FF', 16);
     expect(r.isValid).toBe(true);
     expect(r.decimal).toBe('-255');
+  });
+
+  test('rejects input longer than 500 digits', () => {
+    const r = convertNumberBase('1'.repeat(501), 10);
+    expect(r.isValid).toBe(false);
+    expect(r.error).toContain('Input too long');
+  });
+
+  test('allows 500 digits boundary', () => {
+    const r = convertNumberBase('1'.repeat(500), 10);
+    expect(r.isValid).toBe(true);
+    expect(r.decimal).toBe('1'.repeat(500));
   });
 });

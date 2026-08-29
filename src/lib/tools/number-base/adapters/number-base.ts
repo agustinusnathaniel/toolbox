@@ -84,6 +84,9 @@ export function isValidForBase(value: string, base: NumberBase): boolean {
   if (!stripped) {
     return false;
   }
+  if (stripped.length > 500) {
+    return false;
+  }
   return getPattern(base).test(stripped);
 }
 
@@ -122,6 +125,16 @@ export function convertNumberBase(
     };
   }
   const stripped = stripPrefix(absolute, fromBase);
+  if (stripped.length > 500) {
+    return {
+      binary: '',
+      decimal: '',
+      error: 'Input too long (max 500 digits)',
+      hex: '',
+      isValid: false,
+      octal: '',
+    };
+  }
   if (!getPattern(fromBase).test(stripped)) {
     return {
       binary: '',
