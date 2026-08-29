@@ -37,6 +37,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **Markdown Preview** — Preview Markdown as HTML with live rendering and shareable links
 - **URL Encoder/Decoder** — Encode and decode URLs in component or full-URL mode with shareable links
 - **HTML Entity Codec** — Encode and decode HTML entities (&amp; &lt; &gt; &quot;) entirely in your browser
+- **SQL Formatter** — Format and beautify SQL queries with dialect support entirely in your browser
 
 ## Tech Stack
 
