@@ -13,7 +13,7 @@ import { Separator } from '@/lib/components/ui/separator';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
-import { DEFAULT_RUN_POLICY, isRunable } from '@/lib/js-perf-comp-core';
+import { DEFAULT_RUN_POLICY, isRunable } from '@/lib/js-perf-comp-core/models';
 import {
   buildJsPerfParams,
   buildJsPerfStateFromSearch,

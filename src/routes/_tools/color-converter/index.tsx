@@ -67,14 +67,18 @@ export const Route = createFileRoute('/_tools/color-converter/')({
   validateSearch: searchSchema,
 });
 
-function ColorConverterPage() {
-  const { trackAction } = useToolTracking('color-converter', 'Color Converter');
+function useColorState() {
   const search = useSearch({ from: '/_tools/color-converter/' });
   const [input, setInput] = useState(search.c ?? '#ff0000');
-  const { copiedKey, copy } = useCopyFeedback<ColorFormat>();
+  return { input, setInput };
+}
 
-  const parsed = parseColor(input);
-
+function useColorActions(
+  parsed: ParsedColor | null,
+  setInput: (v: string) => void,
+  trackAction: (a: string) => void,
+  copy: (text: string, key: string) => Promise<boolean>
+) {
   const handleCopy = useCallback(
     async (format: ColorFormat) => {
       if (!parsed) {
@@ -86,144 +90,224 @@ function ColorConverterPage() {
     },
     [parsed, copy, trackAction]
   );
-
   const handlePreset = useCallback(
     (hex: string) => {
       setInput(hex);
       trackAction('preset');
     },
-    [trackAction]
+    [trackAction, setInput]
   );
+  return { handleCopy, handlePreset };
+}
 
+function ColorInputRow({
+  input,
+  setInput,
+  trackAction,
+  handleCopyLink,
+  swatchColor,
+}: {
+  input: string;
+  setInput: (v: string) => void;
+  trackAction: (a: string) => void;
+  handleCopyLink: () => void;
+  swatchColor: string;
+}) {
+  return (
+    <div className="flex gap-4">
+      <ColorPicker
+        onChange={(c) => {
+          setInput(c.toString('hex'));
+          trackAction('color_picker');
+        }}
+        value={parseColorStately(swatchColor)}
+      >
+        <Popover>
+          <Button data-slot="control" intent="plain">
+            <ColorSwatch />
+            Select color
+          </Button>
+          <PopoverContent className="[--gutter:--spacing(1)]">
+            <PopoverBody>
+              <div className="space-y-(--gutter)">
+                <ColorArea
+                  colorSpace="hsb"
+                  xChannel="saturation"
+                  yChannel="brightness"
+                />
+                <ColorSlider channel="hue" colorSpace="hsb">
+                  <ColorSliderTrack>
+                    <ColorThumb />
+                  </ColorSliderTrack>
+                </ColorSlider>
+                <ColorField aria-label="Color">
+                  <Input />
+                </ColorField>
+              </div>
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      </ColorPicker>
+      <div className="flex flex-1 flex-col gap-1">
+        <label className="text-muted-fg text-sm" htmlFor="color-input">
+          Enter a color value
+        </label>
+        <input
+          className="w-full rounded-lg border bg-bg px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
+          id="color-input"
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="#ff0000, rgb(255, 0, 0), hsl(0, 100%, 50%), oklch(0.6278 0.2577 29.23)"
+          type="text"
+          value={input}
+        />
+      </div>
+      <Button
+        aria-label="Copy shareable link"
+        intent="outline"
+        onPress={handleCopyLink}
+        size="sq-sm"
+      >
+        <Link className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
+function ColorResults({
+  parsed,
+  copiedKey,
+  onCopy,
+}: {
+  parsed: ParsedColor | null;
+  copiedKey: string | null;
+  onCopy: (f: ColorFormat) => void;
+}) {
+  if (!parsed) {
+    return null;
+  }
+  return (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {FORMATS.map(({ key, label }) => {
+        const value = formatColorString(parsed, key);
+        return (
+          <div
+            className="flex items-center justify-between rounded-lg border p-3"
+            key={key}
+          >
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-muted-fg text-xs">{label}</span>
+              <code className="font-mono text-sm">{value}</code>
+            </div>
+            <Button
+              aria-label={`Copy ${label} value`}
+              intent="outline"
+              onPress={() => onCopy(key)}
+              size="sq-sm"
+            >
+              {copiedKey === key ? (
+                <Check className="size-4 text-success" />
+              ) : (
+                <Copy className="size-4" />
+              )}
+            </Button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ColorPresets({ onPreset }: { onPreset: (hex: string) => void }) {
+  return (
+    <Card>
+      <CardHeader title="Presets" />
+      <CardContent>
+        <div className="flex flex-wrap gap-2">
+          {PRESET_COLORS.map(({ hex, label }) => (
+            <button
+              aria-label={`Select ${label} (${hex})`}
+              className="flex size-10 items-center justify-center rounded-lg border shadow-xs transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
+              key={hex}
+              onClick={() => onPreset(hex)}
+              style={{ backgroundColor: hex }}
+              title={label}
+              type="button"
+            />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ColorMainCard({
+  input,
+  setInput,
+  trackAction,
+  handleCopyLink,
+  parsed,
+  copiedKey,
+  onCopy,
+}: {
+  input: string;
+  setInput: (v: string) => void;
+  trackAction: (a: string) => void;
+  handleCopyLink: () => void;
+  parsed: ParsedColor | null;
+  copiedKey: string | null;
+  onCopy: (f: ColorFormat) => void;
+}) {
+  const swatchColor = parsed ? parsed.hex : '#000000';
+  return (
+    <Card>
+      <CardHeader />
+      <CardContent className="flex flex-col gap-6">
+        <ColorInputRow
+          handleCopyLink={handleCopyLink}
+          input={input}
+          setInput={setInput}
+          swatchColor={swatchColor}
+          trackAction={trackAction}
+        />
+        {!parsed && input.trim() && (
+          <p className="text-danger text-sm" role="alert">
+            Could not parse this color. Try a format like #ff0000, rgb(255, 0,
+            0), hsl(0, 100%, 50%), or oklch(0.6278 0.2577 29.23).
+          </p>
+        )}
+        <ColorResults copiedKey={copiedKey} onCopy={onCopy} parsed={parsed} />
+      </CardContent>
+    </Card>
+  );
+}
+
+function ColorConverterPage() {
+  const { trackAction } = useToolTracking('color-converter', 'Color Converter');
+  const { input, setInput } = useColorState();
+  const { copiedKey, copy } = useCopyFeedback<ColorFormat>();
+  const parsed = parseColor(input);
+  const { handleCopy, handlePreset } = useColorActions(
+    parsed,
+    setInput,
+    trackAction,
+    copy as never
+  );
   const handleCopyLink = useCopyShareableLink(
     () => buildColorParams(input),
     trackAction
   );
-
-  const swatchColor = parsed ? parsed.hex : '#000000';
-
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
-      <Card>
-        <CardHeader />
-        <CardContent className="flex flex-col gap-6">
-          <div className="flex gap-4">
-            <ColorPicker
-              onChange={(c) => {
-                setInput(c.toString('hex'));
-                trackAction('color_picker');
-              }}
-              value={parseColorStately(swatchColor)}
-            >
-              <Popover>
-                <Button data-slot="control" intent="plain">
-                  <ColorSwatch />
-                  Select color
-                </Button>
-                <PopoverContent className="[--gutter:--spacing(1)]">
-                  <PopoverBody>
-                    <div className="space-y-(--gutter)">
-                      <ColorArea
-                        colorSpace="hsb"
-                        xChannel="saturation"
-                        yChannel="brightness"
-                      />
-                      <ColorSlider channel="hue" colorSpace="hsb">
-                        <ColorSliderTrack>
-                          <ColorThumb />
-                        </ColorSliderTrack>
-                      </ColorSlider>
-                      <ColorField aria-label="Color">
-                        <Input />
-                      </ColorField>
-                    </div>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            </ColorPicker>
-            <div className="flex flex-1 flex-col gap-1">
-              <label className="text-muted-fg text-sm" htmlFor="color-input">
-                Enter a color value
-              </label>
-              <input
-                className="w-full rounded-lg border bg-bg px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
-                id="color-input"
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="#ff0000, rgb(255, 0, 0), hsl(0, 100%, 50%), oklch(0.6278 0.2577 29.23)"
-                type="text"
-                value={input}
-              />
-            </div>
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
-              onPress={handleCopyLink}
-              size="sq-sm"
-            >
-              <Link className="size-4" />
-            </Button>
-          </div>
-
-          {!parsed && input.trim() && (
-            <p className="text-danger text-sm" role="alert">
-              Could not parse this color. Try a format like #ff0000, rgb(255, 0,
-              0), hsl(0, 100%, 50%), or oklch(0.6278 0.2577 29.23).
-            </p>
-          )}
-
-          {parsed && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {FORMATS.map(({ key, label }) => {
-                const value = formatColorString(parsed, key);
-                return (
-                  <div
-                    className="flex items-center justify-between rounded-lg border p-3"
-                    key={key}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <span className="font-medium text-muted-fg text-xs">
-                        {label}
-                      </span>
-                      <code className="font-mono text-sm">{value}</code>
-                    </div>
-                    <Button
-                      aria-label={`Copy ${label} value`}
-                      intent="outline"
-                      onPress={() => handleCopy(key)}
-                      size="sq-sm"
-                    >
-                      {copiedKey === key ? (
-                        <Check className="size-4 text-success" />
-                      ) : (
-                        <Copy className="size-4" />
-                      )}
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader title="Presets" />
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {PRESET_COLORS.map(({ hex, label }) => (
-              <button
-                aria-label={`Select ${label} (${hex})`}
-                className="flex size-10 items-center justify-center rounded-lg border shadow-xs transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
-                key={hex}
-                onClick={() => handlePreset(hex)}
-                style={{ backgroundColor: hex }}
-                title={label}
-                type="button"
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ColorMainCard
+        copiedKey={copiedKey}
+        handleCopyLink={handleCopyLink}
+        input={input}
+        onCopy={handleCopy}
+        parsed={parsed}
+        setInput={setInput}
+        trackAction={trackAction}
+      />
+      <ColorPresets onPreset={handlePreset} />
 
       <ToolHelp
         faq={[

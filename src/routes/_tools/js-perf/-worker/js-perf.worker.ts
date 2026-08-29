@@ -4,13 +4,15 @@ import { getQuickJS, shouldInterruptAfterDeadline } from 'quickjs-emscripten';
 import type {
   ExecutionRequest,
   ExecutionResult,
-  WorkerInboundMessage,
-  WorkerOutboundMessage,
-} from '@/lib/js-perf-comp-core';
+} from '@/lib/js-perf-comp-core/models';
 import {
   calculateRobustStatistics,
   DEFAULT_RUN_POLICY,
-} from '@/lib/js-perf-comp-core';
+} from '@/lib/js-perf-comp-core/models';
+import type {
+  WorkerInboundMessage,
+  WorkerOutboundMessage,
+} from '@/lib/js-perf-comp-core/worker-api';
 
 let quickjsModule: Awaited<ReturnType<typeof getQuickJS>> | null = null;
 
@@ -240,9 +242,98 @@ function runMainIteration(
   }
 }
 
+function runSetupPhase(
+  session: VmSession,
+  payload: ExecutionRequest
+): PhaseFailure | null {
+  if (!payload.setup.trim()) {
+    return null;
+  }
+  const result = runSnippet(
+    session,
+    payload.setup,
+    payload.deadlineMs,
+    'setup',
+    'benchmark-setup.js'
+  );
+  return result.ok ? null : result.failure;
+}
+
+function runCompilePhase(
+  session: VmSession,
+  payload: ExecutionRequest
+): PhaseFailure | null {
+  const result = runSnippet(
+    session,
+    createBenchmarkFunctionSource(payload.code),
+    payload.deadlineMs,
+    'compile',
+    'benchmark-main.js'
+  );
+  return result.ok ? null : result.failure;
+}
+
+function runWarmupPhase(
+  session: VmSession,
+  payload: ExecutionRequest
+): PhaseFailure | null {
+  for (let i = 0; i < WARMUP_ITERATIONS; i += 1) {
+    const r = runMainIteration(
+      session,
+      payload.deadlineMs,
+      'warmup',
+      i + 1,
+      WARMUP_ITERATIONS
+    );
+    if (!r.ok) {
+      return r.failure;
+    }
+  }
+  return null;
+}
+
+function runTimedPhase(
+  session: VmSession,
+  payload: ExecutionRequest
+): { durations: Array<number>; failure: PhaseFailure | null } {
+  const durations: Array<number> = [];
+  for (let i = 0; i < payload.iterations; i += 1) {
+    const start = performance.now();
+    const r = runMainIteration(
+      session,
+      payload.deadlineMs,
+      'timed',
+      i + 1,
+      payload.iterations
+    );
+    if (!r.ok) {
+      return { durations, failure: r.failure };
+    }
+    durations.push(performance.now() - start);
+  }
+  return { durations, failure: null };
+}
+
+function runTeardownPhase(
+  session: VmSession,
+  payload: ExecutionRequest,
+  _durations: Array<number>
+): PhaseFailure | null {
+  if (!payload.teardown.trim()) {
+    return null;
+  }
+  const r = runSnippet(
+    session,
+    payload.teardown,
+    payload.deadlineMs,
+    'teardown',
+    'benchmark-teardown.js'
+  );
+  return r.ok ? null : r.failure;
+}
+
 function executeBenchmark(payload: ExecutionRequest): BenchmarkRunOutcome {
   const session = createVmSession(DEFAULT_RUN_POLICY.maxOutputLines);
-
   if (!session) {
     return {
       durations: [],
@@ -254,105 +345,45 @@ function executeBenchmark(payload: ExecutionRequest): BenchmarkRunOutcome {
       output: [],
     };
   }
-
   try {
-    const { code, deadlineMs, iterations, setup, teardown } = payload;
-
-    if (setup.trim()) {
-      const setupResult = runSnippet(
-        session,
-        setup,
-        deadlineMs,
-        'setup',
-        'benchmark-setup.js'
-      );
-      if (!setupResult.ok) {
-        return {
-          durations: [],
-          failure: setupResult.failure,
-          output: session.output,
-        };
-      }
+    const setupFailure = runSetupPhase(session, payload);
+    if (setupFailure) {
+      return { durations: [], failure: setupFailure, output: session.output };
     }
-
-    const compileResult = runSnippet(
-      session,
-      createBenchmarkFunctionSource(code),
-      deadlineMs,
-      'compile',
-      'benchmark-main.js'
-    );
-    if (!compileResult.ok) {
+    const compileFailure = runCompilePhase(session, payload);
+    if (compileFailure) {
+      return { durations: [], failure: compileFailure, output: session.output };
+    }
+    const warmupFailure = runWarmupPhase(session, payload);
+    if (warmupFailure) {
+      return { durations: [], failure: warmupFailure, output: session.output };
+    }
+    const timed = runTimedPhase(session, payload);
+    if (timed.failure) {
       return {
-        durations: [],
-        failure: compileResult.failure,
+        durations: timed.durations,
+        failure: timed.failure,
         output: session.output,
       };
     }
-
-    for (let i = 0; i < WARMUP_ITERATIONS; i += 1) {
-      const warmupResult = runMainIteration(
-        session,
-        deadlineMs,
-        'warmup',
-        i + 1,
-        WARMUP_ITERATIONS
-      );
-      if (!warmupResult.ok) {
-        return {
-          durations: [],
-          failure: warmupResult.failure,
-          output: session.output,
-        };
-      }
+    const teardownFailure = runTeardownPhase(session, payload, timed.durations);
+    if (teardownFailure) {
+      return {
+        durations: timed.durations,
+        failure: teardownFailure,
+        output: session.output,
+      };
     }
-
-    const durations: Array<number> = [];
-    for (let i = 0; i < iterations; i += 1) {
-      const start = performance.now();
-      const timedResult = runMainIteration(
-        session,
-        deadlineMs,
-        'timed',
-        i + 1,
-        iterations
-      );
-
-      if (!timedResult.ok) {
-        return {
-          durations,
-          failure: timedResult.failure,
-          output: session.output,
-        };
-      }
-
-      durations.push(performance.now() - start);
-    }
-
-    if (teardown.trim()) {
-      const teardownResult = runSnippet(
-        session,
-        teardown,
-        deadlineMs,
-        'teardown',
-        'benchmark-teardown.js'
-      );
-      if (!teardownResult.ok) {
-        return {
-          durations,
-          failure: teardownResult.failure,
-          output: session.output,
-        };
-      }
-    }
-
     if (session.outputTruncated) {
       session.output.push(
         `... output truncated at ${DEFAULT_RUN_POLICY.maxOutputLines} lines`
       );
     }
-
-    return { durations, failure: null, output: session.output };
+    return {
+      durations: timed.durations,
+      failure: null,
+      output: session.output,
+    };
   } finally {
     disposeVmSession(session);
   }

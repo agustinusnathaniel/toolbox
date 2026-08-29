@@ -1,4 +1,4 @@
-import type { ExecutionResult } from '@/lib/js-perf-comp-core';
+import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
 
 export interface Preset {
   codeA: string;

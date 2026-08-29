@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import type { ExecutionResult } from '@/lib/js-perf-comp-core';
-import { formatDuration, formatStatistics } from '@/lib/js-perf-comp-core';
+import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
+import {
+  formatDuration,
+  formatStatistics,
+} from '@/lib/js-perf-comp-core/models';
 
 import { StatusBadge } from './status-badge';
 

@@ -39,81 +39,151 @@ export interface UseWorkerDeadlineReturn<TResult> {
 
 const DEFAULT_DEADLINE_MS = 2000;
 
-export function useWorkerDeadline<TRequest, TResponse, TResult>(
-  options: WorkerDeadlineOptions<TRequest, TResponse, TResult>
-): UseWorkerDeadlineReturn<TResult> {
-  const optionsRef = useRef(options);
-  optionsRef.current = options;
+function attachWorkerImpl<TResponse, TResult>(
+  worker: Worker,
+  workerRef: React.MutableRefObject<Worker | null>,
+  latestIdRef: React.MutableRefObject<string | null>,
+  optionsRef: React.MutableRefObject<
+    WorkerDeadlineOptions<unknown, TResponse, TResult>
+  >,
+  clearDeadline: () => void,
+  setResult: Dispatch<SetStateAction<TResult | null>>,
+  setComputing: Dispatch<SetStateAction<boolean>>
+) {
+  worker.onmessage = (event: MessageEvent<TResponse>) => {
+    if (optionsRef.current.extractId(event.data) !== latestIdRef.current) {
+      return;
+    }
+    clearDeadline();
+    setResult(optionsRef.current.extractResult(event.data));
+    setComputing(false);
+  };
+  workerRef.current = worker;
+}
 
-  const { autoFire = false } = options;
-
+function useDeadlineRefs<TResponse, TResult>(
+  optionsRef: React.MutableRefObject<
+    WorkerDeadlineOptions<unknown, TResponse, TResult>
+  >
+) {
   const workerRef = useRef<Worker | null>(null);
   const latestIdRef = useRef<string | null>(null);
   const deadlineRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const [result, setResult] = useState<TResult | null>(null);
   const [computing, setComputing] = useState(false);
-
   const clearDeadline = useCallback(() => {
     if (deadlineRef.current !== null) {
       clearTimeout(deadlineRef.current);
       deadlineRef.current = null;
     }
   }, []);
-
   const attachWorker = useCallback(
-    (worker: Worker) => {
-      worker.onmessage = (event: MessageEvent<TResponse>) => {
-        if (optionsRef.current.extractId(event.data) !== latestIdRef.current) {
-          return;
-        }
-        clearDeadline();
-        setResult(optionsRef.current.extractResult(event.data));
-        setComputing(false);
-      };
-      workerRef.current = worker;
-    },
-    [clearDeadline]
+    (w: Worker) =>
+      attachWorkerImpl(
+        w,
+        workerRef,
+        latestIdRef,
+        optionsRef,
+        clearDeadline,
+        setResult,
+        setComputing
+      ),
+    [clearDeadline, optionsRef]
   );
+  return {
+    attachWorker,
+    clearDeadline,
+    computing,
+    deadlineRef,
+    latestIdRef,
+    result,
+    setComputing,
+    setResult,
+    workerRef,
+  };
+}
 
-  const handleTimeout = useCallback(() => {
+function useDeadlineTimeout<TResponse, TResult>(
+  workerRef: React.MutableRefObject<Worker | null>,
+  latestIdRef: React.MutableRefObject<string | null>,
+  optionsRef: React.MutableRefObject<
+    WorkerDeadlineOptions<unknown, TResponse, TResult>
+  >,
+  attachWorker: (w: Worker) => void,
+  setResult: Dispatch<SetStateAction<TResult | null>>,
+  setComputing: Dispatch<SetStateAction<boolean>>
+) {
+  return useCallback(() => {
     workerRef.current?.terminate();
     latestIdRef.current = null;
-    const replacement = optionsRef.current.workerFactory();
-    attachWorker(replacement);
+    attachWorker(optionsRef.current.workerFactory());
     setResult(optionsRef.current.timeoutResult);
     setComputing(false);
-  }, [attachWorker]);
+  }, [
+    attachWorker,
+    latestIdRef,
+    optionsRef.current.workerFactory,
+    workerRef.current?.terminate,
+    optionsRef.current.timeoutResult,
+    setResult,
+    setComputing,
+  ]);
+}
 
+export function useWorkerDeadline<TRequest, TResponse, TResult>(
+  options: WorkerDeadlineOptions<TRequest, TResponse, TResult>
+): UseWorkerDeadlineReturn<TResult> {
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+  const { autoFire = false } = options;
+  const refs = useDeadlineRefs(optionsRef as never);
+  const handleTimeout = useDeadlineTimeout(
+    refs.workerRef,
+    refs.latestIdRef,
+    optionsRef as never,
+    refs.attachWorker,
+    refs.setResult,
+    refs.setComputing
+  );
   useEffect(() => {
     const worker = optionsRef.current.workerFactory();
-    attachWorker(worker);
-
+    refs.attachWorker(worker);
     return () => {
-      clearDeadline();
-      workerRef.current?.terminate();
-      workerRef.current = null;
-      latestIdRef.current = null;
+      refs.clearDeadline();
+      refs.workerRef.current?.terminate();
+      refs.workerRef.current = null;
+      refs.latestIdRef.current = null;
     };
-  }, [attachWorker, clearDeadline]);
-
+  }, [refs.attachWorker, refs.clearDeadline, refs.workerRef, refs.latestIdRef]);
   const postRequest = useCallback(() => {
-    clearDeadline();
+    refs.clearDeadline();
     const id = crypto.randomUUID();
-    latestIdRef.current = id;
-    workerRef.current?.postMessage(optionsRef.current.buildRequest(id));
-    setComputing(true);
-    deadlineRef.current = setTimeout(
+    refs.latestIdRef.current = id;
+    refs.workerRef.current?.postMessage(
+      optionsRef.current.buildRequest(id) as never
+    );
+    refs.setComputing(true);
+    refs.deadlineRef.current = setTimeout(
       handleTimeout,
       optionsRef.current.deadlineMs ?? DEFAULT_DEADLINE_MS
     );
-  }, [clearDeadline, handleTimeout]);
-
+  }, [
+    handleTimeout,
+    refs.workerRef.current?.postMessage,
+    refs.deadlineRef,
+    refs.setComputing,
+    refs.latestIdRef,
+    refs.clearDeadline,
+  ]);
   useEffect(() => {
     if (autoFire) {
       postRequest();
     }
   }, [autoFire, postRequest]);
-
-  return { computing, postRequest, result, setResult };
+  return {
+    computing: refs.computing,
+    postRequest,
+    result: refs.result as TResult | null,
+    setResult: refs.setResult,
+  };
 }
