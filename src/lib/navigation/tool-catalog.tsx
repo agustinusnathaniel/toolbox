@@ -21,6 +21,7 @@ import {
   KeyRound,
   Link2,
   Regex,
+  Scale,
   ScanLine,
   Table2,
 } from 'lucide-react';
@@ -48,6 +49,7 @@ import { meta as sqlFormatterMeta } from '@/routes/_tools/sql-formatter/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as textStatsMeta } from '@/routes/_tools/text-stats/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
+import { meta as unitConverterMeta } from '@/routes/_tools/unit-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
@@ -243,5 +245,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Text & Data',
     icon: <FileText />,
     ...textStatsMeta,
+  },
+  {
+    category: 'Calculators',
+    icon: <Scale />,
+    ...unitConverterMeta,
   },
 ];
