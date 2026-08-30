@@ -41,6 +41,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **Number Base Converter** — Convert numbers between binary, octal, decimal, and hexadecimal entirely in your browser
 - **Text Statistics** — Count characters, words, lines, and estimate reading time entirely in your browser
 - **Unit Converter** — Convert between units of length, weight, temperature, volume, and data storage entirely in your browser
+- **Lorem Ipsum Generator** — Generate lorem ipsum placeholder text with shareable links
 
 ## Tech Stack
 

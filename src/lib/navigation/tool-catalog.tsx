@@ -40,6 +40,7 @@ import { meta as jsPerfMeta } from '@/routes/_tools/js-perf/-meta';
 import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta';
 import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
+import { meta as loremIpsumMeta } from '@/routes/_tools/lorem-ipsum/-meta';
 import { meta as markdownPreviewMeta } from '@/routes/_tools/markdown-preview/-meta';
 import { meta as numberBaseMeta } from '@/routes/_tools/number-base/-meta';
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
@@ -49,8 +50,8 @@ import { meta as sqlFormatterMeta } from '@/routes/_tools/sql-formatter/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as textStatsMeta } from '@/routes/_tools/text-stats/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
-import { meta as unitConverterMeta } from '@/routes/_tools/unit-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
+import { meta as unitConverterMeta } from '@/routes/_tools/unit-converter/-meta';
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
@@ -250,5 +251,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Calculators',
     icon: <Scale />,
     ...unitConverterMeta,
+  },
+  {
+    category: 'Text & Data',
+    icon: <FileText />,
+    ...loremIpsumMeta,
   },
 ];
