@@ -46,6 +46,7 @@ import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
 import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
 import { meta as sqlFormatterMeta } from '@/routes/_tools/sql-formatter/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
+import { meta as textStatsMeta } from '@/routes/_tools/text-stats/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
@@ -237,5 +238,10 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Binary />,
     ...numberBaseMeta,
+  },
+  {
+    category: 'Text & Data',
+    icon: <FileText />,
+    ...textStatsMeta,
   },
 ];

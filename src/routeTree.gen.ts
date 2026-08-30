@@ -33,6 +33,7 @@ import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/ind
 import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex-tester/index'
 import { Route as ToolsSqlFormatterIndexRouteImport } from './routes/_tools/sql-formatter/index'
 import { Route as ToolsTextDiffIndexRouteImport } from './routes/_tools/text-diff/index'
+import { Route as ToolsTextStatsIndexRouteImport } from './routes/_tools/text-stats/index'
 import { Route as ToolsTimestampConverterIndexRouteImport } from './routes/_tools/timestamp-converter/index'
 import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/index'
 import { Route as ToolsUrlCodecIndexRouteImport } from './routes/_tools/url-codec/index'
@@ -163,6 +164,11 @@ const ToolsTextDiffIndexRoute = ToolsTextDiffIndexRouteImport.update({
   path: '/text-diff/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsTextStatsIndexRoute = ToolsTextStatsIndexRouteImport.update({
+  id: '/text-stats/',
+  path: '/text-stats/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsTimestampConverterIndexRoute =
   ToolsTimestampConverterIndexRouteImport.update({
     id: '/timestamp-converter/',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/regex-tester/': typeof ToolsRegexTesterIndexRoute
   '/sql-formatter/': typeof ToolsSqlFormatterIndexRoute
   '/text-diff/': typeof ToolsTextDiffIndexRoute
+  '/text-stats/': typeof ToolsTextStatsIndexRoute
   '/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/ua-check/': typeof ToolsUaCheckIndexRoute
   '/url-codec/': typeof ToolsUrlCodecIndexRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByTo {
   '/regex-tester': typeof ToolsRegexTesterIndexRoute
   '/sql-formatter': typeof ToolsSqlFormatterIndexRoute
   '/text-diff': typeof ToolsTextDiffIndexRoute
+  '/text-stats': typeof ToolsTextStatsIndexRoute
   '/timestamp-converter': typeof ToolsTimestampConverterIndexRoute
   '/ua-check': typeof ToolsUaCheckIndexRoute
   '/url-codec': typeof ToolsUrlCodecIndexRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/_tools/regex-tester/': typeof ToolsRegexTesterIndexRoute
   '/_tools/sql-formatter/': typeof ToolsSqlFormatterIndexRoute
   '/_tools/text-diff/': typeof ToolsTextDiffIndexRoute
+  '/_tools/text-stats/': typeof ToolsTextStatsIndexRoute
   '/_tools/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
   '/_tools/ua-check/': typeof ToolsUaCheckIndexRoute
   '/_tools/url-codec/': typeof ToolsUrlCodecIndexRoute
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/regex-tester/'
     | '/sql-formatter/'
     | '/text-diff/'
+    | '/text-stats/'
     | '/timestamp-converter/'
     | '/ua-check/'
     | '/url-codec/'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/regex-tester'
     | '/sql-formatter'
     | '/text-diff'
+    | '/text-stats'
     | '/timestamp-converter'
     | '/ua-check'
     | '/url-codec'
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/_tools/regex-tester/'
     | '/_tools/sql-formatter/'
     | '/_tools/text-diff/'
+    | '/_tools/text-stats/'
     | '/_tools/timestamp-converter/'
     | '/_tools/ua-check/'
     | '/_tools/url-codec/'
@@ -575,6 +587,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsTextDiffIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/text-stats/': {
+      id: '/_tools/text-stats/'
+      path: '/text-stats'
+      fullPath: '/text-stats/'
+      preLoaderRoute: typeof ToolsTextStatsIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/timestamp-converter/': {
       id: '/_tools/timestamp-converter/'
       path: '/timestamp-converter'
@@ -648,6 +667,7 @@ interface ToolsRouteRouteChildren {
   ToolsRegexTesterIndexRoute: typeof ToolsRegexTesterIndexRoute
   ToolsSqlFormatterIndexRoute: typeof ToolsSqlFormatterIndexRoute
   ToolsTextDiffIndexRoute: typeof ToolsTextDiffIndexRoute
+  ToolsTextStatsIndexRoute: typeof ToolsTextStatsIndexRoute
   ToolsTimestampConverterIndexRoute: typeof ToolsTimestampConverterIndexRoute
   ToolsUaCheckIndexRoute: typeof ToolsUaCheckIndexRoute
   ToolsUrlCodecIndexRoute: typeof ToolsUrlCodecIndexRoute
@@ -678,6 +698,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsRegexTesterIndexRoute: ToolsRegexTesterIndexRoute,
   ToolsSqlFormatterIndexRoute: ToolsSqlFormatterIndexRoute,
   ToolsTextDiffIndexRoute: ToolsTextDiffIndexRoute,
+  ToolsTextStatsIndexRoute: ToolsTextStatsIndexRoute,
   ToolsTimestampConverterIndexRoute: ToolsTimestampConverterIndexRoute,
   ToolsUaCheckIndexRoute: ToolsUaCheckIndexRoute,
   ToolsUrlCodecIndexRoute: ToolsUrlCodecIndexRoute,
