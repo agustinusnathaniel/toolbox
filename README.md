@@ -40,6 +40,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **SQL Formatter** — Format and beautify SQL queries with dialect support entirely in your browser
 - **Number Base Converter** — Convert numbers between binary, octal, decimal, and hexadecimal entirely in your browser
 - **Text Statistics** — Count characters, words, lines, and estimate reading time entirely in your browser
+- **Unit Converter** — Convert between units of length, weight, temperature, volume, and data storage entirely in your browser
 
 ## Tech Stack
 
