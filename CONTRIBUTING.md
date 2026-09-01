@@ -59,10 +59,17 @@ We use **Ultracite** (wrapping Biome) for both linting and formatting.
 
 ### Testing
 
-- Write unit tests for business logic in `*.test.ts`.
-- Use `vitest` to run tests.
-- `pnpm test` performs a one-time run.
-- `pnpm test:ui` provides a visual interface for test debugging.
+Tests are opt-in, not the default. Write them when there is a concrete, defensible benefit — meaningful regression protection for risky logic — not automatically for every change. Don't chase test count or coverage percentage; optimize for confidence, regression protection, signal-to-noise ratio, and maintenance cost.
+
+When writing or reviewing tests:
+
+- **Black-box behavior only.** Pass inputs, assert observable outputs. A test should only fail when a behavior is broken, never when the implementation behind it changes. No assertions on source-code strings, function shapes, or internal structure.
+- **One behavior, one test.** A regression should produce exactly one failure. Prefer extending a module's existing test file over creating a new one.
+- **No ceremony.** Plain assertions. Mock only genuinely external seams (clipboard, network, timers, workers) — if a test mocks the project's own logic, extract that logic into a pure `adapters/` function instead.
+- **Prefer adapters over UI tests.** Pure functions in `src/lib/tools/<name>/adapters/` test without DOM mocking. For UI, a handful of behavioral/a11y checks (e.g. `diff-view-control.test.tsx`) beats component-internals testing.
+- **Prefer runtime verification when it gives better signal.** For visual or integration-level changes, `pnpm dev` + browser verification can replace a test that would only mock the DOM.
+
+Run tests with `pnpm test` (one-shot) or `pnpm test:ui` (visual interface for debugging).
 
 ## Adding a New Tool
 
@@ -130,11 +137,14 @@ separate from UI components and makes them testable without DOM mocking.
 See existing tools (e.g., `src/lib/tools/qrcode-generator/adapters/`,
 `src/lib/tools/ev-charging-estimator/adapters/`) for the convention.
 
-Create a corresponding test file alongside the adapter:
-`src/lib/tools/<tool-name>/adapters/<tool>.test.ts`. Model your tests after
-existing adapter tests — they use `vitest` with jsdom. See
-`src/lib/tools/ev-charging-estimator/adapters/ev-charging.test.ts` for a
-comprehensive example covering edge cases.
+Add a test file alongside the adapter when the logic carries real regression
+risk (parsing, formatting, math, shareable-URL state):
+`src/lib/tools/<tool-name>/adapters/<tool>.test.ts`. Tests are opt-in — see
+[Testing](#testing) before creating one. Model them after existing adapter
+tests, e.g. `src/lib/tools/regex-tester/adapters/regex.test.ts` (behavioral
+edge cases) and
+`src/lib/tools/ev-charging-estimator/adapters/ev-charging-params.test.ts`
+(shareable-URL state round-trips). They use `vitest` with jsdom via `vp test`.
 
 Then import from your route:
 
