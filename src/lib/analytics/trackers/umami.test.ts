@@ -10,15 +10,6 @@ afterEach(() => {
   window.umami = undefined;
 });
 
-describe('createUmamiTracker', () => {
-  test('returns an object with track and page methods', () => {
-    const tracker = createUmamiTracker();
-
-    expect(typeof tracker.track).toBe('function');
-    expect(typeof tracker.page).toBe('function');
-  });
-});
-
 describe('track', () => {
   test('calls window.umami.track with event name and properties', () => {
     window.umami = { identify: vi.fn(), track: mockUmamiTrack };

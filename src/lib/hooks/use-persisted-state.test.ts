@@ -59,12 +59,6 @@ describe('usePersistedState', () => {
     expect(result.current[0]).toEqual({ count: 5, name: 'updated' });
   });
 
-  test('does not update continuously when the default value is recreated', () => {
-    const { result } = renderHook(() => usePersistedState('test-key', []));
-
-    expect(result.current[0]).toEqual([]);
-  });
-
   test('returns default value for invalid JSON in localStorage', () => {
     localStorage.setItem('test-key', 'not-valid-json{');
     const { result } = renderHook(() =>

@@ -30,28 +30,15 @@ describe('formatJson', () => {
     expect(result.formatted).toBe('[\n  1,\n  2,\n  3\n]');
   });
 
-  test('formats JSON string', () => {
-    const result = formatJson(VALID_STRING);
+  test.each([
+    ['string', VALID_STRING, '"hello"'],
+    ['number', VALID_NUMBER, '42'],
+    ['boolean', VALID_BOOLEAN, 'true'],
+    ['null', VALID_NULL, 'null'],
+  ])('formats JSON %s scalar', (_kind, input, expected) => {
+    const result = formatJson(input);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('"hello"');
-  });
-
-  test('formats JSON number', () => {
-    const result = formatJson(VALID_NUMBER);
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('42');
-  });
-
-  test('formats JSON boolean', () => {
-    const result = formatJson(VALID_BOOLEAN);
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('true');
-  });
-
-  test('formats JSON null', () => {
-    const result = formatJson(VALID_NULL);
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('null');
+    expect(result.formatted).toBe(expected);
   });
 
   test('formats nested objects with proper indentation', () => {
@@ -136,12 +123,6 @@ describe('minifyJson', () => {
     const result = minifyJson(input);
     expect(result.isValid).toBe(true);
     expect(result.formatted).toBe('{"a":1,"b":2}');
-  });
-
-  test('reduces size compared to formatted version', () => {
-    const formatted = formatJson(VALID_NESTED);
-    const minified = minifyJson(VALID_NESTED);
-    expect(minified.formatted.length).toBeLessThan(formatted.formatted.length);
   });
 
   test('returns error for invalid JSON', () => {

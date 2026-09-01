@@ -69,6 +69,13 @@ describe('decodeBase64', () => {
     expect(result.error).toBeDefined();
   });
 
+  test('returns error for valid base64 that is not valid UTF-8', () => {
+    const result = decodeBase64('/w==');
+    expect(result.isValid).toBe(false);
+    expect(result.output).toBe('');
+    expect(result.error).toBeDefined();
+  });
+
   test('returns error for invalid padding', () => {
     const result = decodeBase64('SGVsbG8gV29ybGQ');
     expect(result.isValid).toBe(false);

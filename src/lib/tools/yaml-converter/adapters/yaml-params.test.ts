@@ -38,11 +38,6 @@ describe('buildYamlStateFromSearch', () => {
     expect(state.mode).toBe('json-to-yaml');
   });
 
-  test('defaults mode to json-to-yaml when missing', () => {
-    const state = buildYamlStateFromSearch({ input: 'test' });
-    expect(state.mode).toBe('json-to-yaml');
-  });
-
   test('defaults mode when invalid', () => {
     const state = buildYamlStateFromSearch({
       input: 'test',

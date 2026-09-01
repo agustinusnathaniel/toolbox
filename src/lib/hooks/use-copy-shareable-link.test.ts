@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
+import type { Mock } from 'vite-plus/test';
 import { beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import type { Mock } from 'vitest';
 
 import { copyToClipboard } from '@/lib/utils/clipboard';
 

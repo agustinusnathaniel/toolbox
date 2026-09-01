@@ -290,9 +290,6 @@ describe('parseColor', () => {
   });
 });
 
-const OKLCH_PREFIX = /^oklch\(/;
-const CLOSING_PAREN = /\)$/;
-
 describe('formatColorString', () => {
   const parsed = parseColor('#ff0000') as NonNullable<
     ReturnType<typeof parseColor>
@@ -311,9 +308,6 @@ describe('formatColorString', () => {
   });
 
   test('formats oklch', () => {
-    const result = formatColorString(parsed, 'oklch');
-    expect(result).toMatch(OKLCH_PREFIX);
-    expect(result).toContain('%');
-    expect(result).toMatch(CLOSING_PAREN);
+    expect(formatColorString(parsed, 'oklch')).toBe('oklch(62.8% 0.2577 29.2)');
   });
 });

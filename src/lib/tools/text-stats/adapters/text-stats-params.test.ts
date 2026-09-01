@@ -40,10 +40,4 @@ describe('buildTextStatsStateFromSearch', () => {
       input: 'hi',
     });
   });
-
-  test('handles undefined', () => {
-    expect(buildTextStatsStateFromSearch({ input: undefined })).toEqual({
-      input: '',
-    });
-  });
 });

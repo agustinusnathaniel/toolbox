@@ -23,32 +23,14 @@ describe('formatSql', () => {
     expect(result.formatted).toContain('FROM');
   });
 
-  test('formats with mysql dialect', () => {
-    const result = formatSql('select * from foo', 'mysql');
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toContain('SELECT');
-  });
-
-  test('formats with postgresql dialect', () => {
-    const result = formatSql('select * from foo', 'postgresql');
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toContain('SELECT');
-  });
-
-  test('formats with sqlite dialect', () => {
-    const result = formatSql('select * from foo', 'sqlite');
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toContain('SELECT');
-  });
-
-  test('formats with bigquery dialect', () => {
-    const result = formatSql('select * from foo', 'bigquery');
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toContain('SELECT');
-  });
-
-  test('formats with transactsql dialect', () => {
-    const result = formatSql('select * from foo', 'transactsql');
+  test.each([
+    'mysql',
+    'postgresql',
+    'sqlite',
+    'bigquery',
+    'transactsql',
+  ] as const)('formats with %s dialect', (dialect) => {
+    const result = formatSql('select * from foo', dialect);
     expect(result.isValid).toBe(true);
     expect(result.formatted).toContain('SELECT');
   });
@@ -61,13 +43,10 @@ describe('formatSql', () => {
     expect(second.formatted).toBe(first.formatted);
   });
 
-  test('handles invalid SQL gracefully', () => {
-    // sql-formatter is lenient, but extremely malformed still formats without throwing
-    // We test that it at least returns valid for something weird rather than crashing
-    const result = formatSql('SELECT', 'sql');
-    // Should not crash, returns either valid or error
-    expect(typeof result.isValid).toBe('boolean');
-    expect(typeof result.formatted).toBe('string');
+  test('returns invalid with an error for unparseable SQL instead of throwing', () => {
+    const result = formatSql(')))', 'sql');
+    expect(result.isValid).toBe(false);
+    expect(result.error).toBeDefined();
   });
 
   test('formats multi-line query correctly', () => {

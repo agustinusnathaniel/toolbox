@@ -4,28 +4,18 @@ import { buildCronParams, buildCronStateFromSearch } from './cron-params';
 import { CRON_EXAMPLES, parseCronExpression } from './cron-parser';
 
 describe('parseCronExpression', () => {
-  test('parses valid every-minute expression', () => {
-    const result = parseCronExpression('* * * * *');
+  test.each([
+    ['* * * * *', 'Every minute'],
+    ['*/5 * * * *', 'Every 5 minutes'],
+    ['0 0 * * *', 'At 12:00 AM'],
+  ])('parses %s with a human-readable description', (expression, expected) => {
+    const result = parseCronExpression(expression);
     expect(result.isValid).toBe(true);
-    expect(result.humanReadable).toBeDefined();
-    expect(result.humanReadable?.length).toBeGreaterThan(0);
+    expect(result.humanReadable).toBe(expected);
     expect(result.nextRuns).toHaveLength(5);
     for (const run of result.nextRuns ?? []) {
       expect(() => new Date(run).toISOString()).not.toThrow();
     }
-  });
-
-  test('parses every 5 minutes', () => {
-    const result = parseCronExpression('*/5 * * * *');
-    expect(result.isValid).toBe(true);
-    expect(result.humanReadable).toBeDefined();
-    expect(result.nextRuns).toHaveLength(5);
-  });
-
-  test('parses daily midnight', () => {
-    const result = parseCronExpression('0 0 * * *');
-    expect(result.isValid).toBe(true);
-    expect(result.nextRuns).toHaveLength(5);
   });
 
   test('respects count option', () => {
@@ -34,10 +24,14 @@ describe('parseCronExpression', () => {
     expect(result.nextRuns).toHaveLength(3);
   });
 
-  test('supports tz option', () => {
+  test('computes next runs in the requested timezone', () => {
     const result = parseCronExpression('0 9 * * *', { tz: 'UTC' });
     expect(result.isValid).toBe(true);
     expect(result.nextRuns).toHaveLength(5);
+    for (const run of result.nextRuns ?? []) {
+      expect(new Date(run).getUTCHours()).toBe(9);
+      expect(new Date(run).getUTCMinutes()).toBe(0);
+    }
   });
 
   test('returns error for invalid expression', () => {

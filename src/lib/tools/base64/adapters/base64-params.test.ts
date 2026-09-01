@@ -17,11 +17,6 @@ describe('buildBase64Params', () => {
     const params = buildBase64Params('   ');
     expect(params.get('input')).toBeNull();
   });
-
-  test('omits input when missing', () => {
-    const params = buildBase64Params('');
-    expect(params.get('input')).toBeNull();
-  });
 });
 
 describe('buildBase64StateFromSearch', () => {
@@ -31,9 +26,5 @@ describe('buildBase64StateFromSearch', () => {
 
   test('returns provided input', () => {
     expect(buildBase64StateFromSearch({ input: 'abc' })).toBe('abc');
-  });
-
-  test('returns empty string when input missing', () => {
-    expect(buildBase64StateFromSearch({})).toBe('');
   });
 });

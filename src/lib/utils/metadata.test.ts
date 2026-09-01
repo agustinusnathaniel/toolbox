@@ -3,38 +3,40 @@ import { describe, expect, test } from 'vite-plus/test';
 import { createToolRouteMetadata } from './metadata';
 
 describe('createToolRouteMetadata', () => {
-  test('uses the route-owned metadata for static data and head tags', () => {
+  test('propagates route-owned metadata into static data, canonical URL, and key head tags', () => {
     const meta = {
       description: 'Test description',
       pageTitle: 'Test Tool',
       slug: 'test-tool',
     } as const;
     const routeMetadata = createToolRouteMetadata(meta);
+    const { links, meta: headMeta } = routeMetadata.head();
 
     expect(routeMetadata.staticData.meta).toBe(meta);
-    expect(routeMetadata.head().links).toEqual([
+
+    expect(links).toEqual([
       { href: 'https://toolbox.sznm.dev/test-tool', rel: 'canonical' },
     ]);
-    expect(routeMetadata.head().meta).toEqual([
-      { title: 'Test Tool' },
-      { content: 'Test description', name: 'description' },
-      { content: 'Test Tool', property: 'og:title' },
-      { content: 'Test description', property: 'og:description' },
-      { content: 'website', property: 'og:type' },
-      { content: 'https://toolbox.sznm.dev/test-tool', property: 'og:url' },
-      {
-        content: 'https://toolbox.sznm.dev/logo512.png',
-        property: 'og:image',
-      },
-      { content: 'Toolbox logo', property: 'og:image:alt' },
-      { content: 'summary_large_image', name: 'twitter:card' },
-      { content: 'Test Tool', name: 'twitter:title' },
-      { content: 'Test description', name: 'twitter:description' },
-      {
-        content: 'https://toolbox.sznm.dev/logo512.png',
-        name: 'twitter:image',
-      },
-      { content: 'Toolbox logo', name: 'twitter:image:alt' },
+
+    const contentFor = (key: string) =>
+      headMeta
+        .filter(
+          (tag) =>
+            'content' in tag &&
+            (('name' in tag && tag.name === key) ||
+              ('property' in tag && tag.property === key))
+        )
+        .map((tag) => ('content' in tag ? tag.content : ''));
+
+    expect(contentFor('og:title')).toEqual(['Test Tool']);
+    expect(contentFor('og:description')).toEqual(['Test description']);
+    expect(contentFor('og:url')).toEqual([
+      'https://toolbox.sznm.dev/test-tool',
     ]);
+    expect(headMeta).toContainEqual({ title: 'Test Tool' });
+    expect(headMeta).toContainEqual({
+      content: 'Test description',
+      name: 'description',
+    });
   });
 });

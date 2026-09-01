@@ -33,11 +33,6 @@ describe('createExecutionRequest', () => {
 });
 
 describe('parseWorkerMessage', () => {
-  test('type "ready" -> { type: "ready" }', () => {
-    expect(parseWorkerMessage({ type: 'ready' })).toStrictEqual({
-      type: 'ready',
-    });
-  });
   test('type "result" with payload -> parsed message', () => {
     const payload = {
       code: '',

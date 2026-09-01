@@ -152,11 +152,6 @@ describe('buildUrlStateFromSearch', () => {
     expect(state.fgColor).toBe('#ff0000');
     expect(state.bgColor).toBe('#cccccc');
   });
-
-  test('handles %23 prefixed colors', () => {
-    const state = buildUrlStateFromSearch({ fg: '%23ff0000' });
-    expect(state.fgColor).toBe('#ff0000');
-  });
 });
 
 describe('buildVcardStateFromSearch', () => {

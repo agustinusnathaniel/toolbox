@@ -1,4 +1,5 @@
 import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 import { describe, expect, test, vi } from 'vite-plus/test';
 
 import { downloadFiles, formatFileSize, summarizeCompression } from './zippy';
@@ -16,6 +17,25 @@ describe('downloadFiles', () => {
     await expect(downloadFiles([file])).resolves.toBeUndefined();
     expect(saveAs).toHaveBeenCalledTimes(1);
     expect(saveAs).toHaveBeenCalledWith(file, 'test.txt');
+  });
+
+  test('bundles multiple files into a single zip download', async () => {
+    vi.mocked(saveAs).mockClear();
+    const files = [
+      new File(['one'], 'one.txt', { type: 'text/plain' }),
+      new File(['two'], 'two.txt', { type: 'text/plain' }),
+    ];
+
+    await expect(downloadFiles(files)).resolves.toBeUndefined();
+    expect(saveAs).toHaveBeenCalledTimes(1);
+
+    const [blob, filename] = vi.mocked(saveAs).mock.calls[0];
+    expect(filename).toBe('files.zip');
+    expect(blob).toBeInstanceOf(Blob);
+
+    const zip = await JSZip.loadAsync(blob as Blob);
+    expect(await zip.file('one.txt')?.async('string')).toBe('one');
+    expect(await zip.file('two.txt')?.async('string')).toBe('two');
   });
 });
 

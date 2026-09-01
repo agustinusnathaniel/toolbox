@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vite-plus/test';
 
 import {
   buildUnitConverterParams,
@@ -107,7 +107,6 @@ describe('buildUnitConverterStateFromSearch', () => {
       to: 'invalid',
     });
     expect(s.fromUnit).toBe('KB');
-    expect(s.toUnit).toBe('KB'); // Wait data second unit is KB? Actually first B second KB
     // For data: from KB valid, to invalid -> fallback to KB (second unit)
     expect(s.toUnit).toBe('KB');
   });

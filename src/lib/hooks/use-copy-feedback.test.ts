@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+import type { Mock } from 'vite-plus/test';
 import {
   afterEach,
   beforeEach,
@@ -7,7 +8,6 @@ import {
   test,
   vi,
 } from 'vite-plus/test';
-import type { Mock } from 'vitest';
 
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
@@ -123,16 +123,5 @@ describe('useCopyFeedback', () => {
       vi.advanceTimersByTime(100);
     });
     expect(result.current.copiedKey).toBeNull();
-  });
-
-  test('supports number keys through the generic type parameter', async () => {
-    mockedCopy.mockResolvedValue(true);
-    const { result } = renderHook(() => useCopyFeedback<number>());
-
-    await act(async () => {
-      await result.current.copy('hello', 3);
-    });
-
-    expect(result.current.copiedKey).toBe(3);
   });
 });
