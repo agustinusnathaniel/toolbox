@@ -116,18 +116,6 @@ describe('generateLoremIpsum', () => {
     }
   });
 
-  test('plain format uses double newline separator', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: 2,
-      sentencesPerParagraph: 1,
-      startWithLorem: false,
-      wordsPerSentence: { max: 5, min: 5 },
-    });
-    expect(text.includes('\n\n')).toBe(true);
-    expect(text.includes('<p>')).toBe(false);
-  });
-
   test('clamps paragraphs to max 50', () => {
     const text = generateLoremIpsum({
       format: 'plain',

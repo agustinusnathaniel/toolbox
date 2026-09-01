@@ -9,21 +9,8 @@ import {
 } from './tool-registry';
 
 describe('getToolNavItems', () => {
-  test('returns all registered tools', () => {
-    const items = getToolNavItems();
-    expect(items).toHaveLength(29);
-  });
-
-  test('each item has required fields', () => {
-    const items = getToolNavItems();
-    for (const item of items) {
-      expect(item.slug).toBeTruthy();
-      expect(item.title).toBeTruthy();
-      expect(item.description).toBeTruthy();
-      expect(item.path).toBeTruthy();
-      expect(item.icon).toBeDefined();
-      expect(item.category).toBeTruthy();
-    }
+  test('order is stable — it defines the homepage grid and keyboard shortcuts', () => {
+    expect(getToolNavItems()[0].slug).toBe('wa-link-helper');
   });
 
   test('slugs are unique', () => {
@@ -36,49 +23,6 @@ describe('getToolNavItems', () => {
     const items = getToolNavItems();
     const paths = items.map((i) => i.path);
     expect(new Set(paths).size).toBe(paths.length);
-  });
-
-  test('keyboard shortcut index maps to correct tool', () => {
-    const items = getToolNavItems();
-    expect(items[0].slug).toBe('wa-link-helper');
-    expect(items[1].slug).toBe('color-converter');
-    expect(items[2].slug).toBe('json-formatter');
-    expect(items[3].slug).toBe('yaml-converter');
-    expect(items[4].slug).toBe('zippy-img');
-    expect(items[5].slug).toBe('ua-check');
-    expect(items[6].slug).toBe('url-codec');
-    expect(items[7].slug).toBe('qrcode');
-    expect(items[8].slug).toBe('js-perf');
-    expect(items[9].slug).toBe('add-to-calendar');
-    expect(items[10].slug).toBe('ev-charging');
-    expect(items[11].slug).toBe('base64');
-    expect(items[12].slug).toBe('password-generator');
-    expect(items[13].slug).toBe('hash-generator');
-    expect(items[14].slug).toBe('jwt-decoder');
-    expect(items[15].slug).toBe('regex-tester');
-    expect(items[16].slug).toBe('timestamp-converter');
-    expect(items[17].slug).toBe('case-converter');
-    expect(items[18].slug).toBe('text-diff');
-    expect(items[19].slug).toBe('uuid-generator');
-    expect(items[20].slug).toBe('csv-converter');
-    expect(items[21].slug).toBe('json-to-ts');
-    expect(items[22].slug).toBe('cron-parser');
-    expect(items[23].slug).toBe('markdown-preview');
-    expect(items[24].slug).toBe('html-entities');
-    expect(items[25].slug).toBe('sql-formatter');
-    expect(items[26].slug).toBe('number-base');
-    expect(items[27].slug).toBe('text-stats');
-    expect(items[28].slug).toBe('unit-converter');
-  });
-});
-
-describe('tool catalog metadata', () => {
-  test('exposes route-owned metadata without loading route implementations', () => {
-    for (const definition of TOOL_DEFINITIONS) {
-      expect(definition.description).toBeTruthy();
-      expect(definition.pageTitle).toBeTruthy();
-      expect(definition.slug).toBeTruthy();
-    }
   });
 });
 

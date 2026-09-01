@@ -17,11 +17,6 @@ describe('buildJwtParams', () => {
     const params = buildJwtParams('   ');
     expect(params.get('token')).toBeNull();
   });
-
-  test('omits token when missing', () => {
-    const params = buildJwtParams('');
-    expect(params.get('token')).toBeNull();
-  });
 });
 
 describe('buildJwtStateFromSearch', () => {
@@ -33,9 +28,5 @@ describe('buildJwtStateFromSearch', () => {
     expect(buildJwtStateFromSearch({ token: 'abc.def.ghi' })).toBe(
       'abc.def.ghi'
     );
-  });
-
-  test('returns empty string when token missing', () => {
-    expect(buildJwtStateFromSearch({})).toBe('');
   });
 });

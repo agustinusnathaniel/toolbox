@@ -1,6 +1,9 @@
 import { describe, expect, test, vi } from 'vite-plus/test';
 
-import { parseColor } from '@/lib/tools/color-converter/adapters/color-converter';
+import {
+  formatColorString,
+  parseColor,
+} from '@/lib/tools/color-converter/adapters/color-converter';
 
 import { copyColorValue } from './index';
 
@@ -14,7 +17,10 @@ describe('copyColorValue', () => {
     const copy = vi.fn().mockResolvedValue(true);
 
     await expect(copyColorValue(parsed, 'rgb', copy)).resolves.toBe(true);
-    expect(copy).toHaveBeenCalledWith('rgb(255, 0, 0)', 'Copied');
+    expect(copy).toHaveBeenCalledWith(
+      formatColorString(parsed, 'rgb'),
+      'Copied'
+    );
   });
 
   test('returns false when the clipboard abstraction rejects the copy', async () => {

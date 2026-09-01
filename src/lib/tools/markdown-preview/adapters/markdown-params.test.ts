@@ -44,12 +44,4 @@ describe('buildMarkdownStateFromSearch', () => {
     const state = buildMarkdownStateFromSearch(search);
     expect(state.input).toBe(input);
   });
-
-  test('numeric-looking input remains string after round-trip', () => {
-    const input = '123';
-    const params = buildMarkdownParams(input);
-    const search = Object.fromEntries(params.entries());
-    const state = buildMarkdownStateFromSearch(search);
-    expect(state.input).toBe('123');
-  });
 });

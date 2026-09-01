@@ -1,8 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
+import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
-import type { Mock } from 'vitest';
-
-import type { SqlFormatterResult } from '@/lib/tools/sql-formatter/adapters/sql-formatter';
 
 import type {
   SqlFormatterRequest,
@@ -20,11 +18,6 @@ interface FakeWorker {
   terminate: Mock<() => void>;
 }
 
-const VALID_RESULT: SqlFormatterResult = {
-  formatted: 'SELECT *\nFROM foo',
-  isValid: true,
-};
-
 function createFakeWorker(): FakeWorker {
   return {
     onmessage: null,
@@ -37,59 +30,35 @@ function createWorkerFactory(worker: FakeWorker) {
   return vi.fn<() => Worker>(() => worker as unknown as Worker);
 }
 
-function respond(worker: FakeWorker, response: SqlFormatterResponse) {
-  act(() => {
-    (worker.onmessage as (event: { data: SqlFormatterResponse }) => void)({
-      data: response,
-    });
-  });
-}
-
 afterEach(() => {
   vi.useRealTimers();
 });
 
+// Worker lifecycle mechanics (id matching, stale responses, replacement on
+// timeout, unmount cleanup) are covered by use-worker-deadline.test.ts. These
+// tests cover only what useSqlFormatter contributes: the request shape, the
+// trigger gating, the blank-input clearing, and the timeout result mapping.
 describe('useSqlFormatter', () => {
-  test('posts a message with an id when trigger changes to 1', () => {
+  test('posts a request with the input, dialect, and action when trigger changes to 1', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
     const workerFactory = createWorkerFactory(worker);
     const { rerender, result } = renderHook(
-      (props: {
-        action: 'format' | 'minify';
-        dialect: 'sql';
-        input: string;
-        trigger: number;
-      }) =>
+      (props: { input: string; trigger: number }) =>
         useSqlFormatter(
           props.input,
-          props.dialect,
-          props.action,
+          'sql',
+          'format',
           props.trigger,
           workerFactory
         ),
-      {
-        initialProps: {
-          action: 'format' as const,
-          dialect: 'sql' as const,
-          input: '',
-          trigger: 0,
-        },
-      }
+      { initialProps: { input: '', trigger: 0 } }
     );
 
-    rerender({
-      action: 'format',
-      dialect: 'sql',
-      input: 'select * from foo',
-      trigger: 1,
-    });
+    rerender({ input: 'select * from foo', trigger: 1 });
 
     expect(worker.postMessage).toHaveBeenCalledTimes(1);
-    const request = worker.postMessage.mock.calls[0][0];
-    expect(request.id).toBeDefined();
-    expect(typeof request.id).toBe('string');
-    expect(request).toMatchObject({
+    expect(worker.postMessage.mock.calls[0][0]).toMatchObject({
       action: 'format',
       dialect: 'sql',
       input: 'select * from foo',
@@ -97,43 +66,44 @@ describe('useSqlFormatter', () => {
     expect(result.current.computing).toBe(true);
   });
 
-  test('sets result from a worker response matching the latest id', () => {
+  test('clears the result when the input is blank', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
     const workerFactory = createWorkerFactory(worker);
-    const { result } = renderHook(() =>
-      useSqlFormatter('select * from foo', 'sql', 'format', 1, workerFactory)
-    );
-
-    const request = worker.postMessage.mock.calls[0][0];
-    respond(worker, { id: request.id, result: VALID_RESULT });
-
-    expect(result.current.result).toEqual(VALID_RESULT);
-    expect(result.current.computing).toBe(false);
-  });
-
-  test('on deadline timeout terminates the worker, creates a replacement, and reports timedOut', () => {
-    vi.useFakeTimers();
-    const worker = createFakeWorker();
-    const workerFactory = createWorkerFactory(worker);
-    const { result } = renderHook(() =>
-      useSqlFormatter('select * from foo', 'sql', 'format', 1, workerFactory)
+    const { rerender, result } = renderHook(
+      (props: { input: string }) =>
+        useSqlFormatter(props.input, 'sql', 'format', 1, workerFactory),
+      { initialProps: { input: 'select * from foo' } }
     );
 
     expect(worker.postMessage).toHaveBeenCalledTimes(1);
+
+    rerender({ input: '   ' });
+
+    expect(result.current.result).toBeNull();
+    expect(worker.postMessage).toHaveBeenCalledTimes(1);
+  });
+
+  test('reports the timeout result after the execution deadline', () => {
+    vi.useFakeTimers();
+    const worker = createFakeWorker();
+    const workerFactory = createWorkerFactory(worker);
+    const { result } = renderHook(() =>
+      useSqlFormatter('select * from foo', 'sql', 'format', 1, workerFactory)
+    );
 
     act(() => {
       vi.advanceTimersByTime(SQL_FORMATTER_EXECUTION_DEADLINE_MS);
     });
 
-    expect(worker.terminate).toHaveBeenCalledTimes(1);
-    expect(workerFactory).toHaveBeenCalledTimes(2);
-    expect(result.current.result?.timedOut).toBe(true);
-    expect(result.current.result?.error).toBe(SQL_FORMATTER_TIMEOUT_ERROR);
+    expect(result.current.result).toMatchObject({
+      error: SQL_FORMATTER_TIMEOUT_ERROR,
+      timedOut: true,
+    });
     expect(result.current.computing).toBe(false);
   });
 
-  test('starts with null result and no synchronous postMessage on mount (trigger 0)', () => {
+  test('starts with null result and does not post on mount (trigger 0)', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
     const workerFactory = createWorkerFactory(worker);

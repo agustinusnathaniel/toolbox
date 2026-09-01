@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vite-plus/test';
 
 import {
   buildNumberBaseParams,
@@ -23,7 +23,7 @@ describe('buildNumberBaseParams', () => {
     expect(p.get('input')).toBeNull();
   });
 
-  test('omits from when 10 even with input', () => {
+  test('includes from for non-default base even with empty input', () => {
     const p = buildNumberBaseParams('', 16);
     expect(p.get('input')).toBeNull();
     expect(p.get('from')).toBe('16');

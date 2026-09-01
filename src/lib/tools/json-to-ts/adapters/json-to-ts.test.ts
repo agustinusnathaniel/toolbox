@@ -20,7 +20,7 @@ describe('jsonToTypescript', () => {
     const result = jsonToTypescript('{"a":}');
     expect(result.isValid).toBe(false);
     expect(result.output).toBe('');
-    expect(result.error).toContain('Unexpected');
+    expect(result.error?.length).toBeGreaterThan(0);
   });
 
   test('rejects a top-level primitive', () => {

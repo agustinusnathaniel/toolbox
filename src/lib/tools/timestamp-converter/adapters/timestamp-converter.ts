@@ -15,9 +15,6 @@ export interface TimestampResult {
   utc?: string;
 }
 
-const MAX_SAFE_EPOCH_MS = 8.64e15; // year 275760, Date max
-const MIN_SAFE_EPOCH_MS = -8.64e15;
-
 const NEGATIVE_PREFIX = /^-/;
 const DIGITS_ONLY = /^\d+$/;
 
@@ -31,12 +28,6 @@ const RELATIVE_UNITS: ReadonlyArray<{ label: string; ms: number }> = [
   { label: 'minute', ms: 60_000 },
   { label: 'second', ms: 1000 },
 ];
-
-function isValidEpochMs(ms: number): boolean {
-  return (
-    Number.isFinite(ms) && ms >= MIN_SAFE_EPOCH_MS && ms <= MAX_SAFE_EPOCH_MS
-  );
-}
 
 function formatRelative(ms: number, now: number): string {
   const diff = ms - now;
@@ -78,9 +69,6 @@ export function convertTimestamp(
     // Anything else (11-12 digits, or a date-like number) falls through to Date.parse.
     if (numeric.length === 13) {
       const ms = Number(input);
-      if (!isValidEpochMs(ms)) {
-        return { error: 'Timestamp is out of range', isValid: false };
-      }
       const date = new Date(ms);
       return {
         epochMillis: String(ms),
@@ -95,9 +83,6 @@ export function convertTimestamp(
     if (numeric.length === 10) {
       const seconds = Number(input);
       const ms = seconds * 1000;
-      if (!isValidEpochMs(ms)) {
-        return { error: 'Timestamp is out of range', isValid: false };
-      }
       const date = new Date(ms);
       return {
         epochMillis: String(ms),
@@ -119,9 +104,6 @@ export function convertTimestamp(
         'Could not parse input as a Unix timestamp (10 or 13 digits) or a date string.',
       isValid: false,
     };
-  }
-  if (!isValidEpochMs(parsed)) {
-    return { error: 'Timestamp is out of range', isValid: false };
   }
   const date = new Date(parsed);
   return {

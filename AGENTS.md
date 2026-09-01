@@ -6,7 +6,7 @@ Directives for AI coding agents. Read this before making changes.
 
 Mark "done" only when **all** pass:
 1. `pnpm type:check` — no `any`, no `@ts-expect-error`
-2. `vp lint` — zero warnings
+2. `pnpm ultracite:check` — zero warnings
 3. `vp test` — for changed modules
 4. `vp build` — no bundle errors
 5. `vp dev` + browser verify the changed tool works
@@ -45,7 +45,11 @@ Violating these breaks the system:
 
 ## Testing
 
-Test public contracts, not implementation. Prefer `adapters/` over UI — pure functions don't need DOM mocking. Self-contained `it()` blocks over shared helpers; copy-paste is OK for readability.
+**New test files are opt-in, not the default.** A request to implement, fix, refactor, or verify something does not authorize creating test files, fixtures, or test-only helpers — propose them first, and only when regression protection genuinely justifies it. Prefer extending a module's existing tests, or `vp dev` + browser verification when it gives better signal for less maintenance.
+
+When tests are warranted: test observable behavior through public APIs (inputs in, outputs out — a test fails only when behavior breaks, never when the implementation changes); one behavior per test; mock only genuine external seams (clipboard, network, timers, workers) — mocking the project's own logic means it belongs in `adapters/`; prefer `adapters/` over UI tests — pure functions don't need DOM mocking. Self-contained `it()` blocks over shared helpers; copy-paste is OK for readability. Don't chase test count or coverage % — optimize for confidence, regression protection, and maintenance cost.
+
+Detailed testing guide: [CONTRIBUTING.md → Testing](./CONTRIBUTING.md#testing).
 
 ## Process
 

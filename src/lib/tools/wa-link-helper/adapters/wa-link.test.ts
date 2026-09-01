@@ -30,7 +30,7 @@ describe('buildWhatsAppLink', () => {
     expect(result.link).toContain('2125551234');
   });
 
-  test('generates correct link with phone number and text', () => {
+  test('generates correct link with phone number and URL-encoded text', () => {
     const result = buildWhatsAppLink({
       countryCode: 'ID',
       phoneNumber: '81234567890',
@@ -38,7 +38,7 @@ describe('buildWhatsAppLink', () => {
     });
     expect(result.isValid).toBe(true);
     expect(result.link).toContain('https://wa.me/');
-    expect(result.link).toContain('text=');
+    expect(result.link).toContain('text=Hello%20from%20WA%20Link!');
   });
 
   test('returns invalid for empty phone number', () => {
@@ -50,13 +50,13 @@ describe('buildWhatsAppLink', () => {
     expect(result.link).toBe('');
   });
 
-  test('handles phone number with leading zeros', () => {
+  test('normalizes the phone number to E.164 without the region prefix', () => {
     const result = buildWhatsAppLink({
       countryCode: 'IT',
       phoneNumber: '3123456789',
     });
     expect(result.isValid).toBe(true);
-    expect(result.link).toContain('https://wa.me/');
+    expect(result.link).toContain('393123456789');
   });
 });
 

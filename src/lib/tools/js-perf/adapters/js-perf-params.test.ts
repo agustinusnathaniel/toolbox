@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'vite-plus/test';
 
+import { DEFAULT_PRESET } from '@/routes/_tools/js-perf/-components/presets';
+
 import {
   buildJsPerfParams,
   buildJsPerfStateFromSearch,
@@ -22,10 +24,8 @@ describe('buildJsPerfParams', () => {
   test('returns empty params for default state', () => {
     const params = buildJsPerfParams({
       ...DEFAULT_STATE,
-      codeA:
-        "// Object literal\nconst COUNT = 100000;\nfor (let i = 0; i < COUNT; i++) {\n  const obj = { id: i, value: i * 2, active: i % 2 === 0 };\n}\nconsole.log('done');",
-      codeB:
-        "// new Object()\nconst COUNT = 100000;\nfor (let i = 0; i < COUNT; i++) {\n  const obj = new Object();\n  obj.id = i;\n  obj.value = i * 2;\n  obj.active = i % 2 === 0;\n}\nconsole.log('done');",
+      codeA: DEFAULT_PRESET.codeA,
+      codeB: DEFAULT_PRESET.codeB,
     });
     expect(params.toString()).toBe('');
   });

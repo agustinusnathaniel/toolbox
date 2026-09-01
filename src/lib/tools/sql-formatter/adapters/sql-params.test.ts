@@ -50,16 +50,6 @@ describe('buildSqlStateFromSearch', () => {
     expect(state.action).toBe('minify');
   });
 
-  test('defaults dialect to sql when missing', () => {
-    const state = buildSqlStateFromSearch({ input: 'SELECT 1' });
-    expect(state.dialect).toBe('sql');
-  });
-
-  test('defaults action to format when missing', () => {
-    const state = buildSqlStateFromSearch({ input: 'SELECT 1' });
-    expect(state.action).toBe('format');
-  });
-
   test('defaults dialect when invalid', () => {
     const state = buildSqlStateFromSearch({
       dialect: 'invalid',

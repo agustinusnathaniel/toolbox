@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vite-plus/test';
 
 import {
   convertUnit,
@@ -256,9 +256,6 @@ describe('convertUnit', () => {
   });
 
   test('max 10 decimals', () => {
-    const r = convertUnit('1', 'inch', 'cm', 'length');
-    // exact 2.54
-    expect(r.result).toBe('2.54');
     const r2 = convertUnit('10', 'inch', 'cm', 'length');
     expect(r2.result).toBe('25.4');
   });

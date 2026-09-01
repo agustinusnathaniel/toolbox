@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
+import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
-import type { Mock } from 'vitest';
 
 import { useWorkerDeadline } from './use-worker-deadline';
 
@@ -170,5 +170,36 @@ describe('useWorkerDeadline', () => {
     setup(worker);
 
     expect(worker.postMessage).not.toHaveBeenCalled();
+  });
+
+  test('does not repost on rerender when the factory creates fresh workers', () => {
+    vi.useFakeTimers();
+    const workers: Array<FakeWorker> = [];
+    const { rerender } = renderHook(
+      (props: { value: string }) =>
+        useWorkerDeadline<TestRequest, TestResponse, number>({
+          autoFire: true,
+          buildRequest: (id) => ({ id, value: props.value }),
+          deadlineMs: 2000,
+          extractId: (response) => response.id,
+          extractResult: (response) => response.result,
+          timeoutResult: TIMEOUT_RESULT,
+          workerFactory: () => {
+            const worker = createFakeWorker();
+            workers.push(worker);
+            return worker as unknown as Worker;
+          },
+        }),
+      { initialProps: { value: 'a' } }
+    );
+
+    rerender({ value: 'b' });
+    rerender({ value: 'c' });
+
+    const totalPosts = workers.reduce(
+      (sum, worker) => sum + worker.postMessage.mock.calls.length,
+      0
+    );
+    expect(totalPosts).toBe(1);
   });
 });

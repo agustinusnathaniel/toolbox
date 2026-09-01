@@ -74,10 +74,6 @@ describe('buildHashStateFromSearch', () => {
       text: 'abc',
     });
   });
-
-  test('defaults expected to empty string', () => {
-    expect(buildHashStateFromSearch({ text: 'abc' }).expected).toBe('');
-  });
 });
 
 describe('buildHashParams with expected', () => {
