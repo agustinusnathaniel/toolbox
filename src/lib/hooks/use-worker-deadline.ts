@@ -113,6 +113,7 @@ function useDeadlineTimeout<TResponse, TResult>(
   setResult: Dispatch<SetStateAction<TResult | null>>,
   setComputing: Dispatch<SetStateAction<boolean>>
 ) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: workerRef is a stable ref read at call time; depending on workerRef.current?.terminate would recreate this callback (and postRequest below) every time the worker is replaced, re-firing caller effects
   return useCallback(() => {
     workerRef.current?.terminate();
     latestIdRef.current = null;
@@ -122,8 +123,6 @@ function useDeadlineTimeout<TResponse, TResult>(
   }, [
     attachWorker,
     latestIdRef,
-    optionsRef.current.workerFactory,
-    workerRef.current?.terminate,
     optionsRef.current.timeoutResult,
     setResult,
     setComputing,
@@ -155,6 +154,7 @@ export function useWorkerDeadline<TRequest, TResponse, TResult>(
       refs.latestIdRef.current = null;
     };
   }, [refs.attachWorker, refs.clearDeadline, refs.workerRef, refs.latestIdRef]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refs are stable and read at call time; depending on refs.workerRef.current?.postMessage would recreate postRequest whenever the worker is replaced, re-firing caller trigger effects
   const postRequest = useCallback(() => {
     refs.clearDeadline();
     const id = crypto.randomUUID();
@@ -169,7 +169,6 @@ export function useWorkerDeadline<TRequest, TResponse, TResult>(
     );
   }, [
     handleTimeout,
-    refs.workerRef.current?.postMessage,
     refs.deadlineRef,
     refs.setComputing,
     refs.latestIdRef,
