@@ -11,11 +11,6 @@ export default function (plop) {
         templateFile: 'plop-templates/tool/adapter.ts.hbs',
         type: 'add',
       },
-      {
-        path: 'src/lib/tools/{{dashCase name}}/adapters/{{dashCase name}}.test.ts',
-        templateFile: 'plop-templates/tool/adapter.test.ts.hbs',
-        type: 'add',
-      },
     ],
     description: 'scaffold a new tool',
     prompts: [
