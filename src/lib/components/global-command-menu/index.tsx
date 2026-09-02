@@ -15,7 +15,7 @@ import {
   CommandMenuSearch,
   CommandMenuSection,
 } from '@/lib/components/ui/command-menu';
-import { Input, InputGroup } from '@/lib/components/ui/input';
+import { InputGroup } from '@/lib/components/ui/input';
 import { Text } from '@/lib/components/ui/text';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { usePinnedTools } from '@/lib/hooks/use-pinned-tools';
@@ -49,7 +49,7 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
     <>
       <button
         aria-label="Open command menu"
-        className="cursor-pointer"
+        className="group cursor-pointer"
         onClick={() => setIsOpen(true)}
         type="button"
       >
@@ -119,10 +119,12 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
 
 export const CommandMenuTrigger = () => (
   <GlobalCommandMenu>
-    <InputGroup className="w-40">
-      <IconSearch />
-      <Input placeholder="Search..." readOnly />
-      <Text>⌘K</Text>
+    <InputGroup className="flex h-9 w-40 items-center gap-2 rounded-lg border border-input bg-transparent px-3 text-muted-fg transition-colors group-hover:border-muted-fg/50 group-focus-visible:border-ring/70 group-focus-visible:ring-3 group-focus-visible:ring-ring/20">
+      <IconSearch aria-hidden="true" data-slot="icon" />
+      <span className="min-w-0 flex-1 truncate text-start text-sm">
+        Search...
+      </span>
+      <Text className="text-muted-fg text-xs">⌘K</Text>
     </InputGroup>
   </GlobalCommandMenu>
 );
