@@ -1,11 +1,9 @@
-"use client"
-
 import {
   TextField as TextFieldPrimitive,
   type TextFieldProps,
-} from "react-aria-components/TextField"
-import { cx } from "@/lib/styles/primitive"
-import { fieldStyles } from "./field"
+} from 'react-aria-components/TextField'
+import { cx } from '@/lib/styles/primitive'
+import { fieldStyles } from './field'
 
 export function TextField({ className, ...props }: TextFieldProps) {
   return (

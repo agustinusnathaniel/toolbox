@@ -9,7 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Checkbox } from '@/lib/components/ui/checkbox';
+import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
 import { Label } from '@/lib/components/ui/field';
 import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
@@ -114,48 +114,48 @@ function PasswordGeneratorPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <Checkbox
+            <CheckboxField
               isSelected={options.lowercase}
               onChange={(selected) =>
                 setOptions((prev) => ({ ...prev, lowercase: selected }))
               }
             >
-              Lowercase (a-z)
-            </Checkbox>
-            <Checkbox
+              <Checkbox>Lowercase (a-z)</Checkbox>
+            </CheckboxField>
+            <CheckboxField
               isSelected={options.uppercase}
               onChange={(selected) =>
                 setOptions((prev) => ({ ...prev, uppercase: selected }))
               }
             >
-              Uppercase (A-Z)
-            </Checkbox>
-            <Checkbox
+              <Checkbox>Uppercase (A-Z)</Checkbox>
+            </CheckboxField>
+            <CheckboxField
               isSelected={options.digits}
               onChange={(selected) =>
                 setOptions((prev) => ({ ...prev, digits: selected }))
               }
             >
-              Digits (0-9)
-            </Checkbox>
-            <Checkbox
+              <Checkbox>Digits (0-9)</Checkbox>
+            </CheckboxField>
+            <CheckboxField
               isSelected={options.symbols}
               onChange={(selected) =>
                 setOptions((prev) => ({ ...prev, symbols: selected }))
               }
             >
-              Symbols (!@#...)
-            </Checkbox>
+              <Checkbox>Symbols (!@#...)</Checkbox>
+            </CheckboxField>
           </div>
 
-          <Checkbox
+          <CheckboxField
             isSelected={options.excludeAmbiguous}
             onChange={(selected) =>
               setOptions((prev) => ({ ...prev, excludeAmbiguous: selected }))
             }
           >
-            Exclude ambiguous characters (I, l, 1, O, 0, o)
-          </Checkbox>
+            <Checkbox>Exclude ambiguous characters (I, l, 1, O, 0, o)</Checkbox>
+          </CheckboxField>
 
           {result && !result.isValid && (
             <p className="text-danger text-sm" role="alert">

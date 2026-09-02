@@ -9,7 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Checkbox } from '@/lib/components/ui/checkbox';
+import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
 import { Label } from '@/lib/components/ui/field';
 import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
 import {
@@ -140,24 +140,24 @@ function UuidGeneratorPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <Checkbox
+            <CheckboxField
               isSelected={uppercase}
               onChange={(selected) => {
                 setOptions((prev) => ({ ...prev, uppercase: selected }));
                 setResult(null);
               }}
             >
-              Uppercase (A-Z)
-            </Checkbox>
-            <Checkbox
+              <Checkbox>Uppercase (A-Z)</Checkbox>
+            </CheckboxField>
+            <CheckboxField
               isSelected={hyphens}
               onChange={(selected) => {
                 setOptions((prev) => ({ ...prev, hyphens: selected }));
                 setResult(null);
               }}
             >
-              Include hyphens
-            </Checkbox>
+              <Checkbox>Include hyphens</Checkbox>
+            </CheckboxField>
           </div>
 
           <div className="flex flex-wrap gap-2">

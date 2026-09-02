@@ -9,7 +9,7 @@ import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Checkbox } from '@/lib/components/ui/checkbox';
+import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import {
@@ -230,14 +230,14 @@ function LoremIpsumPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <Checkbox
+            <CheckboxField
               isSelected={state.startWithLorem}
               onChange={(v) =>
                 setState((prev) => ({ ...prev, startWithLorem: v }))
               }
             >
-              Start with Lorem ipsum
-            </Checkbox>
+              <Checkbox>Start with Lorem ipsum</Checkbox>
+            </CheckboxField>
             <div className="flex flex-col gap-1">
               <Label htmlFor="lorem-format">Format</Label>
               <Select
