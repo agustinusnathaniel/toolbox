@@ -1,11 +1,14 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link, ScanLine, ShieldCheck } from 'lucide-react';
+import { ScanLine, ShieldCheck } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ResultPanel } from '@/lib/components/result-panel';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -99,15 +102,10 @@ function JwtDecoderPage() {
               <ScanLine className="size-4" />
               Decode
             </Button>
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
 
           <div className="flex flex-col gap-1">
@@ -145,62 +143,26 @@ function JwtDecoderPage() {
           )}
 
           {showError && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Unable to decode
-              </p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
+            <ToolError message={result.error} title="Unable to decode" />
           )}
 
           {showResult && result.isValid && (
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-fg text-sm">Header</span>
-                  <Button
-                    aria-label="Copy header"
-                    intent="outline"
-                    onPress={() => handleCopy('header', result.headerRaw)}
-                    size="sq-sm"
-                  >
-                    {copiedKey === 'header' ? (
-                      <Check className="size-4 text-success" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
-                  </Button>
-                </div>
-                <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-                  {JSON.stringify(result.header, null, 2)}
-                </pre>
-              </div>
+              <ResultPanel
+                copied={copiedKey === 'header'}
+                copyLabel="Copy header"
+                label="Header"
+                onCopy={() => handleCopy('header', result.headerRaw)}
+                value={JSON.stringify(result.header, null, 2)}
+              />
 
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-fg text-sm">Payload</span>
-                  <Button
-                    aria-label="Copy payload"
-                    intent="outline"
-                    onPress={() => handleCopy('payload', result.payloadRaw)}
-                    size="sq-sm"
-                  >
-                    {copiedKey === 'payload' ? (
-                      <Check className="size-4 text-success" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
-                  </Button>
-                </div>
-                <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-                  {JSON.stringify(result.payload, null, 2)}
-                </pre>
-              </div>
+              <ResultPanel
+                copied={copiedKey === 'payload'}
+                copyLabel="Copy payload"
+                label="Payload"
+                onCopy={() => handleCopy('payload', result.payloadRaw)}
+                value={JSON.stringify(result.payload, null, 2)}
+              />
 
               <div className="overflow-hidden rounded-lg border">
                 <table className="w-full text-left text-sm">

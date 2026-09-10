@@ -1,11 +1,12 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Copy, Link, RefreshCw, Trash2 } from 'lucide-react';
+import { Copy, RefreshCw, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -265,10 +266,7 @@ function LoremIpsumPage() {
               <RefreshCw className="size-4" />
               Generate
             </Button>
-            <Button intent="outline" onPress={handleCopyLink} size="sm">
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            <CopyLinkButton onPress={handleCopyLink} />
             <Button intent="outline" onPress={handleClear} size="sm">
               <Trash2 className="size-4" />
               Clear

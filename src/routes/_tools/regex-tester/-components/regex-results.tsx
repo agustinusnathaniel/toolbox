@@ -1,5 +1,6 @@
 'use client';
 
+import { ToolError } from '@/lib/components/tool-error';
 import type { RegexTestResult } from '@/lib/tools/regex-tester/adapters/regex';
 
 export function RegexTimeout({ result }: { result: RegexTestResult }) {
@@ -7,19 +8,12 @@ export function RegexTimeout({ result }: { result: RegexTestResult }) {
     return null;
   }
   return (
-    <div
-      className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-      role="alert"
-    >
-      <p className="font-medium text-danger text-sm">Pattern took too long</p>
-      <p className="mt-1 whitespace-pre-wrap text-danger/80 text-xs">
-        {result.error}
-      </p>
-      <p className="mt-1 text-danger/80 text-xs">
-        This usually means catastrophic backtracking. Try simplifying the
-        pattern or reducing the input length.
-      </p>
-    </div>
+    <ToolError
+      hint="This usually means catastrophic backtracking. Try simplifying the pattern or reducing the input length."
+      message={result.error}
+      title="Pattern took too long"
+      variant="prose"
+    />
   );
 }
 
@@ -48,17 +42,7 @@ export function RegexError({ result }: { result: RegexTestResult }) {
     return null;
   }
   return (
-    <div
-      className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-      role="alert"
-    >
-      <p className="font-medium text-danger text-sm">
-        Invalid regular expression
-      </p>
-      <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-        {result.error}
-      </pre>
-    </div>
+    <ToolError message={result.error} title="Invalid regular expression" />
   );
 }
 

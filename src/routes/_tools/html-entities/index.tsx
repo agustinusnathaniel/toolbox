@@ -1,11 +1,12 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyButton } from '@/lib/components/copy-button';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -142,15 +143,10 @@ function HtmlEntitiesPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -176,18 +172,11 @@ function HtmlEntitiesPage() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-muted-fg text-sm">{resultLabel}</span>
-                <Button
-                  aria-label="Copy result"
-                  intent="outline"
+                <CopyButton
+                  copied={copiedKey === 'copy'}
+                  label="Copy result"
                   onPress={handleCopy}
-                  size="sq-sm"
-                >
-                  {copiedKey === 'copy' ? (
-                    <Check className="size-4 text-success" />
-                  ) : (
-                    <Copy className="size-4" />
-                  )}
-                </Button>
+                />
               </div>
               <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
                 {result}

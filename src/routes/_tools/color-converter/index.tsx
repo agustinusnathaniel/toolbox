@@ -2,11 +2,12 @@
 
 import { parseColor as parseColorStately } from '@react-stately/color';
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link } from 'lucide-react';
+import { Link } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyButton } from '@/lib/components/copy-button';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
@@ -198,18 +199,11 @@ function ColorResults({
               <span className="font-medium text-muted-fg text-xs">{label}</span>
               <code className="font-mono text-sm">{value}</code>
             </div>
-            <Button
-              aria-label={`Copy ${label} value`}
-              intent="outline"
+            <CopyButton
+              copied={copiedKey === key}
+              label={`Copy ${label} value`}
               onPress={() => onCopy(key)}
-              size="sq-sm"
-            >
-              {copiedKey === key ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-            </Button>
+            />
           </div>
         );
       })}

@@ -1,11 +1,13 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Dices, Link } from 'lucide-react';
+import { Dices } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyButton } from '@/lib/components/copy-button';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -166,15 +168,10 @@ function UuidGeneratorPage() {
                 Copy all
               </Button>
             )}
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
 
           {result && !result.isValid && (
@@ -193,18 +190,11 @@ function UuidGeneratorPage() {
                   <code className="min-w-0 truncate font-mono text-sm">
                     {uuid}
                   </code>
-                  <Button
-                    aria-label={`Copy UUID ${index + 1}`}
-                    intent="outline"
+                  <CopyButton
+                    copied={copiedKey === index}
+                    label={`Copy UUID ${index + 1}`}
                     onPress={() => handleCopy(uuid, index)}
-                    size="sq-sm"
-                  >
-                    {copiedKey === index ? (
-                      <Check className="size-4 text-success" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
-                  </Button>
+                  />
                 </li>
               ))}
             </ol>

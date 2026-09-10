@@ -1,11 +1,14 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { ArrowUpDown, Check, Copy, Link } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyButton } from '@/lib/components/copy-button';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -146,29 +149,17 @@ function CsvConverterPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              aria-label="Copy output"
-              intent="outline"
-              isDisabled={!result?.isValid || result?.timedOut}
+            <CopyButton
+              copied={copiedKey === 'copy'}
+              disabled={!result?.isValid || result?.timedOut}
+              label="Copy output"
               onPress={handleCopy}
-              size="sm"
-            >
-              {copiedKey === 'copy' ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-              Copy output
-            </Button>
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+              text="Copy output"
+            />
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
 
           {state.input.trim() && !result && (
@@ -182,31 +173,11 @@ function CsvConverterPage() {
           )}
 
           {result && !result.isValid && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Conversion failed
-              </p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
+            <ToolError message={result.error} title="Conversion failed" />
           )}
 
           {result?.timedOut && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Conversion timed out
-              </p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
+            <ToolError message={result.error} title="Conversion timed out" />
           )}
 
           {result?.isValid && result.output && (

@@ -1,11 +1,13 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyButton } from '@/lib/components/copy-button';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -81,17 +83,7 @@ function MarkdownPreviewPage() {
       );
     }
     if (result.timedOut) {
-      return (
-        <div
-          className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-          role="alert"
-        >
-          <p className="font-medium text-danger text-sm">Rendering timed out</p>
-          <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-            {result.error}
-          </pre>
-        </div>
-      );
+      return <ToolError message={result.error} title="Rendering timed out" />;
     }
     if (result.isEmpty) {
       return (
@@ -128,29 +120,17 @@ function MarkdownPreviewPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              aria-label="Copy HTML"
-              intent="outline"
-              isDisabled={computing || result.isEmpty || !result.html}
+            <CopyButton
+              copied={copiedKey === 'html'}
+              disabled={computing || result.isEmpty || !result.html}
+              label="Copy HTML"
               onPress={handleCopyHtml}
-              size="sm"
-            >
-              {copiedKey === 'html' ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-              Copy HTML
-            </Button>
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+              text="Copy HTML"
+            />
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
             <Button
               aria-label="Clear markdown"
               intent="outline"
