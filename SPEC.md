@@ -117,4 +117,4 @@ See **CONTRIBUTING.md** for detailed instructions.
 
 - PWA service worker is disabled in dev and enabled for production builds.
 - Auth is not implemented (no user accounts or personalization).
-- All tools are client-side only; no tool input data persists across sessions (only local UI preferences such as theme and pinned tools).
+- All tools are client-side only; tool data never leaves the device. Some tools persist inputs and preferences in local storage across sessions (for example QR content, saved forms, theme, and pinned tools); clearing site data removes them.

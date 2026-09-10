@@ -7,9 +7,9 @@ Directives for AI coding agents. Read this before making changes.
 Mark "done" only when **all** pass:
 1. `pnpm type:check` — no `any`, no `@ts-expect-error`
 2. `pnpm ultracite:check` — zero warnings
-3. `pnpm knip` — no unused files or dependencies
-4. `pnpm test` — for changed modules
-5. `pnpm build` — no bundle errors
+3. `pnpm knip` - no unused files or dependencies
+4. `pnpm test` - for changed modules
+5. `pnpm build` - no bundle errors
 6. `pnpm dev` + browser verify the changed tool works
 
 `pnpm check` runs steps 1-4 in one pass.
