@@ -1,3 +1,6 @@
+import { readdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vite-plus/test';
 
 import { TOOL_CATEGORIES, TOOL_DEFINITIONS } from './tool-catalog';
@@ -87,5 +90,20 @@ describe('getToolNavCategories', () => {
     for (const group of getToolNavCategories()) {
       expect(group.items.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('catalog completeness', () => {
+  test('every tool route directory is registered in TOOL_DEFINITIONS', () => {
+    const toolsDir = resolve(
+      dirname(fileURLToPath(import.meta.url)),
+      '../../routes/_tools'
+    );
+    const routeDirectories = readdirSync(toolsDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name);
+    const catalogSlugs = TOOL_DEFINITIONS.map((definition) => definition.slug);
+
+    expect(new Set(routeDirectories)).toEqual(new Set(catalogSlugs));
   });
 });
