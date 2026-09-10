@@ -1,12 +1,5 @@
 import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
 
-export interface Preset {
-  codeA: string;
-  codeB: string;
-  description: string;
-  name: string;
-}
-
 export type RunState = 'idle' | 'running' | 'done';
 type RunMode = 'single' | 'stability';
 

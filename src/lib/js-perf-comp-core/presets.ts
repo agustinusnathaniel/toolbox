@@ -1,4 +1,9 @@
-import type { Preset } from './types';
+export interface Preset {
+  codeA: string;
+  codeB: string;
+  description: string;
+  name: string;
+}
 
 export const PRESETS: Array<Preset> = [
   {

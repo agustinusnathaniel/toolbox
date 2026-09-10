@@ -8,9 +8,13 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
+import {
+  type Preset,
+  STABILITY_MAX_ROUNDS,
+  STABILITY_MIN_ROUNDS,
+} from '@/lib/js-perf-comp-core/presets';
 
-import { STABILITY_MAX_ROUNDS, STABILITY_MIN_ROUNDS } from './presets';
-import type { Preset, RunState } from './types';
+import type { RunState } from './types';
 
 const MAX_ITERATIONS = 1000;
 const MIN_ITERATIONS = 1;
