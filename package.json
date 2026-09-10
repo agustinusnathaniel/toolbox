@@ -6,10 +6,11 @@
   "scripts": {
     "biome:ci": "biome ci",
     "build": "vp build && node scripts/generate-sw.mjs",
-    "check": "pnpm ultracite:check && pnpm type:check && pnpm test",
+    "check": "pnpm ultracite:check && pnpm type:check && pnpm knip && pnpm test",
     "dev": "vp dev --port 3000",
     "generate": "plop",
     "generate-pwa-assets": "pwa-assets-generator",
+    "knip": "knip --no-progress",
     "prepare": "vp config",
     "release": "cross-env HUSKY=0 commit-and-tag-version",
     "security:audit": "pnpm audit",

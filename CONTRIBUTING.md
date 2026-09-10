@@ -39,6 +39,12 @@ We use **Ultracite** (wrapping Biome) for both linting and formatting.
 - Run `pnpm ultracite:fix` to auto-fix.
 - Your editor should have the Biome extension installed for real-time feedback.
 
+### Dead Code & Dependencies
+
+Run `pnpm knip` to find unused files and dependencies. IntentUI primitives in `src/lib/components/ui` are CLI-regenerable, so their export/type pruning stays advisory; unused files and unused dependencies fail the check.
+
+`pnpm check` runs lint, typecheck, knip, and tests in one pass.
+
 ### TypeScript
 
 - Strict mode is enabled.
@@ -119,13 +125,13 @@ export const Route = createFileRoute('/_tools/<tool-name>/')({
 });
 ```
 
-The navigation system (`src/lib/navigation/tool-registry.tsx`) automatically discovers registered routes by reading `staticData.meta` from each route definition. No manual registry update is needed.
+The catalog in `src/lib/navigation/tool-catalog.tsx` imports each route's `-meta` sidecar and adds navigation-only fields (category, icon, mobile label). Registering a tool there is what makes it appear in the sidebar, homepage grid, mobile nav, and command palette; a route that is not in `TOOL_DEFINITIONS` is invisible to navigation.
 
 See existing routes (e.g., `src/routes/_tools/qrcode/index.tsx`, `src/routes/_tools/ev-charging/index.tsx`) for concrete examples.
 
-### Step 3: Add to Homepage Catalog
+### Step 3: Register the Tool in Navigation
 
-Update the tool lists in `src/routes/index.tsx` to include your new tool in either `currentTools` or `upcomingTools`.
+Add an entry to `TOOL_DEFINITIONS` in `src/lib/navigation/tool-catalog.tsx`: import the route's `-meta` sidecar, spread it, and fill in the navigation-only fields (category, icon, and optionally `mobileTitle` / `showInMobile`). The sidebar, homepage grid, mobile nav, and command palette all read from this catalog.
 
 ### Step 4: Extract Business Logic (Recommended)
 
@@ -185,7 +191,7 @@ function ToolPage() {
 
 ## Pull Request Process
 
-1. Ensure `pnpm check` (ultracite:check + type:check + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm test`).
+1. Ensure `pnpm check` (ultracite:check + type:check + knip + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm knip && pnpm test`).
 2. Provide a clear description of changes in the PR.
 3. Include screenshots for UI changes.
 4. Update `SPEC.md` if any architectural invariants are changed.

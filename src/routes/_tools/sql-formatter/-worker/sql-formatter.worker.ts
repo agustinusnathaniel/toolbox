@@ -12,7 +12,7 @@ export type SqlDialect =
   | 'sql'
   | 'transactsql';
 
-export type SqlSearchAction = 'format' | 'minify';
+type SqlSearchAction = 'format' | 'minify';
 
 export interface SqlFormatterRequest {
   action: SqlSearchAction;

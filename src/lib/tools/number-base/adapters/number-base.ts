@@ -1,7 +1,5 @@
 export type NumberBase = 2 | 8 | 10 | 16;
 
-export const VALID_BASES: ReadonlyArray<NumberBase> = [2, 8, 10, 16];
-
 export interface NumberBaseResult {
   binary: string;
   decimal: string;

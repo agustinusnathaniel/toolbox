@@ -1,10 +1,5 @@
 import type { HtmlEntitiesMode } from './html-entities';
 
-export interface HtmlEntitiesSearchParams {
-  input?: string;
-  mode?: string;
-}
-
 export interface HtmlEntitiesState {
   input: string;
   mode: HtmlEntitiesMode;

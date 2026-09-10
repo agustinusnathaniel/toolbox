@@ -5,8 +5,6 @@ export type UnitCategory =
   | 'volume'
   | 'data';
 
-export type UnitId = string;
-
 interface UnitDef {
   id: string;
   label: string;

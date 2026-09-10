@@ -21,7 +21,7 @@ const TIMEOUT_RESULT: MarkdownPreviewState = {
   timedOut: true,
 };
 
-export type MarkdownPreviewState = {
+type MarkdownPreviewState = {
   html: string;
   isEmpty: boolean;
   timedOut?: boolean;
