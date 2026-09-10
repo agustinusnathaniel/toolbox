@@ -19,8 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/lib/components/ui/card';
-
-import { getHomepageData } from './homepage-data';
+import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
 const sectionClass = 'mx-auto w-full max-w-7xl px-4 lg:px-6';
 const EXAMPLE_OUTPUT = [
@@ -32,7 +31,7 @@ const EXAMPLE_OUTPUT = [
 ].join('\n');
 
 export function HomepagePage() {
-  const { featuredTools } = getHomepageData();
+  const featuredTools = getToolNavItems().slice(0, 6);
 
   return (
     <div className="overflow-x-clip">
