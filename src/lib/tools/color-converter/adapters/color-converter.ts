@@ -1,5 +1,3 @@
-import { copyToClipboard } from '@/lib/utils/clipboard';
-
 export interface RgbColor {
   b: number;
   g: number;
@@ -330,14 +328,6 @@ export function formatColorString(
     return `hsl(${color.hsl.h}, ${color.hsl.s}%, ${color.hsl.l}%)`;
   }
   return `oklch(${(color.oklch.l * 100).toFixed(1)}% ${color.oklch.c.toFixed(4)} ${color.oklch.h.toFixed(1)})`;
-}
-
-export function copyColorValue(
-  parsed: ParsedColor,
-  format: ColorFormat,
-  copy: typeof copyToClipboard = copyToClipboard
-): Promise<boolean> {
-  return copy(formatColorString(parsed, format), 'Copied');
 }
 
 export const PRESET_COLORS: Array<{ hex: string; label: string }> = [

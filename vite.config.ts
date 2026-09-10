@@ -113,11 +113,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       tsconfigPaths: true,
     },
-    ssr: {
-      // file-saver is CommonJS/UMD; bundle it into the SSR chunks so Node ESM
-      // named-export interop doesn't break during prerendering.
-      noExternal: ['file-saver'],
-    },
     staged: {
       '*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}': ['ultracite fix'],
     },
