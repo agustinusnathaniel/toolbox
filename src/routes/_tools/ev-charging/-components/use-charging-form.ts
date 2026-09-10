@@ -9,7 +9,7 @@ import {
   CHARGER_DEFAULT_POWER,
   type ChargerType,
   calculateChargingEstimate,
-} from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+} from '@/lib/tools/ev-charging/adapters/ev-charging';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
 import {

@@ -17,7 +17,7 @@ import {
   PopoverBody,
   PopoverContent,
 } from '@/lib/components/ui/popover';
-import type { VCardState } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+import type { VCardState } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
 export function VCardColorPresets({
   onUpdateVCardField,

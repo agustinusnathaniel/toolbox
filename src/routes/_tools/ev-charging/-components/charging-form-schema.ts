@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { ChargerType } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+import type { ChargerType } from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 export const formSchema = z
   .object({

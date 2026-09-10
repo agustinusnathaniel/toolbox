@@ -134,8 +134,8 @@ For non-trivial tools, extract pure logic into `src/lib/tools/<tool-name>/`.
 Create a subdirectory called `adapters/` inside your tool's lib directory:
 `src/lib/tools/<tool-name>/adapters/<tool>.ts`. This keeps pure functions
 separate from UI components and makes them testable without DOM mocking.
-See existing tools (e.g., `src/lib/tools/qrcode-generator/adapters/`,
-`src/lib/tools/ev-charging-estimator/adapters/`) for the convention.
+See existing tools (e.g., `src/lib/tools/qrcode/adapters/`,
+`src/lib/tools/ev-charging/adapters/`) for the convention.
 
 Add a test file alongside the adapter when the logic carries real regression
 risk (parsing, formatting, math, shareable-URL state):
@@ -143,7 +143,7 @@ risk (parsing, formatting, math, shareable-URL state):
 [Testing](#testing) before creating one. Model them after existing adapter
 tests, e.g. `src/lib/tools/regex-tester/adapters/regex.test.ts` (behavioral
 edge cases) and
-`src/lib/tools/ev-charging-estimator/adapters/ev-charging-params.test.ts`
+`src/lib/tools/ev-charging/adapters/ev-charging-params.test.ts`
 (shareable-URL state round-trips). They use `vitest` with jsdom via `vp test`.
 
 Then import from your route:

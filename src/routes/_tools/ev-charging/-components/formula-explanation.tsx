@@ -8,7 +8,7 @@ import {
   type ChargerType,
   type ChargingResult,
   SOC_THRESHOLD,
-} from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+} from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 import {
   AboveThresholdFormula,

@@ -1,11 +1,11 @@
-import type { ChargingResult } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+import type { ChargingResult } from '@/lib/tools/ev-charging/adapters/ev-charging';
 import {
   type ChargerType,
   SOC_PENALTY,
   SOC_PENALTY_90,
   SOC_PENALTY_95,
   SOC_THRESHOLD,
-} from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+} from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 type Inputs = {
   startSOC: number;

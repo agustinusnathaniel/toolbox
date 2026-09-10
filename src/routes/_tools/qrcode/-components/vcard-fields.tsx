@@ -1,6 +1,6 @@
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
-import type { VCardState } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+import type { VCardState } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
 type Props = {
   vcardState: VCardState;

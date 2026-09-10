@@ -2,7 +2,7 @@ import { Form } from 'react-aria-components';
 
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import type { ChargerType } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+import type { ChargerType } from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 import { AdvancedFields, BasicFields } from './charging-fields';
 import { FormulaExplanation } from './formula-explanation';

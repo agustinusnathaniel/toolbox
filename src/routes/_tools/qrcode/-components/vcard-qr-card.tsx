@@ -4,7 +4,7 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
 import { Label } from '@/lib/components/ui/field';
 import { Textarea } from '@/lib/components/ui/textarea';
-import type { VCardState } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+import type { VCardState } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
 import { VCardColorPresets, VCardFgColorPicker } from './vcard-color-controls';
 import {
