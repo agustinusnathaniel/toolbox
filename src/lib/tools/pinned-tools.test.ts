@@ -1,60 +1,23 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import {
-  PINNED_TOOLS_STORAGE_KEY,
-  readPinnedTools,
-  togglePinnedTool,
-  writePinnedTools,
-} from './pinned-tools';
+import { parsePinnedTools, togglePinnedTool } from './pinned-tools';
 
-interface MemoryStorage {
-  getItem: (key: string) => string | null;
-  setItem: (key: string, value: string) => void;
-  store: Map<string, string>;
-}
-
-function createMemoryStorage(initialValue?: string): MemoryStorage {
-  const store = new Map<string, string>();
-  if (initialValue !== undefined) {
-    store.set(PINNED_TOOLS_STORAGE_KEY, initialValue);
-  }
-  return {
-    getItem: (key) => store.get(key) ?? null,
-    setItem: (key, value) => {
-      store.set(key, value);
-    },
-    store,
-  };
-}
-
-describe('readPinnedTools', () => {
-  test('returns [] when storage is empty', () => {
-    const storage = createMemoryStorage();
-    expect(readPinnedTools(storage)).toEqual([]);
+describe('parsePinnedTools', () => {
+  test('returns [] for non-array values', () => {
+    expect(parsePinnedTools(undefined)).toEqual([]);
+    expect(parsePinnedTools(null)).toEqual([]);
+    expect(parsePinnedTools('x')).toEqual([]);
+    expect(parsePinnedTools({ pinned: ['base64'] })).toEqual([]);
   });
 
-  test('returns [] when stored JSON is invalid', () => {
-    const storage = createMemoryStorage('not json{');
-    expect(readPinnedTools(storage)).toEqual([]);
+  test('filters out non-string and empty entries', () => {
+    expect(
+      parsePinnedTools(['base64', 42, null, 'json-formatter', ''])
+    ).toEqual(['base64', 'json-formatter']);
   });
 
-  test('returns [] when stored value is not an array', () => {
-    const storage = createMemoryStorage(JSON.stringify({ pinned: ['base64'] }));
-    expect(readPinnedTools(storage)).toEqual([]);
-  });
-
-  test('filters out non-string entries', () => {
-    const storage = createMemoryStorage(
-      JSON.stringify(['base64', 42, null, 'json-formatter', ''])
-    );
-    expect(readPinnedTools(storage)).toEqual(['base64', 'json-formatter']);
-  });
-
-  test('returns stored slugs in order', () => {
-    const storage = createMemoryStorage(
-      JSON.stringify(['json-formatter', 'base64', 'ua-check'])
-    );
-    expect(readPinnedTools(storage)).toEqual([
+  test('returns valid slugs in order', () => {
+    expect(parsePinnedTools(['json-formatter', 'base64', 'ua-check'])).toEqual([
       'json-formatter',
       'base64',
       'ua-check',
@@ -87,25 +50,5 @@ describe('togglePinnedTool', () => {
     expect(removed).toEqual(['json-formatter']);
     expect(removed).not.toBe(slugs);
     expect(slugs).toEqual(['base64', 'json-formatter']);
-  });
-});
-
-describe('writePinnedTools', () => {
-  test('persists JSON to storage', () => {
-    const storage = createMemoryStorage();
-    writePinnedTools(storage, ['base64', 'json-formatter']);
-    expect(storage.store.get(PINNED_TOOLS_STORAGE_KEY)).toBe(
-      JSON.stringify(['base64', 'json-formatter'])
-    );
-    expect(readPinnedTools(storage)).toEqual(['base64', 'json-formatter']);
-  });
-
-  test('does not throw when setItem throws', () => {
-    const throwingStorage = {
-      setItem: () => {
-        throw new Error('Quota exceeded');
-      },
-    };
-    expect(() => writePinnedTools(throwingStorage, ['base64'])).not.toThrow();
   });
 });
