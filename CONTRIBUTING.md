@@ -185,7 +185,7 @@ function ToolPage() {
 
 ## Pull Request Process
 
-1. Ensure `pnpm check:turbo` (ultracite:check + type:check + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm test`).
+1. Ensure `pnpm check` (ultracite:check + type:check + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm test`).
 2. Provide a clear description of changes in the PR.
 3. Include screenshots for UI changes.
 4. Update `SPEC.md` if any architectural invariants are changed.

@@ -34,7 +34,7 @@ jobs:
             Automated dependency update by GitHub Actions.
 
             - All dependencies updated to latest
-            - Checks passed: pnpm check:turbo
+            - Checks passed: pnpm check
           branch: chore/auto-deps-update
           delete-branch: true
           labels: dependencies
