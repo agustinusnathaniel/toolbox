@@ -26,6 +26,7 @@ import { Description, FieldError, Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { TextField } from '@/lib/components/ui/text-field';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   buildWALinkSearchParams,
@@ -34,6 +35,7 @@ import {
 } from '@/lib/tools/wa-link-helper/adapters/wa-link';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
+import { recordToSearchParams } from '@/lib/utils/search-params';
 
 import { meta } from './-meta';
 
@@ -133,6 +135,19 @@ function WALinkHelperPage() {
     }
   };
 
+  const copyShareableLink = useCopyShareableLink(
+    () =>
+      recordToSearchParams(
+        buildWALinkSearchParams({
+          countryCode,
+          phoneNumber,
+          text,
+        })
+      ),
+    trackAction,
+    'copy_shareable'
+  );
+
   const handleCopyShareableLink = async () => {
     navigate({
       replace: true,
@@ -145,10 +160,7 @@ function WALinkHelperPage() {
         }),
       }),
     });
-    const url = window.location.href;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackAction('copy_shareable');
-    }
+    await copyShareableLink();
   };
 
   return (

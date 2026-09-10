@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   buildCalendarSearchParams,
@@ -11,6 +12,7 @@ import {
   generateGoogleCalendarLink,
 } from '@/lib/tools/add-to-calendar/adapters/calendar';
 import { copyToClipboard } from '@/lib/utils/clipboard';
+import { recordToSearchParams } from '@/lib/utils/search-params';
 
 const formSchema = z
   .object({
@@ -98,7 +100,7 @@ function useCalendarLink(
   );
 }
 
-export function useCalendarForm() {
+export function useCalendarForm(trackAction: (action: string) => void) {
   const search = useSearch({
     from: '/_tools/add-to-calendar/',
   } as never) as Record<string, unknown>;
@@ -134,21 +136,21 @@ export function useCalendarForm() {
     const embed = `<a href="${escaped}" target="_blank" rel="noopener noreferrer" style="border:1px solid black;padding:6px;border-radius:6px;text-decoration:none;color:white;font-weight:400;background-color:black;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">Add to Google Calendar</a>`;
     return copyToClipboard(embed, 'Copied Embed Code');
   };
-  const handleCopyShareableLink = () => {
+  const shareValues = { description, end, location, start, title };
+  const copyShareableLink = useCopyShareableLink(
+    () => recordToSearchParams(buildCalendarSearchParams(shareValues)),
+    trackAction,
+    'copy_shareable'
+  );
+  const handleCopyShareableLink = async () => {
     navigate({
       replace: true,
       search: ((prev: Record<string, unknown>) => ({
         ...(prev as Record<string, unknown>),
-        ...buildCalendarSearchParams({
-          description,
-          end,
-          location,
-          start,
-          title,
-        }),
+        ...buildCalendarSearchParams(shareValues),
       })) as never,
     });
-    return copyToClipboard(window.location.href, 'Copied Shareable Link');
+    await copyShareableLink();
   };
   return {
     errors,

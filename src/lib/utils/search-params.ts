@@ -100,6 +100,23 @@ export function readString(value: unknown, fallback = ''): string {
 }
 
 /**
+ * Converts a record of optional string params into a URLSearchParams,
+ * dropping undefined values. Share-link builders that model an absent param
+ * as undefined can hand their output straight to `useCopyShareableLink`.
+ */
+export function recordToSearchParams(
+  record: Record<string, string | undefined>
+): URLSearchParams {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(record)) {
+    if (value !== undefined) {
+      params.set(key, value);
+    }
+  }
+  return params;
+}
+
+/**
  * Builds a URL search-param setter for a single optional string field. The key
  * is omitted only when the trimmed value is empty; the original value
  * (including surrounding whitespace) is written verbatim when present.

@@ -7,6 +7,7 @@ import {
   parseSearchParams,
   readFlag,
   readString,
+  recordToSearchParams,
   stringifySearchParams,
   writeFlag,
 } from './search-params';
@@ -159,5 +160,21 @@ describe('readString', () => {
     expect(readString(123)).toBe('');
     expect(readString(undefined, 'fallback')).toBe('fallback');
     expect(readString(null, 'fallback')).toBe('fallback');
+  });
+});
+
+describe('recordToSearchParams', () => {
+  test('keeps defined values and drops undefined ones', () => {
+    expect(
+      recordToSearchParams({
+        a: '1',
+        b: undefined,
+        c: 'hello world',
+      }).toString()
+    ).toBe('a=1&c=hello+world');
+  });
+
+  test('handles an empty record', () => {
+    expect(recordToSearchParams({}).toString()).toBe('');
   });
 });

@@ -3,6 +3,7 @@ import { useSearch } from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   buildChargingSearchParams,
@@ -10,7 +11,6 @@ import {
   type ChargerType,
   calculateChargingEstimate,
 } from '@/lib/tools/ev-charging/adapters/ev-charging';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 
 import {
   defaultValues,
@@ -105,7 +105,10 @@ function usePersistedSync(
   }, [watchedValues, setSaved]);
 }
 
-export function useChargingForm(onComplete: (success: boolean) => void) {
+export function useChargingForm(
+  onComplete: (success: boolean) => void,
+  onTrack: (action: string) => void
+) {
   const search = useSearch({ from: '/_tools/ev-charging/' } as never) as Record<
     string,
     unknown
@@ -140,13 +143,11 @@ export function useChargingForm(onComplete: (success: boolean) => void) {
     }
   }, [result, onComplete]);
 
-  const handleCopyShareableLink = async (onTrack: (action: string) => void) => {
-    const params = buildChargingSearchParams(watchedValues);
-    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-    if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      onTrack('copy_shareable');
-    }
-  };
+  const handleCopyShareableLink = useCopyShareableLink(
+    () => buildChargingSearchParams(watchedValues),
+    onTrack,
+    'copy_shareable'
+  );
 
   return {
     effectiveChargingPower,

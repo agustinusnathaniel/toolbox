@@ -21,7 +21,7 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
     handleCopyShareableLink,
     result,
     watchedValues,
-  } = useChargingForm(onComplete);
+  } = useChargingForm(onComplete, onTrack);
 
   return (
     <Card>
@@ -31,7 +31,7 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
           className="grid gap-4 text-start"
           onSubmit={(e) => {
             e.preventDefault();
-            handleCopyShareableLink(onTrack);
+            handleCopyShareableLink();
           }}
         >
           <BasicFields
