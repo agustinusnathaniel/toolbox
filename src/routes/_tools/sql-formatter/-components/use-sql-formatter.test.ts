@@ -2,12 +2,13 @@ import { act, renderHook } from '@testing-library/react';
 import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
 
+import { WORKER_DEADLINE_MS } from '@/lib/hooks/use-worker-deadline';
+
 import type {
   SqlFormatterRequest,
   SqlFormatterResponse,
 } from '../-worker/sql-formatter.worker';
 import {
-  SQL_FORMATTER_EXECUTION_DEADLINE_MS,
   SQL_FORMATTER_TIMEOUT_ERROR,
   useSqlFormatter,
 } from './use-sql-formatter';
@@ -93,7 +94,7 @@ describe('useSqlFormatter', () => {
     );
 
     act(() => {
-      vi.advanceTimersByTime(SQL_FORMATTER_EXECUTION_DEADLINE_MS);
+      vi.advanceTimersByTime(WORKER_DEADLINE_MS);
     });
 
     expect(result.current.result).toMatchObject({

@@ -12,8 +12,7 @@ import type {
 } from '../-worker/yaml-converter.worker';
 import YamlConverterWorker from '../-worker/yaml-converter.worker.ts?worker';
 
-export const YAML_CONVERTER_EXECUTION_DEADLINE_MS = 2000;
-export const YAML_CONVERTER_TIMEOUT_ERROR =
+const YAML_CONVERTER_TIMEOUT_ERROR =
   'Conversion took too long — the input is too large. Try a smaller file.';
 
 const TIMEOUT_RESULT: YamlConverterResult & { timedOut: true } = {
@@ -47,7 +46,6 @@ export function useYamlConverter(
       input,
       mode,
     }),
-    deadlineMs: YAML_CONVERTER_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,

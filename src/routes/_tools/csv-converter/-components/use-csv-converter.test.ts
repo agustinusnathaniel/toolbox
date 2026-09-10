@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
 
+import { WORKER_DEADLINE_MS } from '@/lib/hooks/use-worker-deadline';
 import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
 
 import type {
@@ -9,7 +10,6 @@ import type {
   CsvConverterResponse,
 } from '../-worker/csv-converter.worker';
 import {
-  CSV_CONVERTER_EXECUTION_DEADLINE_MS,
   CSV_CONVERTER_TIMEOUT_ERROR,
   useCsvConverter,
 } from './use-csv-converter';
@@ -70,7 +70,7 @@ describe('useCsvConverter', () => {
     );
 
     act(() => {
-      vi.advanceTimersByTime(CSV_CONVERTER_EXECUTION_DEADLINE_MS);
+      vi.advanceTimersByTime(WORKER_DEADLINE_MS);
     });
 
     expect(result.current.result).toMatchObject({

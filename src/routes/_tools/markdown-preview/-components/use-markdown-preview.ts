@@ -11,8 +11,7 @@ import type {
 } from '../-worker/markdown-preview.worker';
 import MarkdownPreviewWorker from '../-worker/markdown-preview.worker.ts?worker';
 
-export const MARKDOWN_PREVIEW_DEADLINE_MS = 2000;
-export const MARKDOWN_PREVIEW_TIMEOUT_ERROR =
+const MARKDOWN_PREVIEW_TIMEOUT_ERROR =
   'Rendering took too long — the input is too large. Try a smaller file.';
 
 const TIMEOUT_RESULT: MarkdownPreviewState = {
@@ -46,7 +45,6 @@ export function useMarkdownPreview(
     MarkdownPreviewState
   >({
     buildRequest: (id) => ({ id, input }),
-    deadlineMs: MARKDOWN_PREVIEW_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => {
       const r = response.result;

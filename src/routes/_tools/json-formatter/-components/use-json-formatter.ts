@@ -12,8 +12,7 @@ import type {
 } from '../-worker/json-formatter.worker';
 import JsonFormatterWorker from '../-worker/json-formatter.worker.ts?worker';
 
-export const JSON_FORMATTER_EXECUTION_DEADLINE_MS = 2000;
-export const JSON_FORMATTER_TIMEOUT_ERROR =
+const JSON_FORMATTER_TIMEOUT_ERROR =
   'Formatting took too long — the input is too large. Try a smaller file.';
 
 const TIMEOUT_RESULT: JsonFormatterResult & { timedOut: true } = {
@@ -47,7 +46,6 @@ export function useJsonFormatter(
       id,
       input,
     }),
-    deadlineMs: JSON_FORMATTER_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,

@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
 
-import { useWorkerDeadline } from './use-worker-deadline';
+import { useWorkerDeadline, WORKER_DEADLINE_MS } from './use-worker-deadline';
 
 interface TestRequest {
   id: string;
@@ -42,13 +42,11 @@ function respond(worker: FakeWorker, response: TestResponse) {
 
 const TIMEOUT_RESULT = -1;
 
-function setup(worker: FakeWorker, autoFire = false) {
+function setup(worker: FakeWorker) {
   const workerFactory = createWorkerFactory(worker);
   const hook = renderHook(() =>
     useWorkerDeadline<TestRequest, TestResponse, number>({
-      autoFire,
       buildRequest: (id) => ({ id, value: 'test' }),
-      deadlineMs: 2000,
       extractId: (response) => response.id,
       extractResult: (response) => response.result,
       timeoutResult: TIMEOUT_RESULT,
@@ -129,7 +127,7 @@ describe('useWorkerDeadline', () => {
     expect(worker.postMessage).toHaveBeenCalledTimes(1);
 
     act(() => {
-      vi.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(WORKER_DEADLINE_MS);
     });
 
     expect(worker.terminate).toHaveBeenCalledTimes(1);
@@ -154,41 +152,21 @@ describe('useWorkerDeadline', () => {
     expect(worker.terminate).toHaveBeenCalledTimes(1);
   });
 
-  test('autoFire mode posts a request automatically on mount', () => {
-    vi.useFakeTimers();
-    const worker = createFakeWorker();
-    setup(worker, true);
-
-    expect(worker.postMessage).toHaveBeenCalledTimes(1);
-    const request = worker.postMessage.mock.calls[0][0];
-    expect(request.id).toBeDefined();
-  });
-
-  test('does not post automatically on mount when autoFire is false', () => {
-    vi.useFakeTimers();
-    const worker = createFakeWorker();
-    setup(worker);
-
-    expect(worker.postMessage).not.toHaveBeenCalled();
-  });
-
-  test('does not repost on rerender when the factory creates fresh workers', () => {
-    vi.useFakeTimers();
+  test('creates the worker once on mount and does not post until requested', () => {
     const workers: Array<FakeWorker> = [];
+    const workerFactory = vi.fn<() => Worker>(() => {
+      const worker = createFakeWorker();
+      workers.push(worker);
+      return worker as unknown as Worker;
+    });
     const { rerender } = renderHook(
       (props: { value: string }) =>
         useWorkerDeadline<TestRequest, TestResponse, number>({
-          autoFire: true,
           buildRequest: (id) => ({ id, value: props.value }),
-          deadlineMs: 2000,
           extractId: (response) => response.id,
           extractResult: (response) => response.result,
           timeoutResult: TIMEOUT_RESULT,
-          workerFactory: () => {
-            const worker = createFakeWorker();
-            workers.push(worker);
-            return worker as unknown as Worker;
-          },
+          workerFactory,
         }),
       { initialProps: { value: 'a' } }
     );
@@ -196,10 +174,7 @@ describe('useWorkerDeadline', () => {
     rerender({ value: 'b' });
     rerender({ value: 'c' });
 
-    const totalPosts = workers.reduce(
-      (sum, worker) => sum + worker.postMessage.mock.calls.length,
-      0
-    );
-    expect(totalPosts).toBe(1);
+    expect(workerFactory).toHaveBeenCalledTimes(1);
+    expect(workers[0].postMessage).not.toHaveBeenCalled();
   });
 });

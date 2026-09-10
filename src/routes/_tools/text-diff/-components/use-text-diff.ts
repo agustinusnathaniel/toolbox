@@ -11,7 +11,6 @@ import type {
 } from '../-worker/text-diff.worker';
 import TextDiffWorker from '../-worker/text-diff.worker.ts?worker';
 
-export const TEXT_DIFF_EXECUTION_DEADLINE_MS = 2000;
 export const TEXT_DIFF_TIMEOUT_ERROR =
   'Comparison took too long — the input is too large or the two texts are too different. Try shorter inputs.';
 
@@ -42,7 +41,6 @@ export function useTextDiff(
     TextDiffResult
   >({
     buildRequest: (id) => ({ id, modified, original }),
-    deadlineMs: TEXT_DIFF_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,

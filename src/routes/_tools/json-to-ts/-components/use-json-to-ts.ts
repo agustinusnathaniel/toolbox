@@ -11,7 +11,6 @@ import type {
 } from '../-worker/json-to-ts.worker';
 import JsonToTsWorker from '../-worker/json-to-ts.worker.ts?worker';
 
-export const JSON_TO_TS_EXECUTION_DEADLINE_MS = 2000;
 export const JSON_TO_TS_TIMEOUT_ERROR =
   'Generation took too long — the input is too large or too deeply nested. Try smaller input.';
 
@@ -41,7 +40,6 @@ export function useJsonToTs(
     JsonToTsState
   >({
     buildRequest: (id) => ({ id, input }),
-    deadlineMs: JSON_TO_TS_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,
