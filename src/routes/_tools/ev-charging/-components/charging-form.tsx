@@ -27,7 +27,6 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
     <Card>
       <CardContent>
         <Form
-          {...form}
           className="grid gap-4 text-start"
           onSubmit={(e) => {
             e.preventDefault();

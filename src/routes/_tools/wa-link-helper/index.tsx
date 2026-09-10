@@ -168,7 +168,6 @@ function WALinkHelperPage() {
       <Card>
         <CardContent>
           <Form
-            {...form}
             className="grid gap-6 text-start"
             onSubmit={form.handleSubmit(handleCopyLink)}
           >
