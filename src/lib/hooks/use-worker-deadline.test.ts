@@ -61,6 +61,10 @@ afterEach(() => {
 });
 
 describe('useWorkerDeadline', () => {
+  test('uses the shared 2000ms deadline that all worker tools rely on', () => {
+    expect(WORKER_DEADLINE_MS).toBe(2000);
+  });
+
   test('posts a message with a UUID when postRequest is called', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
