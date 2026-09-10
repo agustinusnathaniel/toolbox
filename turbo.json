@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "type:check": {
+      "inputs": ["tsconfig.json", "src/**"],
+      "outputs": ["*.tsbuildinfo"],
+      "env": ["VITE_API_BASE_URL"]
+    },
+    "ultracite:check": {
+      "outputs": [],
+      "inputs": ["biome.jsonc", "src/**"]
+    },
+    "biome:ci": {
+      "outputs": [],
+      "inputs": ["biome.jsonc", "src/**"]
+    },
+    "knip": {
+      "outputs": [],
+      "inputs": [
+        "knip.ts",
+        "package.json",
+        "tsconfig.json",
+        "content/**",
+        "src/**"
+      ]
+    },
+    "build": {
+      "dependsOn": ["type:check"],
+      "outputs": ["dist/**"],
+      "env": ["VITE_API_BASE_URL"]
+    },
+    "test": {
+      "outputs": ["node_modules/.vite/vitest/**/results.json"],
+      "inputs": ["vite.config.ts", "src/**"]
+    }
+  }
+}

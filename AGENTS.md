@@ -12,7 +12,7 @@ Mark "done" only when **all** pass:
 5. `pnpm build` - no bundle errors
 6. `pnpm dev` + browser verify the changed tool works
 
-`pnpm check` runs steps 1-4 in one pass.
+`pnpm check` runs steps 1-4 in parallel via turbo.
 
 ## Project
 

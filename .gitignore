@@ -12,6 +12,9 @@ yarn-error.log*
 # TS
 *.tsbuildinfo
 
+# Turbo
+.turbo
+
 stats.*
 
 # Test

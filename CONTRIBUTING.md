@@ -43,7 +43,7 @@ We use **Ultracite** (wrapping Biome) for both linting and formatting.
 
 Run `pnpm knip` to find unused files and dependencies. IntentUI primitives in `src/lib/components/ui` are CLI-regenerable, so their export/type pruning is disabled; unused files and unused dependencies fail the check.
 
-`pnpm check` runs lint, typecheck, knip, and tests in one pass.
+`pnpm check` runs lint, typecheck, knip, and tests in parallel via turbo.
 
 ### TypeScript
 
