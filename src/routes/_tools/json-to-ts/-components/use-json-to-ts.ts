@@ -1,8 +1,11 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type { JsonToTsResult } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
 
 import type {
@@ -46,12 +49,7 @@ export function useJsonToTs(
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    postRequest();
-  }, [postRequest, trigger]);
+  useWorkerTrigger(postRequest, trigger);
 
   return { computing, result, setResult };
 }

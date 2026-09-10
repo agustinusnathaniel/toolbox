@@ -1,14 +1,17 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type { YamlConverterResult } from '@/lib/tools/yaml-converter/adapters/yaml-converter';
+import type { YamlMode } from '@/lib/tools/yaml-converter/adapters/yaml-params';
 
 import type {
   YamlConverterRequest,
   YamlConverterResponse,
-  YamlMode,
 } from '../-worker/yaml-converter.worker';
 import YamlConverterWorker from '../-worker/yaml-converter.worker.ts?worker';
 
@@ -52,17 +55,7 @@ export function useYamlConverter(
     workerFactory,
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: input/mode captured via buildRequest closure, trigger drives execution
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    if (!input.trim()) {
-      setResult(null);
-      return;
-    }
-    postRequest();
-  }, [input, mode, postRequest, setResult, trigger]);
+  useWorkerTrigger(postRequest, trigger, !input.trim(), () => setResult(null));
 
   return { computing, result, setResult };
 }

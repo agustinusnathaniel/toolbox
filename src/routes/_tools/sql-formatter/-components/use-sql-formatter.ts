@@ -1,13 +1,18 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
-import type { SqlFormatterResult } from '@/lib/tools/sql-formatter/adapters/sql-formatter';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
+import type {
+  SqlDialect,
+  SqlFormatterResult,
+} from '@/lib/tools/sql-formatter/adapters/sql-formatter';
 import type { SqlSearchAction } from '@/lib/tools/sql-formatter/adapters/sql-params';
 
 import type {
-  SqlDialect,
   SqlFormatterRequest,
   SqlFormatterResponse,
 } from '../-worker/sql-formatter.worker';
@@ -55,17 +60,7 @@ export function useSqlFormatter(
     workerFactory,
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: input/dialect/action captured via buildRequest closure, trigger drives execution
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    if (!input.trim()) {
-      setResult(null);
-      return;
-    }
-    postRequest();
-  }, [input, dialect, action, postRequest, setResult, trigger]);
+  useWorkerTrigger(postRequest, trigger, !input.trim(), () => setResult(null));
 
   return { computing, result, setResult };
 }

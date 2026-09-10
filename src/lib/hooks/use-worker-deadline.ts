@@ -104,3 +104,24 @@ export function useWorkerDeadline<TRequest, TResponse, TResult>(
 
   return { computing, postRequest, result, setResult };
 }
+
+export function useWorkerTrigger(
+  postRequest: () => void,
+  trigger: number,
+  skip = false,
+  onSkip?: () => void
+): void {
+  const onSkipRef = useRef(onSkip);
+  onSkipRef.current = onSkip;
+
+  useEffect(() => {
+    if (trigger <= 0) {
+      return;
+    }
+    if (skip) {
+      onSkipRef.current?.();
+      return;
+    }
+    postRequest();
+  }, [postRequest, skip, trigger]);
+}

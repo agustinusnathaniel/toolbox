@@ -1,8 +1,11 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type { JsonFormatterResult } from '@/lib/tools/json-formatter/adapters/json-formatter';
 
 import type {
@@ -52,12 +55,7 @@ export function useJsonFormatter(
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0 || action === null) {
-      return;
-    }
-    postRequest();
-  }, [action, postRequest, trigger]);
+  useWorkerTrigger(postRequest, trigger, action === null);
 
   return { computing, result, setResult };
 }

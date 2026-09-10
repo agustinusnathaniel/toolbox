@@ -1,19 +1,19 @@
+import type {
+  WorkerRequest,
+  WorkerResponse,
+} from '@/lib/hooks/worker-protocol';
 import {
   type RegexTestResult,
   testRegex,
 } from '@/lib/tools/regex-tester/adapters/regex';
 
-export interface RegexTesterRequest {
+export type RegexTesterRequest = WorkerRequest<{
   flags: string;
-  id: string;
   input: string;
   pattern: string;
-}
+}>;
 
-export interface RegexTesterResponse {
-  id: string;
-  result: RegexTestResult;
-}
+export type RegexTesterResponse = WorkerResponse<RegexTestResult>;
 
 self.onmessage = (event: MessageEvent<RegexTesterRequest>) => {
   const { flags, id, input, pattern } = event.data;

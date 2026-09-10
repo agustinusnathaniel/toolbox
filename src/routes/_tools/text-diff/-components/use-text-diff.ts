@@ -1,8 +1,11 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type { TextDiffResult } from '@/lib/tools/text-diff/adapters/text-diff';
 
 import type {
@@ -47,12 +50,7 @@ export function useTextDiff(
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    postRequest();
-  }, [postRequest, trigger]);
+  useWorkerTrigger(postRequest, trigger);
 
   return { computing, result, setResult };
 }

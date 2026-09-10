@@ -1,30 +1,24 @@
+import type {
+  WorkerRequest,
+  WorkerResponse,
+} from '@/lib/hooks/worker-protocol';
 import {
   formatSql,
   minifySql,
+  type SqlDialect,
   type SqlFormatterResult,
 } from '@/lib/tools/sql-formatter/adapters/sql-formatter';
+import type { SqlSearchAction } from '@/lib/tools/sql-formatter/adapters/sql-params';
 
-export type SqlDialect =
-  | 'bigquery'
-  | 'mysql'
-  | 'postgresql'
-  | 'sqlite'
-  | 'sql'
-  | 'transactsql';
-
-type SqlSearchAction = 'format' | 'minify';
-
-export interface SqlFormatterRequest {
+export type SqlFormatterRequest = WorkerRequest<{
   action: SqlSearchAction;
   dialect: SqlDialect;
-  id: string;
   input: string;
-}
+}>;
 
-export interface SqlFormatterResponse {
-  id: string;
-  result: SqlFormatterResult & { timedOut?: boolean };
-}
+export type SqlFormatterResponse = WorkerResponse<
+  SqlFormatterResult & { timedOut?: boolean }
+>;
 
 self.onmessage = (event: MessageEvent<SqlFormatterRequest>) => {
   const { id, input, dialect, action } = event.data;

@@ -1,3 +1,7 @@
+import type {
+  WorkerRequest,
+  WorkerResponse,
+} from '@/lib/hooks/worker-protocol';
 import {
   formatJson,
   type JsonFormatterResult,
@@ -7,16 +11,12 @@ import {
 
 export type JsonFormatterAction = 'format' | 'validate' | 'minify';
 
-export interface JsonFormatterRequest {
+export type JsonFormatterRequest = WorkerRequest<{
   action: JsonFormatterAction;
-  id: string;
   input: string;
-}
+}>;
 
-export interface JsonFormatterResponse {
-  id: string;
-  result: JsonFormatterResult;
-}
+export type JsonFormatterResponse = WorkerResponse<JsonFormatterResult>;
 
 self.onmessage = (event: MessageEvent<JsonFormatterRequest>) => {
   const { id, input, action } = event.data;

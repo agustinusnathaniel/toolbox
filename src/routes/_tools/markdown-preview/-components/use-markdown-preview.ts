@@ -1,9 +1,12 @@
 'use client';
 
 import DOMPurify from 'dompurify';
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 
 import type {
   MarkdownPreviewRequest,
@@ -58,16 +61,9 @@ export function useMarkdownPreview(
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    if (!input.trim()) {
-      setResult({ html: '', isEmpty: true });
-      return;
-    }
-    postRequest();
-  }, [input, postRequest, setResult, trigger]);
+  useWorkerTrigger(postRequest, trigger, !input.trim(), () =>
+    setResult({ html: '', isEmpty: true })
+  );
 
   return { computing, result, setResult };
 }
