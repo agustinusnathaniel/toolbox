@@ -1,7 +1,7 @@
 import imageCompression from 'browser-image-compression';
-import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
-import { max, min } from 'radashi';
+
+import { downloadBlob } from '@/lib/utils/download';
 
 export interface CompressionOptions {
   onProgress?: (progress: number) => void;
@@ -76,12 +76,12 @@ export async function compressImage(
   options: CompressionOptions = {}
 ): Promise<File> {
   const imageData = await getImageDimensions(file);
-  const maxMeasure = max([imageData.height, imageData.width]) ?? 1;
-  const maxSizeMB = max([
-    min([Math.ceil(((imageData.size || 0) / SINGLE_MB) * 0.35), 5]) ?? 0.01,
-    0.01,
-  ]);
-  const maxWidthOrHeight = max([Math.ceil(maxMeasure * 0.75), 2400]) ?? 2400;
+  const maxMeasure = Math.max(imageData.height, imageData.width);
+  const maxSizeMB = Math.max(
+    Math.min(Math.ceil(((imageData.size || 0) / SINGLE_MB) * 0.35), 5),
+    0.01
+  );
+  const maxWidthOrHeight = Math.max(Math.ceil(maxMeasure * 0.75), 2400);
 
   const compressed = await imageCompression(file, {
     maxSizeMB,
@@ -100,7 +100,7 @@ export async function downloadFiles(files: Array<File>): Promise<void> {
 
   if (files.length === 1) {
     const file = files[0];
-    saveAs(file, file.name);
+    downloadBlob(file, file.name);
   } else {
     const zip = new JSZip();
 
@@ -110,6 +110,6 @@ export async function downloadFiles(files: Array<File>): Promise<void> {
     }
 
     const zipBlob = await zip.generateAsync({ type: 'blob' });
-    saveAs(zipBlob, 'files.zip');
+    downloadBlob(zipBlob, 'files.zip');
   }
 }

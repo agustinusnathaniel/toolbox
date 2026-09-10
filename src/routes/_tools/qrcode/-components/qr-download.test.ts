@@ -25,7 +25,9 @@ function setupMocks(opts: { getContextResult: object | null }) {
     });
 
   const mockClick = vi.fn();
-  const mockToDataURL = vi.fn().mockReturnValue('data:image/png;base64,mock');
+  const mockToBlob = vi.fn((callback: BlobCallback) => {
+    callback(new Blob(['png'], { type: 'image/png' }));
+  });
   const mockDrawImage = vi.fn();
   const mockGetContext = vi.fn().mockReturnValue(opts.getContextResult);
 
@@ -34,7 +36,7 @@ function setupMocks(opts: { getContextResult: object | null }) {
       return {
         getContext: mockGetContext,
         height: 0,
-        toDataURL: mockToDataURL,
+        toBlob: mockToBlob,
         width: 0,
       };
     }
@@ -67,7 +69,7 @@ function setupMocks(opts: { getContextResult: object | null }) {
     mockGetContext,
     mockRevokeObjectURL,
     mockSerialize,
-    mockToDataURL,
+    mockToBlob,
   };
 }
 
@@ -84,6 +86,7 @@ describe('svgToPngDownload', () => {
 
     expect(m.mockSerialize).toHaveBeenCalledWith(svg);
     expect(m.mockCreateObjectURL).toHaveBeenCalled();
+    expect(m.mockToBlob).toHaveBeenCalled();
     expect(m.mockClick).toHaveBeenCalled();
     expect(m.mockRevokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
   });

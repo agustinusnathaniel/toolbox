@@ -42,10 +42,6 @@ export function getMobileNavItems(): Array<ToolNavItem> {
   return buildNavItems({ mobile: true });
 }
 
-export function getToolNavItem(slug: string): ToolNavItem | undefined {
-  return allNavItems.find((item) => item.slug === slug);
-}
-
 export function getToolNavCategories(): Array<{
   category: ToolCategory;
   items: Array<ToolNavItem>;

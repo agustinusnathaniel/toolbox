@@ -7,7 +7,6 @@ import { TOOL_CATEGORIES, TOOL_DEFINITIONS } from './tool-catalog';
 import {
   getMobileNavItems,
   getToolNavCategories,
-  getToolNavItem,
   getToolNavItems,
 } from './tool-registry';
 
@@ -56,18 +55,6 @@ describe('getMobileNavItems', () => {
     const paths = getMobileNavItems().map((item) => item.path);
 
     expect(new Set(paths).size).toBe(paths.length);
-  });
-});
-
-describe('getToolNavItem', () => {
-  test('returns item for valid slug', () => {
-    const item = getToolNavItem('wa-link-helper');
-    expect(item).toBeDefined();
-    expect(item?.title).toBeTruthy();
-  });
-
-  test('returns undefined for invalid slug', () => {
-    expect(getToolNavItem('nonexistent')).toBeUndefined();
   });
 });
 
