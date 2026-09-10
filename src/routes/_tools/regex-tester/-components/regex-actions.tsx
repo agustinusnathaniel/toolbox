@@ -7,12 +7,12 @@ import { Button } from '@/lib/components/ui/button';
 export function RegexActions({
   onCopyLink,
   onCopyMatches,
-  copiedMatches,
+  copiedKey,
   disabled,
 }: {
   onCopyLink: () => void;
   onCopyMatches: () => void;
-  copiedMatches: boolean;
+  copiedKey: string | null;
   disabled: boolean;
 }) {
   return (
@@ -33,7 +33,7 @@ export function RegexActions({
         onPress={onCopyMatches}
         size="sm"
       >
-        {copiedMatches ? (
+        {copiedKey === 'matches' ? (
           <Check className="size-4 text-success" />
         ) : (
           <Copy className="size-4" />
