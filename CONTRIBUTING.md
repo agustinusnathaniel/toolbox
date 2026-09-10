@@ -131,7 +131,7 @@ See existing routes (e.g., `src/routes/_tools/qrcode/index.tsx`, `src/routes/_to
 
 ### Step 3: Register the Tool in Navigation
 
-Add an entry to `TOOL_DEFINITIONS` in `src/lib/navigation/tool-catalog.tsx`: import the route's `-meta` sidecar, spread it, and fill in the navigation-only fields (category, icon, and optionally `mobileTitle` / `showInMobile`). The sidebar, homepage grid, mobile nav, and command palette all read from this catalog.
+Add an entry to `TOOL_DEFINITIONS` in `src/lib/navigation/tool-catalog.tsx`: import the route's `-meta` sidecar, spread it, and fill in the navigation-only fields (category, icon, and optionally `mobileTitle` / `showInMobile`). The sidebar, homepage grid, mobile nav, and command palette all read from this catalog, and `tool-registry.test.ts` fails when a route directory is missing from it.
 
 ### Step 4: Extract Business Logic (Recommended)
 
@@ -181,6 +181,7 @@ function ToolPage() {
 - Core logic in `src/lib/tools/<name>/` should contain only browser-safe, pure business logic.
 - It should not depend on UI frameworks or route-specific state.
 - It should export types and functions that can be tested independently.
+- Shareable URL state goes through the tool's `build<Name>Params` helper. For a single optional string field, use `singleStringParam` from `@/lib/utils/search-params` instead of building `URLSearchParams` by hand.
 
 ### Route Conventions
 

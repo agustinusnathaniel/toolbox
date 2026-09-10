@@ -64,6 +64,7 @@ Detailed testing guide: [CONTRIBUTING.md → Testing](./CONTRIBUTING.md#testing)
 ## Notes
 
 - Use `vp` CLI, not `vite` (`vp dev`, `vp build`, `vp test`). Package manager is `pnpm`.
+- Run `pnpm check` before pushing (lint + typecheck + knip + tests).
 - CSP includes `'unsafe-eval'` and `'unsafe-inline'` — intentional for QuickJS WASM. Don't flag it.
 - Three icon libs coexist: `lucide-react` (preferred for new tool UI), `@intentui/icons` (system/nav), `@heroicons/react` (IntentUI component library dependency — do NOT remove, it's embedded in shared UI components).
 - Never edit `src/routeTree.gen.ts` (auto-generated). Never modify `dist/` (build output).
