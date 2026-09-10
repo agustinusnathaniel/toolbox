@@ -1,15 +1,3 @@
-export interface ColorSearchParams {
-  c?: string;
-}
+import { singleStringParam } from '@/lib/utils/search-params';
 
-export function buildColorParams(input: string): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input.trim()) {
-    params.set('c', input);
-  }
-  return params;
-}
-
-export function buildColorStateFromSearch(search: ColorSearchParams): string {
-  return search.c ?? '';
-}
+export const buildColorParams = singleStringParam('c');

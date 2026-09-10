@@ -11,10 +11,7 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  buildJsonToTsParams,
-  buildJsonToTsStateFromSearch,
-} from '@/lib/tools/json-to-ts/adapters/json-to-ts-params';
+import { buildJsonToTsParams } from '@/lib/tools/json-to-ts/adapters/json-to-ts-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { useJsonToTs } from './-components/use-json-to-ts';
@@ -33,7 +30,7 @@ export const Route = createFileRoute('/_tools/json-to-ts/')({
 function JsonToTsPage() {
   const { trackAction } = useToolTracking('json-to-ts', 'JSON to TypeScript');
   const search = useSearch({ from: '/_tools/json-to-ts/' });
-  const [input, setInput] = useState(buildJsonToTsStateFromSearch(search));
+  const [input, setInput] = useState(search.input ?? '');
   const [generateTrigger, setGenerateTrigger] = useState(0);
   const { copiedKey, copy } = useCopyFeedback();
   const { computing, result, setResult } = useJsonToTs(input, generateTrigger);

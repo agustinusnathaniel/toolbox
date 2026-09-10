@@ -1,17 +1,3 @@
-export interface JsonToTsSearchParams {
-  input?: string;
-}
+import { singleStringParam } from '@/lib/utils/search-params';
 
-export function buildJsonToTsParams(input: string): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input.trim()) {
-    params.set('input', input);
-  }
-  return params;
-}
-
-export function buildJsonToTsStateFromSearch(
-  search: JsonToTsSearchParams
-): string {
-  return search.input ?? '';
-}
+export const buildJsonToTsParams = singleStringParam('input');

@@ -15,10 +15,7 @@ import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { CaseFormat } from '@/lib/tools/case-converter/adapters/case-converter';
 import { convertCase } from '@/lib/tools/case-converter/adapters/case-converter';
-import {
-  buildCaseParams,
-  buildCaseStateFromSearch,
-} from '@/lib/tools/case-converter/adapters/case-params';
+import { buildCaseParams } from '@/lib/tools/case-converter/adapters/case-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -105,9 +102,7 @@ function CaseResults({
 function CaseConverterPage() {
   const { trackAction } = useToolTracking('case-converter', 'Case Converter');
   const search = useSearch({ from: '/_tools/case-converter/' });
-  const [input, setInput] = useState(
-    () => buildCaseStateFromSearch(search).input
-  );
+  const [input, setInput] = useState(() => search.input ?? '');
   const { copiedKey, copy } = useCopyFeedback();
   const result = useMemo(() => convertCase(input), [input]);
   const handleCopy = useCallback(

@@ -12,10 +12,7 @@ import { Card, CardContent } from '@/lib/components/ui/card';
 import { Input } from '@/lib/components/ui/input';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  buildCronParams,
-  buildCronStateFromSearch,
-} from '@/lib/tools/cron-parser/adapters/cron-params';
+import { buildCronParams } from '@/lib/tools/cron-parser/adapters/cron-params';
 import {
   CRON_EXAMPLES,
   parseCronExpression,
@@ -36,9 +33,7 @@ export const Route = createFileRoute('/_tools/cron-parser/')({
 
 function useCronState() {
   const search = useSearch({ from: '/_tools/cron-parser/' });
-  const [expression, setExpression] = useState(
-    () => buildCronStateFromSearch(search).expression
-  );
+  const [expression, setExpression] = useState(() => search.expression ?? '');
   return { expression, setExpression };
 }
 

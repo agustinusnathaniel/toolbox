@@ -16,10 +16,7 @@ import {
   buildStatsSummary,
   computeTextStats,
 } from '@/lib/tools/text-stats/adapters/text-stats';
-import {
-  buildTextStatsParams,
-  buildTextStatsStateFromSearch,
-} from '@/lib/tools/text-stats/adapters/text-stats-params';
+import { buildTextStatsParams } from '@/lib/tools/text-stats/adapters/text-stats-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -68,9 +65,9 @@ function StatCell({ label, value }: { label: string; value: string | number }) {
 function TextStatsPage() {
   const { trackAction } = useToolTracking('text-stats', 'Text Statistics');
   const search = useSearch({ from: '/_tools/text-stats/' });
-  const [state, setState] = useState(() =>
-    buildTextStatsStateFromSearch(search)
-  );
+  const [state, setState] = useState(() => ({
+    input: search.input ?? '',
+  }));
   const { copiedKey, copy } = useCopyFeedback();
   const stats = useMemo(() => computeTextStats(state.input), [state.input]);
   const summary = useMemo(() => buildStatsSummary(stats), [stats]);

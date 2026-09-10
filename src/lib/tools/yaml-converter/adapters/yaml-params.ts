@@ -13,11 +13,6 @@ function coerceMode(value: unknown): YamlMode {
   return DEFAULT_MODE;
 }
 
-export interface YamlSearchParams {
-  input?: string;
-  mode?: string;
-}
-
 export function buildYamlParams(
   input: string,
   mode: YamlMode

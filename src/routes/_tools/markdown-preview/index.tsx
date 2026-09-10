@@ -12,10 +12,7 @@ import { Card, CardContent } from '@/lib/components/ui/card';
 import { Textarea } from '@/lib/components/ui/textarea';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  buildMarkdownParams,
-  buildMarkdownStateFromSearch,
-} from '@/lib/tools/markdown-preview/adapters/markdown-params';
+import { buildMarkdownParams } from '@/lib/tools/markdown-preview/adapters/markdown-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { useMarkdownPreview } from './-components/use-markdown-preview';
@@ -37,9 +34,7 @@ function MarkdownPreviewPage() {
     'Markdown Preview'
   );
   const search = useSearch({ from: '/_tools/markdown-preview/' });
-  const [input, setInput] = useState(
-    () => buildMarkdownStateFromSearch(search).input
-  );
+  const [input, setInput] = useState(() => search.input ?? '');
   const { copiedKey, copy } = useCopyFeedback();
   const [trigger, setTrigger] = useState(0);
   const {

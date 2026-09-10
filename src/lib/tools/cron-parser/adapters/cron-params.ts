@@ -1,19 +1,3 @@
-export interface CronSearchParams {
-  expression?: string;
-}
+import { singleStringParam } from '@/lib/utils/search-params';
 
-export function buildCronParams(expression: string): URLSearchParams {
-  const params = new URLSearchParams();
-  if (expression.trim()) {
-    params.set('expression', expression);
-  }
-  return params;
-}
-
-export function buildCronStateFromSearch(search: CronSearchParams): {
-  expression: string;
-} {
-  return {
-    expression: search.expression ?? '',
-  };
-}
+export const buildCronParams = singleStringParam('expression');

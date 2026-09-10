@@ -1,8 +1,6 @@
 import type { NumberBase } from './number-base';
 import { normalizeBase } from './number-base';
 
-export type NumberBaseString = '2' | '8' | '10' | '16';
-
 export interface NumberBaseSearchParams {
   from?: string;
   input?: string;
