@@ -1,12 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
 import { buildWorker } from './runner-utils';
-import {
-  makeWorkerAErrorHandler,
-  makeWorkerAResultHandler,
-  makeWorkerBErrorHandler,
-  makeWorkerBResultHandler,
-} from './runner-worker-handlers';
+import { makeWorkerHandlers } from './runner-worker-handlers';
 import type { useRunnerInternals } from './use-runner-internals';
 
 type SessionCbs = {
@@ -27,19 +22,21 @@ export function useWorkerSetup(
       setResultA: internals.setResultA,
       setResultB: internals.setResultB,
     };
+    const handlersA = makeWorkerHandlers(deps, 'a');
+    const handlersB = makeWorkerHandlers(deps, 'b');
     buildWorker(
       internals.workerARef,
       internals.workerAIdRef,
       () => internals.setWorkerAReady(true),
-      makeWorkerAResultHandler(deps),
-      makeWorkerAErrorHandler(deps)
+      handlersA.onResult,
+      handlersA.onError
     );
     buildWorker(
       internals.workerBRef,
       internals.workerBIdRef,
       () => internals.setWorkerBReady(true),
-      makeWorkerBResultHandler(deps),
-      makeWorkerBErrorHandler(deps)
+      handlersB.onResult,
+      handlersB.onError
     );
   }, [cbs.doHandleRoundFinished]);
 
