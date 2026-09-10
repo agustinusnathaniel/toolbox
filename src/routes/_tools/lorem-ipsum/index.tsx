@@ -26,9 +26,9 @@ import { generateLoremIpsum } from '@/lib/tools/lorem-ipsum/adapters/lorem-ipsum
 import {
   buildLoremIpsumParams,
   buildLoremIpsumStateFromSearch,
-  parseIntClamped,
 } from '@/lib/tools/lorem-ipsum/adapters/lorem-ipsum-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
+import { parseIntClamped } from '@/lib/utils/search-params';
 
 import { meta } from './-meta';
 

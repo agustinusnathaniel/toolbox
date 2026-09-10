@@ -1,3 +1,5 @@
+import { coerceEnum, readString } from '@/lib/utils/search-params';
+
 import type { HashAlgorithm } from './hash-generator';
 import { HASH_ALGORITHMS } from './hash-generator';
 
@@ -6,6 +8,9 @@ export interface HashSearchParams {
   expected?: string;
   text?: string;
 }
+
+const HASH_ALGORITHM_SET: ReadonlySet<HashAlgorithm> = new Set(HASH_ALGORITHMS);
+const DEFAULT_ALGORITHM: HashAlgorithm = 'SHA-256';
 
 export function buildHashParams(
   text: string,
@@ -30,12 +35,13 @@ export function buildHashStateFromSearch(search: HashSearchParams): {
   expected: string;
   text: string;
 } {
-  const algorithm = HASH_ALGORITHMS.includes(search.algorithm as HashAlgorithm)
-    ? (search.algorithm as HashAlgorithm)
-    : 'SHA-256';
   return {
-    algorithm,
-    expected: search.expected ?? '',
-    text: search.text ?? '',
+    algorithm: coerceEnum(
+      search.algorithm,
+      HASH_ALGORITHM_SET,
+      DEFAULT_ALGORITHM
+    ),
+    expected: readString(search.expected),
+    text: readString(search.text),
   };
 }

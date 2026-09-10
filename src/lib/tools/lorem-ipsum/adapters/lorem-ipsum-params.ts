@@ -1,3 +1,5 @@
+import { coerceEnum, parseIntClamped } from '@/lib/utils/search-params';
+
 import type { LoremIpsumOutputFormat } from './lorem-ipsum';
 
 export interface LoremIpsumSearchParams {
@@ -27,27 +29,8 @@ const DEFAULTS: LoremIpsumParamsState = {
   wordsMin: 8,
 };
 
-export function parseIntClamped(
-  value: string | undefined,
-  min: number,
-  max: number,
-  fallback: number
-): number {
-  if (value === undefined) {
-    return fallback;
-  }
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed)) {
-    return fallback;
-  }
-  if (parsed < min) {
-    return min;
-  }
-  if (parsed > max) {
-    return max;
-  }
-  return Math.floor(parsed);
-}
+const ALLOWED_FORMATS: ReadonlySet<LoremIpsumOutputFormat> =
+  new Set<LoremIpsumOutputFormat>(['html', 'plain']);
 
 function parseBoolean(value: string | undefined, fallback: boolean): boolean {
   if (value === undefined) {
@@ -60,13 +43,6 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
     return false;
   }
   return fallback;
-}
-
-function parseFormat(value: string | undefined): LoremIpsumOutputFormat {
-  if (value === 'html' || value === 'plain') {
-    return value;
-  }
-  return DEFAULTS.format;
 }
 
 export function buildLoremIpsumParams(
@@ -103,7 +79,7 @@ export function buildLoremIpsumStateFromSearch(
     [wordsMin, wordsMax] = [wordsMax, wordsMin];
   }
   return {
-    format: parseFormat(search.format),
+    format: coerceEnum(search.format, ALLOWED_FORMATS, DEFAULTS.format),
     paragraphs: parseIntClamped(search.paragraphs, 1, 50, DEFAULTS.paragraphs),
     sentencesPerParagraph: parseIntClamped(
       search.sentences,
