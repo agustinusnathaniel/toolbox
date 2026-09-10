@@ -27,7 +27,7 @@ const DEFAULTS: LoremIpsumParamsState = {
   wordsMin: 8,
 };
 
-function parseIntClamped(
+export function parseIntClamped(
   value: string | undefined,
   min: number,
   max: number,

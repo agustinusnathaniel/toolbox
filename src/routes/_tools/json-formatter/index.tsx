@@ -45,26 +45,15 @@ function JsonFormatterPage() {
     trigger
   );
 
-  const handleFormat = useCallback(() => {
-    setResult(null);
-    setActiveAction('format');
-    setTrigger((t) => t + 1);
-    trackAction('format');
-  }, [setResult, trackAction]);
-
-  const handleValidate = useCallback(() => {
-    setResult(null);
-    setActiveAction('validate');
-    setTrigger((t) => t + 1);
-    trackAction('validate');
-  }, [setResult, trackAction]);
-
-  const handleMinify = useCallback(() => {
-    setResult(null);
-    setActiveAction('minify');
-    setTrigger((t) => t + 1);
-    trackAction('minify');
-  }, [setResult, trackAction]);
+  const runAction = useCallback(
+    (action: 'format' | 'validate' | 'minify') => {
+      setResult(null);
+      setActiveAction(action);
+      setTrigger((t) => t + 1);
+      trackAction(action);
+    },
+    [setResult, trackAction]
+  );
 
   const handleCopy = useCallback(async () => {
     if (!(result?.isValid && result.formatted)) {
@@ -111,14 +100,18 @@ function JsonFormatterPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button isDisabled={computing} onPress={handleFormat} size="sm">
+            <Button
+              isDisabled={computing}
+              onPress={() => runAction('format')}
+              size="sm"
+            >
               <FileJson className="size-4" />
               Format
             </Button>
             <Button
               intent="outline"
               isDisabled={computing}
-              onPress={handleValidate}
+              onPress={() => runAction('validate')}
               size="sm"
             >
               Validate
@@ -126,7 +119,7 @@ function JsonFormatterPage() {
             <Button
               intent="outline"
               isDisabled={computing}
-              onPress={handleMinify}
+              onPress={() => runAction('minify')}
               size="sm"
             >
               Minify

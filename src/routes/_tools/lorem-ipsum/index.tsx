@@ -26,6 +26,7 @@ import { generateLoremIpsum } from '@/lib/tools/lorem-ipsum/adapters/lorem-ipsum
 import {
   buildLoremIpsumParams,
   buildLoremIpsumStateFromSearch,
+  parseIntClamped,
 } from '@/lib/tools/lorem-ipsum/adapters/lorem-ipsum-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
@@ -110,41 +111,19 @@ function LoremIpsumPage() {
     ]
   );
 
-  const handleParagraphsChange = useCallback((value: string) => {
-    const n = Number.parseInt(value, 10);
-    setState((prev) => ({
-      ...prev,
-      paragraphs: Number.isNaN(n)
-        ? prev.paragraphs
-        : Math.min(50, Math.max(1, n)),
-    }));
-  }, []);
-
-  const handleSentencesChange = useCallback((value: string) => {
-    const n = Number.parseInt(value, 10);
-    setState((prev) => ({
-      ...prev,
-      sentencesPerParagraph: Number.isNaN(n)
-        ? prev.sentencesPerParagraph
-        : Math.min(10, Math.max(1, n)),
-    }));
-  }, []);
-
-  const handleWordsMinChange = useCallback((value: string) => {
-    const n = Number.parseInt(value, 10);
-    setState((prev) => ({
-      ...prev,
-      wordsMin: Number.isNaN(n) ? prev.wordsMin : Math.min(50, Math.max(1, n)),
-    }));
-  }, []);
-
-  const handleWordsMaxChange = useCallback((value: string) => {
-    const n = Number.parseInt(value, 10);
-    setState((prev) => ({
-      ...prev,
-      wordsMax: Number.isNaN(n) ? prev.wordsMax : Math.min(50, Math.max(1, n)),
-    }));
-  }, []);
+  const handleNumberChange = useCallback(
+    (
+      field: 'paragraphs' | 'sentencesPerParagraph' | 'wordsMax' | 'wordsMin',
+      max: number,
+      value: string
+    ) => {
+      setState((prev) => ({
+        ...prev,
+        [field]: parseIntClamped(value, 1, max, prev[field]),
+      }));
+    },
+    []
+  );
 
   const handleRegenerate = useCallback(() => {
     setTick((t) => t + 1);
@@ -185,7 +164,9 @@ function LoremIpsumPage() {
                 id="lorem-paragraphs"
                 max={50}
                 min={1}
-                onChange={(e) => handleParagraphsChange(e.target.value)}
+                onChange={(e) =>
+                  handleNumberChange('paragraphs', 50, e.target.value)
+                }
                 type="number"
                 value={String(state.paragraphs)}
               />
@@ -199,7 +180,13 @@ function LoremIpsumPage() {
                 id="lorem-sentences"
                 max={10}
                 min={1}
-                onChange={(e) => handleSentencesChange(e.target.value)}
+                onChange={(e) =>
+                  handleNumberChange(
+                    'sentencesPerParagraph',
+                    10,
+                    e.target.value
+                  )
+                }
                 type="number"
                 value={String(state.sentencesPerParagraph)}
               />
@@ -211,7 +198,9 @@ function LoremIpsumPage() {
                 id="lorem-wordsMin"
                 max={50}
                 min={1}
-                onChange={(e) => handleWordsMinChange(e.target.value)}
+                onChange={(e) =>
+                  handleNumberChange('wordsMin', 50, e.target.value)
+                }
                 type="number"
                 value={String(state.wordsMin)}
               />
@@ -223,7 +212,9 @@ function LoremIpsumPage() {
                 id="lorem-wordsMax"
                 max={50}
                 min={1}
-                onChange={(e) => handleWordsMaxChange(e.target.value)}
+                onChange={(e) =>
+                  handleNumberChange('wordsMax', 50, e.target.value)
+                }
                 type="number"
                 value={String(state.wordsMax)}
               />

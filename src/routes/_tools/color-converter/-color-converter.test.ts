@@ -1,11 +1,10 @@
 import { describe, expect, test, vi } from 'vite-plus/test';
 
 import {
+  copyColorValue,
   formatColorString,
   parseColor,
 } from '@/lib/tools/color-converter/adapters/color-converter';
-
-import { copyColorValue } from './index';
 
 describe('copyColorValue', () => {
   const parsed = parseColor('#ff0000');

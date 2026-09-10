@@ -45,6 +45,13 @@ export const Route = createFileRoute('/_tools/password-generator/')({
   validateSearch: searchSchema,
 });
 
+const CHARACTER_SET_OPTIONS = [
+  { key: 'lowercase', label: 'Lowercase (a-z)' },
+  { key: 'uppercase', label: 'Uppercase (A-Z)' },
+  { key: 'digits', label: 'Digits (0-9)' },
+  { key: 'symbols', label: 'Symbols (!@#...)' },
+] as const;
+
 function PasswordGeneratorPage() {
   const { trackAction } = useToolTracking(
     'password-generator',
@@ -111,38 +118,17 @@ function PasswordGeneratorPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <CheckboxField
-              isSelected={options.lowercase}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, lowercase: selected }))
-              }
-            >
-              <Checkbox>Lowercase (a-z)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={options.uppercase}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, uppercase: selected }))
-              }
-            >
-              <Checkbox>Uppercase (A-Z)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={options.digits}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, digits: selected }))
-              }
-            >
-              <Checkbox>Digits (0-9)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={options.symbols}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, symbols: selected }))
-              }
-            >
-              <Checkbox>Symbols (!@#...)</Checkbox>
-            </CheckboxField>
+            {CHARACTER_SET_OPTIONS.map(({ key, label }) => (
+              <CheckboxField
+                isSelected={options[key]}
+                key={key}
+                onChange={(selected) =>
+                  setOptions((prev) => ({ ...prev, [key]: selected }))
+                }
+              >
+                <Checkbox>{label}</Checkbox>
+              </CheckboxField>
+            ))}
           </div>
 
           <CheckboxField

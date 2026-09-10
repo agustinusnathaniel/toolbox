@@ -38,7 +38,6 @@ import {
   parseColor,
 } from '@/lib/tools/color-converter/adapters/color-converter';
 import { buildColorParams } from '@/lib/tools/color-converter/adapters/color-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -53,14 +52,6 @@ const FORMATS: Array<{ key: ColorFormat; label: string }> = [
   { key: 'hsl', label: 'HSL' },
   { key: 'oklch', label: 'OKLCH' },
 ];
-
-export function copyColorValue(
-  parsed: ParsedColor,
-  format: ColorFormat,
-  copy: typeof copyToClipboard = copyToClipboard
-): Promise<boolean> {
-  return copy(formatColorString(parsed, format), 'Copied');
-}
 
 export const Route = createFileRoute('/_tools/color-converter/')({
   component: ColorConverterPage,
