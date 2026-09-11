@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
+import type { UnitCategory } from './unit-converter';
 import {
   convertUnit,
   getUnitsForCategory,
@@ -9,19 +10,116 @@ import {
   normalizeUnit,
 } from './unit-converter';
 
-describe('isValidCategory', () => {
-  test('valid categories', () => {
-    expect(isValidCategory('length')).toBe(true);
-    expect(isValidCategory('weight')).toBe(true);
-    expect(isValidCategory('temperature')).toBe(true);
-    expect(isValidCategory('volume')).toBe(true);
-    expect(isValidCategory('data')).toBe(true);
-  });
+const CATEGORY_CASES: Array<[string | undefined, boolean]> = [
+  ['length', true],
+  ['weight', true],
+  ['temperature', true],
+  ['volume', true],
+  ['data', true],
+  ['invalid', false],
+  [undefined, false],
+  ['', false],
+];
 
-  test('invalid', () => {
-    expect(isValidCategory('invalid')).toBe(false);
-    expect(isValidCategory(undefined)).toBe(false);
-    expect(isValidCategory('')).toBe(false);
+const UNIT_CASES: Array<[string | undefined, UnitCategory, boolean]> = [
+  ['m', 'length', true],
+  ['kg', 'weight', true],
+  ['c', 'temperature', true],
+  ['m', 'weight', false],
+  [undefined, 'length', false],
+  ['', 'length', false],
+];
+
+const MAPPING_CASES: Array<{
+  category: UnitCategory;
+  pairs: Array<[string, string, string, string]>;
+}> = [
+  {
+    category: 'length',
+    pairs: [
+      ['mm', 'm', '1', '0.001'],
+      ['cm', 'm', '1', '0.01'],
+      ['m', 'mm', '1', '1000'],
+      ['km', 'm', '1', '1000'],
+      ['inch', 'm', '1', '0.0254'],
+      ['foot', 'm', '1', '0.3048'],
+      ['yard', 'm', '1', '0.9144'],
+      ['mile', 'm', '1', '1609.344'],
+    ],
+  },
+  {
+    category: 'weight',
+    pairs: [
+      ['mg', 'g', '1', '0.001'],
+      ['g', 'kg', '1', '0.001'],
+      ['kg', 'g', '1', '1000'],
+      ['tonne', 'kg', '1', '1000'],
+      ['oz', 'g', '1', '28.349523125'],
+      ['lb', 'g', '1', '453.59237'],
+    ],
+  },
+  {
+    category: 'temperature',
+    pairs: [
+      ['c', 'k', '1', '274.15'],
+      ['f', 'k', '32', '273.15'],
+      ['k', 'c', '273.15', '0'],
+    ],
+  },
+  {
+    category: 'volume',
+    pairs: [
+      ['ml', 'l', '1', '0.001'],
+      ['l', 'ml', '1', '1000'],
+      ['cup', 'ml', '1', '236.5882365'],
+      ['pint', 'ml', '1', '473.176473'],
+      ['quart', 'ml', '1', '946.352946'],
+      ['gallon', 'ml', '1', '3785.411784'],
+      ['m3', 'l', '1', '1000'],
+      ['fl-oz', 'ml', '1', '29.5735295625'],
+    ],
+  },
+  {
+    category: 'data',
+    pairs: [
+      ['B', 'KB', '1024', '1'],
+      ['KB', 'B', '1', '1024'],
+      ['MB', 'KB', '1', '1024'],
+      ['GB', 'MB', '1', '1024'],
+      ['TB', 'GB', '1', '1024'],
+    ],
+  },
+];
+
+const ZERO_GUARD_CASES: Array<{
+  from: string;
+  input: string;
+  label: string;
+  to: string;
+}> = [
+  { from: 'f', input: '32', label: 'F to C', to: 'c' },
+  { from: 'k', input: '273.15', label: 'K to C', to: 'c' },
+  { from: 'c', input: '-273.15', label: 'C to K', to: 'k' },
+];
+
+const FORMATTING_CASES: Array<{
+  containsExponent?: boolean;
+  expected?: string;
+  from: string;
+  input: string;
+  to: string;
+}> = [
+  { expected: '1000000', from: 'mm', input: '1000000000000', to: 'km' },
+  { containsExponent: true, from: 'mm', input: '1e15', to: 'mm' },
+  { containsExponent: true, from: 'm', input: '0.0000001', to: 'm' },
+  { expected: '1', from: 'm', input: '1', to: 'm' },
+  { expected: '25.4', from: 'inch', input: '10', to: 'cm' },
+  { expected: '42', from: 'm', input: '  42  ', to: 'm' },
+];
+
+describe('isValidCategory', () => {
+  test.each(CATEGORY_CASES)('isValidCategory(%s) -> %s', (value, expected) => {
+    expect(isValidCategory(value)).toBe(expected);
   });
 });
 
@@ -38,17 +136,12 @@ describe('normalizeCategory', () => {
 });
 
 describe('isValidUnitForCategory', () => {
-  test('valid units', () => {
-    expect(isValidUnitForCategory('m', 'length')).toBe(true);
-    expect(isValidUnitForCategory('kg', 'weight')).toBe(true);
-    expect(isValidUnitForCategory('c', 'temperature')).toBe(true);
-  });
-
-  test('invalid', () => {
-    expect(isValidUnitForCategory('m', 'weight')).toBe(false);
-    expect(isValidUnitForCategory(undefined, 'length')).toBe(false);
-    expect(isValidUnitForCategory('', 'length')).toBe(false);
-  });
+  test.each(UNIT_CASES)(
+    'isValidUnitForCategory(%s, %s) -> %s',
+    (unit, category, expected) => {
+      expect(isValidUnitForCategory(unit, category)).toBe(expected);
+    }
+  );
 });
 
 describe('normalizeUnit', () => {
@@ -75,19 +168,14 @@ describe('getUnitsForCategory', () => {
   });
 });
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: data-driven pure-function tests
 describe('convertUnit', () => {
-  test('empty input', () => {
-    const r = convertUnit('', 'm', 'km', 'length');
-    expect(r.isValid).toBe(false);
-    expect(r.result).toBe('');
-    expect(r.error).toBeUndefined();
-  });
-
-  test('whitespace empty', () => {
-    const r = convertUnit('   ', 'm', 'km', 'length');
-    expect(r.isValid).toBe(false);
-    expect(r.result).toBe('');
+  test('returns invalid for empty or whitespace input', () => {
+    for (const input of ['', '   ']) {
+      const r = convertUnit(input, 'm', 'km', 'length');
+      expect(r.isValid).toBe(false);
+      expect(r.result).toBe('');
+      expect(r.error).toBeUndefined();
+    }
   });
 
   test('invalid number', () => {
@@ -96,84 +184,26 @@ describe('convertUnit', () => {
     expect(r.error).toBe('Invalid number');
   });
 
-  test('length m to km', () => {
-    const r = convertUnit('1000', 'm', 'km', 'length');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('1');
-  });
+  test.each(MAPPING_CASES)(
+    'maps every $category unit through the package',
+    ({ category, pairs }) => {
+      for (const [from, to, value, expected] of pairs) {
+        const r = convertUnit(value, from, to, category);
+        expect(r.isValid).toBe(true);
+        expect(r.error).toBeUndefined();
+        expect(r.result).toBe(expected);
+      }
+    }
+  );
 
-  test('length km to m', () => {
-    const r = convertUnit('1', 'km', 'm', 'length');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('1000');
-  });
-
-  test('length inch to cm', () => {
-    const r = convertUnit('1', 'inch', 'cm', 'length');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('2.54');
-  });
-
-  test('length mm to m', () => {
-    const r = convertUnit('1000', 'mm', 'm', 'length');
-    expect(r.result).toBe('1');
-  });
-
-  test('length mile to km', () => {
-    const r = convertUnit('1', 'mile', 'km', 'length');
-    expect(r.isValid).toBe(true);
-    // 1.609344
-    expect(r.result).toBe('1.609344');
-  });
-
-  test('weight kg to lb', () => {
-    const r = convertUnit('1', 'kg', 'lb', 'weight');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('2.2046226218');
-  });
-
-  test('weight lb to kg', () => {
-    const r = convertUnit('1', 'lb', 'kg', 'weight');
-    expect(r.result).toBe('0.45359237');
-  });
-
-  test('weight g to mg', () => {
-    const r = convertUnit('1', 'g', 'mg', 'weight');
-    expect(r.result).toBe('1000');
-  });
-
-  test('weight tonne to kg', () => {
-    const r = convertUnit('1', 'tonne', 'kg', 'weight');
-    expect(r.result).toBe('1000');
-  });
-
-  test('temperature C to F', () => {
-    const r = convertUnit('0', 'c', 'f', 'temperature');
-    expect(r.result).toBe('32');
-    const r2 = convertUnit('100', 'c', 'f', 'temperature');
-    expect(r2.result).toBe('212');
-  });
-
-  test('temperature C to K', () => {
-    const r = convertUnit('0', 'c', 'k', 'temperature');
-    expect(r.result).toBe('273.15');
-  });
-
-  test('temperature F to C', () => {
-    const r = convertUnit('32', 'f', 'c', 'temperature');
-    expect(r.result).toBe('0');
-  });
-
-  test('temperature K to C', () => {
-    const r = convertUnit('273.15', 'k', 'c', 'temperature');
-    expect(r.result).toBe('0');
-  });
-
-  test('temperature -273.15C is 0K', () => {
-    const r = convertUnit('-273.15', 'c', 'k', 'temperature');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('0');
-  });
+  test.each(ZERO_GUARD_CASES)(
+    '$label collapses to 0 instead of -0',
+    ({ from, input, to }) => {
+      const r = convertUnit(input, from, to, 'temperature');
+      expect(r.isValid).toBe(true);
+      expect(r.result).toBe('0');
+    }
+  );
 
   test('temperature below absolute zero error C', () => {
     const r = convertUnit('-274', 'c', 'k', 'temperature');
@@ -193,50 +223,9 @@ describe('convertUnit', () => {
     expect(r.error).toBe('Temperature below absolute zero');
   });
 
-  test('volume l to gallon', () => {
-    const r = convertUnit('3.78541', 'l', 'gallon', 'volume');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('0.9999995287');
-  });
-
-  test('volume gallon to l', () => {
-    const r = convertUnit('1', 'gallon', 'l', 'volume');
-    expect(r.result).toBe('3.785411784');
-  });
-
   test('volume l to cup stays US customary', () => {
     const r = convertUnit('1', 'l', 'cup', 'volume');
     expect(r.result).toBe('4.2267528377');
-  });
-
-  test('volume ml to l', () => {
-    const r = convertUnit('1000', 'ml', 'l', 'volume');
-    expect(r.result).toBe('1');
-  });
-
-  test('volume m3 to l', () => {
-    const r = convertUnit('1', 'm3', 'l', 'volume');
-    expect(r.result).toBe('1000');
-  });
-
-  test('data KB to B', () => {
-    const r = convertUnit('1', 'KB', 'B', 'data');
-    expect(r.result).toBe('1024');
-  });
-
-  test('data MB to KB', () => {
-    const r = convertUnit('1', 'MB', 'KB', 'data');
-    expect(r.result).toBe('1024');
-  });
-
-  test('data B to KB', () => {
-    const r = convertUnit('1024', 'B', 'KB', 'data');
-    expect(r.result).toBe('1');
-  });
-
-  test('data TB to GB', () => {
-    const r = convertUnit('1', 'TB', 'GB', 'data');
-    expect(r.result).toBe('1024');
   });
 
   test('data GB to MB stays binary', () => {
@@ -244,45 +233,22 @@ describe('convertUnit', () => {
     expect(r.result).toBe('1024');
   });
 
+  test.each(FORMATTING_CASES)(
+    'formats $input $from -> $to',
+    ({ containsExponent, expected, from, input, to }) => {
+      const r = convertUnit(input, from, to, 'length');
+      expect(r.isValid).toBe(true);
+      if (containsExponent) {
+        expect(r.result).toContain('e');
+      } else {
+        expect(r.result).toBe(expected);
+      }
+    }
+  );
+
   test('invalid unit', () => {
     const r = convertUnit('1', 'bad', 'm', 'length');
     expect(r.isValid).toBe(false);
     expect(r.error).toBe('Invalid number');
-  });
-
-  test('large value formatting', () => {
-    const r = convertUnit('1000000000000', 'mm', 'km', 'length');
-    // 1e12 mm = 1e9 m = 1e6 km => 1000000
-    expect(r.isValid).toBe(true);
-    expect(r.result).toBe('1000000');
-  });
-
-  test('very large uses exponent formatting', () => {
-    const r = convertUnit('1e15', 'mm', 'mm', 'length');
-    expect(r.isValid).toBe(true);
-    expect(r.result).toContain('e');
-  });
-
-  test('very small uses exponent', () => {
-    const r = convertUnit('0.0000001', 'm', 'm', 'length');
-    expect(r.isValid).toBe(true);
-    // 1e-7 < 1e-6 so should use exponential?
-    // Actually 0.0000001 = 1e-7 -> exponential
-    expect(r.result).toContain('e');
-  });
-
-  test('trailing zeros trimmed', () => {
-    const r = convertUnit('1', 'm', 'm', 'length');
-    expect(r.result).toBe('1');
-  });
-
-  test('max 10 decimals', () => {
-    const r2 = convertUnit('10', 'inch', 'cm', 'length');
-    expect(r2.result).toBe('25.4');
-  });
-
-  test('same unit returns same value trimmed', () => {
-    const r = convertUnit('  42  ', 'm', 'm', 'length');
-    expect(r.result).toBe('42');
   });
 });

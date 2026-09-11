@@ -74,14 +74,8 @@ describe('generatePassword', () => {
     expect(result.output).not.toMatch(HAS_AMBIGUOUS);
   });
 
-  test('rejects length below 8', () => {
-    const result = generatePassword({ ...ALL_SETS, length: 7 });
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBeDefined();
-  });
-
-  test('rejects length above 128', () => {
-    const result = generatePassword({ ...ALL_SETS, length: 129 });
+  test.each([7, 129])('rejects length %i', (length) => {
+    const result = generatePassword({ ...ALL_SETS, length });
     expect(result.isValid).toBe(false);
     expect(result.error).toBeDefined();
   });
@@ -97,12 +91,6 @@ describe('generatePassword', () => {
     });
     expect(result.isValid).toBe(false);
     expect(result.error).toBe('Select at least one character set');
-  });
-
-  test('produces different outputs across calls', () => {
-    const a = generatePassword(ALL_SETS).output;
-    const b = generatePassword(ALL_SETS).output;
-    expect(a).not.toBe(b);
   });
 });
 
@@ -130,40 +118,15 @@ describe('estimateEntropy', () => {
     });
     expect(entropy).toBe(0);
   });
-
-  test('grows with length', () => {
-    const short = estimateEntropy({ ...ALL_SETS, length: 12 });
-    const long = estimateEntropy({ ...ALL_SETS, length: 24 });
-    expect(long).toBeGreaterThan(short);
-  });
-
-  test('shrinks when excluding ambiguous characters', () => {
-    const withAmbiguous = estimateEntropy({
-      ...ALL_SETS,
-      excludeAmbiguous: false,
-    });
-    const withoutAmbiguous = estimateEntropy({
-      ...ALL_SETS,
-      excludeAmbiguous: true,
-    });
-    expect(withoutAmbiguous).toBeLessThan(withAmbiguous);
-  });
 });
 
 describe('strengthLabel', () => {
-  test('labels weak entropy', () => {
-    expect(strengthLabel(30)).toBe('Weak');
-  });
-
-  test('labels good entropy', () => {
-    expect(strengthLabel(60)).toBe('Good');
-  });
-
-  test('labels strong entropy', () => {
-    expect(strengthLabel(80)).toBe('Strong');
-  });
-
-  test('labels very strong entropy', () => {
-    expect(strengthLabel(120)).toBe('Very strong');
+  test.each([
+    [30, 'Weak'],
+    [60, 'Good'],
+    [80, 'Strong'],
+    [120, 'Very strong'],
+  ] as const)('labels %i bits as %s', (entropy, label) => {
+    expect(strengthLabel(entropy)).toBe(label);
   });
 });

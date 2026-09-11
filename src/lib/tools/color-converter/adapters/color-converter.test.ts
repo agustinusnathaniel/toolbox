@@ -4,24 +4,18 @@ import { formatColorString, parseColor } from './color-converter';
 
 describe('parseColor', () => {
   describe('HEX input', () => {
-    test('parses 6-digit hex', () => {
-      const result = parseColor('#ff0000');
+    test.each([
+      ['#ff0000', { b: 0, g: 0, r: 255 }],
+      ['#f00', { b: 0, g: 0, r: 255 }],
+      ['ff0000', { b: 0, g: 0, r: 255 }],
+      ['#FF0000', { b: 0, g: 0, r: 255 }],
+      ['#f00f', { b: 0, g: 0, r: 255 }],
+      ['#ff000080', { b: 0, g: 0, r: 255 }],
+    ])('parses hex variant %s', (input, rgb) => {
+      const result = parseColor(input);
       expect(result).not.toBeNull();
       expect(result?.format).toBe('hex');
-      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
-      expect(result?.hex).toBe('#ff0000');
-    });
-
-    test('parses 3-digit hex', () => {
-      const result = parseColor('#f00');
-      expect(result).not.toBeNull();
-      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
-    });
-
-    test('parses hex without hash', () => {
-      const result = parseColor('ff0000');
-      expect(result).not.toBeNull();
-      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
+      expect(result?.rgb).toEqual(rgb);
     });
   });
 
@@ -46,11 +40,14 @@ describe('parseColor', () => {
       expect(result?.rgb).toEqual({ b: 0, g: 255, r: 0 });
     });
 
-    test('clamps out-of-range rgb channels', () => {
-      const result = parseColor('rgb(300, 0, 0)');
+    test.each([
+      ['rgb(300, 0, 0)', { b: 0, g: 0, r: 255 }, '#ff0000'],
+      ['rgb(127.5, 0, 0)', { b: 0, g: 0, r: 128 }, '#800000'],
+    ])('clamps and rounds channels for %s', (input, rgb, hex) => {
+      const result = parseColor(input);
       expect(result).not.toBeNull();
-      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
-      expect(result?.hex).toBe('#ff0000');
+      expect(result?.rgb).toEqual(rgb);
+      expect(result?.hex).toBe(hex);
     });
   });
 

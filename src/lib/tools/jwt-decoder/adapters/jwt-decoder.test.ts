@@ -59,22 +59,18 @@ describe('decodeJwt', () => {
     );
   });
 
-  test('rejects a token without 3 parts', () => {
-    const result = decodeJwt('not-a-jwt');
+  test.each([
+    ['not-a-jwt', '3 dot-separated parts'],
+    ['eyJhbGciOiJIUzI1NiJ9.not-valid-base64!.sig', undefined],
+    ['eyJhbGciOiJIUzI1NiJ9.aGVsbG8.sig', undefined],
+  ] as const)('rejects malformed token %s', (token, errorPart) => {
+    const result = decodeJwt(token);
     expect(result.isValid).toBe(false);
-    expect(result.error).toContain('3 dot-separated parts');
-  });
-
-  test('rejects malformed base64url payload', () => {
-    const result = decodeJwt('eyJhbGciOiJIUzI1NiJ9.not-valid-base64!.sig');
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBeTruthy();
-  });
-
-  test('rejects non-JSON payload', () => {
-    const result = decodeJwt('eyJhbGciOiJIUzI1NiJ9.aGVsbG8.sig');
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBeTruthy();
+    if (errorPart) {
+      expect(result.error).toContain(errorPart);
+    } else {
+      expect(result.error).toBeTruthy();
+    }
   });
 
   test('rejects null JSON payload with a clean error', () => {
