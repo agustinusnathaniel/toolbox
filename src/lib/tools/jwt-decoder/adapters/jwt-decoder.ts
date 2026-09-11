@@ -1,3 +1,11 @@
+import {
+  base64url,
+  decodeJwt as decodeJoseJwt,
+  decodeProtectedHeader,
+  errors,
+  jwtVerify,
+} from 'jose';
+
 interface DecodedClaim {
   key: string;
   value: string;
@@ -20,68 +28,36 @@ export interface JwtVerifyResult {
   message: string;
 }
 
-const BASE64URL_DASH = /-/g;
-const BASE64URL_UNDERSCORE = /_/g;
-const BASE64_PLUS = /\+/g;
-const BASE64_SLASH = /\//g;
-const BASE64_PADDING = /[=]+$/;
 const HMAC_ALGORITHM = /^HS(256|384|512)$/;
 
-function base64UrlToBytes(input: string): Uint8Array<ArrayBuffer> {
-  const base64 = input
-    .replace(BASE64URL_DASH, '+')
-    .replace(BASE64URL_UNDERSCORE, '/');
-  const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
-  const binary = atob(padded);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
+function decodeSegment(segment: string): string {
+  return new TextDecoder().decode(base64url.decode(segment));
 }
 
-export function bytesToBase64Url(bytes: Uint8Array): string {
-  let binary = '';
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
-  }
-  return btoa(binary)
-    .replace(BASE64_PLUS, '-')
-    .replace(BASE64_SLASH, '_')
-    .replace(BASE64_PADDING, '');
+function invalidDecode(error: string): JwtDecodeResult {
+  return {
+    alg: '',
+    claims: [],
+    error,
+    header: {},
+    headerRaw: '',
+    isValid: false,
+    payload: {},
+    payloadRaw: '',
+  };
 }
 
 export function decodeJwt(token: string): JwtDecodeResult {
-  const parts = token.trim().split('.');
-  if (parts.length !== 3) {
-    return {
-      alg: '',
-      claims: [],
-      error:
-        'Invalid JWT: expected 3 dot-separated parts (header.payload.signature).',
-      header: {},
-      headerRaw: '',
-      isValid: false,
-      payload: {},
-      payloadRaw: '',
-    };
+  const trimmed = token.trim();
+  if (trimmed.split('.').length !== 3) {
+    return invalidDecode(
+      'Invalid JWT: expected 3 dot-separated parts (header.payload.signature).'
+    );
   }
-  const [headerRaw, payloadRaw] = parts;
+  const [headerSegment, payloadSegment] = trimmed.split('.');
   try {
-    const headerBytes = base64UrlToBytes(headerRaw);
-    const payloadBytes = base64UrlToBytes(payloadRaw);
-    const headerText = new TextDecoder().decode(headerBytes);
-    const payloadText = new TextDecoder().decode(payloadBytes);
-    const header = JSON.parse(headerText) as Record<string, unknown>;
-    const payload = JSON.parse(payloadText) as Record<string, unknown>;
-    if (
-      typeof header !== 'object' ||
-      header === null ||
-      typeof payload !== 'object' ||
-      payload === null
-    ) {
-      throw new Error('header and payload must be JSON objects');
-    }
+    const header = decodeProtectedHeader(trimmed);
+    const payload = decodeJoseJwt(trimmed);
     const claims: Array<DecodedClaim> = Object.entries(payload).map(
       ([key, value]) => ({
         key,
@@ -94,26 +70,19 @@ export function decodeJwt(token: string): JwtDecodeResult {
     return {
       alg: typeof header.alg === 'string' ? header.alg : '',
       claims,
-      header,
-      headerRaw: headerText,
+      header: { ...header },
+      headerRaw: decodeSegment(headerSegment),
       isValid: true,
       payload,
-      payloadRaw: payloadText,
+      payloadRaw: decodeSegment(payloadSegment),
     };
   } catch (err) {
-    return {
-      alg: '',
-      claims: [],
-      error:
-        err instanceof Error
-          ? `Invalid JWT: ${err.message}`
-          : 'Invalid JWT: could not decode.',
-      header: {},
-      headerRaw: '',
-      isValid: false,
-      payload: {},
-      payloadRaw: '',
-    };
+    const message = err instanceof Error ? err.message : '';
+    return invalidDecode(
+      message === 'Invalid JWT Claims Set'
+        ? 'Invalid JWT: header and payload must be JSON objects'
+        : `Invalid JWT: ${message || 'could not decode.'}`
+    );
   }
 }
 
@@ -121,8 +90,8 @@ export async function verifyJwtSignature(
   token: string,
   secret: string
 ): Promise<JwtVerifyResult> {
-  const parts = token.trim().split('.');
-  if (parts.length !== 3) {
+  const trimmed = token.trim();
+  if (trimmed.split('.').length !== 3) {
     return { isValid: false, message: 'Invalid JWT: expected 3 parts.' };
   }
   if (!secret) {
@@ -131,12 +100,9 @@ export async function verifyJwtSignature(
       message: 'Enter a secret to verify the signature.',
     };
   }
-  const [headerRaw, payloadRaw, signatureRaw] = parts;
   let alg = '';
   try {
-    const header = JSON.parse(
-      new TextDecoder().decode(base64UrlToBytes(headerRaw))
-    ) as { alg?: unknown };
+    const header = decodeProtectedHeader(trimmed);
     alg = typeof header.alg === 'string' ? header.alg : '';
   } catch {
     return { isValid: false, message: 'Invalid JWT: bad header.' };
@@ -148,28 +114,23 @@ export async function verifyJwtSignature(
     };
   }
   try {
-    const hashName = `SHA-${alg.slice(2)}` as 'SHA-256' | 'SHA-384' | 'SHA-512';
-    const key = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(secret),
-      { hash: hashName, name: 'HMAC' },
-      false,
-      ['verify']
+    // Copy into the active realm: jose checks the key with `instanceof Uint8Array`.
+    await jwtVerify(
+      trimmed,
+      Uint8Array.from(new TextEncoder().encode(secret)),
+      {
+        algorithms: ['HS256', 'HS384', 'HS512'],
+      }
     );
-    const valid = await crypto.subtle.verify(
-      'HMAC',
-      key,
-      base64UrlToBytes(signatureRaw),
-      new TextEncoder().encode(`${headerRaw}.${payloadRaw}`)
-    );
-    return valid
-      ? { isValid: true, message: `Signature is valid for ${alg}.` }
-      : {
-          isValid: false,
-          message:
-            'Signature verification failed: the token does not match this secret.',
-        };
+    return { isValid: true, message: `Signature is valid for ${alg}.` };
   } catch (err) {
+    if (err instanceof errors.JWSSignatureVerificationFailed) {
+      return {
+        isValid: false,
+        message:
+          'Signature verification failed: the token does not match this secret.',
+      };
+    }
     return {
       error: err instanceof Error ? err.message : 'Unknown verification error.',
       isValid: false,

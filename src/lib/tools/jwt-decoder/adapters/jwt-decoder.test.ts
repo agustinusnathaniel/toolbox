@@ -1,6 +1,7 @@
+import { base64url } from 'jose';
 import { describe, expect, test } from 'vite-plus/test';
 
-import { bytesToBase64Url, decodeJwt, verifyJwtSignature } from './jwt-decoder';
+import { decodeJwt, verifyJwtSignature } from './jwt-decoder';
 
 const HEADER = { alg: 'HS256', typ: 'JWT' };
 const PAYLOAD = {
@@ -10,19 +11,24 @@ const PAYLOAD = {
   sub: '1234567890',
 };
 
-function makeToken(secret = 'secret'): Promise<string> {
+const HMAC_HASHES = {
+  HS256: 'SHA-256',
+  HS384: 'SHA-384',
+  HS512: 'SHA-512',
+} as const;
+
+function makeToken(
+  secret = 'secret',
+  alg: keyof typeof HMAC_HASHES = 'HS256'
+): Promise<string> {
   return (async () => {
     const enc = new TextEncoder();
-    const headerB64 = bytesToBase64Url(
-      new Uint8Array(enc.encode(JSON.stringify(HEADER)))
-    );
-    const payloadB64 = bytesToBase64Url(
-      new Uint8Array(enc.encode(JSON.stringify(PAYLOAD)))
-    );
+    const headerB64 = base64url.encode(JSON.stringify({ ...HEADER, alg }));
+    const payloadB64 = base64url.encode(JSON.stringify(PAYLOAD));
     const key = await crypto.subtle.importKey(
       'raw',
       enc.encode(secret),
-      { hash: 'SHA-256', name: 'HMAC' },
+      { hash: HMAC_HASHES[alg], name: 'HMAC' },
       false,
       ['sign']
     );
@@ -31,7 +37,7 @@ function makeToken(secret = 'secret'): Promise<string> {
       key,
       enc.encode(`${headerB64}.${payloadB64}`)
     );
-    return `${headerB64}.${payloadB64}.${bytesToBase64Url(new Uint8Array(sig))}`;
+    return `${headerB64}.${payloadB64}.${base64url.encode(new Uint8Array(sig))}`;
   })();
 }
 
@@ -78,12 +84,16 @@ describe('decodeJwt', () => {
 });
 
 describe('verifyJwtSignature', () => {
-  test('accepts a token signed with the correct secret', async () => {
-    const token = await makeToken('hunter2');
-    const result = await verifyJwtSignature(token, 'hunter2');
-    expect(result.isValid).toBe(true);
-    expect(result.message).toContain('valid');
-  });
+  test.each(['HS256', 'HS384', 'HS512'] as const)(
+    'accepts a %s token signed with the correct secret',
+    async (alg) => {
+      const token = await makeToken('hunter2', alg);
+      const result = await verifyJwtSignature(token, 'hunter2');
+      expect(result.isValid).toBe(true);
+      expect(result.message).toContain('valid');
+      expect(result.message).toContain(alg);
+    }
+  );
 
   test('rejects a token signed with a different secret', async () => {
     const token = await makeToken('hunter2');
