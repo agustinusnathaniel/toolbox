@@ -51,7 +51,7 @@ Business logic is co-located with routes under `src/lib/tools/<tool-name>/`:
 
 #### 3. Metadata System
 
-Each tool route owns its metadata in `src/routes/_tools/<tool-name>/-meta.ts` (with `pageTitle`, `description`, and `slug`). The route module passes that sidecar through `createToolRouteMetadata` from `src/lib/utils/metadata.ts`, which supplies both `staticData.meta` and the standard `head` tags. The leading `-` keeps the sidecar out of TanStack Router's file-route scan. The navigation catalog imports only those lightweight route metadata sidecars, then combines them with navigation-only discovery configuration such as category, icon, order, and mobile label. It never imports tool route implementations, so `/homepage` remains free of tool runtime code. The same utility provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`) and the configured public origin. Set `VITE_PUBLIC_SITE_URL` for the deployment origin; a fixed canonical fallback is used when it is absent so generated URLs do not depend on the request host.
+Each tool route owns its metadata in `src/routes/_tools/<tool-name>/-meta.ts` (with `pageTitle`, `description`, and `slug`). The route module passes that sidecar through `createToolRouteMetadata` from `src/lib/utils/metadata.ts`, which supplies both `staticData.meta` and the standard `head` tags. The leading `-` keeps the sidecar out of TanStack Router's file-route scan. The navigation catalog imports only those lightweight route metadata sidecars, then combines them with navigation-only discovery configuration such as category, icon, and mobile label. It never imports tool route implementations, so `/homepage` remains free of tool runtime code. The same utility provides site-level constants (`SITE_NAME`, `SITE_DESCRIPTION`) and the configured public origin. Set `VITE_PUBLIC_SITE_URL` for the deployment origin; a fixed canonical fallback is used when it is absent so generated URLs do not depend on the request host.
 
 #### 4. Route Shells and Marketing Entry
 
@@ -115,6 +115,6 @@ See **CONTRIBUTING.md** for detailed instructions.
 
 ## Known Limitations
 
-- PWA service worker is disabled by default.
+- PWA service worker is disabled in dev and enabled for production builds.
 - Auth is not implemented (no user accounts or personalization).
-- All tools are client-side only; no data persists across sessions.
+- All tools are client-side only; tool data never leaves the device. Some tools persist inputs and preferences in local storage across sessions (for example QR content, saved forms, theme, and pinned tools); clearing site data removes them.

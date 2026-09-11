@@ -1,6 +1,4 @@
-import { Check, Copy } from 'lucide-react';
-
-import { Button } from '@/lib/components/ui/button';
+import { CopyButton } from '@/lib/components/copy-button';
 
 interface CopyRowProps {
   copied?: boolean;
@@ -34,18 +32,11 @@ export const CopyRow = ({
           {value}
         </span>
         {onCopy && copyLabel && (
-          <Button
-            aria-label={copyLabel}
-            intent="outline"
+          <CopyButton
+            copied={copied ?? false}
+            label={copyLabel}
             onPress={onCopy}
-            size="sq-sm"
-          >
-            {copied ? (
-              <Check className="size-4 text-success" />
-            ) : (
-              <Copy className="size-4" />
-            )}
-          </Button>
+          />
         )}
       </div>
     </div>

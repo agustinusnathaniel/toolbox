@@ -1,7 +1,8 @@
 'use client';
 
-import { Fingerprint, Link } from 'lucide-react';
+import { Fingerprint } from 'lucide-react';
 
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { Button } from '@/lib/components/ui/button';
 
 export function HashActions({
@@ -17,15 +18,7 @@ export function HashActions({
         <Fingerprint className="size-4" />
         Hash text
       </Button>
-      <Button
-        aria-label="Copy shareable link"
-        intent="outline"
-        onPress={onCopyLink}
-        size="sm"
-      >
-        <Link className="size-4" />
-        Copy link
-      </Button>
+      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
     </div>
   );
 }

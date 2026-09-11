@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/lib/components/ui/button';
-import type { QRMode } from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+import type { QRMode } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
 export function QrModeToggle({
   mode,

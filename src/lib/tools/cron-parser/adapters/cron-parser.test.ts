@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { buildCronParams, buildCronStateFromSearch } from './cron-params';
 import { CRON_EXAMPLES, parseCronExpression } from './cron-parser';
 
 describe('parseCronExpression', () => {
@@ -66,40 +65,5 @@ describe('parseCronExpression', () => {
       const result = parseCronExpression(example.expression);
       expect(result.isValid).toBe(true);
     }
-  });
-});
-
-describe('cron-params roundtrip', () => {
-  test('buildCronParams sets expression', () => {
-    const params = buildCronParams('0 * * * *');
-    expect(params.get('expression')).toBe('0 * * * *');
-  });
-
-  test('buildCronParams skips empty', () => {
-    const params = buildCronParams('');
-    expect(params.toString()).toBe('');
-  });
-
-  test('buildCronParams skips whitespace only', () => {
-    const params = buildCronParams('   ');
-    expect(params.toString()).toBe('');
-  });
-
-  test('buildCronStateFromSearch returns defaults', () => {
-    const state = buildCronStateFromSearch({});
-    expect(state).toEqual({ expression: '' });
-  });
-
-  test('buildCronStateFromSearch returns provided', () => {
-    const state = buildCronStateFromSearch({ expression: '*/5 * * * *' });
-    expect(state).toEqual({ expression: '*/5 * * * *' });
-  });
-
-  test('roundtrip preserves expression', () => {
-    const expression = '0 9 * * 1';
-    const params = buildCronParams(expression);
-    const search = Object.fromEntries(params.entries());
-    const state = buildCronStateFromSearch(search);
-    expect(state.expression).toBe(expression);
   });
 });

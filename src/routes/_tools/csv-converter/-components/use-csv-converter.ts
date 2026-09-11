@@ -1,8 +1,11 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type {
   CsvConverterResult,
   CsvMode,
@@ -14,7 +17,6 @@ import type {
 } from '../-worker/csv-converter.worker';
 import CsvConverterWorker from '../-worker/csv-converter.worker.ts?worker';
 
-export const CSV_CONVERTER_EXECUTION_DEADLINE_MS = 2000;
 export const CSV_CONVERTER_TIMEOUT_ERROR =
   'Conversion took too long — the input is too large. Try a smaller file.';
 
@@ -45,19 +47,13 @@ export function useCsvConverter(
     CsvConverterState
   >({
     buildRequest: (id) => ({ id, input, mode }),
-    deadlineMs: CSV_CONVERTER_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    postRequest();
-  }, [postRequest, trigger]);
+  useWorkerTrigger(postRequest, trigger);
 
   return { computing, result, setResult };
 }

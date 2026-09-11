@@ -39,6 +39,12 @@ We use **Ultracite** (wrapping Biome) for both linting and formatting.
 - Run `pnpm ultracite:fix` to auto-fix.
 - Your editor should have the Biome extension installed for real-time feedback.
 
+### Dead Code & Dependencies
+
+Run `pnpm knip` to find unused files and dependencies. Registry-managed IntentUI primitives in `src/lib/components/ui/**` and their dependencies are intentionally kept for future tools and exempted in `knip.ts`; unused application files and dependencies still fail the check.
+
+`pnpm check` runs lint, typecheck, knip, and tests in parallel via turbo.
+
 ### TypeScript
 
 - Strict mode is enabled.
@@ -119,13 +125,13 @@ export const Route = createFileRoute('/_tools/<tool-name>/')({
 });
 ```
 
-The navigation system (`src/lib/navigation/tool-registry.tsx`) automatically discovers registered routes by reading `staticData.meta` from each route definition. No manual registry update is needed.
+The catalog in `src/lib/navigation/tool-catalog.tsx` imports each route's `-meta` sidecar and adds navigation-only fields (category, icon, mobile label). Registering a tool there is what makes it appear in the sidebar, homepage grid, mobile nav, and command palette; a route that is not in `TOOL_DEFINITIONS` is invisible to navigation.
 
 See existing routes (e.g., `src/routes/_tools/qrcode/index.tsx`, `src/routes/_tools/ev-charging/index.tsx`) for concrete examples.
 
-### Step 3: Add to Homepage Catalog
+### Step 3: Register the Tool in Navigation
 
-Update the tool lists in `src/routes/index.tsx` to include your new tool in either `currentTools` or `upcomingTools`.
+Add an entry to `TOOL_DEFINITIONS` in `src/lib/navigation/tool-catalog.tsx`: import the route's `-meta` sidecar, spread it, and fill in the navigation-only fields (category, icon, and optionally `mobileTitle` / `showInMobile`). The sidebar, homepage grid, mobile nav, and command palette all read from this catalog, and `tool-registry.test.ts` fails when a route directory is missing from it.
 
 ### Step 4: Extract Business Logic (Recommended)
 
@@ -134,8 +140,8 @@ For non-trivial tools, extract pure logic into `src/lib/tools/<tool-name>/`.
 Create a subdirectory called `adapters/` inside your tool's lib directory:
 `src/lib/tools/<tool-name>/adapters/<tool>.ts`. This keeps pure functions
 separate from UI components and makes them testable without DOM mocking.
-See existing tools (e.g., `src/lib/tools/qrcode-generator/adapters/`,
-`src/lib/tools/ev-charging-estimator/adapters/`) for the convention.
+See existing tools (e.g., `src/lib/tools/qrcode/adapters/`,
+`src/lib/tools/ev-charging/adapters/`) for the convention.
 
 Add a test file alongside the adapter when the logic carries real regression
 risk (parsing, formatting, math, shareable-URL state):
@@ -143,7 +149,7 @@ risk (parsing, formatting, math, shareable-URL state):
 [Testing](#testing) before creating one. Model them after existing adapter
 tests, e.g. `src/lib/tools/regex-tester/adapters/regex.test.ts` (behavioral
 edge cases) and
-`src/lib/tools/ev-charging-estimator/adapters/ev-charging-params.test.ts`
+`src/lib/tools/ev-charging/adapters/ev-charging-params.test.ts`
 (shareable-URL state round-trips). They use `vitest` with jsdom via `vp test`.
 
 Then import from your route:
@@ -175,6 +181,7 @@ function ToolPage() {
 - Core logic in `src/lib/tools/<name>/` should contain only browser-safe, pure business logic.
 - It should not depend on UI frameworks or route-specific state.
 - It should export types and functions that can be tested independently.
+- Shareable URL state goes through the tool's `build<Name>Params` helper. For a single optional string field, use `singleStringParam` from `@/lib/utils/search-params` instead of building `URLSearchParams` by hand.
 
 ### Route Conventions
 
@@ -185,7 +192,7 @@ function ToolPage() {
 
 ## Pull Request Process
 
-1. Ensure `pnpm check:turbo` (ultracite:check + type:check + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm test`).
+1. Ensure `pnpm check` (ultracite:check + type:check + knip + test) passes, or run individually (`pnpm ultracite:check && pnpm type:check && pnpm knip && pnpm test`).
 2. Provide a clear description of changes in the PR.
 3. Include screenshots for UI changes.
 4. Update `SPEC.md` if any architectural invariants are changed.

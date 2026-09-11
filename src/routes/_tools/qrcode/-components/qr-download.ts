@@ -1,6 +1,9 @@
 import { toast } from 'sonner';
 
+import { downloadBlob } from '@/lib/utils/download';
+
 const EXPORT_SIZE = 2000;
+const EXPORT_FILENAME = 'qrcode.png';
 
 export function svgToPngDownload(svgElement: SVGSVGElement): void {
   const svgData = new XMLSerializer().serializeToString(svgElement);
@@ -22,10 +25,11 @@ export function svgToPngDownload(svgElement: SVGSVGElement): void {
     }
     ctx.drawImage(img, 0, 0, resizedCanvas.width, resizedCanvas.height);
 
-    const link = document.createElement('a');
-    link.download = 'qrcode.png';
-    link.href = resizedCanvas.toDataURL();
-    link.click();
+    resizedCanvas.toBlob((blob) => {
+      if (blob) {
+        downloadBlob(blob, EXPORT_FILENAME);
+      }
+    });
 
     URL.revokeObjectURL(url);
   };

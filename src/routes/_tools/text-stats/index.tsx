@@ -1,11 +1,12 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Copy, Link, Trash2 } from 'lucide-react';
+import { Copy, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -16,10 +17,7 @@ import {
   buildStatsSummary,
   computeTextStats,
 } from '@/lib/tools/text-stats/adapters/text-stats';
-import {
-  buildTextStatsParams,
-  buildTextStatsStateFromSearch,
-} from '@/lib/tools/text-stats/adapters/text-stats-params';
+import { buildTextStatsParams } from '@/lib/tools/text-stats/adapters/text-stats-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { meta } from './-meta';
@@ -68,9 +66,9 @@ function StatCell({ label, value }: { label: string; value: string | number }) {
 function TextStatsPage() {
   const { trackAction } = useToolTracking('text-stats', 'Text Statistics');
   const search = useSearch({ from: '/_tools/text-stats/' });
-  const [state, setState] = useState(() =>
-    buildTextStatsStateFromSearch(search)
-  );
+  const [state, setState] = useState(() => ({
+    input: search.input ?? '',
+  }));
   const { copiedKey, copy } = useCopyFeedback();
   const stats = useMemo(() => computeTextStats(state.input), [state.input]);
   const summary = useMemo(() => buildStatsSummary(stats), [stats]);
@@ -150,10 +148,7 @@ function TextStatsPage() {
           )}
 
           <div className="flex flex-wrap gap-2">
-            <Button intent="outline" onPress={handleCopyLink} size="sm">
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            <CopyLinkButton onPress={handleCopyLink} />
             <Button intent="outline" onPress={handleClear} size="sm">
               <Trash2 className="size-4" />
               Clear

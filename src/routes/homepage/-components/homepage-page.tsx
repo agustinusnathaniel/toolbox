@@ -1,4 +1,4 @@
-import { IconGlobe, IconMoon, IconSun } from '@intentui/icons';
+import { IconGlobe } from '@intentui/icons';
 import { Link } from '@tanstack/react-router';
 import {
   ArrowDownRight,
@@ -8,10 +8,10 @@ import {
   MonitorSmartphone,
   Sparkles,
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 
+import { ThemeToggle } from '@/lib/components/theme-toggle';
 import { Badge } from '@/lib/components/ui/badge';
-import { Button, buttonStyles } from '@/lib/components/ui/button';
+import { buttonStyles } from '@/lib/components/ui/button';
 import {
   Card,
   CardContent,
@@ -19,8 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/lib/components/ui/card';
-
-import { getHomepageData } from './homepage-data';
+import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
 const sectionClass = 'mx-auto w-full max-w-7xl px-4 lg:px-6';
 const EXAMPLE_OUTPUT = [
@@ -32,7 +31,7 @@ const EXAMPLE_OUTPUT = [
 ].join('\n');
 
 export function HomepagePage() {
-  const { featuredTools } = getHomepageData();
+  const featuredTools = getToolNavItems().slice(0, 6);
 
   return (
     <div className="overflow-x-clip">
@@ -72,7 +71,7 @@ export function HomepagePage() {
             >
               Why local?
             </a>
-            <ThemeToggle />
+            <ThemeToggle size="sq-sm" />
           </nav>
         </div>
       </header>
@@ -213,24 +212,6 @@ export function HomepagePage() {
         </section>
       </main>
     </div>
-  );
-}
-
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-
-  return (
-    <Button
-      aria-label="Toggle theme"
-      intent="plain"
-      onPress={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      size="sq-sm"
-    >
-      {/* Both icons are rendered and toggled via CSS so the markup is
-          identical on server and client (theme is unknown at SSR time). */}
-      <IconMoon aria-hidden="true" className="dark:hidden" />
-      <IconSun aria-hidden="true" className="hidden dark:block" />
-    </Button>
   );
 }
 

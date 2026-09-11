@@ -18,67 +18,6 @@ describe('buildLoremIpsumParams', () => {
     expect(p.toString()).toBe('');
   });
 
-  test('non-default paragraphs set', () => {
-    const p = buildLoremIpsumParams({
-      format: 'plain',
-      paragraphs: 5,
-      sentencesPerParagraph: 5,
-      startWithLorem: true,
-      wordsMax: 15,
-      wordsMin: 8,
-    });
-    expect(p.get('paragraphs')).toBe('5');
-  });
-
-  test('non-default sentences set', () => {
-    const p = buildLoremIpsumParams({
-      format: 'plain',
-      paragraphs: 3,
-      sentencesPerParagraph: 2,
-      startWithLorem: true,
-      wordsMax: 15,
-      wordsMin: 8,
-    });
-    expect(p.get('sentences')).toBe('2');
-  });
-
-  test('wordsMin and wordsMax set when non-default', () => {
-    const p = buildLoremIpsumParams({
-      format: 'plain',
-      paragraphs: 3,
-      sentencesPerParagraph: 5,
-      startWithLorem: true,
-      wordsMax: 20,
-      wordsMin: 5,
-    });
-    expect(p.get('wordsMin')).toBe('5');
-    expect(p.get('wordsMax')).toBe('20');
-  });
-
-  test('startWithLorem false set', () => {
-    const p = buildLoremIpsumParams({
-      format: 'plain',
-      paragraphs: 3,
-      sentencesPerParagraph: 5,
-      startWithLorem: false,
-      wordsMax: 15,
-      wordsMin: 8,
-    });
-    expect(p.get('startWithLorem')).toBe('false');
-  });
-
-  test('html format set', () => {
-    const p = buildLoremIpsumParams({
-      format: 'html',
-      paragraphs: 3,
-      sentencesPerParagraph: 5,
-      startWithLorem: true,
-      wordsMax: 15,
-      wordsMin: 8,
-    });
-    expect(p.get('format')).toBe('html');
-  });
-
   test('all non-defaults together', () => {
     const p = buildLoremIpsumParams({
       format: 'html',
@@ -127,37 +66,49 @@ describe('buildLoremIpsumStateFromSearch', () => {
     expect(s.format).toBe('html');
   });
 
-  test('invalid numbers fallback to defaults', () => {
-    const s = buildLoremIpsumStateFromSearch({
-      paragraphs: 'bad',
-      sentences: 'bad',
-      wordsMax: 'bad',
-      wordsMin: 'bad',
-    });
-    expect(s.paragraphs).toBe(3);
-    expect(s.sentencesPerParagraph).toBe(5);
-    expect(s.wordsMin).toBe(8);
-    expect(s.wordsMax).toBe(15);
+  test.each([
+    {
+      expected: {
+        paragraphs: 3,
+        sentencesPerParagraph: 5,
+        wordsMax: 15,
+        wordsMin: 8,
+      },
+      name: 'invalid numbers fall back to defaults',
+      search: {
+        paragraphs: 'bad',
+        sentences: 'bad',
+        wordsMax: 'bad',
+        wordsMin: 'bad',
+      },
+    },
+    {
+      expected: { paragraphs: 50 },
+      name: 'clamps paragraphs to max 50',
+      search: { paragraphs: '100' },
+    },
+    {
+      expected: { sentencesPerParagraph: 10 },
+      name: 'clamps sentences to 10',
+      search: { sentences: '99' },
+    },
+  ])('$name', ({ search, expected }) => {
+    expect(buildLoremIpsumStateFromSearch(search)).toMatchObject(expected);
   });
 
-  test('clamps paragraphs to max 50', () => {
-    const s = buildLoremIpsumStateFromSearch({ paragraphs: '100' });
-    expect(s.paragraphs).toBe(50);
-  });
-
-  test('clamps sentences to 10', () => {
-    const s = buildLoremIpsumStateFromSearch({ sentences: '99' });
-    expect(s.sentencesPerParagraph).toBe(10);
-  });
-
-  test('invalid format falls back to plain', () => {
-    const s = buildLoremIpsumStateFromSearch({ format: 'bad' });
-    expect(s.format).toBe('plain');
-  });
-
-  test('invalid startWithLorem falls back to true', () => {
-    const s = buildLoremIpsumStateFromSearch({ startWithLorem: 'maybe' });
-    expect(s.startWithLorem).toBe(true);
+  test.each([
+    {
+      expected: { format: 'plain' },
+      name: 'invalid format falls back to plain',
+      search: { format: 'bad' },
+    },
+    {
+      expected: { startWithLorem: true },
+      name: 'invalid startWithLorem falls back to true',
+      search: { startWithLorem: 'maybe' },
+    },
+  ])('$name', ({ search, expected }) => {
+    expect(buildLoremIpsumStateFromSearch(search)).toMatchObject(expected);
   });
 
   test('swaps wordsMin wordsMax if inverted', () => {
@@ -182,20 +133,5 @@ describe('buildLoremIpsumStateFromSearch', () => {
     }
     const restored = buildLoremIpsumStateFromSearch(search);
     expect(restored).toEqual(original);
-  });
-
-  test('round-trip defaults stays empty', () => {
-    const defaults = {
-      format: 'plain' as const,
-      paragraphs: 3,
-      sentencesPerParagraph: 5,
-      startWithLorem: true,
-      wordsMax: 15,
-      wordsMin: 8,
-    };
-    const params = buildLoremIpsumParams(defaults);
-    expect(params.toString()).toBe('');
-    const restored = buildLoremIpsumStateFromSearch({});
-    expect(restored).toEqual(defaults);
   });
 });

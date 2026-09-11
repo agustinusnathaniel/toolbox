@@ -2,15 +2,13 @@ import { act, renderHook } from '@testing-library/react';
 import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
 
+import { WORKER_DEADLINE_MS } from '@/lib/hooks/use-worker-deadline';
+
 import type {
   TextDiffRequest,
   TextDiffResponse,
 } from '../-worker/text-diff.worker';
-import {
-  TEXT_DIFF_EXECUTION_DEADLINE_MS,
-  TEXT_DIFF_TIMEOUT_ERROR,
-  useTextDiff,
-} from './use-text-diff';
+import { TEXT_DIFF_TIMEOUT_ERROR, useTextDiff } from './use-text-diff';
 
 interface FakeWorker {
   onmessage: ((event: MessageEvent<TextDiffResponse>) => void) | null;
@@ -73,7 +71,7 @@ describe('useTextDiff', () => {
     );
 
     act(() => {
-      vi.advanceTimersByTime(TEXT_DIFF_EXECUTION_DEADLINE_MS);
+      vi.advanceTimersByTime(WORKER_DEADLINE_MS);
     });
 
     expect(result.current.result).toMatchObject({

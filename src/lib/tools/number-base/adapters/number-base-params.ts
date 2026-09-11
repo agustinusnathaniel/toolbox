@@ -1,7 +1,7 @@
+import { readString } from '@/lib/utils/search-params';
+
 import type { NumberBase } from './number-base';
 import { normalizeBase } from './number-base';
-
-export type NumberBaseString = '2' | '8' | '10' | '16';
 
 export interface NumberBaseSearchParams {
   from?: string;
@@ -30,6 +30,6 @@ export function buildNumberBaseStateFromSearch(
 } {
   return {
     fromBase: normalizeBase(search.from),
-    input: search.input ?? '',
+    input: readString(search.input),
   };
 }

@@ -1,8 +1,10 @@
+import { coerceEnum, readString } from '@/lib/utils/search-params';
+
 import type { SqlDialect } from './sql-formatter';
 
 export type SqlSearchAction = 'format' | 'minify';
 
-const ALLOWED_DIALECTS: ReadonlySet<string> = new Set<string>([
+const ALLOWED_DIALECTS: ReadonlySet<SqlDialect> = new Set<SqlDialect>([
   'bigquery',
   'mysql',
   'postgresql',
@@ -11,27 +13,13 @@ const ALLOWED_DIALECTS: ReadonlySet<string> = new Set<string>([
   'transactsql',
 ]);
 
-const ALLOWED_ACTIONS: ReadonlySet<string> = new Set<string>([
+const ALLOWED_ACTIONS: ReadonlySet<SqlSearchAction> = new Set<SqlSearchAction>([
   'format',
   'minify',
 ]);
 
 const DEFAULT_DIALECT: SqlDialect = 'sql';
 const DEFAULT_ACTION: SqlSearchAction = 'format';
-
-function coerceDialect(value: unknown): SqlDialect {
-  if (typeof value === 'string' && ALLOWED_DIALECTS.has(value)) {
-    return value as SqlDialect;
-  }
-  return DEFAULT_DIALECT;
-}
-
-function coerceAction(value: unknown): SqlSearchAction {
-  if (typeof value === 'string' && ALLOWED_ACTIONS.has(value)) {
-    return value as SqlSearchAction;
-  }
-  return DEFAULT_ACTION;
-}
 
 export function buildSqlParams(
   input: string,
@@ -52,8 +40,8 @@ export function buildSqlStateFromSearch(search: Record<string, unknown>): {
   dialect: SqlDialect;
   input: string;
 } {
-  const input = typeof search.input === 'string' ? search.input : '';
-  const dialect = coerceDialect(search.dialect);
-  const action = coerceAction(search.action);
+  const input = readString(search.input);
+  const dialect = coerceEnum(search.dialect, ALLOWED_DIALECTS, DEFAULT_DIALECT);
+  const action = coerceEnum(search.action, ALLOWED_ACTIONS, DEFAULT_ACTION);
   return { action, dialect, input };
 }

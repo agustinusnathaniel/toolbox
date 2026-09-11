@@ -3,7 +3,7 @@
 import type {
   UrlState,
   VCardState,
-} from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+} from '@/lib/tools/qrcode/adapters/qrcode-params';
 
 import { UrlQRCard } from './url-qr-card';
 import { VCardQRCard } from './vcard-qr-card';

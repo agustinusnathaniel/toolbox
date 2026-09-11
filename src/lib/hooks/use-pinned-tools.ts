@@ -1,8 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import {
   PINNED_TOOLS_STORAGE_KEY,
+  parsePinnedTools,
   togglePinnedTool,
 } from '@/lib/tools/pinned-tools';
 
@@ -13,16 +14,23 @@ interface UsePinnedToolsResult {
 }
 
 export function usePinnedTools(): UsePinnedToolsResult {
-  const [pinnedSlugs, setPinnedSlugs] = usePersistedState<Array<string>>(
+  const [storedValue, setStoredValue] = usePersistedState<unknown>(
     PINNED_TOOLS_STORAGE_KEY,
     []
   );
 
+  const pinnedSlugs = useMemo(
+    () => parsePinnedTools(storedValue),
+    [storedValue]
+  );
+
   const togglePin = useCallback(
     (slug: string) => {
-      setPinnedSlugs((prev) => togglePinnedTool(prev, slug));
+      setStoredValue((prev: unknown) =>
+        togglePinnedTool(parsePinnedTools(prev), slug)
+      );
     },
-    [setPinnedSlugs]
+    [setStoredValue]
   );
 
   return {

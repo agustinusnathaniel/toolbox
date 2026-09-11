@@ -1,8 +1,11 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type { JsonFormatterResult } from '@/lib/tools/json-formatter/adapters/json-formatter';
 
 import type {
@@ -12,8 +15,7 @@ import type {
 } from '../-worker/json-formatter.worker';
 import JsonFormatterWorker from '../-worker/json-formatter.worker.ts?worker';
 
-export const JSON_FORMATTER_EXECUTION_DEADLINE_MS = 2000;
-export const JSON_FORMATTER_TIMEOUT_ERROR =
+const JSON_FORMATTER_TIMEOUT_ERROR =
   'Formatting took too long — the input is too large. Try a smaller file.';
 
 const TIMEOUT_RESULT: JsonFormatterResult & { timedOut: true } = {
@@ -47,19 +49,13 @@ export function useJsonFormatter(
       id,
       input,
     }),
-    deadlineMs: JSON_FORMATTER_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0 || action === null) {
-      return;
-    }
-    postRequest();
-  }, [action, postRequest, trigger]);
+  useWorkerTrigger(postRequest, trigger, action === null);
 
   return { computing, result, setResult };
 }

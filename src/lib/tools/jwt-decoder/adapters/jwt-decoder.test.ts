@@ -1,6 +1,7 @@
+import { base64url } from 'jose';
 import { describe, expect, test } from 'vite-plus/test';
 
-import { bytesToBase64Url, decodeJwt, verifyJwtSignature } from './jwt-decoder';
+import { decodeJwt, verifyJwtSignature } from './jwt-decoder';
 
 const HEADER = { alg: 'HS256', typ: 'JWT' };
 const PAYLOAD = {
@@ -10,19 +11,25 @@ const PAYLOAD = {
   sub: '1234567890',
 };
 
-function makeToken(secret = 'secret'): Promise<string> {
+const HMAC_HASHES = {
+  HS256: 'SHA-256',
+  HS384: 'SHA-384',
+  HS512: 'SHA-512',
+} as const;
+
+function makeToken(
+  secret = 'secret',
+  alg: keyof typeof HMAC_HASHES = 'HS256',
+  payload: Record<string, unknown> = PAYLOAD
+): Promise<string> {
   return (async () => {
     const enc = new TextEncoder();
-    const headerB64 = bytesToBase64Url(
-      new Uint8Array(enc.encode(JSON.stringify(HEADER)))
-    );
-    const payloadB64 = bytesToBase64Url(
-      new Uint8Array(enc.encode(JSON.stringify(PAYLOAD)))
-    );
+    const headerB64 = base64url.encode(JSON.stringify({ ...HEADER, alg }));
+    const payloadB64 = base64url.encode(JSON.stringify(payload));
     const key = await crypto.subtle.importKey(
       'raw',
       enc.encode(secret),
-      { hash: 'SHA-256', name: 'HMAC' },
+      { hash: HMAC_HASHES[alg], name: 'HMAC' },
       false,
       ['sign']
     );
@@ -31,7 +38,7 @@ function makeToken(secret = 'secret'): Promise<string> {
       key,
       enc.encode(`${headerB64}.${payloadB64}`)
     );
-    return `${headerB64}.${payloadB64}.${bytesToBase64Url(new Uint8Array(sig))}`;
+    return `${headerB64}.${payloadB64}.${base64url.encode(new Uint8Array(sig))}`;
   })();
 }
 
@@ -52,22 +59,18 @@ describe('decodeJwt', () => {
     );
   });
 
-  test('rejects a token without 3 parts', () => {
-    const result = decodeJwt('not-a-jwt');
+  test.each([
+    ['not-a-jwt', '3 dot-separated parts'],
+    ['eyJhbGciOiJIUzI1NiJ9.not-valid-base64!.sig', undefined],
+    ['eyJhbGciOiJIUzI1NiJ9.aGVsbG8.sig', undefined],
+  ] as const)('rejects malformed token %s', (token, errorPart) => {
+    const result = decodeJwt(token);
     expect(result.isValid).toBe(false);
-    expect(result.error).toContain('3 dot-separated parts');
-  });
-
-  test('rejects malformed base64url payload', () => {
-    const result = decodeJwt('eyJhbGciOiJIUzI1NiJ9.not-valid-base64!.sig');
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBeTruthy();
-  });
-
-  test('rejects non-JSON payload', () => {
-    const result = decodeJwt('eyJhbGciOiJIUzI1NiJ9.aGVsbG8.sig');
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBeTruthy();
+    if (errorPart) {
+      expect(result.error).toContain(errorPart);
+    } else {
+      expect(result.error).toBeTruthy();
+    }
   });
 
   test('rejects null JSON payload with a clean error', () => {
@@ -78,11 +81,26 @@ describe('decodeJwt', () => {
 });
 
 describe('verifyJwtSignature', () => {
-  test('accepts a token signed with the correct secret', async () => {
-    const token = await makeToken('hunter2');
+  test.each(['HS256', 'HS384', 'HS512'] as const)(
+    'accepts a %s token signed with the correct secret',
+    async (alg) => {
+      const token = await makeToken('hunter2', alg);
+      const result = await verifyJwtSignature(token, 'hunter2');
+      expect(result.isValid).toBe(true);
+      expect(result.message).toContain('valid');
+      expect(result.message).toContain(alg);
+    }
+  );
+
+  test('accepts an expired token when the signature is valid', async () => {
+    const token = await makeToken('hunter2', 'HS256', {
+      exp: 1,
+      sub: 'expired',
+    });
     const result = await verifyJwtSignature(token, 'hunter2');
     expect(result.isValid).toBe(true);
     expect(result.message).toContain('valid');
+    expect(result.message).toContain('HS256');
   });
 
   test('rejects a token signed with a different secret', async () => {

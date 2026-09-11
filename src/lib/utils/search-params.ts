@@ -6,7 +6,7 @@
  * arrives as the number `3`, and a string `'3'` is re-serialized as `"3"` with
  * quotes. Every URL-state tool in this app validates search with `z.string()`
  * schemas and reads values through string-typed adapters
- * (`buildUuidStateFromSearch`, `buildBase64StateFromSearch`, ...), so a
+ * (`buildUuidStateFromSearch`, `buildYamlStateFromSearch`, ...), so a
  * numeric-looking share link (`/uuid-generator?count=3&uppercase=1&version=v7`,
  * `/base64?input=123`, `/text-diff?original=123`) failed validation, threw in
  * `validateSearch`, and landed on the error boundary.
@@ -30,4 +30,105 @@ export function stringifySearchParams(search: Record<string, unknown>): string {
   }
   const searchStr = params.toString();
   return searchStr ? `?${searchStr}` : '';
+}
+
+/**
+ * Returns the value when it is one of the allowed strings, otherwise the
+ * fallback. Used by share-link adapters to validate enum-like params.
+ */
+export function coerceEnum<T extends string>(
+  value: unknown,
+  allowed: ReadonlySet<T>,
+  fallback: T
+): T {
+  if (typeof value === 'string' && allowed.has(value as T)) {
+    return value as T;
+  }
+  return fallback;
+}
+
+/**
+ * Parses a base-10 integer and clamps it to `[min, max]`. Missing,
+ * non-numeric, or unparseable values return the fallback instead of clamping,
+ * so an absent param keeps the tool default.
+ */
+export function parseIntClamped(
+  value: string | undefined,
+  min: number,
+  max: number,
+  fallback: number
+): number {
+  if (value === undefined) {
+    return fallback;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+  if (parsed < min) {
+    return min;
+  }
+  if (parsed > max) {
+    return max;
+  }
+  return Math.floor(parsed);
+}
+
+/**
+ * Reads the `'1'`/`'0'` URL convention. Any other value (including missing)
+ * returns the caller's default, so absent params keep the tool default.
+ */
+export function readFlag(
+  value: string | undefined,
+  defaultValue: boolean
+): boolean {
+  if (value === '1') {
+    return true;
+  }
+  if (value === '0') {
+    return false;
+  }
+  return defaultValue;
+}
+
+export function writeFlag(value: boolean): '1' | '0' {
+  return value ? '1' : '0';
+}
+
+export function readString(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback;
+}
+
+/**
+ * Converts a record of optional string params into a URLSearchParams,
+ * dropping undefined values. Share-link builders that model an absent param
+ * as undefined can hand their output straight to `useCopyShareableLink`.
+ */
+export function recordToSearchParams(
+  record: Record<string, string | undefined>
+): URLSearchParams {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(record)) {
+    if (value !== undefined) {
+      params.set(key, value);
+    }
+  }
+  return params;
+}
+
+/**
+ * Builds a URL search-param setter for a single optional string field. The key
+ * is omitted only when the trimmed value is empty; the original value
+ * (including surrounding whitespace) is written verbatim when present.
+ */
+export function singleStringParam(
+  key: string
+): (value: string) => URLSearchParams {
+  return (value) => {
+    const params = new URLSearchParams();
+    if (value.trim()) {
+      params.set(key, value);
+    }
+    return params;
+  };
 }

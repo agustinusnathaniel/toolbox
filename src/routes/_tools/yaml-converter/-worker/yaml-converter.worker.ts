@@ -1,21 +1,22 @@
+import type {
+  WorkerRequest,
+  WorkerResponse,
+} from '@/lib/hooks/worker-protocol';
 import {
   convertJsonToYaml,
   convertYamlToJson,
   type YamlConverterResult,
 } from '@/lib/tools/yaml-converter/adapters/yaml-converter';
+import type { YamlMode } from '@/lib/tools/yaml-converter/adapters/yaml-params';
 
-export type YamlMode = 'json-to-yaml' | 'yaml-to-json';
-
-export interface YamlConverterRequest {
-  id: string;
+export type YamlConverterRequest = WorkerRequest<{
   input: string;
   mode: YamlMode;
-}
+}>;
 
-export interface YamlConverterResponse {
-  id: string;
-  result: YamlConverterResult & { timedOut?: boolean };
-}
+export type YamlConverterResponse = WorkerResponse<
+  YamlConverterResult & { timedOut?: boolean }
+>;
 
 self.onmessage = (event: MessageEvent<YamlConverterRequest>) => {
   const { id, input, mode } = event.data;

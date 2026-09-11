@@ -1,3 +1,12 @@
+import {
+  camelCase,
+  constantCase,
+  kebabCase,
+  pascalCase,
+  snakeCase,
+  splitSeparateNumbers,
+} from 'change-case';
+
 export type CaseFormat =
   | 'camel'
   | 'pascal'
@@ -25,47 +34,19 @@ const EMPTY_FORMATS: Record<CaseFormat, string> = {
   upper: '',
 };
 
-const WORD_CHUNK_RE = /\p{Lu}+(?=\p{Lu}\p{Ll})|\p{Lu}?\p{Ll}+|\p{Lu}+|\p{N}+/gu;
+// Word-delimited formats keep digit chunks separate; camel/pascal stay on the
+// package default so a digit run does not gain an underscore.
+const SEPARATE_DIGITS_OPTIONS = { split: splitSeparateNumbers } as const;
 
-export function splitWords(input: string): Array<string> {
-  const trimmed = input.trim();
-  if (!trimmed) {
-    return [];
+function toTitleWord(word: string): string {
+  if (word.length >= 2 && word.length <= 3 && word === word.toUpperCase()) {
+    return word;
   }
-  return trimmed.match(WORD_CHUNK_RE) ?? [];
-}
-
-function lowercase(word: string): string {
-  return word.toLowerCase();
-}
-
-function uppercase(word: string): string {
-  return word.toUpperCase();
-}
-
-function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
 
-function toTitleWord(word: string): string {
-  if (word.length >= 2 && word.length <= 3 && word === uppercase(word)) {
-    return word;
-  }
-  return capitalize(word);
-}
-
-function buildFormats(words: Array<string>): Record<CaseFormat, string> {
-  const [first, ...rest] = words;
-  return {
-    camel: lowercase(first) + rest.map(capitalize).join(''),
-    kebab: words.map(lowercase).join('-'),
-    lower: words.map(lowercase).join(' '),
-    pascal: words.map(capitalize).join(''),
-    screamingSnake: words.map(uppercase).join('_'),
-    snake: words.map(lowercase).join('_'),
-    title: words.map(toTitleWord).join(' '),
-    upper: words.map(uppercase).join(' '),
-  };
+function splitWords(input: string): Array<string> {
+  return splitSeparateNumbers(input.trim());
 }
 
 export function convertCase(input: string): CaseConverterResult {
@@ -74,7 +55,16 @@ export function convertCase(input: string): CaseConverterResult {
     return { formats: EMPTY_FORMATS, isValid: false, wordCount: 0 };
   }
   return {
-    formats: buildFormats(words),
+    formats: {
+      camel: camelCase(input),
+      kebab: kebabCase(input, SEPARATE_DIGITS_OPTIONS),
+      lower: words.map((word) => word.toLowerCase()).join(' '),
+      pascal: pascalCase(input),
+      screamingSnake: constantCase(input, SEPARATE_DIGITS_OPTIONS),
+      snake: snakeCase(input, SEPARATE_DIGITS_OPTIONS),
+      title: words.map(toTitleWord).join(' '),
+      upper: words.map((word) => word.toUpperCase()).join(' '),
+    },
     isValid: true,
     wordCount: words.length,
   };

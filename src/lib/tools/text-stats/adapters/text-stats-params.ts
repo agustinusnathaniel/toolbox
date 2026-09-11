@@ -1,17 +1,3 @@
-export interface TextStatsSearchParams {
-  input?: string;
-}
+import { singleStringParam } from '@/lib/utils/search-params';
 
-export function buildTextStatsParams(input: string): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input.trim()) {
-    params.set('input', input);
-  }
-  return params;
-}
-
-export function buildTextStatsStateFromSearch(search: TextStatsSearchParams): {
-  input: string;
-} {
-  return { input: search.input ?? '' };
-}
+export const buildTextStatsParams = singleStringParam('input');

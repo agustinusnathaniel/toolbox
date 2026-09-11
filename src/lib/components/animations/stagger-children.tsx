@@ -1,7 +1,10 @@
-import { type MotionProps, motion, type Variants } from 'motion/react';
+import {
+  type MotionProps,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from 'motion/react';
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react';
-
-import { useReducedMotion } from '@/lib/hooks/use-reduced-motion';
 
 type StaggerChildrenProps<T extends ElementType = 'div'> = {
   as?: T;

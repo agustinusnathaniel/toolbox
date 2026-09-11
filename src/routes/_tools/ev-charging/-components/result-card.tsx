@@ -1,5 +1,5 @@
-import type { ChargingResult } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
-import { formatTime } from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+import type { ChargingResult } from '@/lib/tools/ev-charging/adapters/ev-charging';
+import { formatTime } from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 type ResultCardProps = {
   result: ChargingResult;

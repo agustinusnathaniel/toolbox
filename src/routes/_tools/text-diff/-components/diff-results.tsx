@@ -1,8 +1,7 @@
 'use client';
 
-import { Check, Copy } from 'lucide-react';
-
-import { Button } from '@/lib/components/ui/button';
+import { CopyButton } from '@/lib/components/copy-button';
+import { ToolError } from '@/lib/components/tool-error';
 import type { TextDiffResult } from '@/lib/tools/text-diff/adapters/text-diff';
 import type { DiffViewMode } from '@/lib/tools/text-diff/adapters/text-diff-view-mode';
 
@@ -45,34 +44,14 @@ export function DiffError({ result }: { result: TextDiffResult | null }) {
   if (!(result && !result.isValid)) {
     return null;
   }
-  return (
-    <div
-      className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-      role="alert"
-    >
-      <p className="font-medium text-danger text-sm">Input too large</p>
-      <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-        {result.error}
-      </pre>
-    </div>
-  );
+  return <ToolError message={result.error} title="Input too large" />;
 }
 
 export function DiffTimeout({ result }: { result: TextDiffResult | null }) {
   if (!result?.timedOut) {
     return null;
   }
-  return (
-    <div
-      className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-      role="alert"
-    >
-      <p className="font-medium text-danger text-sm">Comparison timed out</p>
-      <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-        {result.error}
-      </pre>
-    </div>
-  );
+  return <ToolError message={result.error} title="Comparison timed out" />;
 }
 
 export function DiffResults({
@@ -101,18 +80,11 @@ export function DiffResults({
               onModeChange={view.setViewMode}
               splitDisabled={!view.splitUsable}
             />
-            <Button
-              aria-label="Copy diff"
-              intent="outline"
+            <CopyButton
+              copied={copiedKey === 'copy'}
+              label="Copy diff"
               onPress={onCopyDiff}
-              size="sq-sm"
-            >
-              {copiedKey === 'copy' ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-            </Button>
+            />
           </div>
         </div>
         {!view.splitUsable && (

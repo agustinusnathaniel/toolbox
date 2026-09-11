@@ -1,3 +1,26 @@
+import type { Color, Hsl, Oklch, Rgb } from 'culori/fn';
+import {
+  converter,
+  formatHex,
+  modeHsl,
+  modeOklch,
+  modeRgb,
+  parse,
+  parseHex,
+  useMode as registerMode,
+  round,
+} from 'culori/fn';
+
+registerMode(modeRgb);
+registerMode(modeHsl);
+registerMode(modeOklch);
+
+const toRgb = converter('rgb');
+const toHsl = converter('hsl');
+const toOklch = converter('oklch');
+const round2 = round(2);
+const round4 = round(4);
+
 export interface RgbColor {
   b: number;
   g: number;
@@ -27,276 +50,62 @@ export interface ParsedColor {
   rgb: RgbColor;
 }
 
-const HEX_REGEX = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const RGB_REGEX =
-  /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*[\d.]+%?\s*)?\)$/;
-const HSL_REGEX =
-  /^hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*[\d.]+%?\s*)?\)$/;
-const OKLCH_REGEX = /^oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)\s*\)$/;
-
-function parseHex(hex: string): RgbColor | null {
-  const cleaned = hex.replace('#', '');
-  if (cleaned.length !== 3 && cleaned.length !== 6) {
-    return null;
-  }
-  const expanded =
-    cleaned.length === 3
-      ? cleaned
-          .split('')
-          .map((c) => c + c)
-          .join('')
-      : cleaned;
-  const r = Number.parseInt(expanded.slice(0, 2), 16);
-  const g = Number.parseInt(expanded.slice(2, 4), 16);
-  const b = Number.parseInt(expanded.slice(4, 6), 16);
-  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-    return null;
-  }
-  return { b, g, r };
+function clampChannel(value: number): number {
+  return Math.max(0, Math.min(1, value));
 }
 
-export function hexToRgb(hex: string): RgbColor | null {
-  return parseHex(hex);
+function rgbFrom8Bit(r: number, g: number, b: number): Rgb {
+  return { b: b / 255, g: g / 255, mode: 'rgb', r: r / 255 };
 }
 
-export function rgbToHex(r: number, g: number, b: number): string {
-  const toHex = (n: number) =>
-    Math.max(0, Math.min(255, Math.round(n)))
-      .toString(16)
-      .padStart(2, '0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-export function rgbToHsl(r: number, g: number, b: number): HslColor {
-  const rn = r / 255;
-  const gn = g / 255;
-  const bn = b / 255;
-  const max = Math.max(rn, gn, bn);
-  const min = Math.min(rn, gn, bn);
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    if (max === rn) {
-      h = ((gn - bn) / d + (gn < bn ? 6 : 0)) * 60;
-    } else if (max === gn) {
-      h = ((bn - rn) / d + 2) * 60;
-    } else {
-      h = ((rn - gn) / d + 4) * 60;
-    }
-  }
-
+function toRgbColor(rgb: Rgb): RgbColor {
   return {
-    h: Math.round(h * 100) / 100,
-    l: Math.round(l * 100 * 100) / 100,
-    s: Math.round(s * 100 * 100) / 100,
+    b: Math.round(clampChannel(rgb.b ?? 0) * 255),
+    g: Math.round(clampChannel(rgb.g ?? 0) * 255),
+    r: Math.round(clampChannel(rgb.r ?? 0) * 255),
   };
 }
 
-function hueToRgb(p: number, q: number, t: number): number {
-  let tt = t;
-  if (tt < 0) {
-    tt += 1;
-  }
-  if (tt > 1) {
-    tt -= 1;
-  }
-  if (tt < 1 / 6) {
-    return p + (q - p) * 6 * tt;
-  }
-  if (tt < 1 / 2) {
-    return q;
-  }
-  if (tt < 2 / 3) {
-    return p + (q - p) * (2 / 3 - tt) * 6;
-  }
-  return p;
-}
-
-export function hslToRgb(h: number, s: number, l: number): RgbColor {
-  const hn = h / 360;
-  const sn = s / 100;
-  const ln = l / 100;
-
-  if (sn === 0) {
-    const v = Math.round(ln * 255);
-    return { b: v, g: v, r: v };
-  }
-
-  const q = ln < 0.5 ? ln * (1 + sn) : ln + sn - ln * sn;
-  const p = 2 * ln - q;
-
+function toHslColor(hsl: Hsl): HslColor {
   return {
-    b: Math.round(hueToRgb(p, q, hn - 1 / 3) * 255),
-    g: Math.round(hueToRgb(p, q, hn) * 255),
-    r: Math.round(hueToRgb(p, q, hn + 1 / 3) * 255),
+    h: round2(hsl.h ?? 0),
+    l: round2((hsl.l ?? 0) * 100),
+    s: round2((hsl.s ?? 0) * 100),
   };
 }
 
-function srgbToLinear(c: number): number {
-  const v = c / 255;
-  return v <= 0.040_45 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-}
-
-function linearToSrgb(c: number): number {
-  const v = c <= 0.003_130_8 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055;
-  return Math.round(Math.max(0, Math.min(1, v)) * 255);
-}
-
-export function rgbToOklch(r: number, g: number, b: number): OklchColor {
-  const lr = srgbToLinear(r);
-  const lg = srgbToLinear(g);
-  const lb = srgbToLinear(b);
-
-  const l_ = 0.412_221_470_8 * lr + 0.536_882_536_8 * lg + 0.051_445_992_9 * lb;
-  const m_ = 0.211_903_498_2 * lr + 0.680_699_545_1 * lg + 0.107_396_956_6 * lb;
-  const s_ = 0.088_302_461_9 * lr + 0.281_718_837_6 * lg + 0.629_978_700_5 * lb;
-
-  const l3 = Math.cbrt(l_);
-  const m3 = Math.cbrt(m_);
-  const s3 = Math.cbrt(s_);
-
-  const L = 0.210_454_255_3 * l3 + 0.793_617_785 * m3 - 0.004_072_046_8 * s3;
-  const a = 1.977_998_495_1 * l3 - 2.428_592_205 * m3 + 0.450_593_709_9 * s3;
-  const b_ = 0.025_904_037_1 * l3 + 0.782_771_766_2 * m3 - 0.808_675_766 * s3;
-
-  const C = Math.sqrt(a * a + b_ * b_);
-  const H = (Math.atan2(b_, a) * 180) / Math.PI;
-
+function toOklchColor(oklch: Oklch): OklchColor {
   return {
-    c: Math.round(C * 10_000) / 10_000,
-    h: Math.round((H < 0 ? H + 360 : H) * 100) / 100,
-    l: Math.round(L * 10_000) / 10_000,
+    c: round4(oklch.c ?? 0),
+    h: round2(oklch.h ?? 0),
+    l: round4(oklch.l ?? 0),
   };
 }
 
-function oklchToRgb(l: number, c: number, h: number): RgbColor {
-  const L = l;
-  const a = c * Math.cos((h * Math.PI) / 180);
-  const b_ = c * Math.sin((h * Math.PI) / 180);
-
-  const l3 = L + 0.396_337_777_4 * a + 0.215_803_757_3 * b_;
-  const m3 = L - 0.105_561_345_8 * a - 0.063_854_172_8 * b_;
-  const s3 = L - 0.089_484_177_5 * a - 1.291_485_548 * b_;
-
-  const l_ = l3 * l3 * l3;
-  const m_ = m3 * m3 * m3;
-  const s_ = s3 * s3 * s3;
-
-  const r = linearToSrgb(
-    4.076_741_662_1 * l_ - 3.307_711_591_3 * m_ + 0.230_969_929_2 * s_
-  );
-  const g = linearToSrgb(
-    -1.268_438_004_6 * l_ + 2.609_757_401_1 * m_ - 0.341_319_396_5 * s_
-  );
-  const b = linearToSrgb(
-    -0.004_196_086_3 * l_ - 0.703_418_614_7 * m_ + 1.707_614_701 * s_
-  );
-
-  return { b, g, r };
+function detectFormat(input: string, parsed: Color): ColorFormat {
+  if (parseHex(input)) {
+    return 'hex';
+  }
+  if (parsed.mode === 'hsl' || parsed.mode === 'oklch') {
+    return parsed.mode;
+  }
+  return 'rgb';
 }
 
-function hslStringToRgb(hsl: string): RgbColor | null {
-  const match = hsl.match(HSL_REGEX);
-  if (!match) {
-    return null;
-  }
-  const h = Number.parseInt(match[1], 10);
-  const s = Number.parseInt(match[2], 10);
-  const l = Number.parseInt(match[3], 10);
-  return hslToRgb(h, s, l);
-}
-
-function oklchStringToRgb(oklch: string): RgbColor | null {
-  const match = oklch.match(OKLCH_REGEX);
-  if (!match) {
-    return null;
-  }
-  let l = Number.parseFloat(match[1]);
-  const c = Number.parseFloat(match[2]);
-  const h = Number.parseFloat(match[3]);
-  if (l > 1) {
-    l /= 100;
-  }
-  return oklchToRgb(l, c, h);
-}
-
-function tryParseHex(trimmed: string): ParsedColor | null {
-  if (!HEX_REGEX.test(trimmed)) {
-    return null;
-  }
-  const rgb = parseHex(trimmed);
-  if (!rgb) {
-    return null;
-  }
+function buildParsedColor(
+  input: string,
+  format: ColorFormat,
+  rgb: Rgb
+): ParsedColor {
+  const rounded = toRgbColor(rgb);
+  const displayRgb = rgbFrom8Bit(rounded.r, rounded.g, rounded.b);
   return {
-    format: 'hex',
-    hex: rgbToHex(rgb.r, rgb.g, rgb.b),
-    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
-    input: trimmed,
-    oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
-    rgb,
-  };
-}
-
-function tryParseRgb(trimmed: string): ParsedColor | null {
-  const m = trimmed.match(RGB_REGEX);
-  if (!m) {
-    return null;
-  }
-  const r = Number.parseInt(m[1], 10);
-  const g = Number.parseInt(m[2], 10);
-  const b = Number.parseInt(m[3], 10);
-  if (r > 255 || g > 255 || b > 255) {
-    return null;
-  }
-  const rgb: RgbColor = { b, g, r };
-  return {
-    format: 'rgb',
-    hex: rgbToHex(r, g, b),
-    hsl: rgbToHsl(r, g, b),
-    input: trimmed,
-    oklch: rgbToOklch(r, g, b),
-    rgb,
-  };
-}
-
-function tryParseHsl(trimmed: string): ParsedColor | null {
-  if (!trimmed.match(HSL_REGEX)) {
-    return null;
-  }
-  const rgb = hslStringToRgb(trimmed);
-  if (!rgb) {
-    return null;
-  }
-  return {
-    format: 'hsl',
-    hex: rgbToHex(rgb.r, rgb.g, rgb.b),
-    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
-    input: trimmed,
-    oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
-    rgb,
-  };
-}
-
-function tryParseOklch(trimmed: string): ParsedColor | null {
-  if (!trimmed.match(OKLCH_REGEX)) {
-    return null;
-  }
-  const rgb = oklchStringToRgb(trimmed);
-  if (!rgb) {
-    return null;
-  }
-  return {
-    format: 'oklch',
-    hex: rgbToHex(rgb.r, rgb.g, rgb.b),
-    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
-    input: trimmed,
-    oklch: rgbToOklch(rgb.r, rgb.g, rgb.b),
-    rgb,
+    format,
+    hex: formatHex(displayRgb),
+    hsl: toHslColor(toHsl(displayRgb)),
+    input,
+    oklch: toOklchColor(toOklch(displayRgb)),
+    rgb: rounded,
   };
 }
 
@@ -305,12 +114,14 @@ export function parseColor(input: string): ParsedColor | null {
   if (!trimmed) {
     return null;
   }
-  return (
-    tryParseHex(trimmed) ??
-    tryParseRgb(trimmed) ??
-    tryParseHsl(trimmed) ??
-    tryParseOklch(trimmed) ??
-    null
+  const parsed = parse(trimmed);
+  if (!parsed) {
+    return null;
+  }
+  return buildParsedColor(
+    trimmed,
+    detectFormat(trimmed, parsed),
+    toRgb(parsed)
   );
 }
 

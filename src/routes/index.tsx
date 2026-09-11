@@ -7,7 +7,7 @@ import { CardContent, CardHeader } from '@/lib/components/ui/card';
 import { usePinnedTools } from '@/lib/hooks/use-pinned-tools';
 import type { ToolNavItem } from '@/lib/navigation/tool-registry';
 import { getToolNavItems } from '@/lib/navigation/tool-registry';
-import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/utils/metadata';
+import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from '@/lib/utils/metadata';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/')({
       { content: SITE_NAME, property: 'og:title' },
       { content: SITE_DESCRIPTION, property: 'og:description' },
       { content: 'website', property: 'og:type' },
-      { content: '/', property: 'og:url' },
+      { content: siteUrl('/'), property: 'og:url' },
     ],
   }),
 });

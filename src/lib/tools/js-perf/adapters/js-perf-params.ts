@@ -2,7 +2,7 @@ import { DEFAULT_RUN_POLICY } from '@/lib/js-perf-comp-core/models';
 import {
   DEFAULT_PRESET,
   STABILITY_DEFAULT_ROUNDS,
-} from '@/routes/_tools/js-perf/-components/presets';
+} from '@/lib/js-perf-comp-core/presets';
 
 export interface JsPerfSearchParams {
   codeA?: string;

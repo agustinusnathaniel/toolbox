@@ -1,17 +1,15 @@
+import type {
+  WorkerRequest,
+  WorkerResponse,
+} from '@/lib/hooks/worker-protocol';
 import {
   type JsonToTsResult,
   jsonToTypescript,
 } from '@/lib/tools/json-to-ts/adapters/json-to-ts';
 
-export interface JsonToTsRequest {
-  id: string;
-  input: string;
-}
+export type JsonToTsRequest = WorkerRequest<{ input: string }>;
 
-export interface JsonToTsResponse {
-  id: string;
-  result: JsonToTsResult;
-}
+export type JsonToTsResponse = WorkerResponse<JsonToTsResult>;
 
 self.onmessage = (event: MessageEvent<JsonToTsRequest>) => {
   const { id, input } = event.data;

@@ -1,9 +1,12 @@
 'use client';
 
 import DOMPurify from 'dompurify';
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 
 import type {
   MarkdownPreviewRequest,
@@ -11,8 +14,7 @@ import type {
 } from '../-worker/markdown-preview.worker';
 import MarkdownPreviewWorker from '../-worker/markdown-preview.worker.ts?worker';
 
-export const MARKDOWN_PREVIEW_DEADLINE_MS = 2000;
-export const MARKDOWN_PREVIEW_TIMEOUT_ERROR =
+const MARKDOWN_PREVIEW_TIMEOUT_ERROR =
   'Rendering took too long — the input is too large. Try a smaller file.';
 
 const TIMEOUT_RESULT: MarkdownPreviewState = {
@@ -22,7 +24,7 @@ const TIMEOUT_RESULT: MarkdownPreviewState = {
   timedOut: true,
 };
 
-export type MarkdownPreviewState = {
+type MarkdownPreviewState = {
   html: string;
   isEmpty: boolean;
   timedOut?: boolean;
@@ -46,7 +48,6 @@ export function useMarkdownPreview(
     MarkdownPreviewState
   >({
     buildRequest: (id) => ({ id, input }),
-    deadlineMs: MARKDOWN_PREVIEW_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => {
       const r = response.result;
@@ -60,16 +61,9 @@ export function useMarkdownPreview(
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    if (!input.trim()) {
-      setResult({ html: '', isEmpty: true });
-      return;
-    }
-    postRequest();
-  }, [input, postRequest, setResult, trigger]);
+  useWorkerTrigger(postRequest, trigger, !input.trim(), () =>
+    setResult({ html: '', isEmpty: true })
+  );
 
   return { computing, result, setResult };
 }

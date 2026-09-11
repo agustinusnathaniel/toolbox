@@ -4,9 +4,9 @@ import { useSearch } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { buildRegexParams } from '@/lib/tools/regex-tester/adapters/regex-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
 
 import { useRegexTester } from './use-regex-tester';
 
@@ -63,21 +63,19 @@ function useRegexSegments(
 
 function useRegexCopyActions(
   result: ReturnType<typeof useRegexTester>['result'],
-  trackAction: (a: string) => void,
-  setCopiedMatches: (v: boolean) => void
+  trackAction: (a: string) => void
 ) {
+  const { copiedKey, copy } = useCopyFeedback<'matches'>();
   const handleCopyMatches = useCallback(async () => {
     if (result.matches.length === 0) {
       return;
     }
     const text = result.matches.map((m) => m.full).join('\n');
-    if (await copyToClipboard(text, 'Copied Matches')) {
-      setCopiedMatches(true);
+    if (await copy(text, 'matches', 'Copied Matches')) {
       trackAction('copy');
-      setTimeout(() => setCopiedMatches(false), 1500);
     }
-  }, [result.matches, trackAction, setCopiedMatches]);
-  return { handleCopyMatches };
+  }, [result.matches, trackAction, copy]);
+  return { copiedKey, handleCopyMatches };
 }
 
 export function useRegexPageState() {
@@ -86,14 +84,12 @@ export function useRegexPageState() {
   const [pattern, setPattern] = useState(search.pattern ?? '');
   const [flags, setFlags] = useState(search.flags ?? '');
   const [input, setInput] = useState(search.input ?? '');
-  const [copiedMatches, setCopiedMatches] = useState(false);
   const { result } = useRegexTester(pattern, flags, input);
   useRegexTracking(pattern, flags, input, trackAction);
   const segments = useRegexSegments(input, result.matches);
-  const { handleCopyMatches } = useRegexCopyActions(
+  const { copiedKey, handleCopyMatches } = useRegexCopyActions(
     result,
-    trackAction,
-    setCopiedMatches
+    trackAction
   );
   const handleCopyLink = useCopyShareableLink(
     () => buildRegexParams(pattern, flags, input),
@@ -104,7 +100,7 @@ export function useRegexPageState() {
     result.matchCount === 1 ? '1 match' : `${result.matchCount} matches`;
 
   return {
-    copiedMatches,
+    copiedKey,
     flags,
     handleCopyLink,
     handleCopyMatches,

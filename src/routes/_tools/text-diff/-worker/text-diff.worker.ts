@@ -1,18 +1,18 @@
+import type {
+  WorkerRequest,
+  WorkerResponse,
+} from '@/lib/hooks/worker-protocol';
 import {
   diffTexts,
   type TextDiffResult,
 } from '@/lib/tools/text-diff/adapters/text-diff';
 
-export interface TextDiffRequest {
-  id: string;
+export type TextDiffRequest = WorkerRequest<{
   modified: string;
   original: string;
-}
+}>;
 
-export interface TextDiffResponse {
-  id: string;
-  result: TextDiffResult;
-}
+export type TextDiffResponse = WorkerResponse<TextDiffResult>;
 
 self.onmessage = (event: MessageEvent<TextDiffRequest>) => {
   const { id, modified, original } = event.data;

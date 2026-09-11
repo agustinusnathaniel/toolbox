@@ -1,14 +1,17 @@
-import type { HtmlEntitiesMode } from './html-entities';
+import { coerceEnum, readString } from '@/lib/utils/search-params';
 
-export interface HtmlEntitiesSearchParams {
-  input?: string;
-  mode?: string;
-}
+import type { HtmlEntitiesMode } from './html-entities';
 
 export interface HtmlEntitiesState {
   input: string;
   mode: HtmlEntitiesMode;
 }
+
+const ALLOWED_MODES: ReadonlySet<HtmlEntitiesMode> = new Set<HtmlEntitiesMode>([
+  'decode',
+  'encode',
+]);
+const DEFAULT_MODE: HtmlEntitiesMode = 'encode';
 
 export function buildHtmlEntitiesParams(
   input: string,
@@ -27,10 +30,8 @@ export function buildHtmlEntitiesParams(
 export function buildHtmlEntitiesStateFromSearch(
   search: Record<string, unknown>
 ): HtmlEntitiesState {
-  const rawInput = search.input;
-  const rawMode = search.mode;
   return {
-    input: typeof rawInput === 'string' ? rawInput : '',
-    mode: rawMode === 'decode' ? 'decode' : 'encode',
+    input: readString(search.input),
+    mode: coerceEnum(search.mode, ALLOWED_MODES, DEFAULT_MODE),
   };
 }

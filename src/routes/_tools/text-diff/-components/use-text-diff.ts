@@ -1,8 +1,11 @@
 'use client';
 
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
-import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
+import {
+  useWorkerDeadline,
+  useWorkerTrigger,
+} from '@/lib/hooks/use-worker-deadline';
 import type { TextDiffResult } from '@/lib/tools/text-diff/adapters/text-diff';
 
 import type {
@@ -11,7 +14,6 @@ import type {
 } from '../-worker/text-diff.worker';
 import TextDiffWorker from '../-worker/text-diff.worker.ts?worker';
 
-export const TEXT_DIFF_EXECUTION_DEADLINE_MS = 2000;
 export const TEXT_DIFF_TIMEOUT_ERROR =
   'Comparison took too long — the input is too large or the two texts are too different. Try shorter inputs.';
 
@@ -42,19 +44,13 @@ export function useTextDiff(
     TextDiffResult
   >({
     buildRequest: (id) => ({ id, modified, original }),
-    deadlineMs: TEXT_DIFF_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,
     workerFactory,
   });
 
-  useEffect(() => {
-    if (trigger <= 0) {
-      return;
-    }
-    postRequest();
-  }, [postRequest, trigger]);
+  useWorkerTrigger(postRequest, trigger);
 
   return { computing, result, setResult };
 }

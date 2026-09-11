@@ -1,12 +1,11 @@
 'use client';
 
-import { IconClock, IconGlobe, IconMoon, IconSun } from '@intentui/icons';
+import { IconClock, IconGlobe } from '@intentui/icons';
 import { useLocation } from '@tanstack/react-router';
 import { Folder } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { useCallback } from 'react';
 
-import { Button } from '@/lib/components/ui/button';
+import { ThemeToggle } from '@/lib/components/theme-toggle';
 import { Link } from '@/lib/components/ui/link';
 import {
   Sidebar,
@@ -34,7 +33,6 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { setIsOpenOnMobile } = useSidebar();
   const isMobile = useIsMobile();
   const location = useLocation();
-  const { resolvedTheme, setTheme } = useTheme();
 
   const handleMobileClose = useCallback(() => {
     if (isMobile) {
@@ -109,19 +107,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
         </SidebarContent>
 
         <SidebarFooter className="flex flex-row items-center justify-between gap-2 p-2">
-          <Button
-            aria-label="Toggle theme"
-            className="size-8"
-            intent="plain"
-            onPress={() =>
-              setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-            }
-          >
-            {/* Both icons are rendered and toggled via CSS so the markup is
-              identical on server and client (theme is unknown at SSR time). */}
-            <IconMoon aria-hidden="true" className="dark:hidden" />
-            <IconSun aria-hidden="true" className="hidden dark:block" />
-          </Button>
+          <ThemeToggle className="size-8" />
         </SidebarFooter>
       </nav>
       <SidebarRail />

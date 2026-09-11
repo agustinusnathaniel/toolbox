@@ -1,21 +1,20 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, Link } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyButton } from '@/lib/components/copy-button';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { Input } from '@/lib/components/ui/input';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  buildCronParams,
-  buildCronStateFromSearch,
-} from '@/lib/tools/cron-parser/adapters/cron-params';
+import { buildCronParams } from '@/lib/tools/cron-parser/adapters/cron-params';
 import {
   CRON_EXAMPLES,
   parseCronExpression,
@@ -36,9 +35,7 @@ export const Route = createFileRoute('/_tools/cron-parser/')({
 
 function useCronState() {
   const search = useSearch({ from: '/_tools/cron-parser/' });
-  const [expression, setExpression] = useState(
-    () => buildCronStateFromSearch(search).expression
-  );
+  const [expression, setExpression] = useState(() => search.expression ?? '');
   return { expression, setExpression };
 }
 
@@ -149,17 +146,7 @@ function CronError({
   if (!(result && !result.isValid)) {
     return null;
   }
-  return (
-    <div
-      className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-      role="alert"
-    >
-      <p className="font-medium text-danger text-sm">Invalid cron expression</p>
-      <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-        {result.error}
-      </pre>
-    </div>
-  );
+  return <ToolError message={result.error} title="Invalid cron expression" />;
 }
 
 function CronHumanReadable({
@@ -178,18 +165,11 @@ function CronHumanReadable({
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <span className="text-muted-fg text-sm">Human readable</span>
-        <Button
-          aria-label="Copy description"
-          intent="outline"
+        <CopyButton
+          copied={copiedKey === 'description'}
+          label="Copy description"
           onPress={onCopy}
-          size="sq-sm"
-        >
-          {copiedKey === 'description' ? (
-            <Check className="size-4 text-success" />
-          ) : (
-            <Copy className="size-4" />
-          )}
-        </Button>
+        />
       </div>
       <p className="rounded-lg border bg-(--card-bg)/50 p-3 text-sm">
         {result.humanReadable}
@@ -218,18 +198,11 @@ function CronNextRuns({
         <span className="text-muted-fg text-sm">
           Next {result.nextRuns?.length ?? 0} runs
         </span>
-        <Button
-          aria-label="Copy all run times"
-          intent="outline"
+        <CopyButton
+          copied={copiedKey === 'runs'}
+          label="Copy all run times"
           onPress={onCopyRuns}
-          size="sq-sm"
-        >
-          {copiedKey === 'runs' ? (
-            <Check className="size-4 text-success" />
-          ) : (
-            <Copy className="size-4" />
-          )}
-        </Button>
+        />
       </div>
       <ul className="flex flex-col gap-1.5">
         {(result.nextRuns ?? []).map((run, index) => (
@@ -243,18 +216,11 @@ function CronNextRuns({
             <span className="hidden font-mono text-muted-fg text-xs sm:inline">
               {run}
             </span>
-            <Button
-              aria-label={`Copy run time ${index + 1}`}
-              intent="outline"
+            <CopyButton
+              copied={copiedKey === `run-${index}`}
+              label={`Copy run time ${index + 1}`}
               onPress={() => onCopySingleRun(run, index)}
-              size="sq-sm"
-            >
-              {copiedKey === `run-${index}` ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-            </Button>
+            />
           </li>
         ))}
       </ul>
@@ -287,15 +253,10 @@ function CronParserPage() {
           <CronInput expression={expression} setExpression={setExpression} />
           <CronExamples onSelect={handleSelectExample} />
           <div className="flex flex-wrap gap-2">
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
           <CronError result={result} />
           <CronHumanReadable

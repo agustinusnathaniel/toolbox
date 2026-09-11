@@ -1,3 +1,5 @@
+import { readFlag, writeFlag } from '@/lib/utils/search-params';
+
 import type { PasswordOptions } from './password-generator';
 
 export interface PasswordSearchParams {
@@ -24,19 +26,19 @@ export function buildPasswordParams(options: PasswordOptions): URLSearchParams {
     params.set('length', String(options.length));
   }
   if (options.lowercase !== DEFAULTS.lowercase) {
-    params.set('lowercase', options.lowercase ? '1' : '0');
+    params.set('lowercase', writeFlag(options.lowercase));
   }
   if (options.uppercase !== DEFAULTS.uppercase) {
-    params.set('uppercase', options.uppercase ? '1' : '0');
+    params.set('uppercase', writeFlag(options.uppercase));
   }
   if (options.digits !== DEFAULTS.digits) {
-    params.set('digits', options.digits ? '1' : '0');
+    params.set('digits', writeFlag(options.digits));
   }
   if (options.symbols !== DEFAULTS.symbols) {
-    params.set('symbols', options.symbols ? '1' : '0');
+    params.set('symbols', writeFlag(options.symbols));
   }
   if (options.excludeAmbiguous !== DEFAULTS.excludeAmbiguous) {
-    params.set('excludeAmbiguous', options.excludeAmbiguous ? '1' : '0');
+    params.set('excludeAmbiguous', writeFlag(options.excludeAmbiguous));
   }
   return params;
 }
@@ -46,14 +48,17 @@ export function buildPasswordStateFromSearch(
 ): PasswordOptions {
   const length = Number(search.length);
   return {
-    digits: search.digits === '0' ? false : DEFAULTS.digits,
-    excludeAmbiguous: search.excludeAmbiguous === '1',
+    digits: readFlag(search.digits, DEFAULTS.digits),
+    excludeAmbiguous: readFlag(
+      search.excludeAmbiguous,
+      DEFAULTS.excludeAmbiguous
+    ),
     length:
       Number.isInteger(length) && length >= 8 && length <= 128
         ? length
         : DEFAULTS.length,
-    lowercase: search.lowercase === '0' ? false : DEFAULTS.lowercase,
-    symbols: search.symbols === '1',
-    uppercase: search.uppercase === '0' ? false : DEFAULTS.uppercase,
+    lowercase: readFlag(search.lowercase, DEFAULTS.lowercase),
+    symbols: readFlag(search.symbols, DEFAULTS.symbols),
+    uppercase: readFlag(search.uppercase, DEFAULTS.uppercase),
   };
 }

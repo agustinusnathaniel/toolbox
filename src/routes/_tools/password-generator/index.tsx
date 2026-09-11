@@ -1,11 +1,13 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, KeyRound, Link } from 'lucide-react';
+import { KeyRound } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -42,6 +44,13 @@ export const Route = createFileRoute('/_tools/password-generator/')({
   ...createToolRouteMetadata(meta),
   validateSearch: searchSchema,
 });
+
+const CHARACTER_SET_OPTIONS = [
+  { key: 'lowercase', label: 'Lowercase (a-z)' },
+  { key: 'uppercase', label: 'Uppercase (A-Z)' },
+  { key: 'digits', label: 'Digits (0-9)' },
+  { key: 'symbols', label: 'Symbols (!@#...)' },
+] as const;
 
 function PasswordGeneratorPage() {
   const { trackAction } = useToolTracking(
@@ -102,50 +111,24 @@ function PasswordGeneratorPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <CheckboxField
-              isSelected={options.lowercase}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, lowercase: selected }))
-              }
-            >
-              <Checkbox>Lowercase (a-z)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={options.uppercase}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, uppercase: selected }))
-              }
-            >
-              <Checkbox>Uppercase (A-Z)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={options.digits}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, digits: selected }))
-              }
-            >
-              <Checkbox>Digits (0-9)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={options.symbols}
-              onChange={(selected) =>
-                setOptions((prev) => ({ ...prev, symbols: selected }))
-              }
-            >
-              <Checkbox>Symbols (!@#...)</Checkbox>
-            </CheckboxField>
+            {CHARACTER_SET_OPTIONS.map(({ key, label }) => (
+              <CheckboxField
+                isSelected={options[key]}
+                key={key}
+                onChange={(selected) =>
+                  setOptions((prev) => ({ ...prev, [key]: selected }))
+                }
+              >
+                <Checkbox>{label}</Checkbox>
+              </CheckboxField>
+            ))}
           </div>
 
           <CheckboxField
@@ -164,28 +147,13 @@ function PasswordGeneratorPage() {
           )}
 
           {result?.isValid && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-fg text-sm">
-                  {strength} · {entropy} bits
-                </span>
-                <Button
-                  aria-label="Copy password"
-                  intent="outline"
-                  onPress={handleCopy}
-                  size="sq-sm"
-                >
-                  {copiedKey === 'copy' ? (
-                    <Check className="size-4 text-success" />
-                  ) : (
-                    <Copy className="size-4" />
-                  )}
-                </Button>
-              </div>
-              <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-                {result.output}
-              </pre>
-            </div>
+            <ResultPanel
+              copied={copiedKey === 'copy'}
+              copyLabel="Copy password"
+              label={`${strength} · ${entropy} bits`}
+              onCopy={handleCopy}
+              value={result.output}
+            />
           )}
         </CardContent>
       </Card>

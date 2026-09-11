@@ -14,6 +14,7 @@ import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import { DEFAULT_RUN_POLICY, isRunable } from '@/lib/js-perf-comp-core/models';
+import { DEFAULT_PRESET, PRESETS } from '@/lib/js-perf-comp-core/presets';
 import {
   buildJsPerfParams,
   buildJsPerfStateFromSearch,
@@ -23,7 +24,6 @@ import { createToolRouteMetadata } from '@/lib/utils/metadata';
 import { AdvancedScriptsSection } from './-components/advanced-scripts-section';
 import { ComparatorConfigBar } from './-components/comparator-config-bar';
 import { ComparisonResults } from './-components/comparison-results';
-import { DEFAULT_PRESET, PRESETS } from './-components/presets';
 import { RunActionBar } from './-components/run-action-bar';
 import { SnippetEditors } from './-components/snippet-editors';
 import { useJsPerfRunner } from './-components/use-js-perf-runner';

@@ -1,12 +1,14 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Link as LinkIcon, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { CopyRow } from '@/lib/components/copy-row';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
@@ -88,10 +90,7 @@ function TimestampConverterPage() {
               <RotateCcw className="size-4" />
               Use current time
             </Button>
-            <Button intent="outline" onPress={handleCopyLink} size="sm">
-              <LinkIcon className="size-4" />
-              Copy link
-            </Button>
+            <CopyLinkButton onPress={handleCopyLink} />
           </div>
 
           {!hasInput && (
@@ -103,15 +102,11 @@ function TimestampConverterPage() {
       </Card>
 
       {result.error && hasInput && (
-        <div
-          className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-          role="alert"
-        >
-          <p className="font-medium text-danger text-sm">Invalid timestamp</p>
-          <p className="mt-1 whitespace-pre-wrap text-danger/80 text-xs">
-            {result.error}
-          </p>
-        </div>
+        <ToolError
+          message={result.error}
+          title="Invalid timestamp"
+          variant="prose"
+        />
       )}
 
       {result.isValid && hasInput && (

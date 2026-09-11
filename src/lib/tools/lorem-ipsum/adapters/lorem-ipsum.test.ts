@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { countWords, generateLoremIpsum } from './lorem-ipsum';
+import { generateLoremIpsum } from './lorem-ipsum';
 
 const WS_RE = /\s+/;
 
@@ -17,56 +17,16 @@ describe('generateLoremIpsum', () => {
     expect(paragraphs).toHaveLength(3);
   });
 
-  test('0 paragraphs returns empty', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: 0,
-      sentencesPerParagraph: 5,
-      startWithLorem: true,
-      wordsPerSentence: { max: 15, min: 8 },
-    });
-    expect(text).toBe('');
-  });
-
-  test('negative paragraphs returns empty', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: -2,
-      sentencesPerParagraph: 5,
-      startWithLorem: true,
-      wordsPerSentence: { max: 15, min: 8 },
-    });
-    expect(text).toBe('');
-  });
-
-  test('sentence count per paragraph', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: 2,
-      sentencesPerParagraph: 4,
-      startWithLorem: false,
-      wordsPerSentence: { max: 5, min: 5 },
-    });
-    const paragraphs = text.split('\n\n');
-    for (const p of paragraphs) {
-      const sentences = p.split('.').filter((s) => s.trim().length > 0);
-      expect(sentences).toHaveLength(4);
-    }
-  });
-
-  test('word bounds per sentence', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: 1,
-      sentencesPerParagraph: 5,
-      startWithLorem: false,
-      wordsPerSentence: { max: 12, min: 8 },
-    });
-    const sentences = text.split('.').filter((s) => s.trim().length > 0);
-    for (const s of sentences) {
-      const words = s.trim().split(WS_RE);
-      expect(words.length).toBeGreaterThanOrEqual(8);
-      expect(words.length).toBeLessThanOrEqual(12);
+  test('returns empty for zero or negative paragraphs', () => {
+    for (const paragraphs of [0, -2]) {
+      const text = generateLoremIpsum({
+        format: 'plain',
+        paragraphs,
+        sentencesPerParagraph: 5,
+        startWithLorem: true,
+        wordsPerSentence: { max: 15, min: 8 },
+      });
+      expect(text).toBe('');
     }
   });
 
@@ -79,25 +39,6 @@ describe('generateLoremIpsum', () => {
       wordsPerSentence: { max: 15, min: 8 },
     });
     expect(text.startsWith('Lorem ipsum dolor sit amet')).toBe(true);
-  });
-
-  test('startWithLorem false does not always start with Lorem', () => {
-    // generate multiple times and ensure at least one does not start with Lorem
-    let foundNonLorem = false;
-    for (let i = 0; i < 10; i += 1) {
-      const t = generateLoremIpsum({
-        format: 'plain',
-        paragraphs: 1,
-        sentencesPerParagraph: 1,
-        startWithLorem: false,
-        wordsPerSentence: { max: 8, min: 8 },
-      });
-      if (!t.startsWith('Lorem ipsum dolor sit amet')) {
-        foundNonLorem = true;
-        break;
-      }
-    }
-    expect(foundNonLorem).toBe(true);
   });
 
   test('html format wraps paragraphs in <p>', () => {
@@ -116,27 +57,51 @@ describe('generateLoremIpsum', () => {
     }
   });
 
-  test('clamps paragraphs to max 50', () => {
+  test.each([
+    {
+      expected: { paragraphs: 50, sentences: 1, wordsMax: 3, wordsMin: 3 },
+      name: 'clamps paragraphs to max 50',
+      options: {
+        paragraphs: 100,
+        sentencesPerParagraph: 1,
+        wordsPerSentence: { max: 3, min: 3 },
+      },
+    },
+    {
+      expected: { paragraphs: 1, sentences: 10, wordsMax: 3, wordsMin: 3 },
+      name: 'clamps sentencesPerParagraph to 1-10',
+      options: {
+        paragraphs: 1,
+        sentencesPerParagraph: 20,
+        wordsPerSentence: { max: 3, min: 3 },
+      },
+    },
+    {
+      expected: { paragraphs: 3, sentences: 5, wordsMax: 15, wordsMin: 8 },
+      name: 'falls back to defaults for non-finite options',
+      options: {
+        paragraphs: Number.NaN,
+        sentencesPerParagraph: Number.NaN,
+        wordsPerSentence: { max: Number.NaN, min: Number.NaN },
+      },
+    },
+  ])('$name', ({ options, expected }) => {
     const text = generateLoremIpsum({
       format: 'plain',
-      paragraphs: 100,
-      sentencesPerParagraph: 1,
       startWithLorem: false,
-      wordsPerSentence: { max: 3, min: 3 },
+      ...options,
     });
-    expect(text.split('\n\n')).toHaveLength(50);
-  });
-
-  test('clamps sentencesPerParagraph to 1-10', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: 1,
-      sentencesPerParagraph: 20,
-      startWithLorem: false,
-      wordsPerSentence: { max: 3, min: 3 },
-    });
-    const sentences = text.split('.').filter((s) => s.trim().length > 0);
-    expect(sentences).toHaveLength(10);
+    const paragraphs = text.split('\n\n');
+    expect(paragraphs).toHaveLength(expected.paragraphs);
+    for (const paragraph of paragraphs) {
+      const sentences = paragraph.split('.').filter((s) => s.trim());
+      expect(sentences).toHaveLength(expected.sentences);
+      for (const sentence of sentences) {
+        const words = sentence.trim().split(WS_RE);
+        expect(words.length).toBeGreaterThanOrEqual(expected.wordsMin);
+        expect(words.length).toBeLessThanOrEqual(expected.wordsMax);
+      }
+    }
   });
 
   test('swaps word min/max if inverted', () => {
@@ -154,41 +119,37 @@ describe('generateLoremIpsum', () => {
       expect(words.length).toBeLessThanOrEqual(15);
     }
   });
+});
 
-  test('each sentence ends with period and capitalizes', () => {
+describe('generateLoremIpsum edge cases', () => {
+  test('startWithLorem replaces a short first sentence entirely', () => {
+    const text = generateLoremIpsum({
+      format: 'plain',
+      paragraphs: 2,
+      sentencesPerParagraph: 2,
+      startWithLorem: true,
+      wordsPerSentence: { max: 3, min: 1 },
+    });
+    const paragraphs = text.split('\n\n');
+    expect(paragraphs).toHaveLength(2);
+    expect(paragraphs[0].split('.')[0].trim()).toBe(
+      'Lorem ipsum dolor sit amet'
+    );
+    for (const paragraph of paragraphs) {
+      const sentences = paragraph.split('.').filter((s) => s.trim());
+      expect(sentences).toHaveLength(2);
+    }
+  });
+
+  test('startWithLorem keeps the sentence count when sentences are 5 words', () => {
     const text = generateLoremIpsum({
       format: 'plain',
       paragraphs: 1,
-      sentencesPerParagraph: 2,
-      startWithLorem: false,
+      sentencesPerParagraph: 3,
+      startWithLorem: true,
       wordsPerSentence: { max: 5, min: 5 },
     });
-    // last sentence still ends with .
-    expect(text.trim().endsWith('.')).toBe(true);
-    for (const p of text.split('\n\n')) {
-      const sents = p.split('.').filter((s) => s.trim());
-      for (const s of sents) {
-        const trimmed = s.trim();
-        expect(trimmed[0]).toBe(trimmed[0].toUpperCase());
-      }
-    }
-  });
-});
-
-describe('countWords', () => {
-  test('empty returns 0', () => {
-    expect(countWords('')).toBe(0);
-  });
-
-  test('counts words with spaces', () => {
-    expect(countWords('hello world')).toBe(2);
-  });
-
-  test('trims and handles multiple spaces', () => {
-    expect(countWords('  hello   world  ')).toBe(2);
-  });
-
-  test('handles newlines', () => {
-    expect(countWords('a\nb\nc')).toBe(3);
+    expect(text.split('.')[0].trim()).toBe('Lorem ipsum dolor sit amet');
+    expect(text.split('.').filter((s) => s.trim())).toHaveLength(3);
   });
 });

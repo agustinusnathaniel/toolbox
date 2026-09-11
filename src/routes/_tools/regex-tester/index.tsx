@@ -46,7 +46,7 @@ function RegexTesterPage() {
           <RegexFlagsInput flags={s.flags} setFlags={s.setFlags} />
           <RegexTestInput input={s.input} setInput={s.setInput} />
           <RegexActions
-            copiedMatches={s.copiedMatches}
+            copiedKey={s.copiedKey}
             disabled={s.result.matches.length === 0}
             onCopyLink={s.handleCopyLink}
             onCopyMatches={s.handleCopyMatches}

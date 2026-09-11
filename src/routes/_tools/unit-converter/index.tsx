@@ -1,12 +1,14 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { ArrowLeftRight, Link, Trash2 } from 'lucide-react';
+import { ArrowLeftRight, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { CopyRow } from '@/lib/components/copy-row';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -102,16 +104,7 @@ function ConversionOutput({
     );
   }
   if (!result.isValid) {
-    return (
-      <div
-        className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-        role="alert"
-      >
-        <p className="font-medium text-danger text-sm">
-          {result.error ?? 'Invalid input'}
-        </p>
-      </div>
-    );
+    return <ToolError title={result.error ?? 'Invalid input'} />;
   }
   return (
     <CopyRow
@@ -326,10 +319,7 @@ function UnitConverterPage() {
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button intent="outline" onPress={handleCopyLink} size="sm">
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            <CopyLinkButton onPress={handleCopyLink} />
             <Button intent="outline" onPress={handleClear} size="sm">
               <Trash2 className="size-4" />
               Clear

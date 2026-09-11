@@ -1,3 +1,5 @@
+import { readFlag, writeFlag } from '@/lib/utils/search-params';
+
 import {
   DEFAULT_UUID_OPTIONS,
   UUID_VERSION_OPTIONS,
@@ -18,10 +20,10 @@ export function buildUuidParams(options: UuidOptions): URLSearchParams {
     params.set('count', String(options.count));
   }
   if (options.hyphens !== DEFAULT_UUID_OPTIONS.hyphens) {
-    params.set('hyphens', options.hyphens ? '1' : '0');
+    params.set('hyphens', writeFlag(options.hyphens));
   }
   if (options.uppercase !== DEFAULT_UUID_OPTIONS.uppercase) {
-    params.set('uppercase', options.uppercase ? '1' : '0');
+    params.set('uppercase', writeFlag(options.uppercase));
   }
   if (options.version !== DEFAULT_UUID_OPTIONS.version) {
     params.set('version', options.version);
@@ -41,8 +43,8 @@ export function buildUuidStateFromSearch(
       Number.isInteger(count) && count >= 1 && count <= 1000
         ? count
         : DEFAULT_UUID_OPTIONS.count,
-    hyphens: search.hyphens === '0' ? false : DEFAULT_UUID_OPTIONS.hyphens,
-    uppercase: search.uppercase === '1' ? true : DEFAULT_UUID_OPTIONS.uppercase,
+    hyphens: readFlag(search.hyphens, DEFAULT_UUID_OPTIONS.hyphens),
+    uppercase: readFlag(search.uppercase, DEFAULT_UUID_OPTIONS.uppercase),
     version,
   };
 }

@@ -44,18 +44,13 @@ function AddToCalendarPage() {
     isValid,
     errors,
     handleCopyLink: rawCopyLink,
-    handleCopyShareableLink: rawShareable,
+    handleCopyShareableLink,
     handleGenerateEmbed: rawEmbed,
-  } = useCalendarForm();
+  } = useCalendarForm(trackAction);
 
   const handleCopyLink = async () => {
     if (await rawCopyLink()) {
       trackAction('copy_link');
-    }
-  };
-  const handleCopyShareableLink = async () => {
-    if (await rawShareable()) {
-      trackAction('copy_shareable');
     }
   };
   const handleGenerateEmbed = async () => {

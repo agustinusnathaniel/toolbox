@@ -24,6 +24,9 @@ jobs:
           pnpm dedupe
           pnpm ultracite:fix
 
+      - name: Run checks
+        run: pnpm check
+
       - name: Create PR
         uses: peter-evans/create-pull-request@v8
         with:
@@ -34,7 +37,7 @@ jobs:
             Automated dependency update by GitHub Actions.
 
             - All dependencies updated to latest
-            - Checks passed: pnpm check:turbo
+            - Checks passed: pnpm check
           branch: chore/auto-deps-update
           delete-branch: true
           labels: dependencies

@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowLeftRight, GitCompare, Link } from 'lucide-react';
+import { ArrowLeftRight, GitCompare } from 'lucide-react';
 
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { Button } from '@/lib/components/ui/button';
 
 type DiffActionsProps = {
@@ -32,15 +33,7 @@ export function DiffActions({
         <ArrowLeftRight className="size-4" />
         Swap
       </Button>
-      <Button
-        aria-label="Copy shareable link"
-        intent="outline"
-        onPress={onCopyLink}
-        size="sm"
-      >
-        <Link className="size-4" />
-        Copy link
-      </Button>
+      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
     </div>
   );
 }

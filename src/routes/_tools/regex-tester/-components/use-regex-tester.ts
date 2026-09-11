@@ -11,7 +11,6 @@ import type {
 } from '../-worker/regex-tester.worker';
 import RegexTesterWorker from '../-worker/regex-tester.worker.ts?worker';
 
-export const REGEX_EXECUTION_DEADLINE_MS = 2000;
 export const REGEX_DEBOUNCE_MS = 150;
 
 const EMPTY_RESULT: RegexTestResult = {
@@ -45,7 +44,6 @@ export function useRegexTester(
     RegexTestResult
   >({
     buildRequest: (id) => ({ flags, id, input, pattern }),
-    deadlineMs: REGEX_EXECUTION_DEADLINE_MS,
     extractId: (response) => response.id,
     extractResult: (response) => response.result,
     timeoutResult: TIMEOUT_RESULT,

@@ -1,10 +1,12 @@
+import { readdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vite-plus/test';
 
 import { TOOL_CATEGORIES, TOOL_DEFINITIONS } from './tool-catalog';
 import {
   getMobileNavItems,
   getToolNavCategories,
-  getToolNavItem,
   getToolNavItems,
 } from './tool-registry';
 
@@ -56,18 +58,6 @@ describe('getMobileNavItems', () => {
   });
 });
 
-describe('getToolNavItem', () => {
-  test('returns item for valid slug', () => {
-    const item = getToolNavItem('wa-link-helper');
-    expect(item).toBeDefined();
-    expect(item?.title).toBeTruthy();
-  });
-
-  test('returns undefined for invalid slug', () => {
-    expect(getToolNavItem('nonexistent')).toBeUndefined();
-  });
-});
-
 describe('getToolNavCategories', () => {
   test('groups every tool into a category', () => {
     const categories = getToolNavCategories();
@@ -87,5 +77,20 @@ describe('getToolNavCategories', () => {
     for (const group of getToolNavCategories()) {
       expect(group.items.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('catalog completeness', () => {
+  test('every tool route directory is registered in TOOL_DEFINITIONS', () => {
+    const toolsDir = resolve(
+      dirname(fileURLToPath(import.meta.url)),
+      '../../routes/_tools'
+    );
+    const routeDirectories = readdirSync(toolsDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name);
+    const catalogSlugs = TOOL_DEFINITIONS.map((definition) => definition.slug);
+
+    expect(new Set(routeDirectories)).toEqual(new Set(catalogSlugs));
   });
 });

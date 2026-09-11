@@ -1,3 +1,5 @@
+import { coerceEnum, readString } from '@/lib/utils/search-params';
+
 import type { UrlCodecDirection, UrlCodecMode } from './url-codec';
 
 export interface UrlCodecSearchParams {
@@ -11,6 +13,13 @@ export interface UrlCodecState {
   input: string;
   mode: UrlCodecMode;
 }
+
+const ALLOWED_DIRECTIONS: ReadonlySet<UrlCodecDirection> =
+  new Set<UrlCodecDirection>(['decode', 'encode']);
+const ALLOWED_MODES: ReadonlySet<UrlCodecMode> = new Set<UrlCodecMode>([
+  'component',
+  'full',
+]);
 
 export function buildUrlCodecParams(state: UrlCodecState): URLSearchParams {
   const params = new URLSearchParams();
@@ -30,8 +39,8 @@ export function buildUrlCodecStateFromSearch(
   search: UrlCodecSearchParams
 ): UrlCodecState {
   return {
-    direction: search.direction === 'decode' ? 'decode' : 'encode',
-    input: search.input ?? '',
-    mode: search.mode === 'full' ? 'full' : 'component',
+    direction: coerceEnum(search.direction, ALLOWED_DIRECTIONS, 'encode'),
+    input: readString(search.input),
+    mode: coerceEnum(search.mode, ALLOWED_MODES, 'component'),
   };
 }

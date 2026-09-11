@@ -2,15 +2,13 @@ import { act, renderHook } from '@testing-library/react';
 import type { Mock } from 'vite-plus/test';
 import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
 
+import { WORKER_DEADLINE_MS } from '@/lib/hooks/use-worker-deadline';
+
 import type {
   RegexTesterRequest,
   RegexTesterResponse,
 } from '../-worker/regex-tester.worker';
-import {
-  REGEX_DEBOUNCE_MS,
-  REGEX_EXECUTION_DEADLINE_MS,
-  useRegexTester,
-} from './use-regex-tester';
+import { REGEX_DEBOUNCE_MS, useRegexTester } from './use-regex-tester';
 
 interface FakeWorker {
   onmessage: ((event: MessageEvent<RegexTesterResponse>) => void) | null;
@@ -79,7 +77,7 @@ describe('useRegexTester', () => {
     expect(worker.postMessage).toHaveBeenCalledTimes(1);
 
     act(() => {
-      vi.advanceTimersByTime(REGEX_EXECUTION_DEADLINE_MS);
+      vi.advanceTimersByTime(WORKER_DEADLINE_MS);
     });
 
     expect(result.current.result.timedOut).toBe(true);

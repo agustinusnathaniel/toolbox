@@ -17,7 +17,7 @@ import {
 import {
   CHARGER_DEFAULT_POWER,
   type ChargerType,
-} from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+} from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 import { CHARGER_OPTIONS } from './charging-form-constants';
 import { coerceNumber, type FormType } from './charging-form-schema';

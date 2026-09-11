@@ -4,7 +4,7 @@ import {
   DEFAULT_CALIBRATION_FACTOR,
   DEFAULT_CHARGING_POWER,
   DEFAULT_USABLE_PERCENT,
-} from '@/lib/tools/ev-charging-estimator/adapters/ev-charging';
+} from '@/lib/tools/ev-charging/adapters/ev-charging';
 
 export const CHARGER_OPTIONS: Array<{ id: ChargerType; label: string }> =
   Object.entries(CHARGER_LABELS).map(([id, label]) => ({

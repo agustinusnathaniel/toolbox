@@ -1,6 +1,7 @@
-import { Check, Copy, Link } from 'lucide-react';
-
-import { Button } from '@/lib/components/ui/button';
+import { CopyButton } from '@/lib/components/copy-button';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ResultPanel } from '@/lib/components/result-panel';
+import { ToolError } from '@/lib/components/tool-error';
 import type { YamlMode } from '@/lib/tools/yaml-converter/adapters/yaml-params';
 
 import type { UseYamlConverterReturn } from './use-yaml-converter';
@@ -27,29 +28,14 @@ export function YamlResultView({
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        <Button
-          aria-label="Copy output"
-          intent="outline"
-          isDisabled={!(result?.isValid && result.output) || result.timedOut}
+        <CopyButton
+          copied={copiedKey === 'copy'}
+          disabled={!(result?.isValid && result.output) || result.timedOut}
+          label="Copy output"
           onPress={onCopy}
-          size="sm"
-        >
-          {copiedKey === 'copy' ? (
-            <Check className="size-4 text-success" />
-          ) : (
-            <Copy className="size-4" />
-          )}
-          Copy output
-        </Button>
-        <Button
-          aria-label="Copy shareable link"
-          intent="outline"
-          onPress={onCopyLink}
-          size="sm"
-        >
-          <Link className="size-4" />
-          Copy link
-        </Button>
+          text="Copy output"
+        />
+        <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
       </div>
 
       {input.trim() && !result && !computing && (
@@ -63,52 +49,20 @@ export function YamlResultView({
       )}
 
       {result && !result.isValid && !result.timedOut && (
-        <div
-          className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-          role="alert"
-        >
-          <p className="font-medium text-danger text-sm">Conversion failed</p>
-          <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-            {result.error}
-          </pre>
-        </div>
+        <ToolError message={result.error} title="Conversion failed" />
       )}
 
       {result?.timedOut && (
-        <div
-          className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-          role="alert"
-        >
-          <p className="font-medium text-danger text-sm">
-            Conversion timed out
-          </p>
-          <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-            {result.error}
-          </pre>
-        </div>
+        <ToolError message={result.error} title="Conversion timed out" />
       )}
 
       {result?.isValid && result.output && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-fg text-sm">Output</span>
-            <Button
-              aria-label="Copy result"
-              intent="outline"
-              onPress={onCopy}
-              size="sq-sm"
-            >
-              {copiedKey === 'copy' ? (
-                <Check className="size-4 text-success" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-            </Button>
-          </div>
-          <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-            {result.output}
-          </pre>
-        </div>
+        <ResultPanel
+          copied={copiedKey === 'copy'}
+          label="Output"
+          onCopy={onCopy}
+          value={result.output}
+        />
       )}
     </>
   );

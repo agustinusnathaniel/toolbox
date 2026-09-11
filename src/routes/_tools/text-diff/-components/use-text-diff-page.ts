@@ -21,7 +21,7 @@ import {
 import { useContainerWidth } from './use-container-width';
 import { useTextDiff } from './use-text-diff';
 
-export function useDiffViewState() {
+function useDiffViewState() {
   const [viewMode, setViewMode] = useState<DiffViewMode>('unified');
   const { ref, width } = useContainerWidth<HTMLDivElement>();
   const splitUsable = isSplitViewUsable(width);

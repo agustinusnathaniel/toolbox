@@ -2,14 +2,14 @@ import { useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
-import type { VCardFormData } from '@/lib/tools/qrcode-generator/adapters/qrcode';
-import { generateVCardString } from '@/lib/tools/qrcode-generator/adapters/qrcode';
+import type { VCardFormData } from '@/lib/tools/qrcode/adapters/qrcode';
+import { generateVCardString } from '@/lib/tools/qrcode/adapters/qrcode';
 import type {
   QRMode,
   SearchParams,
   UrlState,
   VCardState,
-} from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+} from '@/lib/tools/qrcode/adapters/qrcode-params';
 import {
   buildUrlParams,
   buildUrlStateFromSearch,
@@ -17,7 +17,7 @@ import {
   buildVcardStateFromSearch,
   DEFAULT_URL_STATE,
   DEFAULT_VCARD_STATE,
-} from '@/lib/tools/qrcode-generator/adapters/qrcode-params';
+} from '@/lib/tools/qrcode/adapters/qrcode-params';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
 import { svgToPngDownload } from './qr-download';

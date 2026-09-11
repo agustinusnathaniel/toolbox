@@ -1,11 +1,14 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Check, Copy, FileJson, Link } from 'lucide-react';
+import { FileJson } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { ResultPanel } from '@/lib/components/result-panel';
+import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
@@ -42,26 +45,15 @@ function JsonFormatterPage() {
     trigger
   );
 
-  const handleFormat = useCallback(() => {
-    setResult(null);
-    setActiveAction('format');
-    setTrigger((t) => t + 1);
-    trackAction('format');
-  }, [setResult, trackAction]);
-
-  const handleValidate = useCallback(() => {
-    setResult(null);
-    setActiveAction('validate');
-    setTrigger((t) => t + 1);
-    trackAction('validate');
-  }, [setResult, trackAction]);
-
-  const handleMinify = useCallback(() => {
-    setResult(null);
-    setActiveAction('minify');
-    setTrigger((t) => t + 1);
-    trackAction('minify');
-  }, [setResult, trackAction]);
+  const runAction = useCallback(
+    (action: 'format' | 'validate' | 'minify') => {
+      setResult(null);
+      setActiveAction(action);
+      setTrigger((t) => t + 1);
+      trackAction(action);
+    },
+    [setResult, trackAction]
+  );
 
   const handleCopy = useCallback(async () => {
     if (!(result?.isValid && result.formatted)) {
@@ -108,14 +100,18 @@ function JsonFormatterPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button isDisabled={computing} onPress={handleFormat} size="sm">
+            <Button
+              isDisabled={computing}
+              onPress={() => runAction('format')}
+              size="sm"
+            >
               <FileJson className="size-4" />
               Format
             </Button>
             <Button
               intent="outline"
               isDisabled={computing}
-              onPress={handleValidate}
+              onPress={() => runAction('validate')}
               size="sm"
             >
               Validate
@@ -123,7 +119,7 @@ function JsonFormatterPage() {
             <Button
               intent="outline"
               isDisabled={computing}
-              onPress={handleMinify}
+              onPress={() => runAction('minify')}
               size="sm"
             >
               Minify
@@ -133,15 +129,10 @@ function JsonFormatterPage() {
                 Processing…
               </span>
             )}
-            <Button
-              aria-label="Copy shareable link"
-              intent="outline"
+            <CopyLinkButton
+              label="Copy shareable link"
               onPress={handleCopyLink}
-              size="sm"
-            >
-              <Link className="size-4" />
-              Copy link
-            </Button>
+            />
           </div>
 
           {input.trim() && !result && !computing && (
@@ -151,52 +142,20 @@ function JsonFormatterPage() {
           )}
 
           {showError && result && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">Invalid JSON</p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
+            <ToolError message={result.error} title="Invalid JSON" />
           )}
 
           {result?.timedOut && result && (
-            <div
-              className="rounded-lg border border-danger/30 bg-danger/5 p-3"
-              role="alert"
-            >
-              <p className="font-medium text-danger text-sm">
-                Formatting timed out
-              </p>
-              <pre className="mt-1 whitespace-pre-wrap font-mono text-danger/80 text-xs">
-                {result.error}
-              </pre>
-            </div>
+            <ToolError message={result.error} title="Formatting timed out" />
           )}
 
           {showResult && result && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-fg text-sm">{label}</span>
-                <Button
-                  aria-label="Copy result"
-                  intent="outline"
-                  onPress={handleCopy}
-                  size="sq-sm"
-                >
-                  {copiedKey === 'copy' ? (
-                    <Check className="size-4 text-success" />
-                  ) : (
-                    <Copy className="size-4" />
-                  )}
-                </Button>
-              </div>
-              <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-                {result.formatted}
-              </pre>
-            </div>
+            <ResultPanel
+              copied={copiedKey === 'copy'}
+              label={label}
+              onCopy={handleCopy}
+              value={result.formatted}
+            />
           )}
         </CardContent>
       </Card>

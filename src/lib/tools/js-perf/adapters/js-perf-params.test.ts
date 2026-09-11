@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { DEFAULT_PRESET } from '@/routes/_tools/js-perf/-components/presets';
+import { DEFAULT_PRESET } from '@/lib/js-perf-comp-core/presets';
 
 import {
   buildJsPerfParams,

@@ -3,25 +3,33 @@
   "tasks": {
     "type:check": {
       "inputs": ["tsconfig.json", "src/**"],
-      "outputs": ["*.tsbuildinfo"],
-      "env": ["VITE_API_BASE_URL"]
+      "outputs": ["*.tsbuildinfo"]
     },
     "ultracite:check": {
       "outputs": [],
-      "inputs": ["biome.json", "src/**"]
+      "inputs": ["biome.jsonc", "src/**"]
     },
     "biome:ci": {
       "outputs": [],
-      "inputs": ["biome.json", "src/**"]
+      "inputs": ["biome.jsonc", "src/**"]
+    },
+    "knip": {
+      "outputs": [],
+      "inputs": [
+        "knip.ts",
+        "package.json",
+        "tsconfig.json",
+        "content/**",
+        "src/**"
+      ]
     },
     "build": {
       "dependsOn": ["type:check"],
-      "outputs": ["dist/**"],
-      "env": ["VITE_API_BASE_URL"]
+      "outputs": ["dist/**"]
     },
     "test": {
       "outputs": ["node_modules/.vite/vitest/**/results.json"],
-      "inputs": ["vitest.config.ts", "src/**"]
+      "inputs": ["vite.config.ts", "src/**"]
     }
   }
 }
