@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.9.0...v1.10.0) (2026-09-11)
+
+### Features
+
+* **cron-parser:** add Cron Expression Parser tool with shareable link ([#69](https://github.com/agustinusnathaniel/toolbox/issues/69)) ([480680d](https://github.com/agustinusnathaniel/toolbox/commit/480680dd76608d4c38e1fe7b22e33b5bc68befec))
+* **hash-generator:** persist expected hash in shareable link ([#64](https://github.com/agustinusnathaniel/toolbox/issues/64)) ([7a45941](https://github.com/agustinusnathaniel/toolbox/commit/7a459417ec4cf0e2ebca79a92dc69094efd629f8))
+* **hash-generator:** verify computed digest against an expected hash ([#63](https://github.com/agustinusnathaniel/toolbox/issues/63)) ([415ef99](https://github.com/agustinusnathaniel/toolbox/commit/415ef9933e154ba7b0cc29f537f9379d8284d8f4))
+* **html-entities:** add HTML Entity Encoder/Decoder tool with shareable URL state ([#72](https://github.com/agustinusnathaniel/toolbox/issues/72)) ([862f464](https://github.com/agustinusnathaniel/toolbox/commit/862f464fac9f9f9b7c85f19e12d0c392a301539c))
+* **js-perf:** add shareable URL state ([#60](https://github.com/agustinusnathaniel/toolbox/issues/60)) ([7b095ed](https://github.com/agustinusnathaniel/toolbox/commit/7b095edb16202c8208ee99294fe7eab572ae1a2b))
+* **lorem-ipsum:** add Lorem Ipsum Generator tool with shareable URL state ([#78](https://github.com/agustinusnathaniel/toolbox/issues/78)) ([cec88ab](https://github.com/agustinusnathaniel/toolbox/commit/cec88abd9ce93f2813e54d0ae1dafed803c6d96b))
+* **markdown-preview:** add Markdown Preview tool with shareable URL state ([#71](https://github.com/agustinusnathaniel/toolbox/issues/71)) ([99d22f0](https://github.com/agustinusnathaniel/toolbox/commit/99d22f0844c7fb7cbd49e5347c1d9b83fc2e1dd9))
+* **number-base:** add Number Base Converter tool with shareable URL state ([#76](https://github.com/agustinusnathaniel/toolbox/issues/76)) ([9930f58](https://github.com/agustinusnathaniel/toolbox/commit/9930f586c318319e93aea2cde090364cc0359fe3))
+* **sql-formatter:** add SQL Formatter tool with shareable URL state ([#75](https://github.com/agustinusnathaniel/toolbox/issues/75)) ([1cca907](https://github.com/agustinusnathaniel/toolbox/commit/1cca907c7edc2485c3c7dfa0b078826d63e93af9))
+* **ui:** refresh IntentUI components and nest sidebar ([#80](https://github.com/agustinusnathaniel/toolbox/issues/80)) ([196b1fc](https://github.com/agustinusnathaniel/toolbox/commit/196b1fc622b33b5dcae75ab634e6b0d3cb449cf3))
+* **unit-converter:** add Unit Converter tool with shareable URL state ([#77](https://github.com/agustinusnathaniel/toolbox/issues/77)) ([8e0d18f](https://github.com/agustinusnathaniel/toolbox/commit/8e0d18f673cfff707601049f47eac33c5ce82030))
+* **url-codec:** add URL encoder/decoder tool with shareable link ([#66](https://github.com/agustinusnathaniel/toolbox/issues/66)) ([52c0e7b](https://github.com/agustinusnathaniel/toolbox/commit/52c0e7b3d59aa537424f5f7ef91027d08bc38f82))
+* **yaml-converter:** add YAML Converter tool with shareable URL state ([#73](https://github.com/agustinusnathaniel/toolbox/issues/73)) ([4935383](https://github.com/agustinusnathaniel/toolbox/commit/4935383f592332dabbebf087f3164dbbf60f9682))
+
+### Bug Fixes
+
+* **add-to-calendar:** stop spreading react-hook-form props onto Form ([cd3bbd7](https://github.com/agustinusnathaniel/toolbox/commit/cd3bbd7406c31b75f66e742001d6b54e454315c3))
+* **color-converter:** keep adapters pure by removing DOM-backed helper ([a91f520](https://github.com/agustinusnathaniel/toolbox/commit/a91f520184a5c7f378437117c717ee19a5394185))
+* **json-formatter:** run formatting in worker with deadline to prevent tab freeze ([#67](https://github.com/agustinusnathaniel/toolbox/issues/67)) ([42f868e](https://github.com/agustinusnathaniel/toolbox/commit/42f868e064b40512b224824432b4f99b6e5ec1b6))
+* **json-to-ts:** run generation in worker with deadline to prevent tab freeze ([#65](https://github.com/agustinusnathaniel/toolbox/issues/65)) ([d5cc764](https://github.com/agustinusnathaniel/toolbox/commit/d5cc76408944814633084f496db17b7cc95d946b))
+* **jwt-decoder:** verify signatures without claim timestamp checks ([a0dd602](https://github.com/agustinusnathaniel/toolbox/commit/a0dd6021000bf670f37dcc230e989c45f0a01618))
+* **password-generator:** remove modulo bias with rejection sampling ([b5e2b60](https://github.com/agustinusnathaniel/toolbox/commit/b5e2b60ce50b9ead20748b736b911be8c706de31))
+* **pinned-tools:** sanitize persisted pins from storage ([7a0e84e](https://github.com/agustinusnathaniel/toolbox/commit/7a0e84e3f79f8f486aadd21bcf84c6a1b97621e3))
+* **tools:** stop spreading react-hook-form props onto Form elements ([307e79e](https://github.com/agustinusnathaniel/toolbox/commit/307e79e952cd09e5d1736b8d75e1d35b1c97af45))
+* **workers:** preserve sql and yaml trigger semantics ([0e2648a](https://github.com/agustinusnathaniel/toolbox/commit/0e2648a12d5d2e62f849dc1a41933c9aa3485ec6))
 ## [1.9.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.8.0...v1.9.0) (2026-08-18)
 
 ### Features
