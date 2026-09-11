@@ -19,12 +19,13 @@ const HMAC_HASHES = {
 
 function makeToken(
   secret = 'secret',
-  alg: keyof typeof HMAC_HASHES = 'HS256'
+  alg: keyof typeof HMAC_HASHES = 'HS256',
+  payload: Record<string, unknown> = PAYLOAD
 ): Promise<string> {
   return (async () => {
     const enc = new TextEncoder();
     const headerB64 = base64url.encode(JSON.stringify({ ...HEADER, alg }));
-    const payloadB64 = base64url.encode(JSON.stringify(PAYLOAD));
+    const payloadB64 = base64url.encode(JSON.stringify(payload));
     const key = await crypto.subtle.importKey(
       'raw',
       enc.encode(secret),
@@ -94,6 +95,17 @@ describe('verifyJwtSignature', () => {
       expect(result.message).toContain(alg);
     }
   );
+
+  test('accepts an expired token when the signature is valid', async () => {
+    const token = await makeToken('hunter2', 'HS256', {
+      exp: 1,
+      sub: 'expired',
+    });
+    const result = await verifyJwtSignature(token, 'hunter2');
+    expect(result.isValid).toBe(true);
+    expect(result.message).toContain('valid');
+    expect(result.message).toContain('HS256');
+  });
 
   test('rejects a token signed with a different secret', async () => {
     const token = await makeToken('hunter2');

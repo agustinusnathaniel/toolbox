@@ -1,9 +1,9 @@
 import {
   base64url,
+  compactVerify,
   decodeJwt as decodeJoseJwt,
   decodeProtectedHeader,
   errors,
-  jwtVerify,
 } from 'jose';
 
 interface DecodedClaim {
@@ -115,14 +115,19 @@ export async function verifyJwtSignature(
   }
   try {
     // Copy into the active realm: jose checks the key with `instanceof Uint8Array`.
-    await jwtVerify(
+    // compactVerify checks the signature only; it does not validate JWT claims
+    // such as `exp` or `nbf`, which are the caller's concern.
+    const { protectedHeader } = await compactVerify(
       trimmed,
       Uint8Array.from(new TextEncoder().encode(secret)),
       {
         algorithms: ['HS256', 'HS384', 'HS512'],
       }
     );
-    return { isValid: true, message: `Signature is valid for ${alg}.` };
+    return {
+      isValid: true,
+      message: `Signature is valid for ${protectedHeader.alg ?? alg}.`,
+    };
   } catch (err) {
     if (err instanceof errors.JWSSignatureVerificationFailed) {
       return {
