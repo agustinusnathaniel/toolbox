@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { countWords, generateLoremIpsum } from './lorem-ipsum';
+import { generateLoremIpsum } from './lorem-ipsum';
 
 const WS_RE = /\s+/;
 
@@ -226,23 +226,5 @@ describe('generateLoremIpsum edge cases', () => {
         expect(words.length).toBeLessThanOrEqual(15);
       }
     }
-  });
-});
-
-describe('countWords', () => {
-  test('empty returns 0', () => {
-    expect(countWords('')).toBe(0);
-  });
-
-  test('counts words with spaces', () => {
-    expect(countWords('hello world')).toBe(2);
-  });
-
-  test('trims and handles multiple spaces', () => {
-    expect(countWords('  hello   world  ')).toBe(2);
-  });
-
-  test('handles newlines', () => {
-    expect(countWords('a\nb\nc')).toBe(3);
   });
 });

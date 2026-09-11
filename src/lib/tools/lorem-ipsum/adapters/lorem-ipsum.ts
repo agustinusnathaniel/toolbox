@@ -13,8 +13,6 @@ export interface LoremIpsumOptions {
 const LOREM_START = 'Lorem ipsum dolor sit amet';
 const LOREM_START_WORDS = 5;
 
-const WORDS_SPLIT_RE = /\s+/;
-
 function clampInt(
   value: number,
   min: number,
@@ -40,14 +38,6 @@ function applyLoremStart(paragraph: string): string {
   const tail = firstSentence.split(' ').slice(LOREM_START_WORDS).join(' ');
   const patched = tail ? `${LOREM_START} ${tail}` : `${LOREM_START}.`;
   return patched + paragraph.slice(sentenceEnd + 1);
-}
-
-export function countWords(text: string): number {
-  const trimmed = text.trim();
-  if (!trimmed) {
-    return 0;
-  }
-  return trimmed.split(WORDS_SPLIT_RE).filter(Boolean).length;
 }
 
 export function generateLoremIpsum(options: LoremIpsumOptions): string {

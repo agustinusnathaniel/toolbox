@@ -45,7 +45,7 @@ function toTitleWord(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
 
-export function splitWords(input: string): Array<string> {
+function splitWords(input: string): Array<string> {
   return splitSeparateNumbers(input.trim());
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { convertCase, splitWords } from './case-converter';
+import { convertCase } from './case-converter';
 
 describe('convertCase', () => {
   test('returns an invalid empty result for empty input', () => {
@@ -122,28 +122,20 @@ describe('convertCase', () => {
       upper: '日本語テキスト',
     });
   });
-});
 
-describe('splitWords', () => {
-  test('returns an empty array for empty input', () => {
-    expect(splitWords('')).toEqual([]);
+  test('splits words across separators, casing, and acronym boundaries', () => {
+    expect(convertCase('one two-THREE').wordCount).toBe(3);
+    expect(convertCase('one two-THREE').formats.lower).toBe('one two three');
+    expect(convertCase('one two-THREE').formats.upper).toBe('ONE TWO THREE');
+    expect(convertCase('helloWorld').wordCount).toBe(2);
+    expect(convertCase('XMLHttpRequest').wordCount).toBe(3);
+    expect(convertCase('API_KEY').wordCount).toBe(2);
   });
 
-  test('splits spaces and kebab/snake separators', () => {
-    expect(splitWords('one two-THREE')).toEqual(['one', 'two', 'THREE']);
-    expect(splitWords('already-kebab-case')).toEqual([
-      'already',
-      'kebab',
-      'case',
-    ]);
-  });
-
-  test('splits camelCase boundaries and acronym runs', () => {
-    expect(splitWords('XMLHttpRequest')).toEqual(['XML', 'Http', 'Request']);
-    expect(splitWords('API_KEY')).toEqual(['API', 'KEY']);
-  });
-
-  test('drops empty tokens from consecutive separators', () => {
-    expect(splitWords('a--b  c')).toEqual(['a', 'b', 'c']);
+  test('drops empty tokens when splitting', () => {
+    const result = convertCase('a--b  c');
+    expect(result.wordCount).toBe(3);
+    expect(result.formats.lower).toBe('a b c');
+    expect(result.formats.upper).toBe('A B C');
   });
 });

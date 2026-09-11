@@ -109,27 +109,6 @@ function buildParsedColor(
   };
 }
 
-export function hexToRgb(hex: string): RgbColor | null {
-  const rgb = parseHex(hex);
-  return rgb ? toRgbColor(rgb) : null;
-}
-
-export function rgbToHex(r: number, g: number, b: number): string {
-  return formatHex(rgbFrom8Bit(r, g, b));
-}
-
-export function rgbToHsl(r: number, g: number, b: number): HslColor {
-  return toHslColor(toHsl(rgbFrom8Bit(r, g, b)));
-}
-
-export function hslToRgb(h: number, s: number, l: number): RgbColor {
-  return toRgbColor(toRgb({ h, l: l / 100, mode: 'hsl', s: s / 100 }));
-}
-
-export function rgbToOklch(r: number, g: number, b: number): OklchColor {
-  return toOklchColor(toOklch(rgbFrom8Bit(r, g, b)));
-}
-
 export function parseColor(input: string): ParsedColor | null {
   const trimmed = input.trim();
   if (!trimmed) {
