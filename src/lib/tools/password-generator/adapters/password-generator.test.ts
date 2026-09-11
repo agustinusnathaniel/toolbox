@@ -37,6 +37,18 @@ describe('generatePassword', () => {
     expect(result.output).toMatch(HAS_SYMBOL);
   });
 
+  test('keeps length and charset guarantees across many runs', () => {
+    for (let run = 0; run < 50; run++) {
+      const result = generatePassword({ ...ALL_SETS, length: 12 });
+      expect(result.isValid).toBe(true);
+      expect(result.output).toHaveLength(12);
+      expect(result.output).toMatch(HAS_LOWERCASE);
+      expect(result.output).toMatch(HAS_UPPERCASE);
+      expect(result.output).toMatch(HAS_DIGIT);
+      expect(result.output).toMatch(HAS_SYMBOL);
+    }
+  });
+
   test('lowercase-only password contains no other character classes', () => {
     const result = generatePassword({
       digits: false,

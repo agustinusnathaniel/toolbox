@@ -24,9 +24,15 @@ function removeAmbiguous(set: string): string {
 }
 
 function randomInt(max: number): number {
+  // Rejection sampling avoids the slight modulo bias of `buffer[0] % max`.
+  const limit = Math.floor(0x1_00_00_00_00 / max) * max;
   const buffer = new Uint32Array(1);
-  crypto.getRandomValues(buffer);
-  return buffer[0] % max;
+  let value: number;
+  do {
+    crypto.getRandomValues(buffer);
+    value = buffer[0];
+  } while (value >= limit);
+  return value % max;
 }
 
 function selectedSets(options: PasswordOptions): Array<string> {
