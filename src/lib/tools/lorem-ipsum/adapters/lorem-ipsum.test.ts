@@ -175,6 +175,60 @@ describe('generateLoremIpsum', () => {
   });
 });
 
+describe('generateLoremIpsum edge cases', () => {
+  test('startWithLorem replaces a short first sentence entirely', () => {
+    const text = generateLoremIpsum({
+      format: 'plain',
+      paragraphs: 2,
+      sentencesPerParagraph: 2,
+      startWithLorem: true,
+      wordsPerSentence: { max: 3, min: 1 },
+    });
+    const paragraphs = text.split('\n\n');
+    expect(paragraphs).toHaveLength(2);
+    expect(paragraphs[0].split('.')[0].trim()).toBe(
+      'Lorem ipsum dolor sit amet'
+    );
+    for (const paragraph of paragraphs) {
+      const sentences = paragraph.split('.').filter((s) => s.trim());
+      expect(sentences).toHaveLength(2);
+    }
+  });
+
+  test('startWithLorem keeps the sentence count when sentences are 5 words', () => {
+    const text = generateLoremIpsum({
+      format: 'plain',
+      paragraphs: 1,
+      sentencesPerParagraph: 3,
+      startWithLorem: true,
+      wordsPerSentence: { max: 5, min: 5 },
+    });
+    expect(text.split('.')[0].trim()).toBe('Lorem ipsum dolor sit amet');
+    expect(text.split('.').filter((s) => s.trim())).toHaveLength(3);
+  });
+
+  test('non-finite options fall back to defaults', () => {
+    const text = generateLoremIpsum({
+      format: 'plain',
+      paragraphs: Number.NaN,
+      sentencesPerParagraph: Number.NaN,
+      startWithLorem: false,
+      wordsPerSentence: { max: Number.NaN, min: Number.NaN },
+    });
+    const paragraphs = text.split('\n\n');
+    expect(paragraphs).toHaveLength(3);
+    for (const paragraph of paragraphs) {
+      const sentences = paragraph.split('.').filter((s) => s.trim());
+      expect(sentences).toHaveLength(5);
+      for (const sentence of sentences) {
+        const words = sentence.trim().split(WS_RE);
+        expect(words.length).toBeGreaterThanOrEqual(8);
+        expect(words.length).toBeLessThanOrEqual(15);
+      }
+    }
+  });
+});
+
 describe('countWords', () => {
   test('empty returns 0', () => {
     expect(countWords('')).toBe(0);
