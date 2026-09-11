@@ -35,6 +35,11 @@ describe('hexToRgb', () => {
     expect(hexToRgb('#FF0000')).toEqual({ b: 0, g: 0, r: 255 });
   });
 
+  test('ignores alpha in 4- and 8-digit hex', () => {
+    expect(hexToRgb('#f00f')).toEqual({ b: 0, g: 0, r: 255 });
+    expect(hexToRgb('#ff000080')).toEqual({ b: 0, g: 0, r: 255 });
+  });
+
   test('returns null for invalid hex', () => {
     expect(hexToRgb('#xyz')).toBeNull();
     expect(hexToRgb('#12345')).toBeNull();
@@ -231,8 +236,11 @@ describe('parseColor', () => {
       expect(result?.rgb).toEqual({ b: 0, g: 255, r: 0 });
     });
 
-    test('returns null for out-of-range rgb', () => {
-      expect(parseColor('rgb(300, 0, 0)')).toBeNull();
+    test('clamps out-of-range rgb channels', () => {
+      const result = parseColor('rgb(300, 0, 0)');
+      expect(result).not.toBeNull();
+      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
+      expect(result?.hex).toBe('#ff0000');
     });
   });
 
@@ -272,6 +280,38 @@ describe('parseColor', () => {
       const result = parseColor('oklch(62.78% 0.2577 29.23)');
       expect(result).not.toBeNull();
       expect(result?.format).toBe('oklch');
+    });
+
+    test('derives all outputs from the rounded rgb color', () => {
+      const red = parseColor('#ff0000');
+      const result = parseColor('oklch(62.78% 0.2577 29.23)');
+      expect(result?.hex).toBe('#ff0000');
+      expect(result?.hsl).toEqual(red?.hsl);
+      expect(result?.oklch).toEqual(red?.oklch);
+    });
+  });
+
+  describe('expanded input syntax', () => {
+    test('parses named CSS colors', () => {
+      const result = parseColor('red');
+      expect(result).not.toBeNull();
+      expect(result?.format).toBe('rgb');
+      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
+      expect(result?.hex).toBe('#ff0000');
+    });
+
+    test('parses space-separated rgb()', () => {
+      const result = parseColor('rgb(255 0 0)');
+      expect(result).not.toBeNull();
+      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
+      expect(result?.hex).toBe('#ff0000');
+    });
+
+    test('parses space-separated hsl()', () => {
+      const result = parseColor('hsl(0 100% 50%)');
+      expect(result).not.toBeNull();
+      expect(result?.format).toBe('hsl');
+      expect(result?.rgb).toEqual({ b: 0, g: 0, r: 255 });
     });
   });
 
