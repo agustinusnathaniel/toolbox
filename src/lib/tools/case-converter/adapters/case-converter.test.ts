@@ -90,6 +90,13 @@ describe('convertCase', () => {
     expect(convertCase('API_KEY').wordCount).toBe(2);
   });
 
+  test('preserves acronyms in title case', () => {
+    expect(convertCase('XMLHttpRequest').formats.title).toBe(
+      'XML Http Request'
+    );
+    expect(convertCase('API_KEY').formats.title).toBe('API KEY');
+  });
+
   test('drops empty tokens when splitting', () => {
     const result = convertCase('a--b  c');
     expect(result.wordCount).toBe(3);
