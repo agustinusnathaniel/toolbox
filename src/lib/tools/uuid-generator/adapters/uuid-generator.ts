@@ -36,7 +36,7 @@ export function generateUuidV4(): string {
   return v4();
 }
 
-export function generateUuidV7(): string {
+function generateUuidV7(): string {
   return v7();
 }
 
