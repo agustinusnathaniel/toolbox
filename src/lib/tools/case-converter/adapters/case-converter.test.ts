@@ -94,6 +94,34 @@ describe('convertCase', () => {
     const result = convertCase('a--b  c');
     expect(result.formats.snake).toBe('a_b_c');
   });
+
+  test('pins intentional change-case digit handling', () => {
+    // camelCase joins digit chunks with an underscore; word-delimited formats
+    // keep digits as separate words. Both are deliberate package outputs.
+    expect(convertCase('version 2 update').formats.camel).toBe(
+      'version_2Update'
+    );
+    expect(convertCase('version 2 update').formats.snake).toBe(
+      'version_2_update'
+    );
+    expect(convertCase('v1.2.3').formats.camel).toBe('v1_2_3');
+  });
+
+  test('treats uncased scripts as a single valid word', () => {
+    const result = convertCase('日本語テキスト');
+    expect(result.isValid).toBe(true);
+    expect(result.wordCount).toBe(1);
+    expect(result.formats).toEqual({
+      camel: '日本語テキスト',
+      kebab: '日本語テキスト',
+      lower: '日本語テキスト',
+      pascal: '日本語テキスト',
+      screamingSnake: '日本語テキスト',
+      snake: '日本語テキスト',
+      title: '日本語テキスト',
+      upper: '日本語テキスト',
+    });
+  });
 });
 
 describe('splitWords', () => {
