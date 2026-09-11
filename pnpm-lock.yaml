@@ -170,6 +170,9 @@ importers:
       browser-image-compression:
         specifier: ^2.0.2
         version: 2.0.2
+      convert:
+        specifier: ^7.0.2
+        version: 7.0.2
       country-flag-icons:
         specifier: ^1.6.20
         version: 1.6.20
@@ -3861,6 +3864,9 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  convert@7.0.2:
+    resolution: {integrity: sha512-vDIDqKYqSxmg3x16wYdB+CyfioYOd70GJBtFeU9eoj7PXzhhsmEut+N9NJ7X4Lc+mp18AHOPL9YgyXyejpDc1A==}
 
   cookie-es@3.1.1:
     resolution: {integrity: sha512-UaXxwISYJPTr9hwQxMFYZ7kNhSXboMXP+Z3TRX6f1/NyaGPfuNUZOWP1pUEb75B2HjfklIYLVRfWiFZJyC6Npg==}
@@ -9957,6 +9963,8 @@ snapshots:
       conventional-commits-parser: 7.1.2
 
   convert-source-map@2.0.0: {}
+
+  convert@7.0.2: {}
 
   cookie-es@3.1.1: {}
 

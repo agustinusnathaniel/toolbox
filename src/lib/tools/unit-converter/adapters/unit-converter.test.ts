@@ -129,16 +129,21 @@ describe('convertUnit', () => {
   test('weight kg to lb', () => {
     const r = convertUnit('1', 'kg', 'lb', 'weight');
     expect(r.isValid).toBe(true);
-    expect(r.result).toBe('2.2046244202');
+    expect(r.result).toBe('2.2046226218');
   });
 
   test('weight lb to kg', () => {
     const r = convertUnit('1', 'lb', 'kg', 'weight');
-    expect(r.result).toBe('0.453592');
+    expect(r.result).toBe('0.45359237');
   });
 
   test('weight g to mg', () => {
     const r = convertUnit('1', 'g', 'mg', 'weight');
+    expect(r.result).toBe('1000');
+  });
+
+  test('weight tonne to kg', () => {
+    const r = convertUnit('1', 'tonne', 'kg', 'weight');
     expect(r.result).toBe('1000');
   });
 
@@ -191,12 +196,17 @@ describe('convertUnit', () => {
   test('volume l to gallon', () => {
     const r = convertUnit('3.78541', 'l', 'gallon', 'volume');
     expect(r.isValid).toBe(true);
-    expect(r.result).toBe('1');
+    expect(r.result).toBe('0.9999995287');
   });
 
   test('volume gallon to l', () => {
     const r = convertUnit('1', 'gallon', 'l', 'volume');
-    expect(r.result).toBe('3.78541');
+    expect(r.result).toBe('3.785411784');
+  });
+
+  test('volume l to cup stays US customary', () => {
+    const r = convertUnit('1', 'l', 'cup', 'volume');
+    expect(r.result).toBe('4.2267528377');
   });
 
   test('volume ml to l', () => {
@@ -227,6 +237,17 @@ describe('convertUnit', () => {
   test('data TB to GB', () => {
     const r = convertUnit('1', 'TB', 'GB', 'data');
     expect(r.result).toBe('1024');
+  });
+
+  test('data GB to MB stays binary', () => {
+    const r = convertUnit('1', 'GB', 'MB', 'data');
+    expect(r.result).toBe('1024');
+  });
+
+  test('invalid unit', () => {
+    const r = convertUnit('1', 'bad', 'm', 'length');
+    expect(r.isValid).toBe(false);
+    expect(r.error).toBe('Invalid number');
   });
 
   test('large value formatting', () => {

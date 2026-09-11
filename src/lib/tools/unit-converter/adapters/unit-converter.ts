@@ -1,3 +1,6 @@
+import type { Unit } from 'convert';
+import { convert } from 'convert';
+
 export type UnitCategory =
   | 'length'
   | 'weight'
@@ -80,44 +83,33 @@ export const UNIT_CATEGORIES: Array<CategoryDef> = [
   },
 ];
 
-const LENGTH_FACTORS: Record<string, number> = {
-  cm: 0.01,
-  foot: 0.3048,
-  inch: 0.0254,
-  km: 1000,
-  m: 1,
-  mile: 1609.344,
-  mm: 0.001,
-  yard: 0.9144,
+const PACKAGE_UNITS: Record<UnitCategory, Record<string, Unit | undefined>> = {
+  data: { B: 'B', GB: 'GiB', KB: 'KiB', MB: 'MiB', TB: 'TiB' },
+  length: {
+    cm: 'cm',
+    foot: 'foot',
+    inch: 'inch',
+    km: 'km',
+    m: 'm',
+    mile: 'mile',
+    mm: 'mm',
+    yard: 'yard',
+  },
+  temperature: { c: 'C', f: 'F', k: 'K' },
+  volume: {
+    cup: 'cup',
+    'fl-oz': 'fl oz',
+    gallon: 'gallon',
+    l: 'l',
+    m3: 'm3',
+    ml: 'ml',
+    pint: 'pint',
+    quart: 'quart',
+  },
+  weight: { g: 'g', kg: 'kg', lb: 'lb', mg: 'mg', oz: 'oz', tonne: 'tonne' },
 };
 
-const WEIGHT_FACTORS: Record<string, number> = {
-  g: 0.001,
-  kg: 1,
-  lb: 0.453_592,
-  mg: 0.000_001,
-  oz: 0.028_349_5,
-  tonne: 1000,
-};
-
-const VOLUME_FACTORS: Record<string, number> = {
-  cup: 0.236_588,
-  'fl-oz': 0.029_573_5,
-  gallon: 3.785_41,
-  l: 1,
-  m3: 1000,
-  ml: 0.001,
-  pint: 0.473_176,
-  quart: 0.946_353,
-};
-
-const DATA_FACTORS: Record<string, number> = {
-  B: 1,
-  GB: 1_073_741_824,
-  KB: 1024,
-  MB: 1_048_576,
-  TB: 1_099_511_627_776,
-};
+const ABSOLUTE_ZERO_TOLERANCE = -1e-9;
 
 const TRAILING_ZEROS_RE = /0+$/;
 const TRAILING_DOT_RE = /\.$/;
@@ -163,51 +155,6 @@ export function normalizeUnit(
   return getUnitsForCategory(category)[0].id;
 }
 
-function getFactor(category: UnitCategory, unit: string): number | undefined {
-  if (category === 'length') {
-    return LENGTH_FACTORS[unit];
-  }
-  if (category === 'weight') {
-    return WEIGHT_FACTORS[unit];
-  }
-  if (category === 'volume') {
-    return VOLUME_FACTORS[unit];
-  }
-  if (category === 'data') {
-    return DATA_FACTORS[unit];
-  }
-  return undefined;
-}
-
-function toCelsius(value: number, fromUnit: string): number {
-  if (fromUnit === 'c') {
-    return value;
-  }
-  if (fromUnit === 'f') {
-    return (value - 32) * (5 / 9);
-  }
-  return value - 273.15;
-}
-
-function fromCelsius(value: number, toUnit: string): number {
-  if (toUnit === 'c') {
-    return value;
-  }
-  if (toUnit === 'f') {
-    return value * (9 / 5) + 32;
-  }
-  return value + 273.15;
-}
-
-function convertTemperature(
-  value: number,
-  fromUnit: string,
-  toUnit: string
-): number {
-  const celsius = toCelsius(value, fromUnit);
-  return fromCelsius(celsius, toUnit);
-}
-
 function formatFixed(value: number): string {
   let fixed = value.toFixed(10);
   fixed = fixed.replace(FIXED_TRIM_RE, '');
@@ -247,6 +194,14 @@ function formatResult(value: number): string {
   return formatFixed(value);
 }
 
+// The package composes temperature conversions from ratios and offsets, which
+// leaves tiny residue at exact reference points (32 F to C yields ~5.7e-14).
+// Collapse values that round to zero at the formatter's precision so they
+// display as 0 instead of an exponential artifact.
+function normalizeTemperatureResult(value: number): number {
+  return Number(value.toFixed(10)) === 0 ? 0 : value;
+}
+
 export function convertUnit(
   value: string,
   fromUnit: string,
@@ -262,41 +217,25 @@ export function convertUnit(
     return { error: 'Invalid number', isValid: false, result: '' };
   }
 
-  if (category === 'temperature') {
-    if (!isValidUnitForCategory(fromUnit, category)) {
-      return { error: 'Invalid number', isValid: false, result: '' };
-    }
-    if (!isValidUnitForCategory(toUnit, category)) {
-      return { error: 'Invalid number', isValid: false, result: '' };
-    }
-    const fromKelvin =
-      fromUnit === 'k' ? num : toCelsius(num, fromUnit) + 273.15;
-    if (fromKelvin < 0 && fromKelvin < -1e-9) {
-      return {
-        error: 'Temperature below absolute zero',
-        isValid: false,
-        result: '',
-      };
-    }
-    const result = convertTemperature(num, fromUnit, toUnit);
-    const resultKelvin =
-      toUnit === 'k' ? result : toCelsius(result, toUnit) + 273.15;
-    if (resultKelvin < 0 && resultKelvin < -1e-9) {
-      return {
-        error: 'Temperature below absolute zero',
-        isValid: false,
-        result: '',
-      };
-    }
-    return { isValid: true, result: formatResult(result) };
-  }
-
-  const fromFactor = getFactor(category, fromUnit);
-  const toFactor = getFactor(category, toUnit);
-  if (fromFactor === undefined || toFactor === undefined) {
+  const units = PACKAGE_UNITS[category];
+  const from = units[fromUnit];
+  const to = units[toUnit];
+  if (from === undefined || to === undefined) {
     return { error: 'Invalid number', isValid: false, result: '' };
   }
-  const baseValue = num * fromFactor;
-  const resultValue = baseValue / toFactor;
-  return { isValid: true, result: formatResult(resultValue) };
+  if (category === 'temperature') {
+    if (convert(num, from).to('K') < ABSOLUTE_ZERO_TOLERANCE) {
+      return {
+        error: 'Temperature below absolute zero',
+        isValid: false,
+        result: '',
+      };
+    }
+    const result = convert(num, from).to(to);
+    return {
+      isValid: true,
+      result: formatResult(normalizeTemperatureResult(result)),
+    };
+  }
+  return { isValid: true, result: formatResult(convert(num, from).to(to)) };
 }
