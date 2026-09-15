@@ -40,7 +40,7 @@ describe('analytics.addTracker', () => {
   });
 });
 
-describe('analytics.track', () => {
+describe('analytics.track event enrichment', () => {
   test('enriches event with timestamp', () => {
     const tracker = createMockTracker();
     const unsubscribe = analytics.addTracker(tracker);
@@ -89,7 +89,9 @@ describe('analytics.track', () => {
 
     unsubscribe();
   });
+});
 
+describe('analytics.track delivery resilience', () => {
   test('fans out to multiple trackers', () => {
     const tracker1 = createMockTracker();
     const tracker2 = createMockTracker();

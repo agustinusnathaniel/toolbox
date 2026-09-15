@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { generateVCardString } from './qrcode';
 
-describe('generateVCardString', () => {
+describe('generateVCardString contact fields', () => {
   test('generates vCard with full contact info', () => {
     const result = generateVCardString({
       companyName: 'Acme Inc',
@@ -31,7 +31,9 @@ describe('generateVCardString', () => {
     expect(result).toContain('VERSION:3.0');
     expect(result).toContain('END:VCARD');
   });
+});
 
+describe('generateVCardString address variants', () => {
   test('generates vCard with address fields', () => {
     const result = generateVCardString({
       city: 'Portland',
@@ -80,7 +82,9 @@ describe('generateVCardString', () => {
 
     expect(result).not.toContain('ADR;');
   });
+});
 
+describe('generateVCardString full and minimal output', () => {
   test('generates vCard with website URL', () => {
     const result = generateVCardString({ websiteURL: 'https://example.com' });
 
@@ -126,7 +130,9 @@ describe('generateVCardString', () => {
 
     expect(result).toBe(['BEGIN:VCARD', 'VERSION:3.0', 'END:VCARD'].join('\n'));
   });
+});
 
+describe('generateVCardString escaping', () => {
   test('escapes special characters in name and organization', () => {
     const result = generateVCardString({
       companyName: 'Foo & Bar, LLC',

@@ -29,7 +29,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('useCopyFeedback', () => {
+describe('useCopyFeedback copy results', () => {
   test('copy sets copiedKey to the provided key on success', async () => {
     mockedCopy.mockResolvedValue(true);
     const { result } = renderHook(() => useCopyFeedback());
@@ -64,7 +64,9 @@ describe('useCopyFeedback', () => {
 
     expect(result.current.copiedKey).toBeNull();
   });
+});
 
+describe('useCopyFeedback timer behavior', () => {
   test('copiedKey resets to null after the feedback duration', async () => {
     vi.useFakeTimers();
     mockedCopy.mockResolvedValue(true);

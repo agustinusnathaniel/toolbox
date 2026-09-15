@@ -36,6 +36,47 @@ describe('buildLoremIpsumParams', () => {
   });
 });
 
+const FALLBACK_CASES = [
+  {
+    expected: {
+      paragraphs: 3,
+      sentencesPerParagraph: 5,
+      wordsMax: 15,
+      wordsMin: 8,
+    },
+    name: 'invalid numbers fall back to defaults',
+    search: {
+      paragraphs: 'bad',
+      sentences: 'bad',
+      wordsMax: 'bad',
+      wordsMin: 'bad',
+    },
+  },
+  {
+    expected: { paragraphs: 50 },
+    name: 'clamps paragraphs to max 50',
+    search: { paragraphs: '100' },
+  },
+  {
+    expected: { sentencesPerParagraph: 10 },
+    name: 'clamps sentences to 10',
+    search: { sentences: '99' },
+  },
+];
+
+const FORMAT_FALLBACK_CASES = [
+  {
+    expected: { format: 'plain' },
+    name: 'invalid format falls back to plain',
+    search: { format: 'bad' },
+  },
+  {
+    expected: { startWithLorem: true },
+    name: 'invalid startWithLorem falls back to true',
+    search: { startWithLorem: 'maybe' },
+  },
+];
+
 describe('buildLoremIpsumStateFromSearch', () => {
   test('empty search gives defaults', () => {
     const s = buildLoremIpsumStateFromSearch({});
@@ -66,48 +107,11 @@ describe('buildLoremIpsumStateFromSearch', () => {
     expect(s.format).toBe('html');
   });
 
-  test.each([
-    {
-      expected: {
-        paragraphs: 3,
-        sentencesPerParagraph: 5,
-        wordsMax: 15,
-        wordsMin: 8,
-      },
-      name: 'invalid numbers fall back to defaults',
-      search: {
-        paragraphs: 'bad',
-        sentences: 'bad',
-        wordsMax: 'bad',
-        wordsMin: 'bad',
-      },
-    },
-    {
-      expected: { paragraphs: 50 },
-      name: 'clamps paragraphs to max 50',
-      search: { paragraphs: '100' },
-    },
-    {
-      expected: { sentencesPerParagraph: 10 },
-      name: 'clamps sentences to 10',
-      search: { sentences: '99' },
-    },
-  ])('$name', ({ search, expected }) => {
+  test.each(FALLBACK_CASES)('$name', ({ search, expected }) => {
     expect(buildLoremIpsumStateFromSearch(search)).toMatchObject(expected);
   });
 
-  test.each([
-    {
-      expected: { format: 'plain' },
-      name: 'invalid format falls back to plain',
-      search: { format: 'bad' },
-    },
-    {
-      expected: { startWithLorem: true },
-      name: 'invalid startWithLorem falls back to true',
-      search: { startWithLorem: 'maybe' },
-    },
-  ])('$name', ({ search, expected }) => {
+  test.each(FORMAT_FALLBACK_CASES)('$name', ({ search, expected }) => {
     expect(buildLoremIpsumStateFromSearch(search)).toMatchObject(expected);
   });
 

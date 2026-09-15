@@ -18,7 +18,7 @@ function diffFileDiff(original: string, modified: string): FileDiffMetadata {
   return result.fileDiff as FileDiffMetadata;
 }
 
-describe('diffTexts', () => {
+describe('diffTexts line changes', () => {
   test('returns an empty diff for identical text', () => {
     const result = diffTexts('alpha\nbeta', 'alpha\nbeta');
     expect(result.isValid).toBe(true);
@@ -68,7 +68,9 @@ describe('diffTexts', () => {
     expect(result.removedCount).toBe(1);
     expect(result.addedCount).toBe(1);
   });
+});
 
+describe('diffTexts empty and size limits', () => {
   test('returns valid empty result for empty inputs', () => {
     const result = diffTexts('', '');
     expect(result.isValid).toBe(true);

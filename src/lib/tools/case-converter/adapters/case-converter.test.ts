@@ -13,34 +13,36 @@ const EMPTY_FORMATS = {
   upper: '',
 };
 
-describe('convertCase', () => {
-  test.each([
-    {
-      expected: { formats: EMPTY_FORMATS, isValid: false, wordCount: 0 },
-      input: '',
-    },
-    {
-      expected: { formats: EMPTY_FORMATS, isValid: false, wordCount: 0 },
-      input: '   \t  ',
-    },
-    {
-      expected: {
-        formats: {
-          camel: 'helloWorld',
-          kebab: 'hello-world',
-          lower: 'hello world',
-          pascal: 'HelloWorld',
-          screamingSnake: 'HELLO_WORLD',
-          snake: 'hello_world',
-          title: 'Hello World',
-          upper: 'HELLO WORLD',
-        },
-        isValid: true,
-        wordCount: 2,
+const CONVERT_CASES = [
+  {
+    expected: { formats: EMPTY_FORMATS, isValid: false, wordCount: 0 },
+    input: '',
+  },
+  {
+    expected: { formats: EMPTY_FORMATS, isValid: false, wordCount: 0 },
+    input: '   \t  ',
+  },
+  {
+    expected: {
+      formats: {
+        camel: 'helloWorld',
+        kebab: 'hello-world',
+        lower: 'hello world',
+        pascal: 'HelloWorld',
+        screamingSnake: 'HELLO_WORLD',
+        snake: 'hello_world',
+        title: 'Hello World',
+        upper: 'HELLO WORLD',
       },
-      input: 'hello world',
+      isValid: true,
+      wordCount: 2,
     },
-  ])('converts %j', ({ input, expected }) => {
+    input: 'hello world',
+  },
+];
+
+describe('convertCase', () => {
+  test.each(CONVERT_CASES)('converts %j', ({ input, expected }) => {
     const result = convertCase(input);
     expect(result.isValid).toBe(expected.isValid);
     expect(result.wordCount).toBe(expected.wordCount);

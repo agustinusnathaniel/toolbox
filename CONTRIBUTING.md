@@ -74,6 +74,7 @@ When writing or reviewing tests:
 - **No ceremony.** Plain assertions. Mock only genuinely external seams (clipboard, network, timers, workers) — if a test mocks the project's own logic, extract that logic into a pure `adapters/` function instead.
 - **Prefer adapters over UI tests.** Pure functions in `src/lib/tools/<name>/adapters/` test without DOM mocking. For UI, a handful of behavioral/a11y checks (e.g. `diff-view-control.test.tsx`) beats component-internals testing.
 - **Prefer runtime verification when it gives better signal.** For visual or integration-level changes, `pnpm dev` + browser verification can replace a test that would only mock the DOM.
+- **Keep test functions small (Biome limit: 60 lines per function, 500 per file, enforced as errors).** Split an oversized `describe` into smaller themed `describe` blocks; hoist large `test.each` tables to top-level `const`s; extract a file-local arrange helper (e.g. `chargingInput(overrides)`) when several tests repeat the same input shape. Keep tests self-contained — no shared cross-file test helpers.
 
 Run tests with `pnpm test` (one-shot) or `pnpm test:ui` (visual interface for debugging).
 

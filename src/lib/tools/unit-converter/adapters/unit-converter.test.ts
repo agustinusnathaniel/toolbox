@@ -168,7 +168,7 @@ describe('getUnitsForCategory', () => {
   });
 });
 
-describe('convertUnit', () => {
+describe('convertUnit input validation', () => {
   test('returns invalid for empty or whitespace input', () => {
     for (const input of ['', '   ']) {
       const r = convertUnit(input, 'm', 'km', 'length');
@@ -183,7 +183,9 @@ describe('convertUnit', () => {
     expect(r.isValid).toBe(false);
     expect(r.error).toBe('Invalid number');
   });
+});
 
+describe('convertUnit mappings and guards', () => {
   test.each(MAPPING_CASES)(
     'maps every $category unit through the package',
     ({ category, pairs }) => {
@@ -222,7 +224,9 @@ describe('convertUnit', () => {
     expect(r.isValid).toBe(false);
     expect(r.error).toBe('Temperature below absolute zero');
   });
+});
 
+describe('convertUnit formatting', () => {
   test('volume l to cup stays US customary', () => {
     const r = convertUnit('1', 'l', 'cup', 'volume');
     expect(r.result).toBe('4.2267528377');

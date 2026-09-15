@@ -23,7 +23,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe('DiffViewControl', () => {
+describe('DiffViewControl rendering', () => {
   test('renders a group labelled "Diff view" with both options', () => {
     render(
       <DiffViewControl
@@ -61,7 +61,9 @@ describe('DiffViewControl', () => {
     expect(getButtons().unified).toHaveAttribute('aria-pressed', 'false');
     expect(getButtons().split).toHaveAttribute('aria-pressed', 'true');
   });
+});
 
+describe('DiffViewControl interaction', () => {
   test('disables split and keeps aria-pressed false when split is not usable', () => {
     render(
       <DiffViewControl

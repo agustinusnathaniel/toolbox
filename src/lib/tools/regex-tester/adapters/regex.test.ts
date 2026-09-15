@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { MAX_MATCHES, testRegex } from './regex';
 
-describe('testRegex', () => {
+describe('testRegex matching basics', () => {
   test('returns valid empty result for empty pattern', () => {
     const result = testRegex('', '', 'hello');
     expect(result.isValid).toBe(true);
@@ -44,7 +44,9 @@ describe('testRegex', () => {
     expect(result.matchCount).toBe(1);
     expect(result.matches[0].groups).toEqual([undefined]);
   });
+});
 
+describe('testRegex flags and edge cases', () => {
   test('returns an error for an invalid pattern', () => {
     const result = testRegex('(', '', 'x');
     expect(result.isValid).toBe(false);
@@ -86,7 +88,9 @@ describe('testRegex', () => {
     expect(result.matchCount).toBe(1);
     expect(result.matches[0].index).toBe(2);
   });
+});
 
+describe('testRegex match caps', () => {
   test('caps stored matches at MAX_MATCHES but reports truncation', () => {
     const result = testRegex('.', 'g', 'a'.repeat(MAX_MATCHES + 10));
     expect(result.isValid).toBe(true);

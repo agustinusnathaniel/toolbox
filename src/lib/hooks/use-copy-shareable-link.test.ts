@@ -24,7 +24,7 @@ beforeEach(() => {
   });
 });
 
-describe('useCopyShareableLink', () => {
+describe('useCopyShareableLink copy behavior', () => {
   test('builds params from the provided function and copies the shareable URL', async () => {
     mockedCopy.mockResolvedValue(true);
     const trackAction = vi.fn();
@@ -73,7 +73,9 @@ describe('useCopyShareableLink', () => {
 
     expect(trackAction).not.toHaveBeenCalled();
   });
+});
 
+describe('useCopyShareableLink URL shape', () => {
   test('omits the query string when params are empty', async () => {
     mockedCopy.mockResolvedValue(true);
     const trackAction = vi.fn();

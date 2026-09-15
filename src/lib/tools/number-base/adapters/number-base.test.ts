@@ -65,7 +65,7 @@ describe('isValidForBase', () => {
   });
 });
 
-describe('convertNumberBase', () => {
+describe('convertNumberBase valid conversions', () => {
   test('empty input', () => {
     const r = convertNumberBase('', 10);
     expect(r.isValid).toBe(false);
@@ -100,7 +100,9 @@ describe('convertNumberBase', () => {
     const r = convertNumberBase('377', 8);
     expect(r.decimal).toBe('255');
   });
+});
 
+describe('convertNumberBase errors and sign handling', () => {
   test('invalid binary returns error', () => {
     const r = convertNumberBase('102', 2);
     expect(r.isValid).toBe(false);
@@ -137,7 +139,9 @@ describe('convertNumberBase', () => {
     expect(r.decimal).toBe('9007199254740993');
     expect(r.hex).toBe('20000000000001');
   });
+});
 
+describe('convertNumberBase prefixes and length limits', () => {
   test('binary with 0b prefix', () => {
     const r = convertNumberBase('0b1010', 2);
     expect(r.isValid).toBe(true);
