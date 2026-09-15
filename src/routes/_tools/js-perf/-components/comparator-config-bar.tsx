@@ -1,19 +1,18 @@
 import { RotateCcw } from 'lucide-react';
 
 import { Button } from '@/lib/components/ui/button';
-import { Input } from '@/lib/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/lib/components/ui/select';
 import {
   type Preset,
   STABILITY_MAX_ROUNDS,
   STABILITY_MIN_ROUNDS,
 } from '@/lib/js-perf-comp-core/presets';
 
+import {
+  IterationsInput,
+  StabilityRoundsInput,
+  StabilityToggle,
+} from './config-inputs';
+import { PresetSelect } from './preset-select';
 import type { RunState } from './types';
 
 const MAX_ITERATIONS = 1000;
@@ -34,127 +33,40 @@ interface ComparatorConfigBarProps {
   stabilityRounds: number;
 }
 
-export function ComparatorConfigBar({
-  selectedPreset,
-  presets,
-  runState,
-  iterations,
-  stabilityModeEnabled,
-  stabilityRounds,
-  showResetToPreset,
-  onPresetChange,
-  onIterationsChange,
-  onStabilityModeChange,
-  onStabilityRoundsChange,
-  onResetToPreset,
-}: ComparatorConfigBarProps) {
+export function ComparatorConfigBar(props: ComparatorConfigBarProps) {
+  const running = props.runState === 'running';
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Select
-        onSelectionChange={(key) => onPresetChange(String(key))}
-        selectedKey={selectedPreset}
-      >
-        <SelectTrigger className="min-w-[160px] flex-1 sm:w-[200px] sm:min-w-[200px] sm:flex-none">
-          {selectedPreset}
-        </SelectTrigger>
-        <SelectContent items={presets}>
-          {(preset) => <SelectItem id={preset.name}>{preset.name}</SelectItem>}
-        </SelectContent>
-      </Select>
-
-      <div className="flex items-center gap-2">
-        <label className="text-muted-fg text-sm" htmlFor="iterations-input">
-          Iterations:
-        </label>
-        <Input
-          className="w-[72px]"
-          id="iterations-input"
-          max={MAX_ITERATIONS}
-          min={MIN_ITERATIONS}
-          onBlur={(event) => {
-            const value = Number.parseInt(event.target.value, 10);
-            if (!Number.isNaN(value)) {
-              const clamped = Math.max(
-                MIN_ITERATIONS,
-                Math.min(value, MAX_ITERATIONS)
-              );
-              event.target.value = String(clamped);
-            }
-          }}
-          onChange={(event) => {
-            const value = Number.parseInt(event.target.value, 10);
-            if (!Number.isNaN(value)) {
-              onIterationsChange(
-                Math.max(MIN_ITERATIONS, Math.min(value, MAX_ITERATIONS))
-              );
-            }
-          }}
-          type="number"
-          value={iterations}
+      <PresetSelect
+        onPresetChange={props.onPresetChange}
+        presets={props.presets}
+        selectedPreset={props.selectedPreset}
+      />
+      <IterationsInput
+        iterations={props.iterations}
+        max={MAX_ITERATIONS}
+        min={MIN_ITERATIONS}
+        onChange={props.onIterationsChange}
+      />
+      <StabilityToggle
+        checked={props.stabilityModeEnabled}
+        disabled={running}
+        onChange={props.onStabilityModeChange}
+      />
+      {props.stabilityModeEnabled ? (
+        <StabilityRoundsInput
+          max={STABILITY_MAX_ROUNDS}
+          min={STABILITY_MIN_ROUNDS}
+          onChange={props.onStabilityRoundsChange}
+          rounds={props.stabilityRounds}
         />
-      </div>
-
-      <label
-        className="flex cursor-pointer items-center gap-2 text-muted-fg text-sm"
-        htmlFor="stability-mode-input"
-      >
-        <input
-          checked={stabilityModeEnabled}
-          className="size-4"
-          disabled={runState === 'running'}
-          id="stability-mode-input"
-          onChange={(event) => onStabilityModeChange(event.target.checked)}
-          type="checkbox"
-        />
-        Stability mode
-      </label>
-
-      {stabilityModeEnabled ? (
-        <div className="flex items-center gap-2">
-          <label
-            className="text-muted-fg text-sm"
-            htmlFor="stability-rounds-input"
-          >
-            Rounds:
-          </label>
-          <Input
-            className="w-[72px]"
-            id="stability-rounds-input"
-            max={STABILITY_MAX_ROUNDS}
-            min={STABILITY_MIN_ROUNDS}
-            onBlur={(event) => {
-              const value = Number.parseInt(event.target.value, 10);
-              if (!Number.isNaN(value)) {
-                const clamped = Math.max(
-                  STABILITY_MIN_ROUNDS,
-                  Math.min(value, STABILITY_MAX_ROUNDS)
-                );
-                event.target.value = String(clamped);
-              }
-            }}
-            onChange={(event) => {
-              const value = Number.parseInt(event.target.value, 10);
-              if (!Number.isNaN(value)) {
-                onStabilityRoundsChange(
-                  Math.max(
-                    STABILITY_MIN_ROUNDS,
-                    Math.min(value, STABILITY_MAX_ROUNDS)
-                  )
-                );
-              }
-            }}
-            type="number"
-            value={stabilityRounds}
-          />
-        </div>
       ) : null}
-
-      {showResetToPreset ? (
+      {props.showResetToPreset ? (
         <Button
           className="ml-auto sm:ml-0"
           intent="secondary"
-          isDisabled={runState === 'running'}
-          onPress={onResetToPreset}
+          isDisabled={running}
+          onPress={props.onResetToPreset}
           size="sm"
         >
           <RotateCcw className="size-4" />

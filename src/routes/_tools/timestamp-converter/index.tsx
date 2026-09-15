@@ -1,24 +1,19 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { RotateCcw } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
-import { CopyLinkButton } from '@/lib/components/copy-link-button';
-import { CopyRow } from '@/lib/components/copy-row';
-import { ToolError } from '@/lib/components/tool-error';
-import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
-import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
-import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import { convertTimestamp } from '@/lib/tools/timestamp-converter/adapters/timestamp-converter';
-import { buildTimestampParams } from '@/lib/tools/timestamp-converter/adapters/timestamp-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import {
+  TimestampDateCards,
+  TimestampEpochCards,
+  TimestampError,
+  TimestampHelp,
+  TimestampInput,
+} from './-components/timestamp-sections';
+import { useTimestampPage } from './-components/use-timestamp-page';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -37,159 +32,41 @@ function TimestampConverterPage() {
     'Timestamp Converter'
   );
   const search = useSearch({ from: '/_tools/timestamp-converter/' });
-  const [input, setInput] = useState(search.ts ?? '');
-  const { copiedKey, copy } = useCopyFeedback();
-
-  const result = useMemo(() => convertTimestamp(input), [input]);
-
-  useEffect(() => {
-    trackAction('view');
-    trackComplete(true);
-  }, [trackAction, trackComplete]);
-
-  const handleCopy = useCallback(
-    async (key: string, value: string, label: string) => {
-      if (await copy(value, key, label)) {
-        trackAction('copy');
-      }
-    },
-    [copy, trackAction]
-  );
-
-  const handleUseNow = useCallback(() => {
-    setInput(String(Math.floor(Date.now() / 1000)));
-    trackAction('use_now');
-  }, [trackAction]);
-
-  const handleCopyLink = useCopyShareableLink(
-    () => buildTimestampParams(input),
-    trackAction
-  );
-
-  const hasInput = input.trim().length > 0;
+  const page = useTimestampPage(search.ts ?? '', trackAction, trackComplete);
+  const hasInput = page.input.trim().length > 0;
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
-      <Card>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="timestamp-input">
-              Timestamp or Date
-            </label>
-            <Textarea
-              className="min-h-24 font-mono text-xs"
-              id="timestamp-input"
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste an epoch timestamp (10 or 13 digits) or a date string..."
-              value={input}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button intent="outline" onPress={handleUseNow} size="sm">
-              <RotateCcw className="size-4" />
-              Use current time
-            </Button>
-            <CopyLinkButton onPress={handleCopyLink} />
-          </div>
-
-          {!hasInput && (
-            <p className="text-muted-fg text-xs">
-              Paste a Unix timestamp or a date string above to convert it.
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
-      {result.error && hasInput && (
-        <ToolError
-          message={result.error}
-          title="Invalid timestamp"
-          variant="prose"
-        />
+      <TimestampInput
+        input={page.input}
+        onCopyLink={page.handleCopyLink}
+        onInput={page.setInput}
+        onUseNow={page.handleUseNow}
+      />
+      {page.result.error && hasInput && (
+        <TimestampError error={page.result.error} />
       )}
-
-      {result.isValid && hasInput && (
+      {page.result.isValid && hasInput && (
         <>
-          <Card>
-            <CardHeader title="Epoch" />
-            <CardContent className="flex flex-col">
-              <CopyRow
-                copied={copiedKey === 'seconds'}
-                copyLabel="Copy epoch seconds"
-                label="Seconds"
-                mono
-                onCopy={() =>
-                  handleCopy(
-                    'seconds',
-                    result.epochSeconds ?? '',
-                    'Copied Epoch Seconds'
-                  )
-                }
-                value={result.epochSeconds}
-              />
-              <CopyRow
-                copied={copiedKey === 'milliseconds'}
-                copyLabel="Copy epoch milliseconds"
-                label="Milliseconds"
-                mono
-                onCopy={() =>
-                  handleCopy(
-                    'milliseconds',
-                    result.epochMillis ?? '',
-                    'Copied Epoch Milliseconds'
-                  )
-                }
-                value={result.epochMillis}
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader title="Date" />
-            <CardContent className="flex flex-col">
-              <CopyRow
-                copied={copiedKey === 'iso'}
-                copyLabel="Copy ISO 8601 date"
-                label="ISO 8601"
-                mono
-                onCopy={() =>
-                  handleCopy('iso', result.iso ?? '', 'Copied ISO 8601')
-                }
-                value={result.iso}
-              />
-              <CopyRow label="Local" value={result.local} />
-              <CopyRow label="UTC" value={result.utc} />
-              <CopyRow label="Relative" value={result.relative} />
-            </CardContent>
-          </Card>
+          <TimestampEpochCards
+            copiedKey={page.copiedKey}
+            epochMillis={page.result.epochMillis}
+            epochSeconds={page.result.epochSeconds}
+            onCopy={page.handleCopy}
+          />
+          <TimestampDateCards
+            copiedKey={page.copiedKey}
+            iso={page.result.iso}
+            local={page.result.local}
+            onCopyIso={() =>
+              page.handleCopy('iso', page.result.iso ?? '', 'Copied ISO 8601')
+            }
+            relative={page.result.relative}
+            utc={page.result.utc}
+          />
         </>
       )}
-
-      <ToolHelp
-        faq={[
-          {
-            answer:
-              'Yes. All conversion happens locally in your browser. No data is sent to any server.',
-            question: 'Is my data safe?',
-          },
-          {
-            answer:
-              'A Unix timestamp is the number of seconds (or milliseconds) that have elapsed since January 1, 1970, UTC. This tool converts between that number and a human-readable date.',
-            question: 'What is a Unix timestamp?',
-          },
-        ]}
-        howItWorks={{
-          description:
-            'Paste an epoch timestamp or a date string into the textarea. Results update live as you type.',
-          steps: [
-            'Paste a Unix timestamp (10 or 13 digits) or a date string',
-            'Results update live — seconds, milliseconds, and formatted dates',
-            'Click Use current time to insert the current epoch seconds',
-            'Copy any value or the shareable link',
-          ],
-        }}
-      />
+      <TimestampHelp />
     </div>
   );
 }

@@ -1,30 +1,22 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { ScanLine, ShieldCheck } from 'lucide-react';
-import { useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
-import { CopyLinkButton } from '@/lib/components/copy-link-button';
-import { ResultPanel } from '@/lib/components/result-panel';
-import { ToolError } from '@/lib/components/tool-error';
-import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
-import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import type {
-  JwtDecodeResult,
-  JwtVerifyResult,
-} from '@/lib/tools/jwt-decoder/adapters/jwt-decoder';
-import {
-  decodeJwt,
-  verifyJwtSignature,
-} from '@/lib/tools/jwt-decoder/adapters/jwt-decoder';
-import { buildJwtParams } from '@/lib/tools/jwt-decoder/adapters/jwt-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import {
+  JwtClaims,
+  JwtDecodeActions,
+  JwtHelp,
+  JwtSecretInput,
+  JwtStatus,
+  JwtTokenInput,
+  JwtVerifyBar,
+} from './-components/jwt-sections';
+import { useJwtPage } from './-components/use-jwt-page';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -40,171 +32,48 @@ export const Route = createFileRoute('/_tools/jwt-decoder/')({
 function JwtDecoderPage() {
   const { trackAction } = useToolTracking('jwt-decoder', 'JWT Decoder');
   const search = useSearch({ from: '/_tools/jwt-decoder/' });
-  const [token, setToken] = useState(search.token ?? '');
-  const [secret, setSecret] = useState('');
-  const [result, setResult] = useState<JwtDecodeResult | null>(null);
-  const [verifyResult, setVerifyResult] = useState<JwtVerifyResult | null>(
-    null
-  );
-  const { copiedKey, copy } = useCopyFeedback<'header' | 'payload'>();
-
-  const handleDecode = useCallback(() => {
-    setResult(decodeJwt(token));
-    setVerifyResult(null);
-    trackAction('decode');
-  }, [token, trackAction]);
-
-  const handleVerify = useCallback(async () => {
-    setVerifyResult(await verifyJwtSignature(token, secret));
-    trackAction('verify');
-  }, [secret, token, trackAction]);
-
-  const handleCopy = useCallback(
-    async (field: 'header' | 'payload', text: string) => {
-      if (await copy(text, field, 'Copied')) {
-        trackAction('copy');
-      }
-    },
-    [copy, trackAction]
-  );
-
-  const handleCopyLink = useCopyShareableLink(
-    () => buildJwtParams(token),
-    trackAction
-  );
-
-  const showError = result && !result.isValid;
-  const showResult = result?.isValid;
+  const page = useJwtPage(search.token ?? '', trackAction);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="jwt-token">
-              Token
-            </label>
-            <textarea
-              className="field-sizing-content min-h-40 w-full rounded-lg border border-input bg-transparent p-3 font-mono text-fg text-sm outline-hidden placeholder:text-muted-fg focus:border-ring/70 focus:ring-3 focus:ring-ring/20"
-              id="jwt-token"
-              onChange={(e) => {
-                setToken(e.target.value);
-                setResult(null);
-                setVerifyResult(null);
-              }}
-              placeholder="Paste a JWT to decode..."
-              value={token}
+          <JwtTokenInput
+            onChange={(v) => {
+              page.setToken(v);
+              page.clearResults();
+            }}
+            token={page.token}
+          />
+          <JwtDecodeActions
+            onCopyLink={page.handleCopyLink}
+            onDecode={page.handleDecode}
+          />
+          <JwtSecretInput onChange={page.setSecret} secret={page.secret} />
+          <JwtVerifyBar onVerify={page.handleVerify} />
+          {page.verifyResult && (
+            <JwtStatus
+              isValid={page.verifyResult.isValid}
+              message={page.verifyResult.message}
             />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button onPress={handleDecode} size="sm">
-              <ScanLine className="size-4" />
-              Decode
-            </Button>
-            <CopyLinkButton
-              label="Copy shareable link"
-              onPress={handleCopyLink}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="jwt-secret">
-              Shared secret (optional)
-            </label>
-            <input
-              className="w-full rounded-lg border bg-bg px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
-              id="jwt-secret"
-              onChange={(e) => setSecret(e.target.value)}
-              placeholder="Enter a secret to verify the HMAC signature"
-              type="password"
-              value={secret}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button onPress={handleVerify} size="sm">
-              <ShieldCheck className="size-4" />
-              Verify signature
-            </Button>
-          </div>
-
-          {verifyResult && (
-            <p
-              className={
-                verifyResult.isValid
-                  ? 'text-sm text-success'
-                  : 'text-danger text-sm'
-              }
-              role="status"
-            >
-              {verifyResult.message}
-            </p>
           )}
-
-          {showError && (
-            <ToolError message={result.error} title="Unable to decode" />
+          {page.result && !page.result.isValid && (
+            <JwtStatus error={page.result.error} isValid={false} />
           )}
-
-          {showResult && result.isValid && (
-            <div className="flex flex-col gap-4">
-              <ResultPanel
-                copied={copiedKey === 'header'}
-                copyLabel="Copy header"
-                label="Header"
-                onCopy={() => handleCopy('header', result.headerRaw)}
-                value={JSON.stringify(result.header, null, 2)}
-              />
-
-              <ResultPanel
-                copied={copiedKey === 'payload'}
-                copyLabel="Copy payload"
-                label="Payload"
-                onCopy={() => handleCopy('payload', result.payloadRaw)}
-                value={JSON.stringify(result.payload, null, 2)}
-              />
-
-              <div className="overflow-hidden rounded-lg border">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-(--card-bg)/50 text-muted-fg">
-                    <tr>
-                      <th className="p-3 font-medium">Claim</th>
-                      <th className="p-3 font-medium">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.claims.map((claim) => (
-                      <tr className="border-input border-t" key={claim.key}>
-                        <td className="p-3 font-mono">{claim.key}</td>
-                        <td className="p-3 font-mono">{claim.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          {page.result?.isValid && (
+            <JwtClaims
+              claims={page.result.claims}
+              copiedKey={page.copiedKey}
+              header={page.result.header}
+              headerRaw={page.result.headerRaw}
+              onCopy={page.handleCopy}
+              payload={page.result.payload}
+              payloadRaw={page.result.payloadRaw}
+            />
           )}
         </CardContent>
       </Card>
-
-      <ToolHelp
-        faq={[
-          {
-            answer:
-              'No. Decoding and signature verification happen entirely in your browser with the native Web Crypto API. Your JWT never leaves your device.',
-            question: 'Is my token sent anywhere?',
-          },
-        ]}
-        howItWorks={{
-          description:
-            'Paste a JWT to inspect its header and payload, then optionally verify the signature with a shared secret.',
-          steps: [
-            'Paste a JWT',
-            'Decode to inspect header and payload claims',
-            'Optionally enter a shared secret and verify the HMAC signature',
-          ],
-        }}
-      />
+      <JwtHelp />
     </div>
   );
 }

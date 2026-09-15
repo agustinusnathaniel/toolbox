@@ -83,56 +83,6 @@
   },
   "overrides": [
     {
-      // Justified exception: js-perf comparator page orchestrates 8+ state slices, presets, and worker lifecycle.
-      // Further split would fragment the single-screen island. Narrow per-file warn 250.
-      "includes": ["**/js-perf/index.tsx"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveLinesPerFunction": {
-              "level": "warn",
-              "options": { "maxLines": 300 }
-            }
-          }
-        }
-      }
-    },
-    {
-      // Remaining single-screen tool pages are cohesive islands (60-130 line page components).
-      // Splitting each into hooks/components would be artificial fragmentation for these smaller tools.
-      // Kept as narrow per-file warn 150, not broad globs - largest tools already modularized above.
-      "includes": [
-        "**/csv-converter/index.tsx",
-        "**/html-entities/index.tsx",
-        "**/json-formatter/index.tsx",
-        "**/json-to-ts/index.tsx",
-        "**/jwt-decoder/index.tsx",
-        "**/markdown-preview/index.tsx",
-        "**/password-generator/index.tsx",
-        "**/sql-formatter/index.tsx",
-        "**/timestamp-converter/index.tsx",
-        "**/ua-check/index.tsx",
-        "**/url-codec/index.tsx",
-        "**/uuid-generator/index.tsx",
-        "**/wa-link-helper/index.tsx",
-        "**/yaml-converter/index.tsx",
-        "**/zippy-img/index.tsx",
-        "**/use-zippy-img.ts",
-        "**/comparator-config-bar.tsx",
-        "**/homepage-page.tsx"
-      ],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveLinesPerFunction": {
-              "level": "warn",
-              "options": { "maxLines": 150 }
-            }
-          }
-        }
-      }
-    },
-    {
       "includes": ["src/lib/pages/**/index.tsx", "src/*.ts", "*.ts"],
       "linter": {
         "rules": {
