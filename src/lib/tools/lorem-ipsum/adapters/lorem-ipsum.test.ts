@@ -4,7 +4,37 @@ import { generateLoremIpsum } from './lorem-ipsum';
 
 const WS_RE = /\s+/;
 
-describe('generateLoremIpsum', () => {
+const CLAMP_CASES = [
+  {
+    expected: { paragraphs: 50, sentences: 1, wordsMax: 3, wordsMin: 3 },
+    name: 'clamps paragraphs to max 50',
+    options: {
+      paragraphs: 100,
+      sentencesPerParagraph: 1,
+      wordsPerSentence: { max: 3, min: 3 },
+    },
+  },
+  {
+    expected: { paragraphs: 1, sentences: 10, wordsMax: 3, wordsMin: 3 },
+    name: 'clamps sentencesPerParagraph to 1-10',
+    options: {
+      paragraphs: 1,
+      sentencesPerParagraph: 20,
+      wordsPerSentence: { max: 3, min: 3 },
+    },
+  },
+  {
+    expected: { paragraphs: 3, sentences: 5, wordsMax: 15, wordsMin: 8 },
+    name: 'falls back to defaults for non-finite options',
+    options: {
+      paragraphs: Number.NaN,
+      sentencesPerParagraph: Number.NaN,
+      wordsPerSentence: { max: Number.NaN, min: Number.NaN },
+    },
+  },
+];
+
+describe('generateLoremIpsum output', () => {
   test('generates correct paragraph count plain', () => {
     const text = generateLoremIpsum({
       format: 'plain',
@@ -56,36 +86,10 @@ describe('generateLoremIpsum', () => {
       expect(line.endsWith('</p>')).toBe(true);
     }
   });
+});
 
-  test.each([
-    {
-      expected: { paragraphs: 50, sentences: 1, wordsMax: 3, wordsMin: 3 },
-      name: 'clamps paragraphs to max 50',
-      options: {
-        paragraphs: 100,
-        sentencesPerParagraph: 1,
-        wordsPerSentence: { max: 3, min: 3 },
-      },
-    },
-    {
-      expected: { paragraphs: 1, sentences: 10, wordsMax: 3, wordsMin: 3 },
-      name: 'clamps sentencesPerParagraph to 1-10',
-      options: {
-        paragraphs: 1,
-        sentencesPerParagraph: 20,
-        wordsPerSentence: { max: 3, min: 3 },
-      },
-    },
-    {
-      expected: { paragraphs: 3, sentences: 5, wordsMax: 15, wordsMin: 8 },
-      name: 'falls back to defaults for non-finite options',
-      options: {
-        paragraphs: Number.NaN,
-        sentencesPerParagraph: Number.NaN,
-        wordsPerSentence: { max: Number.NaN, min: Number.NaN },
-      },
-    },
-  ])('$name', ({ options, expected }) => {
+describe('generateLoremIpsum option clamping', () => {
+  test.each(CLAMP_CASES)('$name', ({ options, expected }) => {
     const text = generateLoremIpsum({
       format: 'plain',
       startWithLorem: false,

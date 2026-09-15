@@ -60,7 +60,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('useWorkerDeadline', () => {
+describe('useWorkerDeadline requests', () => {
   test('uses the shared 2000ms deadline that all worker tools rely on', () => {
     expect(WORKER_DEADLINE_MS).toBe(2000);
   });
@@ -97,7 +97,9 @@ describe('useWorkerDeadline', () => {
     expect(result.current.result).toBe(42);
     expect(result.current.computing).toBe(false);
   });
+});
 
+describe('useWorkerDeadline staleness and timeout', () => {
   test('ignores stale responses (older id arrives after newer request)', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
@@ -139,7 +141,9 @@ describe('useWorkerDeadline', () => {
     expect(result.current.result).toBe(TIMEOUT_RESULT);
     expect(result.current.computing).toBe(false);
   });
+});
 
+describe('useWorkerDeadline lifecycle', () => {
   test('cleans up and terminates the worker on unmount', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();

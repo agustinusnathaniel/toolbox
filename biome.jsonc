@@ -83,26 +83,6 @@
   },
   "overrides": [
     {
-      // Test files: data-driven pure-function tests; splitting adds no clarity
-      "includes": ["**/*.test.ts", "**/*.test.tsx"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveLinesPerFunction": {
-              "level": "warn",
-              "options": { "maxLines": 150 }
-            }
-          },
-          "style": {
-            "noExcessiveLinesPerFile": {
-              "level": "warn",
-              "options": { "maxLines": 600, "skipBlankLines": true }
-            }
-          }
-        }
-      }
-    },
-    {
       // Justified exception: js-perf comparator page orchestrates 8+ state slices, presets, and worker lifecycle.
       // Further split would fragment the single-screen island. Narrow per-file warn 250.
       "includes": ["**/js-perf/index.tsx"],

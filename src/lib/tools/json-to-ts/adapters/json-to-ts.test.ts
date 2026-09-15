@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { JSON_TO_TS_MAX_CHARS, jsonToTypescript } from './json-to-ts';
 
-describe('jsonToTypescript', () => {
+describe('jsonToTypescript invalid input', () => {
   test('returns an invalid result for empty input', () => {
     expect(jsonToTypescript('')).toEqual({
       error: 'Input is empty',
@@ -33,7 +33,9 @@ describe('jsonToTypescript', () => {
     expect(jsonToTypescript('42')).toEqual(expected);
     expect(jsonToTypescript('null')).toEqual(expected);
   });
+});
 
+describe('jsonToTypescript object interfaces', () => {
   test('generates an interface for a flat object', () => {
     const result = jsonToTypescript('{"name":"x","age":1,"active":true}');
     expect(result.isValid).toBe(true);
@@ -86,7 +88,9 @@ export interface Root {
 `
     );
   });
+});
 
+describe('jsonToTypescript type mapping', () => {
   test('handles irregular plurals', () => {
     const addresses = jsonToTypescript('{"addresses":[{"street":"x"}]}');
     expect(addresses.output).toContain('export interface Address {');
@@ -132,7 +136,9 @@ export interface Root {
     expect(result.output).toContain('  "some-key": string;');
     expect(result.output).toContain('  "2fa": boolean;');
   });
+});
 
+describe('jsonToTypescript collisions, arrays, and limits', () => {
   test('dedupes colliding interface names', () => {
     const result = jsonToTypescript(
       '{"user":{"a":1},"userData":{"user":{"b":2}}}'

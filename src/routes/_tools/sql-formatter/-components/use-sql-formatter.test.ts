@@ -42,7 +42,7 @@ afterEach(() => {
 // tests cover only what useSqlFormatter contributes: the request shape, the
 // trigger gating, the field-change repost, the blank-input clearing, and the
 // timeout result mapping.
-describe('useSqlFormatter', () => {
+describe('useSqlFormatter request posting', () => {
   test('posts a request with the input, dialect, and action when trigger changes to 1', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
@@ -95,7 +95,9 @@ describe('useSqlFormatter', () => {
       input: 'select * from bar',
     });
   });
+});
 
+describe('useSqlFormatter repost on field change', () => {
   test('reposts when the dialect changes after the trigger has fired', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();
@@ -147,7 +149,9 @@ describe('useSqlFormatter', () => {
       action: 'minify',
     });
   });
+});
 
+describe('useSqlFormatter result handling', () => {
   test('clears the result when the input is blank', () => {
     vi.useFakeTimers();
     const worker = createFakeWorker();

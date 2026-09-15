@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { buildChargingSearchParams } from './ev-charging';
 
-describe('buildChargingSearchParams', () => {
+describe('buildChargingSearchParams required params', () => {
   test('sets all required params', () => {
     const params = buildChargingSearchParams({
       calibrationFactor: 1,
@@ -36,7 +36,9 @@ describe('buildChargingSearchParams', () => {
     expect(params.get('rate')).toBe('0.15');
     expect(params.get('power')).toBe('50');
   });
+});
 
+describe('buildChargingSearchParams omissions', () => {
   test('omits rate when zero or negative', () => {
     const zero = buildChargingSearchParams({
       calibrationFactor: 1,
@@ -73,7 +75,9 @@ describe('buildChargingSearchParams', () => {
     });
     expect(zero.get('power')).toBeNull();
   });
+});
 
+describe('buildChargingSearchParams null and partial inputs', () => {
   test('handles null inputs gracefully', () => {
     const params = buildChargingSearchParams({
       calibrationFactor: null,

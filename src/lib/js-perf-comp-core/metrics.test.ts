@@ -39,7 +39,7 @@ function simpleResult(
   });
 }
 
-describe('buildComparisonMetrics', () => {
+describe('buildComparisonMetrics null guards', () => {
   test('returns ComparisonMetrics when both results succeed', () => {
     const result = buildComparisonMetrics(
       simpleResult(10, 10, 1),
@@ -75,7 +75,9 @@ describe('buildComparisonMetrics', () => {
     );
     expect(result).toBeNull();
   });
+});
 
+describe('buildComparisonMetrics winners', () => {
   test('A-faster case: winner A, speedup > 1, positive delta', () => {
     const result = buildComparisonMetrics(
       simpleResult(5, 5, 1),
@@ -111,7 +113,9 @@ describe('buildComparisonMetrics', () => {
     expect(result?.percentDelta).toBe(0);
     expect(result?.marginRatio).toBeNull();
   });
+});
 
+describe('buildComparisonMetrics verdicts', () => {
   test('verdict inconclusive when delta within combined margin', () => {
     const result = buildComparisonMetrics(
       simpleResult(10, 10, 2),
@@ -139,7 +143,9 @@ describe('buildComparisonMetrics', () => {
 
     expect(result?.verdict).toBe('confident');
   });
+});
 
+describe('buildComparisonMetrics intervals', () => {
   test('intervals overlap when confidence intervals intersect', () => {
     const result = buildComparisonMetrics(
       simpleResult(10, 10, 2),

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { buildStatsSummary, computeTextStats } from './text-stats';
 
-describe('computeTextStats', () => {
+describe('computeTextStats empty and basic counts', () => {
   test('empty string', () => {
     const s = computeTextStats('');
     expect(s.characters).toBe(0);
@@ -52,7 +52,9 @@ describe('computeTextStats', () => {
     expect(s.averageWordLength).toBe(5);
     expect(s.longestWordLength).toBe(5);
   });
+});
 
+describe('computeTextStats structure', () => {
   test('multiline', () => {
     const s = computeTextStats('a\nb\nc');
     expect(s.lines).toBe(3);
@@ -86,7 +88,9 @@ describe('computeTextStats', () => {
     const s = computeTextStats('');
     expect(s.sentences).toBe(0);
   });
+});
 
+describe('computeTextStats encoding and reading time', () => {
   test('bytesUtf8 handles unicode', () => {
     const s = computeTextStats('café');
     expect(s.characters).toBe(4);
@@ -120,7 +124,9 @@ describe('computeTextStats', () => {
     expect(s.readingTimeMinutes).toBe(1);
     expect(s.readingTimeText).toBe('1 min');
   });
+});
 
+describe('computeTextStats word metrics and whitespace', () => {
   test('average and longest word', () => {
     const s = computeTextStats('a bb ccc');
     expect(s.words).toBe(3);
