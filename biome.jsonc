@@ -103,16 +103,6 @@
       }
     },
     {
-      "includes": ["vite.config.ts", "*.config.ts"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveLinesPerFunction": "off"
-          }
-        }
-      }
-    },
-    {
       // Justified exception: js-perf comparator page orchestrates 8+ state slices, presets, and worker lifecycle.
       // Further split would fragment the single-screen island. Narrow per-file warn 250.
       "includes": ["**/js-perf/index.tsx"],

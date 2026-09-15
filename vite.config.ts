@@ -45,6 +45,71 @@ const pwaOptions = (mode: string): Partial<VitePWAOptions> => ({
 });
 
 // https://vitejs.dev/config/
+type PluginFlags = {
+  isCheckDisabled: boolean;
+  isReactCompilerEnabled: boolean;
+  mode: string;
+};
+
+const getPrerenderPages = () => [
+  {
+    path: '/',
+    prerender: { enabled: true },
+  },
+  {
+    path: '/homepage',
+    prerender: { enabled: true },
+  },
+  {
+    path: '/changelog',
+    prerender: { enabled: true },
+  },
+];
+
+const createStartPlugin = () =>
+  tanstackStart({
+    pages: getPrerenderPages(),
+    prerender: {
+      retryCount: 2,
+      retryDelay: 1000,
+    },
+    spa: {
+      enabled: true,
+      prerender: {
+        crawlLinks: true,
+        outputPath: '',
+      },
+    },
+  });
+
+const createVitePlugins = ({
+  isCheckDisabled,
+  isReactCompilerEnabled,
+  mode,
+}: PluginFlags) => [
+  ValidateEnv(),
+  tanstackDevtools(),
+  createStartPlugin(),
+  mdx({ include: ['content/**/*.mdx'] }),
+  react(),
+  ...(isReactCompilerEnabled
+    ? [
+        babel({
+          presets: [reactCompilerPreset()],
+        }),
+      ]
+    : []),
+  tailwindcss(),
+  ...(isCheckDisabled
+    ? []
+    : [
+        checker({
+          typescript: true,
+        }),
+      ]),
+  VitePWA(pwaOptions(mode)),
+];
+
 export default defineConfig(({ mode }) => {
   const isCheckDisabled = mode === 'production' || !!process.env.VITEST;
   const env = loadEnv(mode, process.cwd(), '');
@@ -61,55 +126,9 @@ export default defineConfig(({ mode }) => {
       ignorePatterns: ['**/*'],
       options: { typeAware: true, typeCheck: true },
     },
-    plugins: lazyPlugins(() => [
-      ValidateEnv(),
-      tanstackDevtools(),
-      tanstackStart({
-        pages: [
-          {
-            path: '/',
-            prerender: { enabled: true },
-          },
-          {
-            path: '/homepage',
-            prerender: { enabled: true },
-          },
-          {
-            path: '/changelog',
-            prerender: { enabled: true },
-          },
-        ],
-        prerender: {
-          retryCount: 2,
-          retryDelay: 1000,
-        },
-        spa: {
-          enabled: true,
-          prerender: {
-            crawlLinks: true,
-            outputPath: '',
-          },
-        },
-      }),
-      mdx({ include: ['content/**/*.mdx'] }),
-      react(),
-      ...(isReactCompilerEnabled
-        ? [
-            babel({
-              presets: [reactCompilerPreset()],
-            }),
-          ]
-        : []),
-      tailwindcss(),
-      ...(isCheckDisabled
-        ? []
-        : [
-            checker({
-              typescript: true,
-            }),
-          ]),
-      VitePWA(pwaOptions(mode)),
-    ]),
+    plugins: lazyPlugins(() =>
+      createVitePlugins({ isCheckDisabled, isReactCompilerEnabled, mode })
+    ),
     resolve: {
       tsconfigPaths: true,
     },
