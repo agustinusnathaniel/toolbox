@@ -4,15 +4,20 @@ import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 import {
-  type CompressionSummary,
   compressImage,
   downloadFiles,
-  summarizeCompression,
 } from '@/lib/tools/zippy-img/adapters/zippy';
+
+import {
+  announceCompressionSummary,
+  filterValidFiles,
+  getCompressionSummary,
+  mergeFileInputs,
+  summarizeZippyTotals,
+} from './zippy-helpers';
 
 export const MAX_FILES = 2;
 export const MAX_SIZE_MB = 15;
-const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 export interface ImageFile {
   compressed?: File;
@@ -32,27 +37,8 @@ export function useZippyImg(
   const handleFilesSelected = useCallback(
     (files: Array<File>) => {
       trackAction('files_selected');
-      const validFiles = files.filter((f) => {
-        if (f.size > MAX_SIZE_BYTES) {
-          toast.error(`"${f.name}" exceeds ${MAX_SIZE_MB}MB limit`);
-          return false;
-        }
-        return f.type.startsWith('image/');
-      });
-
-      const accepted = validFiles.slice(0, MAX_FILES);
-      if (validFiles.length > MAX_FILES) {
-        toast.info(`Only first ${MAX_FILES} files accepted`);
-      }
-
-      setInputs((prev) => {
-        const existing = prev.map((p) => p.file.name);
-        const newFiles = accepted.filter((f) => !existing.includes(f.name));
-        return [
-          ...prev.map((p) => ({ ...p, progress: 0 })),
-          ...newFiles.map((file) => ({ file, progress: 0 })),
-        ].slice(0, MAX_FILES);
-      });
+      const accepted = filterValidFiles(files);
+      setInputs((prev) => mergeFileInputs(prev, accepted));
     },
     [trackAction]
   );
@@ -61,43 +47,20 @@ export function useZippyImg(
     if (!inputs.length) {
       return;
     }
-
     trackAction('compress');
     setIsCompressing(true);
     setInputs((prev) =>
       prev.map((p) => ({ ...p, compressed: undefined, progress: 0 }))
     );
-
     const results = await Promise.all(
-      inputs.map(async (item, index) => {
-        try {
-          const compressed = await compressImage(item.file, {
-            onProgress: (progress) => {
-              setInputs((prev) =>
-                prev.map((p, i) => (i === index ? { ...p, progress } : p))
-              );
-            },
-          });
-          return { compressed, file: item.file, progress: 100 };
-        } catch {
-          toast.error(`Failed to compress "${item.file.name}"`);
-          return { compressed: undefined, file: item.file, progress: 100 };
-        }
-      })
+      inputs.map((item, index) => compressOne(item, index, setInputs))
     );
-
     setInputs(results);
     setIsCompressing(false);
-    const summary = summarizeCompression(results);
-    trackComplete(summary.succeeded > 0);
-    if (summary.outcome === 'all-success') {
-      toast.success('Compression complete');
-    } else if (summary.outcome === 'partial') {
-      toast.info(
-        `Compression finished: ${summary.succeeded} of ${summary.total} files succeeded`
-      );
-    } else {
-      toast.error('Compression failed for all files');
+    const summary = getCompressionSummary(results);
+    if (summary) {
+      trackComplete(summary.succeeded > 0);
+      announceCompressionSummary(summary);
     }
   }, [trackAction, trackComplete, inputs]);
 
@@ -117,39 +80,42 @@ export function useZippyImg(
   }, []);
 
   const allDone = inputs.length > 0 && inputs.every((i) => i.progress >= 100);
-  const compressionSummary: CompressionSummary | null = allDone
-    ? summarizeCompression(inputs)
-    : null;
-  const hasCompressed = inputs.some((i) => i.compressed !== undefined);
-  const compressedItems = inputs.filter(
-    (i): i is CompressedItem => i.compressed !== undefined
-  );
-  const totalOriginal = compressedItems.reduce(
-    (sum, i) => sum + i.file.size,
-    0
-  );
-  const totalCompressed = compressedItems.reduce(
-    (sum, i) => sum + i.compressed.size,
-    0
-  );
-  const totalSavings =
-    totalOriginal > 0
-      ? Math.round(((totalOriginal - totalCompressed) / totalOriginal) * 100)
-      : 0;
+  const compressionSummary = getCompressionSummary(inputs);
+  const totals = summarizeZippyTotals(inputs);
 
   return {
     allDone,
-    compressedItems,
+    compressedItems: totals.compressedItems,
     compressionSummary,
     executeCompress,
     handleDownload,
     handleFilesSelected,
     handleRemove,
-    hasCompressed,
+    hasCompressed: totals.hasCompressed,
     inputs,
     isCompressing,
-    totalCompressed,
-    totalOriginal,
-    totalSavings,
+    totalCompressed: totals.totalCompressed,
+    totalOriginal: totals.totalOriginal,
+    totalSavings: totals.totalSavings,
   };
+}
+
+async function compressOne(
+  item: ImageFile,
+  index: number,
+  setInputs: React.Dispatch<React.SetStateAction<Array<ImageFile>>>
+): Promise<ImageFile> {
+  try {
+    const compressed = await compressImage(item.file, {
+      onProgress: (progress) => {
+        setInputs((prev) =>
+          prev.map((p, i) => (i === index ? { ...p, progress } : p))
+        );
+      },
+    });
+    return { compressed, file: item.file, progress: 100 };
+  } catch {
+    toast.error(`Failed to compress "${item.file.name}"`);
+    return { compressed: undefined, file: item.file, progress: 100 };
+  }
 }

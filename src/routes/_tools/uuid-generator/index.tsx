@@ -1,42 +1,16 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Dices } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
-import { CopyButton } from '@/lib/components/copy-button';
-import { CopyLinkButton } from '@/lib/components/copy-link-button';
-import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
-import { Label } from '@/lib/components/ui/field';
-import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/lib/components/ui/select';
-import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
-import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import type {
-  UuidOptions,
-  UuidResult,
-} from '@/lib/tools/uuid-generator/adapters/uuid-generator';
-import {
-  generateUuids,
-  UUID_VERSION_OPTIONS,
-} from '@/lib/tools/uuid-generator/adapters/uuid-generator';
-import {
-  buildUuidParams,
-  buildUuidStateFromSearch,
-} from '@/lib/tools/uuid-generator/adapters/uuid-params';
-import { copyToClipboard } from '@/lib/utils/clipboard';
+import { buildUuidStateFromSearch } from '@/lib/tools/uuid-generator/adapters/uuid-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
+import { useUuidPage } from './-components/use-uuid-page';
+import { UuidOptionsForm } from './-components/uuid-options-form';
+import { UuidHelp, UuidResults } from './-components/uuid-results';
 import { meta } from './-meta';
 
 const searchSchema = z.object({
@@ -55,177 +29,28 @@ export const Route = createFileRoute('/_tools/uuid-generator/')({
 function UuidGeneratorPage() {
   const { trackAction } = useToolTracking('uuid-generator', 'UUID Generator');
   const search = useSearch({ from: '/_tools/uuid-generator/' });
-  const [options, setOptions] = useState<UuidOptions>(() =>
-    buildUuidStateFromSearch(search)
-  );
-  const [result, setResult] = useState<UuidResult | null>(null);
-  const { copiedKey, copy } = useCopyFeedback<number>();
-
-  const count = useMemo(() => options.count, [options.count]);
-  const version = useMemo(() => options.version, [options.version]);
-  const hyphens = useMemo(() => options.hyphens, [options.hyphens]);
-  const uppercase = useMemo(() => options.uppercase, [options.uppercase]);
-
-  const handleGenerate = useCallback(() => {
-    setResult(generateUuids(options));
-    trackAction('generate');
-  }, [options, trackAction]);
-
-  const handleCopy = useCallback(
-    async (uuid: string, index: number) => {
-      if (await copy(uuid, index, 'Copied UUID')) {
-        trackAction('copy');
-      }
-    },
-    [copy, trackAction]
-  );
-
-  const handleCopyAll = useCallback(async () => {
-    if (
-      result?.isValid &&
-      result.uuids.length > 1 &&
-      (await copyToClipboard(result.uuids.join('\n'), 'Copied all UUIDs'))
-    ) {
-      trackAction('copy_all');
-    }
-  }, [result, trackAction]);
-
-  const handleCopyLink = useCopyShareableLink(
-    () => buildUuidParams(options),
-    trackAction
-  );
+  const page = useUuidPage(buildUuidStateFromSearch(search), trackAction);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="uuid-version">Version</Label>
-              <Select
-                aria-label="UUID version"
-                onSelectionChange={(key) => {
-                  setOptions((prev) => ({
-                    ...prev,
-                    version: key as UuidOptions['version'],
-                  }));
-                  setResult(null);
-                }}
-                selectedKey={version}
-              >
-                <SelectTrigger />
-                <SelectContent items={UUID_VERSION_OPTIONS}>
-                  {(option) => (
-                    <SelectItem id={option.id}>{option.label}</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="uuid-count">Count</Label>
-              <NumberField
-                maxValue={1000}
-                minValue={1}
-                onChange={(v) => {
-                  setOptions((prev) => ({ ...prev, count: v ?? prev.count }));
-                  setResult(null);
-                }}
-                value={count}
-              >
-                <NumberInput id="uuid-count" />
-              </NumberField>
-            </div>
-            <Button onPress={handleGenerate} size="sm">
-              <Dices className="size-4" />
-              Generate
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <CheckboxField
-              isSelected={uppercase}
-              onChange={(selected) => {
-                setOptions((prev) => ({ ...prev, uppercase: selected }));
-                setResult(null);
-              }}
-            >
-              <Checkbox>Uppercase (A-Z)</Checkbox>
-            </CheckboxField>
-            <CheckboxField
-              isSelected={hyphens}
-              onChange={(selected) => {
-                setOptions((prev) => ({ ...prev, hyphens: selected }));
-                setResult(null);
-              }}
-            >
-              <Checkbox>Include hyphens</Checkbox>
-            </CheckboxField>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {result?.isValid && result.uuids.length > 1 && (
-              <Button intent="outline" onPress={handleCopyAll} size="sm">
-                Copy all
-              </Button>
-            )}
-            <CopyLinkButton
-              label="Copy shareable link"
-              onPress={handleCopyLink}
-            />
-          </div>
-
-          {result && !result.isValid && (
-            <p className="text-danger text-sm" role="alert">
-              {result.error}
-            </p>
-          )}
-
-          {result?.isValid && result.uuids.length > 0 && (
-            <ol className="flex max-h-96 flex-col gap-2 overflow-auto">
-              {result.uuids.map((uuid, index) => (
-                <li
-                  className="flex items-center justify-between gap-2 rounded-lg border bg-(--card-bg)/50 p-3"
-                  key={uuid}
-                >
-                  <code className="min-w-0 truncate font-mono text-sm">
-                    {uuid}
-                  </code>
-                  <CopyButton
-                    copied={copiedKey === index}
-                    label={`Copy UUID ${index + 1}`}
-                    onPress={() => handleCopy(uuid, index)}
-                  />
-                </li>
-              ))}
-            </ol>
-          )}
+          <UuidOptionsForm
+            clearResult={page.clearResult}
+            onGenerate={page.handleGenerate}
+            options={page.options}
+            setOptions={page.setOptions}
+          />
+          <UuidResults
+            copiedKey={page.copiedKey}
+            onCopy={page.handleCopy}
+            onCopyAll={page.handleCopyAll}
+            onCopyLink={page.handleCopyLink}
+            result={page.result}
+          />
         </CardContent>
       </Card>
-
-      <ToolHelp
-        faq={[
-          {
-            answer:
-              'No. UUIDs are generated entirely in your browser using the native Web Crypto API. Nothing leaves your device.',
-            question: 'Is my data sent anywhere?',
-          },
-          {
-            answer:
-              'UUID v4 is fully random. UUID v7 encodes the current timestamp in the first bytes, so values are roughly time-ordered, which can improve database index locality.',
-            question: 'What is the difference between v4 and v7?',
-          },
-        ]}
-        howItWorks={{
-          description:
-            'Pick a version, choose how many UUIDs you need, and copy them individually or all at once.',
-          steps: [
-            'Select UUID v4 or v7',
-            'Set the count (1-1000) and formatting options',
-            'Click Generate',
-            'Copy a single UUID or copy all',
-          ],
-        }}
-      />
+      <UuidHelp />
     </div>
   );
 }
