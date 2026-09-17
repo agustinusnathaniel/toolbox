@@ -41,48 +41,36 @@ export const StaggerChildren = <T extends ElementType = 'div'>({
 }: StaggerChildrenProps<T>) => {
   const reducedMotion = useReducedMotion();
 
-  const containerVariants = {
-    hidden: reducedMotion ? { opacity: 1 } : { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: reducedMotion
-        ? { duration: 0 }
-        : {
-            delayChildren: delay,
-            staggerChildren: staggerDelay,
-          },
-    },
-  };
-
-  const childVariants: Variants = {
+  const getChildVariants = (index: number): Variants => ({
     hidden: reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       transition: reducedMotion
         ? { duration: 0 }
         : {
+            delay: delay + Math.min(index * staggerDelay, 0.4),
             duration,
             ease: [0.4, 0, 0.2, 1],
           },
       y: 0,
     },
-  };
+  });
 
   const tag = (as as MotionComponentKey) || 'div';
   const Component = motionComponents[tag] || motion.div;
 
   return (
-    <Component
-      animate="visible"
-      className={className}
-      initial={reducedMotion ? 'visible' : 'hidden'}
-      variants={containerVariants}
-      {...(props as MotionProps)}
-    >
+    <Component className={className} {...(props as MotionProps)}>
       {Array.isArray(children)
         ? children.map((child, index) => (
-            /* biome-ignore lint/suspicious/noArrayIndexKey: Stagger animation requires index-based keys */
-            <motion.div key={index} variants={childVariants}>
+            <motion.div
+              initial={reducedMotion ? 'visible' : 'hidden'}
+              // biome-ignore lint/suspicious/noArrayIndexKey: Stagger animation requires index-based keys
+              key={index}
+              variants={getChildVariants(index)}
+              viewport={{ margin: '-10% 0px', once: true }}
+              whileInView="visible"
+            >
               {child}
             </motion.div>
           ))
