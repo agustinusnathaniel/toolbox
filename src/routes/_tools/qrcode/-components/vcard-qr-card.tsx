@@ -41,7 +41,7 @@ function VCardQRPreview({
   return (
     <div className="flex flex-col items-center gap-4">
       <div
-        className="rounded-lg p-4"
+        className="rounded-md p-4 outline-1 outline-black/8 -outline-offset-1 dark:outline-white/8"
         style={{ backgroundColor: vcardState.bgColor }}
       >
         <QRCodeSVG

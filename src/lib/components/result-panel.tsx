@@ -25,7 +25,7 @@ export const ResultPanel = ({
       <CopyButton copied={copied} label={copyLabel} onPress={onCopy} />
     </div>
     {children}
-    <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
+    <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
       {value}
     </pre>
   </div>

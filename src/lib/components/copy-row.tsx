@@ -25,8 +25,8 @@ export const CopyRow = ({
       <span className="text-muted-fg text-sm">{label}</span>
       <div className="flex min-w-0 items-center gap-2">
         <span
-          className={`break-all text-right font-medium text-sm ${
-            mono ? 'font-mono' : ''
+          className={`break-words break-all text-right font-medium text-sm ${
+            mono ? 'font-mono tabular-nums' : ''
           }`}
         >
           {value}

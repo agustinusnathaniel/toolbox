@@ -34,7 +34,7 @@ export function ImageDropZone({
       }}
     >
       <div className="flex flex-col items-center gap-1 text-center">
-        <div className="flex size-10 items-center justify-center rounded-full border">
+        <div className="flex size-10 items-center justify-center rounded-full border outline-1 outline-black/8 -outline-offset-1 dark:outline-white/8">
           <UploadIcon className="size-5 text-muted-fg" />
         </div>
         <p className="font-medium text-sm">Drag & drop images here</p>
