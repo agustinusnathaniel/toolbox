@@ -45,7 +45,9 @@ export default function ChangelogPage() {
   return (
     <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-6">
       <section className="space-y-2">
-        <Heading level={1}>Changelog</Heading>
+        <Heading className="text-balance" level={1}>
+          Changelog
+        </Heading>
         <Text>What's new in Toolbox</Text>
       </section>
 

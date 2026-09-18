@@ -154,8 +154,8 @@ export function JwtClaims({
           <tbody>
             {claims.map((claim) => (
               <tr className="border-input border-t" key={claim.key}>
-                <td className="p-3 font-mono">{claim.key}</td>
-                <td className="p-3 font-mono">{claim.value}</td>
+                <td className="break-words p-3 font-mono">{claim.key}</td>
+                <td className="break-words p-3 font-mono">{claim.value}</td>
               </tr>
             ))}
           </tbody>

@@ -58,7 +58,9 @@ function StatCell({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex flex-col gap-1 rounded-lg border bg-(--card-bg)/50 p-3">
       <span className="text-muted-fg text-xs">{label}</span>
-      <span className="font-mono font-semibold text-sm">{value}</span>
+      <span className="font-mono font-semibold text-sm tabular-nums">
+        {value}
+      </span>
     </div>
   );
 }

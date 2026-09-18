@@ -44,11 +44,11 @@ export function ResultCard({
           <>
             <div className="flex items-center gap-2">
               <StatusBadge result={result} />
-              <span className="font-mono text-muted-fg text-sm">
+              <span className="font-mono text-muted-fg text-sm tabular-nums">
                 {formatDuration(result.durationMs)}
               </span>
               {result.statistics && (
-                <span className="text-muted-fg text-xs">
+                <span className="text-muted-fg text-xs tabular-nums">
                   ({formatStatistics(result.statistics)})
                 </span>
               )}
@@ -57,26 +57,26 @@ export function ResultCard({
               <div className="grid grid-cols-1 gap-1 rounded-md border border-border/60 bg-muted/20 px-2 py-1.5 text-xs sm:grid-cols-2">
                 <span className="text-muted-fg">
                   Per iteration:{' '}
-                  <span className="font-medium text-fg">
+                  <span className="font-medium text-fg tabular-nums">
                     {formatDuration(result.perIterationMs)}
                   </span>
                 </span>
                 <span className="text-muted-fg">
                   Range:{' '}
-                  <span className="font-medium text-fg">
+                  <span className="font-medium text-fg tabular-nums">
                     {formatDuration(result.statistics.minMs)} -{' '}
                     {formatDuration(result.statistics.maxMs)}
                   </span>
                 </span>
                 <span className="text-muted-fg">
                   Std dev:{' '}
-                  <span className="font-medium text-fg">
+                  <span className="font-medium text-fg tabular-nums">
                     {formatDuration(result.statistics.stddevMs)}
                   </span>
                 </span>
                 <span className="text-muted-fg">
                   Relative margin:{' '}
-                  <span className="font-medium text-fg">
+                  <span className="font-medium text-fg tabular-nums">
                     {relativeMargin === null
                       ? '—'
                       : `${relativeMargin.toFixed(2)}%`}
@@ -84,13 +84,13 @@ export function ResultCard({
                 </span>
                 <span className="text-muted-fg">
                   Variability:{' '}
-                  <span className="font-medium text-fg">
+                  <span className="font-medium text-fg tabular-nums">
                     {variability === null ? '—' : `${variability.toFixed(2)}%`}
                   </span>
                 </span>
                 <span className="text-muted-fg">
                   Runs:{' '}
-                  <span className="font-medium text-fg">
+                  <span className="font-medium text-fg tabular-nums">
                     {result.statistics.iterations}
                   </span>
                 </span>

@@ -14,7 +14,7 @@ function ToolLayout() {
   return (
     <div className="flex flex-col gap-y-6">
       <div className="flex items-center justify-between">
-        <Heading className="mx-auto text-center" level={1}>
+        <Heading className="mx-auto text-balance text-center" level={1}>
           {meta?.pageTitle}
         </Heading>
       </div>

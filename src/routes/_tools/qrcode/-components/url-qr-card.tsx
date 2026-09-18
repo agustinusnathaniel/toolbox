@@ -50,7 +50,7 @@ export function UrlQRCard({
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-4">
             <div
-              className="rounded-lg p-4"
+              className="rounded-md p-4 outline-1 outline-black/8 -outline-offset-1 dark:outline-white/8"
               style={{ backgroundColor: urlState.bgColor }}
             >
               <QRCodeSVG
@@ -74,11 +74,14 @@ export function UrlQRCard({
               <div className="flex flex-col gap-1">
                 <Label htmlFor="url-value">URL / Text</Label>
                 <Input
+                  autoComplete="url"
                   id="url-value"
+                  inputMode="url"
                   onChange={(e) =>
                     onUpdateUrlField('value', e.currentTarget.value)
                   }
                   placeholder="https://example.com"
+                  type="url"
                   value={urlState.value}
                 />
               </div>

@@ -210,10 +210,10 @@ function CronNextRuns({
             className="flex items-center justify-between gap-2 rounded-lg border bg-(--card-bg)/50 px-3 py-2"
             key={run}
           >
-            <span className="font-mono text-sm">
+            <span className="font-mono text-sm tabular-nums">
               {new Date(run).toLocaleString()}
             </span>
-            <span className="hidden font-mono text-muted-fg text-xs sm:inline">
+            <span className="hidden font-mono text-muted-fg text-xs tabular-nums sm:inline">
               {run}
             </span>
             <CopyButton

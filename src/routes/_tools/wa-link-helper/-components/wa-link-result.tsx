@@ -19,7 +19,10 @@ export function WaLinkResult({
   return (
     <div className="mt-6 flex flex-col gap-2">
       <Label>Generated Link</Label>
-      <Button className="w-full flex-wrap break-all text-start" intent="plain">
+      <Button
+        className="w-full flex-wrap break-words break-all text-start"
+        intent="plain"
+      >
         <a href={link} rel="noopener noreferrer" target="_blank">
           {link}
         </a>
