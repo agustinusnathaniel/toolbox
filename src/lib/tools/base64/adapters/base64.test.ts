@@ -42,13 +42,6 @@ describe('decodeBase64', () => {
     expect(result.output).toBe('🚀');
   });
 
-  test('round-trips ASCII', () => {
-    const encoded = encodeBase64('Hello World');
-    const decoded = decodeBase64(encoded.output);
-    expect(decoded.isValid).toBe(true);
-    expect(decoded.output).toBe('Hello World');
-  });
-
   test('round-trips Unicode', () => {
     const encoded = encodeBase64('héllo wörld 🚀');
     const decoded = decodeBase64(encoded.output);

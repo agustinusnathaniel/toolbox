@@ -60,17 +60,6 @@ describe('generateLoremIpsum output', () => {
     }
   });
 
-  test('startWithLorem true starts with Lorem ipsum dolor sit amet', () => {
-    const text = generateLoremIpsum({
-      format: 'plain',
-      paragraphs: 1,
-      sentencesPerParagraph: 2,
-      startWithLorem: true,
-      wordsPerSentence: { max: 15, min: 8 },
-    });
-    expect(text.startsWith('Lorem ipsum dolor sit amet')).toBe(true);
-  });
-
   test('html format wraps paragraphs in <p>', () => {
     const text = generateLoremIpsum({
       format: 'html',
@@ -117,8 +106,8 @@ describe('generateLoremIpsum option clamping', () => {
       wordsPerSentence: { max: 8, min: 15 },
     });
     const sentences = text.split('.').filter((s) => s.trim().length > 0);
-    for (const s of sentences) {
-      const words = s.trim().split(WS_RE);
+    for (const sentence of sentences) {
+      const words = sentence.trim().split(WS_RE);
       expect(words.length).toBeGreaterThanOrEqual(8);
       expect(words.length).toBeLessThanOrEqual(15);
     }

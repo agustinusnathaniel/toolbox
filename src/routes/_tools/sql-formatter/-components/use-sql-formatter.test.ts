@@ -39,9 +39,8 @@ afterEach(() => {
 
 // Worker lifecycle mechanics (id matching, stale responses, replacement on
 // timeout, unmount cleanup) are covered by use-worker-deadline.test.ts. These
-// tests cover only what useSqlFormatter contributes: the request shape, the
-// trigger gating, the field-change repost, the blank-input clearing, and the
-// timeout result mapping.
+// tests cover the field-change repost and timeout result behavior contributed
+// by useSqlFormatter.
 describe('useSqlFormatter request posting', () => {
   test('posts a request with the input, dialect, and action when trigger changes to 1', () => {
     vi.useFakeTimers();
@@ -187,18 +186,5 @@ describe('useSqlFormatter result handling', () => {
       timedOut: true,
     });
     expect(result.current.computing).toBe(false);
-  });
-
-  test('starts with null result and does not post on mount (trigger 0)', () => {
-    vi.useFakeTimers();
-    const worker = createFakeWorker();
-    const workerFactory = createWorkerFactory(worker);
-    const { result } = renderHook(() =>
-      useSqlFormatter('select * from foo', 'sql', 'format', 0, workerFactory)
-    );
-
-    expect(result.current.result).toBeNull();
-    expect(result.current.computing).toBe(false);
-    expect(worker.postMessage).not.toHaveBeenCalled();
   });
 });

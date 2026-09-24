@@ -79,6 +79,36 @@ const STATE_CASES: Array<{
     name: 'invalid to falls back to second unit',
     search: { category: 'data', from: 'KB', to: 'invalid' },
   },
+  {
+    expected: {
+      category: 'temperature',
+      fromUnit: 'f',
+      toUnit: 'k',
+      value: '32',
+    },
+    name: 'parses temperature state',
+    search: { category: 'temperature', from: 'f', to: 'k', value: '32' },
+  },
+  {
+    expected: {
+      category: 'volume',
+      fromUnit: 'l',
+      toUnit: 'cup',
+      value: '1',
+    },
+    name: 'parses volume state',
+    search: { category: 'volume', from: 'l', to: 'cup', value: '1' },
+  },
+  {
+    expected: {
+      category: 'weight',
+      fromUnit: 'mg',
+      toUnit: 'g',
+      value: '1',
+    },
+    name: 'rejects a unit from another category',
+    search: { category: 'weight', from: 'm', to: 'g', value: '1' },
+  },
 ];
 
 describe('buildUnitConverterParams', () => {

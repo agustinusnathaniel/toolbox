@@ -29,14 +29,6 @@ describe('generatePassword', () => {
     expect(result.output).toHaveLength(20);
   });
 
-  test('includes at least one character from each selected set', () => {
-    const result = generatePassword(ALL_SETS);
-    expect(result.output).toMatch(HAS_LOWERCASE);
-    expect(result.output).toMatch(HAS_UPPERCASE);
-    expect(result.output).toMatch(HAS_DIGIT);
-    expect(result.output).toMatch(HAS_SYMBOL);
-  });
-
   test('keeps length and charset guarantees across many runs', () => {
     for (let run = 0; run < 50; run++) {
       const result = generatePassword({ ...ALL_SETS, length: 12 });

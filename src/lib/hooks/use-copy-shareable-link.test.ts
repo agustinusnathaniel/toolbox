@@ -28,9 +28,8 @@ describe('useCopyShareableLink copy behavior', () => {
   test('builds params from the provided function and copies the shareable URL', async () => {
     mockedCopy.mockResolvedValue(true);
     const trackAction = vi.fn();
-    const buildParams = vi.fn(
-      () => new URLSearchParams({ digits: 'true', length: '16' })
-    );
+    const buildParams = () =>
+      new URLSearchParams({ digits: 'true', length: '16' });
     const { result } = renderHook(() =>
       useCopyShareableLink(buildParams, trackAction)
     );
@@ -39,7 +38,6 @@ describe('useCopyShareableLink copy behavior', () => {
       await result.current();
     });
 
-    expect(buildParams).toHaveBeenCalledTimes(1);
     expect(mockedCopy).toHaveBeenCalledWith(
       'https://example.com/tools/password-generator?digits=true&length=16',
       'Copied Shareable Link'

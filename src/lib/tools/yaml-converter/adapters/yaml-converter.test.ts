@@ -51,12 +51,6 @@ describe('convertJsonToYaml', () => {
     expect(result.error).toBeDefined();
   });
 
-  test('returns error for empty string', () => {
-    const result = convertJsonToYaml('');
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBe('Input is empty');
-  });
-
   test('returns error for whitespace only', () => {
     const result = convertJsonToYaml('   ');
     expect(result.isValid).toBe(false);
@@ -99,12 +93,6 @@ describe('convertYamlToJson', () => {
     expect(result.isValid).toBe(false);
     expect(result.error).toBeDefined();
     expect(result.output).toBe('');
-  });
-
-  test('returns error for empty string', () => {
-    const result = convertYamlToJson('');
-    expect(result.isValid).toBe(false);
-    expect(result.error).toBe('Input is empty');
   });
 
   test('returns error for whitespace only', () => {

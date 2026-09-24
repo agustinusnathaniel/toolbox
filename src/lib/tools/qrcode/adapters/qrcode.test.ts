@@ -3,26 +3,6 @@ import { describe, expect, test } from 'vite-plus/test';
 import { generateVCardString } from './qrcode';
 
 describe('generateVCardString contact fields', () => {
-  test('generates vCard with full contact info', () => {
-    const result = generateVCardString({
-      companyName: 'Acme Inc',
-      emailAddress: 'john@example.com',
-      firstName: 'John',
-      jobTitle: 'Engineer',
-      lastName: 'Doe',
-      mobilePhoneNumber: '+1-555-1234',
-    });
-
-    expect(result).toContain('BEGIN:VCARD');
-    expect(result).toContain('N:Doe;John');
-    expect(result).toContain('TEL;TYPE=work,VOICE:+1-555-1234');
-    expect(result).toContain('EMAIL:john@example.com');
-    expect(result).toContain('ORG:Acme Inc');
-    expect(result).toContain('TITLE:Engineer');
-    expect(result).toContain('VERSION:3.0');
-    expect(result).toContain('END:VCARD');
-  });
-
   test('generates vCard with only phone number', () => {
     const result = generateVCardString({ mobilePhoneNumber: '+1-555-5678' });
 
@@ -85,12 +65,6 @@ describe('generateVCardString address variants', () => {
 });
 
 describe('generateVCardString full and minimal output', () => {
-  test('generates vCard with website URL', () => {
-    const result = generateVCardString({ websiteURL: 'https://example.com' });
-
-    expect(result).toContain('URL:https://example.com');
-  });
-
   test('generates vCard with all fields filled', () => {
     const result = generateVCardString({
       city: 'Seattle',

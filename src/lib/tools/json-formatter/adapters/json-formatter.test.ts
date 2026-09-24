@@ -87,11 +87,6 @@ describe('formatJson', () => {
 });
 
 describe('validateJson', () => {
-  test('returns valid for valid JSON', () => {
-    const result = validateJson(VALID_OBJECT);
-    expect(result.isValid).toBe(true);
-  });
-
   test('returns normalized formatted output', () => {
     const result = validateJson('  {"name":"John"}  ');
     expect(result.isValid).toBe(true);
@@ -112,12 +107,6 @@ describe('validateJson', () => {
 });
 
 describe('minifyJson', () => {
-  test('minifies formatted JSON', () => {
-    const result = minifyJson(VALID_NESTED);
-    expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe(VALID_NESTED);
-  });
-
   test('minifies whitespace-heavy JSON', () => {
     const input = '{\n  "a": 1,\n  "b": 2\n}';
     const result = minifyJson(input);

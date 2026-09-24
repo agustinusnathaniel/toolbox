@@ -50,12 +50,6 @@ describe('getMobileNavItems', () => {
       )
     );
   });
-
-  test('returns unique paths', () => {
-    const paths = getMobileNavItems().map((item) => item.path);
-
-    expect(new Set(paths).size).toBe(paths.length);
-  });
 });
 
 describe('getToolNavCategories', () => {

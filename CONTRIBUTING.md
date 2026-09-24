@@ -65,7 +65,12 @@ Run `pnpm knip` to find unused files and dependencies. Registry-managed IntentUI
 
 ### Testing
 
-Tests are opt-in, not the default. Write them when there is a concrete, defensible benefit — meaningful regression protection for risky logic — not automatically for every change. Don't chase test count or coverage percentage; optimize for confidence, regression protection, signal-to-noise ratio, and maintenance cost.
+Testing order:
+- **Never write unit tests after writing code.**
+- **Highly prefer E2E tests as the sole testing mechanism.** Use E2E tests to verify complex features work. At the end of E2E tests, produce a verifiable and repeatable artifact.
+- **If you must test a system in isolation, first write down all the ways it could fail, then write the code.**
+
+Tests are opt-in, not the default. Write them when there is a concrete, defensible benefit, meaningful regression protection for risky logic, not automatically for every change. Don't chase test count or coverage percentage; optimize for confidence, regression protection, signal-to-noise ratio, and maintenance cost.
 
 When writing or reviewing tests:
 
@@ -74,11 +79,10 @@ When writing or reviewing tests:
 - **No change-detector tests.** Do not lock output without a behavior contract (snapshots, golden strings, serialized shapes asserted for their own sake). A refactor that preserves behavior must keep tests green.
 - **No automatic regression test per bug fix.** Add one only when a genuine behavior gap exists: the test would have caught this bug through observable behavior and no existing test covers it. Otherwise rely on existing coverage plus runtime verification.
 - **One behavior, one test.** A regression should produce exactly one failure. Prefer extending a module's existing test file over creating a new one.
-- **No ceremony.** Plain assertions. Mock only genuinely external seams (clipboard, network, timers, workers) — if a test mocks the project's own logic, extract that logic into a pure `adapters/` function instead.
-- **Prefer adapters over UI tests.** Pure functions in `src/lib/tools/<name>/adapters/` test without DOM mocking. For UI, a handful of behavioral/a11y checks (e.g. `diff-view-control.test.tsx`) beats component-internals testing.
-- **Define behavior before code, not tests after code.** Do not backfill unit tests to lock in already-written code. When isolated coverage is justified, write down the observable behavior and every failure mode first, then implement.
-- **Prefer runtime verification when it gives better signal.** For visual or integration-level changes, `pnpm dev` + browser verification can replace a test that would only mock the DOM. For complex features, exercise the full tool journey in the running app and end with its actionable output (download, clipboard content, or shareable link) as the verifiable artifact; reach for isolated tests only when runtime verification cannot cover a genuine gap, and keep them at the smallest boundary that catches it (usually `adapters/`).
-- **Keep test functions small (Biome limit: 60 lines per function, 500 per file, enforced as errors).** Split an oversized `describe` into smaller themed `describe` blocks; hoist large `test.each` tables to top-level `const`s; extract a file-local arrange helper (e.g. `chargingInput(overrides)`) when several tests repeat the same input shape. Keep tests self-contained — no shared cross-file test helpers.
+- **No ceremony.** Plain assertions. Mock only genuinely external seams (clipboard, network, timers, workers). If a test mocks the project's own logic, extract that logic into a pure `adapters/` function instead.
+- **Use isolated tests only when E2E cannot cover a genuine gap.** When that happens, prefer the smallest adapter boundary that catches the behavior. For UI, retain only a handful of behavioral or accessibility checks that E2E cannot reasonably replace, such as `diff-view-control.test.tsx`.
+- **Prefer runtime verification when it gives better signal.** For visual or integration-level changes, `pnpm dev` plus browser verification can replace a test that would only mock the DOM. For complex features, exercise the full tool journey in the running app and end with its actionable output (download, clipboard content, or shareable link) as the verifiable, repeatable artifact.
+- **Keep test functions small (Biome limit: 60 lines per function, 500 per file, enforced as errors).** Split an oversized `describe` into smaller themed `describe` blocks; hoist large `test.each` tables to top-level `const`s; extract a file-local arrange helper (e.g. `chargingInput(overrides)`) when several tests repeat the same input shape. Keep tests self-contained, with no shared cross-file test helpers.
 
 Run tests with `pnpm test` (one-shot) or `pnpm test:ui` (visual interface for debugging).
 

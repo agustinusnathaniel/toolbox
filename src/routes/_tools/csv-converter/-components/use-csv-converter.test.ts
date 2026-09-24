@@ -36,10 +36,6 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-// Worker lifecycle mechanics (id matching, stale responses, replacement on
-// timeout, unmount cleanup) are covered by use-worker-deadline.test.ts. These
-// tests cover only what useCsvConverter contributes: the request shape, the
-// trigger gating, and the timeout result mapping.
 describe('useCsvConverter', () => {
   test('posts a request with the input and mode when trigger changes to 1', () => {
     vi.useFakeTimers();

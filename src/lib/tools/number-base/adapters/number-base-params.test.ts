@@ -28,11 +28,6 @@ describe('buildNumberBaseParams', () => {
     expect(p.get('input')).toBeNull();
     expect(p.get('from')).toBe('16');
   });
-
-  test('encodes both', () => {
-    const p = buildNumberBaseParams('1010', 2);
-    expect(p.toString()).toBe('input=1010&from=2');
-  });
 });
 
 describe('buildNumberBaseStateFromSearch', () => {
@@ -57,5 +52,18 @@ describe('buildNumberBaseStateFromSearch', () => {
     const s = buildNumberBaseStateFromSearch({ from: '2', input: '1010' });
     expect(s.fromBase).toBe(2);
     expect(s.input).toBe('1010');
+  });
+
+  test('round-trips octal shared state', () => {
+    const params = buildNumberBaseParams('377', 8);
+    const search: Record<string, unknown> = {};
+    for (const [key, value] of params.entries()) {
+      search[key] = value;
+    }
+
+    expect(buildNumberBaseStateFromSearch(search)).toEqual({
+      fromBase: 8,
+      input: '377',
+    });
   });
 });

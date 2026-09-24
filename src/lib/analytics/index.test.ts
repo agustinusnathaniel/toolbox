@@ -20,15 +20,6 @@ afterEach(() => {
 });
 
 describe('analytics.addTracker', () => {
-  test('returns an unsubscribe function', () => {
-    const tracker = createMockTracker();
-    const unsubscribe = analytics.addTracker(tracker);
-
-    expect(typeof unsubscribe).toBe('function');
-
-    unsubscribe();
-  });
-
   test('unsubscribed tracker no longer receives events', () => {
     const tracker = createMockTracker();
     const unsubscribe = analytics.addTracker(tracker);
@@ -123,10 +114,6 @@ describe('analytics.track delivery resilience', () => {
 
     unsub1();
     unsub2();
-  });
-
-  test('does nothing when no trackers registered', () => {
-    expect(() => analytics.track({ name: 'test_event' })).not.toThrow();
   });
 });
 

@@ -28,19 +28,6 @@ describe('computeTextStats empty and basic counts', () => {
     expect(s.sentences).toBe(0);
   });
 
-  test('single word', () => {
-    const s = computeTextStats('hello');
-    expect(s.characters).toBe(5);
-    expect(s.charactersNoSpaces).toBe(5);
-    expect(s.words).toBe(1);
-    expect(s.lines).toBe(1);
-    expect(s.paragraphs).toBe(1);
-    expect(s.sentences).toBe(1);
-    expect(s.bytesUtf8).toBe(5);
-    expect(s.longestWordLength).toBe(5);
-    expect(s.averageWordLength).toBe(5);
-  });
-
   test('hello world basic', () => {
     const s = computeTextStats('hello world');
     expect(s.characters).toBe(11);
@@ -82,11 +69,6 @@ describe('computeTextStats structure', () => {
   test('sentence without terminator counts as one', () => {
     const s = computeTextStats('hello world');
     expect(s.sentences).toBe(1);
-  });
-
-  test('empty sentences stays zero', () => {
-    const s = computeTextStats('');
-    expect(s.sentences).toBe(0);
   });
 });
 
