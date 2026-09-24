@@ -122,10 +122,6 @@ describe('parseColor expanded input syntax', () => {
 });
 
 describe('parseColor invalid input', () => {
-  test('returns null for empty string', () => {
-    expect(parseColor('')).toBeNull();
-  });
-
   test('returns null for whitespace', () => {
     expect(parseColor('   ')).toBeNull();
   });

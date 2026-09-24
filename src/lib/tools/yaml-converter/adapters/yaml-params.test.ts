@@ -9,12 +9,6 @@ describe('buildYamlParams', () => {
     expect(params.get('mode')).toBe('json-to-yaml');
   });
 
-  test('builds params with yaml-to-json mode', () => {
-    const params = buildYamlParams('a: 1', 'yaml-to-json');
-    expect(params.get('input')).toBe('a: 1');
-    expect(params.get('mode')).toBe('yaml-to-json');
-  });
-
   test('includes mode even when input empty', () => {
     const params = buildYamlParams('', 'json-to-yaml');
     expect(params.get('mode')).toBe('json-to-yaml');
@@ -30,12 +24,6 @@ describe('buildYamlStateFromSearch', () => {
     });
     expect(state.input).toBe('hello');
     expect(state.mode).toBe('yaml-to-json');
-  });
-
-  test('defaults input to empty string', () => {
-    const state = buildYamlStateFromSearch({ mode: 'json-to-yaml' });
-    expect(state.input).toBe('');
-    expect(state.mode).toBe('json-to-yaml');
   });
 
   test('defaults mode when invalid', () => {

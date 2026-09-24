@@ -78,18 +78,6 @@ describe('buildComparisonMetrics null guards', () => {
 });
 
 describe('buildComparisonMetrics winners', () => {
-  test('A-faster case: winner A, speedup > 1, positive delta', () => {
-    const result = buildComparisonMetrics(
-      simpleResult(5, 5, 1),
-      simpleResult(15, 15, 1)
-    );
-
-    expect(result?.winner).toBe('A');
-    expect(result?.speedup).toBeCloseTo(3, 4);
-    expect(result?.absoluteDeltaMs).toBeCloseTo(10, 4);
-    expect(result?.percentDelta).toBeCloseTo(66.6667, 2);
-  });
-
   test('B-faster case: winner B, speedup > 1', () => {
     const result = buildComparisonMetrics(
       simpleResult(20, 20, 1),

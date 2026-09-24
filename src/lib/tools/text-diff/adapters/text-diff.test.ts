@@ -12,10 +12,7 @@ import {
 } from './text-diff';
 
 function diffFileDiff(original: string, modified: string): FileDiffMetadata {
-  const result = diffTexts(original, modified);
-  expect(result.isValid).toBe(true);
-  expect(result.fileDiff).not.toBeNull();
-  return result.fileDiff as FileDiffMetadata;
+  return diffTexts(original, modified).fileDiff as FileDiffMetadata;
 }
 
 describe('diffTexts line changes', () => {

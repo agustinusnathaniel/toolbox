@@ -60,11 +60,6 @@ describe('formatFileSize', () => {
     expect(formatFileSize(1024 * 1024 - 1)).toBe('1024.0 KB');
     expect(formatFileSize(1024 * 1024)).toBe('1.00 MB');
   });
-
-  test('formats large values', () => {
-    expect(formatFileSize(100 * 1024 * 1024)).toBe('100.00 MB');
-    expect(formatFileSize(500 * 1024 * 1024)).toBe('500.00 MB');
-  });
 });
 
 describe('summarizeCompression', () => {

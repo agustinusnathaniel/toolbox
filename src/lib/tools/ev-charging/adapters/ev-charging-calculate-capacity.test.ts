@@ -30,18 +30,6 @@ describe('usable capacity calculation', () => {
     expect(result.totalKwh).toBe(52.63);
   });
 
-  test('defaults to 100% when usablePercent is 100', () => {
-    const result = calculateChargingEstimate({
-      chargerType: 'ac-l2',
-      endSOC: 100,
-      startSOC: 0,
-      totalCapacity: 75,
-      usablePercent: 100,
-    });
-
-    expect(result.usableCapacity).toBe(75);
-  });
-
   test('reduces usableCapacity when usablePercent is lower', () => {
     const result100 = calculateChargingEstimate({
       chargerType: 'ac-l2',

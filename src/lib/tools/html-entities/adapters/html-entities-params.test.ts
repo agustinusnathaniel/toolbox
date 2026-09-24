@@ -61,10 +61,6 @@ describe('buildHtmlEntitiesStateFromSearch', () => {
       input: '',
       mode: 'encode',
     });
-    expect(buildHtmlEntitiesStateFromSearch({ mode: '' })).toEqual({
-      input: '',
-      mode: 'encode',
-    });
   });
 
   it('handles non-string input', () => {

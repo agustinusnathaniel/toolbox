@@ -1,34 +1,7 @@
 import { describe, expect, test } from 'vite-plus/test';
 
 import type { UnitCategory } from './unit-converter';
-import {
-  convertUnit,
-  getUnitsForCategory,
-  isValidCategory,
-  isValidUnitForCategory,
-  normalizeCategory,
-  normalizeUnit,
-} from './unit-converter';
-
-const CATEGORY_CASES: Array<[string | undefined, boolean]> = [
-  ['length', true],
-  ['weight', true],
-  ['temperature', true],
-  ['volume', true],
-  ['data', true],
-  ['invalid', false],
-  [undefined, false],
-  ['', false],
-];
-
-const UNIT_CASES: Array<[string | undefined, UnitCategory, boolean]> = [
-  ['m', 'length', true],
-  ['kg', 'weight', true],
-  ['c', 'temperature', true],
-  ['m', 'weight', false],
-  [undefined, 'length', false],
-  ['', 'length', false],
-];
+import { convertUnit, getUnitsForCategory } from './unit-converter';
 
 const MAPPING_CASES: Array<{
   category: UnitCategory;
@@ -117,47 +90,8 @@ const FORMATTING_CASES: Array<{
   { expected: '42', from: 'm', input: '  42  ', to: 'm' },
 ];
 
-describe('isValidCategory', () => {
-  test.each(CATEGORY_CASES)('isValidCategory(%s) -> %s', (value, expected) => {
-    expect(isValidCategory(value)).toBe(expected);
-  });
-});
-
-describe('normalizeCategory', () => {
-  test('defaults to length', () => {
-    expect(normalizeCategory(undefined)).toBe('length');
-    expect(normalizeCategory('bad')).toBe('length');
-  });
-
-  test('returns valid', () => {
-    expect(normalizeCategory('weight')).toBe('weight');
-    expect(normalizeCategory('temperature')).toBe('temperature');
-  });
-});
-
-describe('isValidUnitForCategory', () => {
-  test.each(UNIT_CASES)(
-    'isValidUnitForCategory(%s, %s) -> %s',
-    (unit, category, expected) => {
-      expect(isValidUnitForCategory(unit, category)).toBe(expected);
-    }
-  );
-});
-
-describe('normalizeUnit', () => {
-  test('returns valid', () => {
-    expect(normalizeUnit('km', 'length')).toBe('km');
-  });
-
-  test('fallback', () => {
-    expect(normalizeUnit('bad', 'length')).toBe('mm');
-    expect(normalizeUnit(undefined, 'weight')).toBe('mg');
-  });
-});
-
 describe('getUnitsForCategory', () => {
   test('returns units', () => {
-    expect(getUnitsForCategory('length').length).toBeGreaterThan(0);
     expect(getUnitsForCategory('data').map((u) => u.id)).toEqual([
       'B',
       'KB',

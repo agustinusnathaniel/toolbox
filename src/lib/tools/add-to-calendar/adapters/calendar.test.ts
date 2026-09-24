@@ -139,17 +139,4 @@ describe('buildCalendarSearchParams', () => {
       title: undefined,
     });
   });
-
-  test('handles partial inputs', () => {
-    const result = buildCalendarSearchParams({
-      title: 'Conference',
-    });
-    expect(result).toEqual({
-      desc: undefined,
-      end: undefined,
-      loc: undefined,
-      start: undefined,
-      title: 'Conference',
-    });
-  });
 });

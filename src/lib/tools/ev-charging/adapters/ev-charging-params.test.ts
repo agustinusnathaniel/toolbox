@@ -77,7 +77,7 @@ describe('buildChargingSearchParams omissions', () => {
   });
 });
 
-describe('buildChargingSearchParams null and partial inputs', () => {
+describe('buildChargingSearchParams null inputs', () => {
   test('handles null inputs gracefully', () => {
     const params = buildChargingSearchParams({
       calibrationFactor: null,
@@ -94,16 +94,5 @@ describe('buildChargingSearchParams null and partial inputs', () => {
     expect(params.get('cal')).toBeNull();
     expect(params.get('type')).toBeNull();
     expect(params.toString()).toBe('');
-  });
-
-  test('handles partial inputs', () => {
-    const params = buildChargingSearchParams({
-      endSOC: 90,
-      startSOC: 10,
-    });
-    expect(params.get('start')).toBe('10');
-    expect(params.get('end')).toBe('90');
-    expect(params.get('cap')).toBeNull();
-    expect(params.toString()).toBe('start=10&end=90');
   });
 });

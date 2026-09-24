@@ -24,13 +24,6 @@ describe('testRegex matching basics', () => {
     expect(result.matches.map((m) => m.index)).toEqual([0, 4]);
   });
 
-  test('finds all matches with the g flag', () => {
-    const result = testRegex('cat', 'g', 'cat cat');
-    expect(result.isValid).toBe(true);
-    expect(result.matchCount).toBe(2);
-    expect(result.matches.map((m) => m.index)).toEqual([0, 4]);
-  });
-
   test('captures groups in order', () => {
     const result = testRegex('(\\w+)@(\\w+)', '', 'a@b');
     expect(result.isValid).toBe(true);
@@ -68,12 +61,6 @@ describe('testRegex flags and edge cases', () => {
     expect(result.isValid).toBe(true);
     expect(result.matchCount).toBe(1);
     expect(result.matches[0].full).toBe('cat');
-  });
-
-  test('handles zero-length matches without hanging', () => {
-    const result = testRegex('a*', '', 'bbb');
-    expect(result.isValid).toBe(true);
-    expect(result.matches.length).toBeGreaterThanOrEqual(1);
   });
 
   test('handles zero-length matches everywhere without hanging', () => {

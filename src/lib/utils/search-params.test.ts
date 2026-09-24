@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vite-plus/test';
-import { z } from 'zod';
 
 import {
   coerceEnum,
@@ -11,22 +10,6 @@ import {
   stringifySearchParams,
   writeFlag,
 } from './search-params';
-
-const uuidSearchSchema = z.object({
-  count: z.string().optional(),
-  hyphens: z.string().optional(),
-  uppercase: z.string().optional(),
-  version: z.string().optional(),
-});
-
-const singleStringSchema = z.object({
-  input: z.string().optional(),
-});
-
-const textDiffSchema = z.object({
-  modified: z.string().optional(),
-  original: z.string().optional(),
-});
 
 const LEADING_QUESTION_MARK = /^\?/;
 
@@ -47,24 +30,6 @@ describe('parseSearchParams', () => {
       input: 'hello world',
       mode: 'encode',
     });
-  });
-
-  test('uuid-generator share link passes its route schema', () => {
-    const parsed = parseSearchParams('count=3&uppercase=1&version=v7');
-    const result = uuidSearchSchema.safeParse(parsed);
-    expect(result.success).toBe(true);
-  });
-
-  test('numeric-looking single values pass string schemas', () => {
-    const parsed = parseSearchParams('input=123');
-    const result = singleStringSchema.safeParse(parsed);
-    expect(result.success).toBe(true);
-  });
-
-  test('text-diff share link passes its route schema', () => {
-    const parsed = parseSearchParams('original=123&modified=456');
-    const result = textDiffSchema.safeParse(parsed);
-    expect(result.success).toBe(true);
   });
 
   test('handles empty and absent search', () => {

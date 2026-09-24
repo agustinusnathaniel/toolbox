@@ -48,9 +48,13 @@ Violating these breaks the system:
 
 ## Testing
 
-**New test files are opt-in, not the default.** A request to implement, fix, refactor, or verify something does not authorize creating test files, fixtures, or test-only helpers — propose them first, and only when regression protection genuinely justifies it. Prefer extending a module's existing tests, or `vp dev` + browser verification when it gives better signal for less maintenance.
+- **Never write unit tests after you write code.**
+- **Highly prefer E2E tests as the sole testing mechanism.** Use E2E tests to verify complex features work. At the end of E2E tests, produce a verifiable and repeatable artifact.
+- **If you must test a system in isolation, first write down all the ways it could fail, then write the code.**
 
-When tests are warranted: test observable behavior through public APIs (inputs in, outputs out — a test fails only when behavior breaks, never when the implementation changes); one behavior per test; mock only genuine external seams (clipboard, network, timers, workers) — mocking the project's own logic means it belongs in `adapters/`; prefer `adapters/` over UI tests — pure functions don't need DOM mocking. Self-contained `it()` blocks over shared helpers; copy-paste is OK for readability. Don't chase test count or coverage % — optimize for confidence, regression protection, and maintenance cost.
+**New test files are opt-in, not the default.** A request to implement, fix, refactor, or verify something does not authorize creating test files, fixtures, or test-only helpers. Propose them first, and only when regression protection genuinely justifies an isolated boundary that E2E cannot cover.
+
+When isolated coverage is justified, test observable behavior through public APIs (inputs in, outputs out, a test fails only when behavior breaks, never when the implementation changes); one behavior per test; mock only genuine external seams (clipboard, network, timers, workers). Preserve coverage for error handling, boundaries, security/privacy, URL state, async races, and external browser seams. Do not claim browser coverage when no committed E2E suite exists, and do not delete a test solely because it is a unit test.
 
 Detailed testing guide: [CONTRIBUTING.md → Testing](./CONTRIBUTING.md#testing).
 

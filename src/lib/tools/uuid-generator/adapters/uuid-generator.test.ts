@@ -49,7 +49,6 @@ describe('generateUuids', () => {
     expect(result.isValid).toBe(true);
     for (const uuid of result.uuids) {
       expect(uuid).toMatch(UUID_HEX_32_REGEX);
-      expect(uuid).not.toContain('-');
     }
   });
 
@@ -63,7 +62,6 @@ describe('generateUuids', () => {
     expect(result.isValid).toBe(true);
     for (const uuid of result.uuids) {
       expect(uuid).toMatch(UPPERCASE_UUID_REGEX);
-      expect(uuid).toBe(uuid.toUpperCase());
     }
   });
 

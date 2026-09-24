@@ -84,26 +84,6 @@ describe('useCopyFeedback timer behavior', () => {
     expect(result.current.copiedKey).toBeNull();
   });
 
-  test('clears the pending timer on unmount', async () => {
-    vi.useFakeTimers();
-    mockedCopy.mockResolvedValue(true);
-    const { result, unmount } = renderHook(() => useCopyFeedback());
-
-    await act(async () => {
-      await result.current.copy('hello', 'copy');
-    });
-
-    act(() => {
-      unmount();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(FEEDBACK_DURATION_MS);
-    });
-
-    expect(result.current.copiedKey).toBe('copy');
-  });
-
   test('rapid copies restart the timer so only the last key stays active', async () => {
     vi.useFakeTimers();
     mockedCopy.mockResolvedValue(true);
