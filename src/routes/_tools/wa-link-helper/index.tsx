@@ -1,15 +1,23 @@
 'use client';
 
-import { createFileRoute, useSearch } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  useNavigate,
+  useSearch,
+} from '@tanstack/react-router';
 import { Form } from 'react-aria-components';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
+import { buildWALinkSearchParams } from '@/lib/tools/wa-link-helper/adapters/wa-link';
+import { copyToClipboard } from '@/lib/utils/clipboard';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
+import { recordToSearchParams } from '@/lib/utils/search-params';
 
-import { copyWaLink, useWaLinkCopy } from './-components/use-wa-link-copy';
 import { useWaLinkForm } from './-components/use-wa-link-form';
 import { WaLinkFormFields } from './-components/wa-link-form-fields';
 import { WaLinkHelp, WaLinkResult } from './-components/wa-link-result';
@@ -32,12 +40,37 @@ function WALinkHelperPage() {
   const search = useSearch({ from: '/_tools/wa-link-helper/' });
   const { countryCode, form, isPhoneValid, link, phoneNumber, text } =
     useWaLinkForm(search);
-  const { handleCopyShareableLink } = useWaLinkCopy({
-    countryCode,
-    onCopy: trackAction,
-    phoneNumber,
-    text,
-  });
+  const navigate = useNavigate({ from: '/wa-link-helper/' });
+  const copyShareableLink = useCopyShareableLink(
+    () =>
+      recordToSearchParams(
+        buildWALinkSearchParams({ countryCode, phoneNumber, text })
+      ),
+    trackAction,
+    'copy_shareable'
+  );
+  const handleCopyShareableLink = async () => {
+    navigate({
+      replace: true,
+      search: (prev) => ({
+        ...prev,
+        ...buildWALinkSearchParams({ countryCode, phoneNumber, text }),
+      }),
+    });
+    await copyShareableLink();
+  };
+  const handleCopyLink = async () => {
+    if (!(isPhoneValid && link)) {
+      toast('Invalid Phone Number', {
+        description:
+          'The phone number is not valid for the selected country. Please check and try again.',
+      });
+      return;
+    }
+    if (await copyToClipboard(link, 'Copied Link')) {
+      trackAction('copy_link');
+    }
+  };
   const { isValid } = form.formState;
 
   return (
@@ -46,9 +79,7 @@ function WALinkHelperPage() {
         <CardContent>
           <Form
             className="grid gap-6 text-start"
-            onSubmit={form.handleSubmit(() =>
-              copyWaLink(link, isPhoneValid, trackAction)
-            )}
+            onSubmit={form.handleSubmit(() => handleCopyLink())}
           >
             <WaLinkFormFields form={form} />
             <Button type="submit">Copy Link</Button>

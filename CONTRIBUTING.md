@@ -70,10 +70,14 @@ Tests are opt-in, not the default. Write them when there is a concrete, defensib
 When writing or reviewing tests:
 
 - **Black-box behavior only.** Pass inputs, assert observable outputs. A test should only fail when a behavior is broken, never when the implementation behind it changes. No assertions on source-code strings, function shapes, or internal structure.
+- **No tautological tests.** Do not assert what the test itself arranged (canned mock returned as expected, implementation restated as expectation). Each assertion must pin an independently meaningful observable behavior.
+- **No change-detector tests.** Do not lock output without a behavior contract (snapshots, golden strings, serialized shapes asserted for their own sake). A refactor that preserves behavior must keep tests green.
+- **No automatic regression test per bug fix.** Add one only when a genuine behavior gap exists: the test would have caught this bug through observable behavior and no existing test covers it. Otherwise rely on existing coverage plus runtime verification.
 - **One behavior, one test.** A regression should produce exactly one failure. Prefer extending a module's existing test file over creating a new one.
 - **No ceremony.** Plain assertions. Mock only genuinely external seams (clipboard, network, timers, workers) — if a test mocks the project's own logic, extract that logic into a pure `adapters/` function instead.
 - **Prefer adapters over UI tests.** Pure functions in `src/lib/tools/<name>/adapters/` test without DOM mocking. For UI, a handful of behavioral/a11y checks (e.g. `diff-view-control.test.tsx`) beats component-internals testing.
-- **Prefer runtime verification when it gives better signal.** For visual or integration-level changes, `pnpm dev` + browser verification can replace a test that would only mock the DOM.
+- **Define behavior before code, not tests after code.** Do not backfill unit tests to lock in already-written code. When isolated coverage is justified, write down the observable behavior and every failure mode first, then implement.
+- **Prefer runtime verification when it gives better signal.** For visual or integration-level changes, `pnpm dev` + browser verification can replace a test that would only mock the DOM. For complex features, exercise the full tool journey in the running app and end with its actionable output (download, clipboard content, or shareable link) as the verifiable artifact; reach for isolated tests only when runtime verification cannot cover a genuine gap, and keep them at the smallest boundary that catches it (usually `adapters/`).
 - **Keep test functions small (Biome limit: 60 lines per function, 500 per file, enforced as errors).** Split an oversized `describe` into smaller themed `describe` blocks; hoist large `test.each` tables to top-level `const`s; extract a file-local arrange helper (e.g. `chargingInput(overrides)`) when several tests repeat the same input shape. Keep tests self-contained — no shared cross-file test helpers.
 
 Run tests with `pnpm test` (one-shot) or `pnpm test:ui` (visual interface for debugging).

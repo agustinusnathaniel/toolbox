@@ -57,7 +57,6 @@ export const CHARGER_LABELS: Record<ChargerType, string> = {
 // Note: 30-50 kW band has no direct data; set to adjacent 10-30 kW value (0.88).
 const POWER_EFFICIENCY_TABLE: Array<{ maxKw: number; efficiency: number }> = [
   { efficiency: 0.86, maxKw: 10 },
-  { efficiency: 0.88, maxKw: 30 },
   { efficiency: 0.88, maxKw: 50 },
   { efficiency: 0.86, maxKw: 80 },
   { efficiency: 0.87, maxKw: Number.POSITIVE_INFINITY },
@@ -77,10 +76,6 @@ function getEfficiency(chargerType: ChargerType, powerKw?: number): number {
 
 export const SOC_PENALTY = 0.045;
 export const SOC_THRESHOLD = 80;
-
-// Penalty above 80% SOC — all tiers use the same rate (0.045). The graduated structure is preserved for future refinement when more data is available.
-export const SOC_PENALTY_90 = 0.045;
-export const SOC_PENALTY_95 = 0.045;
 
 export function calculateChargingEstimate(
   inputs: ChargingInputs
@@ -162,8 +157,8 @@ function calcAboveThreshold(
 ): { topPart: number; penalty: number } {
   const breakpoints = [
     { end: 90, penalty: SOC_PENALTY, start: SOC_THRESHOLD },
-    { end: 95, penalty: SOC_PENALTY_90, start: 90 },
-    { end: 100, penalty: SOC_PENALTY_95, start: 95 },
+    { end: 95, penalty: SOC_PENALTY, start: 90 },
+    { end: 100, penalty: SOC_PENALTY, start: 95 },
   ];
 
   let topPart = 0;
