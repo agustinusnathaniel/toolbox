@@ -13,8 +13,6 @@ export function useCopyShareableLink(
   buildParamsRef.current = buildParams;
   const trackActionRef = useRef(trackAction);
   trackActionRef.current = trackAction;
-  const actionRef = useRef(action);
-  actionRef.current = action;
 
   return useCallback(async () => {
     const params = buildParamsRef.current();
@@ -22,7 +20,7 @@ export function useCopyShareableLink(
       params.toString() ? `?${params.toString()}` : ''
     }`;
     if (await copyToClipboard(url, 'Copied Shareable Link')) {
-      trackActionRef.current(actionRef.current);
+      trackActionRef.current(action);
     }
-  }, []);
+  }, [action]);
 }

@@ -4,16 +4,9 @@ import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  buildWALinkSearchParams,
-  type WALinkInputs,
-} from '@/lib/tools/wa-link-helper/adapters/wa-link';
+import { buildWALinkSearchParams } from '@/lib/tools/wa-link-helper/adapters/wa-link';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { recordToSearchParams } from '@/lib/utils/search-params';
-
-interface CopyArgs extends WALinkInputs {
-  onCopy: (action: string) => void;
-}
 
 export function useWaLinkCopy({
   countryCode,
@@ -67,5 +60,3 @@ export async function copyWaLink(
     trackAction('copy_link');
   }
 }
-
-export type { CopyArgs };

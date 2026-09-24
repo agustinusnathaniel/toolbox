@@ -2,8 +2,6 @@ import type { ChargingResult } from '@/lib/tools/ev-charging/adapters/ev-chargin
 import {
   type ChargerType,
   SOC_PENALTY,
-  SOC_PENALTY_90,
-  SOC_PENALTY_95,
   SOC_THRESHOLD,
 } from '@/lib/tools/ev-charging/adapters/ev-charging';
 
@@ -46,11 +44,11 @@ export function EfficiencyInfo({
         </span>
         ,{' '}
         <span className="font-medium text-fg">
-          {((efficiency - SOC_PENALTY_90) * 100).toFixed(0)}% at 90–95% SOC
+          {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% at 90–95% SOC
         </span>
         ,{' '}
         <span className="font-medium text-fg">
-          {((efficiency - SOC_PENALTY_95) * 100).toFixed(0)}% above 95% SOC
+          {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% above 95% SOC
         </span>
         . Charging slows at high SOC to protect battery health, which increases
         relative losses.
@@ -110,11 +108,11 @@ export function SplitFormula({
         {endSOC > 90 && (
           <p>
             90–95% = ({Math.min(endSOC, 95) - 90}) x {usableCapacity} /{' '}
-            {(efficiency - SOC_PENALTY_90).toFixed(3)} ={' '}
+            {(efficiency - SOC_PENALTY).toFixed(3)} ={' '}
             {(
               ((Math.min(endSOC, 95) - 90) * usableCapacity) /
               100 /
-              (efficiency - SOC_PENALTY_90)
+              (efficiency - SOC_PENALTY)
             ).toFixed(2)}{' '}
             kWh
           </p>
@@ -122,11 +120,11 @@ export function SplitFormula({
         {endSOC > 95 && (
           <p>
             95–100% = ({endSOC - 95}) x {usableCapacity} /{' '}
-            {(efficiency - SOC_PENALTY_95).toFixed(3)} ={' '}
+            {(efficiency - SOC_PENALTY).toFixed(3)} ={' '}
             {(
               ((endSOC - 95) * usableCapacity) /
               100 /
-              (efficiency - SOC_PENALTY_95)
+              (efficiency - SOC_PENALTY)
             ).toFixed(2)}{' '}
             kWh
           </p>
@@ -171,12 +169,12 @@ export function AboveThresholdFormula({
         {endSOC > 90 && startSOC < 95 && (
           <p>
             90–95% = ({Math.min(endSOC, 95) - Math.max(startSOC, 90)}) x{' '}
-            {usableCapacity} / {(efficiency - SOC_PENALTY_90).toFixed(3)} ={' '}
+            {usableCapacity} / {(efficiency - SOC_PENALTY).toFixed(3)} ={' '}
             {(
               ((Math.min(endSOC, 95) - Math.max(startSOC, 90)) *
                 usableCapacity) /
               100 /
-              (efficiency - SOC_PENALTY_90)
+              (efficiency - SOC_PENALTY)
             ).toFixed(2)}{' '}
             kWh
           </p>
@@ -184,11 +182,11 @@ export function AboveThresholdFormula({
         {endSOC > 95 && (
           <p>
             95–100% = ({endSOC - Math.max(startSOC, 95)}) x {usableCapacity} /{' '}
-            {(efficiency - SOC_PENALTY_95).toFixed(3)} ={' '}
+            {(efficiency - SOC_PENALTY).toFixed(3)} ={' '}
             {(
               ((endSOC - Math.max(startSOC, 95)) * usableCapacity) /
               100 /
-              (efficiency - SOC_PENALTY_95)
+              (efficiency - SOC_PENALTY)
             ).toFixed(2)}{' '}
             kWh
           </p>
