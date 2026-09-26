@@ -131,7 +131,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Developer',
     icon: <Link2 />,
-    mobileTitle: 'URL Codec',
+    mobileTitle: 'URL',
     showInMobile: true,
     ...urlCodecMeta,
   },
