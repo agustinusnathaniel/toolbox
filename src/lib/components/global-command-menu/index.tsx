@@ -119,10 +119,25 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
 
 export const CommandMenuTrigger = () => (
   <GlobalCommandMenu>
-    <InputGroup className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-input bg-transparent text-muted-fg transition-colors group-hover:border-muted-fg/50 group-focus-visible:border-ring/70 group-focus-visible:ring-3 group-focus-visible:ring-ring/20 sm:w-40 sm:justify-start sm:gap-2 sm:px-3">
+    {/* Matches the SidebarTrigger beside it at BOTH breakpoints. The trigger
+        is 40px/18px icon below sm: and 32px/16px from sm: up, so both the
+        frame and the icon have to be breakpoint-aware — a single size makes
+        one of the two match and the other mismatch.
+
+        InputGroup absolutely positions [data-slot=icon] and clears it with
+        `has-[>icon]:[&_input]:ps-10`, which only applies to a real <input>.
+        This trigger renders a <span> placeholder instead, so the icon
+        landed on top of the text. Keeping the icon in normal flow with a
+        gap is what actually separates them.
+
+        The `!` on the icon overrides InputGroup's own `size-5`, so the
+        sm: override has to live on the parent as a descendant variant with
+        matching importance — an `sm:` utility on the icon itself cannot
+        beat an unconditional `!`. */}
+    <InputGroup className="sm:[&>[data-slot=icon]]:!size-4 flex size-10 shrink-0 items-center justify-center rounded-lg border-0 bg-transparent text-muted-fg transition-colors group-hover:text-fg group-focus-visible:ring-3 group-focus-visible:ring-ring/20 sm:h-8 sm:w-40 sm:justify-start sm:gap-2 sm:border sm:border-input sm:px-3 sm:group-focus-visible:border-ring/70 [&>[data-slot=icon]]:static [&>[data-slot=icon]]:start-auto [&>[data-slot=icon]]:top-auto">
       <IconSearch
         aria-hidden="true"
-        className="size-4 shrink-0"
+        className="!size-4.5 shrink-0"
         data-slot="icon"
       />
       {/* Text and the ⌘K hint are desktop-only: on a phone the bar is width-constrained
