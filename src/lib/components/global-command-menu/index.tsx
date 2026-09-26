@@ -119,16 +119,16 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
 
 export const CommandMenuTrigger = () => (
   <GlobalCommandMenu>
-    {/* Matches the SidebarTrigger beside it: same plain intent, same 40px
-        square, same 16px icon. The bordered pill only appears from sm: up,
-        where there is room for it to read as a search field. */}
-    <InputGroup className="flex size-10 shrink-0 items-center justify-center rounded-lg border-0 bg-transparent text-muted-fg transition-colors group-hover:text-fg group-focus-visible:ring-3 group-focus-visible:ring-ring/20 sm:h-9 sm:w-40 sm:justify-start sm:gap-2 sm:border sm:border-input sm:px-3 sm:group-focus-visible:border-ring/70">
+    {/* Matches the SidebarTrigger beside it at BOTH breakpoints. The trigger
+        is 40px/18px icon below sm: and 32px/16px from sm: up, so both the
+        frame and the icon have to be breakpoint-aware — a single size makes
+        one of the two match and the other mismatch. */}
+    <InputGroup className="flex size-10 shrink-0 items-center justify-center rounded-lg border-0 bg-transparent text-muted-fg transition-colors group-hover:text-fg group-focus-visible:ring-3 group-focus-visible:ring-ring/20 sm:h-8 sm:w-40 sm:justify-start sm:gap-2 sm:border sm:border-input sm:px-3 sm:group-focus-visible:border-ring/70">
       {/* InputGroup's own `*:data-[slot=icon]:size-5` compiles to a class +
-          attribute selector, so it outranks a plain size utility. `!` is
-          required here to land on the same 18px the SidebarTrigger uses. */}
+          attribute selector, which outranks a plain size utility — hence `!`. */}
       <IconSearch
         aria-hidden="true"
-        className="!size-4.5 shrink-0"
+        className="!size-4.5 sm:!size-4 shrink-0"
         data-slot="icon"
       />
       {/* Text and the ⌘K hint are desktop-only: on a phone the bar is width-constrained
