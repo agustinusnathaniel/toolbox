@@ -10,6 +10,16 @@ const homeItem = { href: '/' as const, icon: <IconGlobe />, label: 'Home' };
 
 const MAX_MOBILE_TOOLS = 4;
 
+// Every nav item renders its icon inside this one box, so a tool that imports
+// its icon from a different library (lucide ships a 24x24 svg with no sizing
+// class) cannot render larger than its neighbours. The inner svg is forced to
+// fill the box instead of contributing its own intrinsic size.
+const iconClass =
+  'flex size-5 shrink-0 items-center justify-center [&_svg]:size-full';
+
+const itemClass =
+  'flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-1 font-medium text-xs transition-colors';
+
 export const MobileBottomNav = () => {
   const { location } = useRouterState();
   const currentPath = location.pathname;
@@ -34,24 +44,28 @@ export const MobileBottomNav = () => {
         return (
           <Link
             aria-current={isActive ? 'page' : undefined}
-            className={`flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-1 font-medium text-xs transition-colors ${isActive ? 'text-primary' : 'text-muted-fg hover:text-fg'}`}
+            className={`${itemClass} ${
+              isActive ? 'text-primary' : 'text-muted-fg hover:text-fg'
+            }`}
             href={href}
             key={href}
           >
-            <span className="size-5">{icon}</span>
-            <span>{label}</span>
+            <span className={iconClass}>{icon}</span>
+            <span className="max-w-full truncate">{label}</span>
           </Link>
         );
       })}
+      {/* The sq-md variant's size-11 would cap this button at 44px and the
+          Button base's border would stretch it to 50px, so both are neutralised
+          in favour of the same 48px row height as the link items. */}
       <SidebarTrigger
         aria-label="More navigation"
-        className="sm:size-11 sm:*:[svg]:size-5"
+        className={`${itemClass} h-auto self-stretch border-0 text-muted-fg`}
+        intent="plain"
         size="sq-md"
       >
-        <div className="flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-1 font-medium text-muted-fg text-xs">
-          <IconHamburger className="size-5" />
-          <span>More</span>
-        </div>
+        <IconHamburger className={iconClass} />
+        <span className="max-w-full truncate">More</span>
       </SidebarTrigger>
     </nav>
   );

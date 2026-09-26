@@ -119,12 +119,18 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
 
 export const CommandMenuTrigger = () => (
   <GlobalCommandMenu>
-    <InputGroup className="flex h-9 w-40 items-center gap-2 rounded-lg border border-input bg-transparent px-3 text-muted-fg transition-colors group-hover:border-muted-fg/50 group-focus-visible:border-ring/70 group-focus-visible:ring-3 group-focus-visible:ring-ring/20">
-      <IconSearch aria-hidden="true" data-slot="icon" />
-      <span className="min-w-0 flex-1 truncate text-start text-sm">
+    <InputGroup className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-input bg-transparent text-muted-fg transition-colors group-hover:border-muted-fg/50 group-focus-visible:border-ring/70 group-focus-visible:ring-3 group-focus-visible:ring-ring/20 sm:w-40 sm:justify-start sm:gap-2 sm:px-3">
+      <IconSearch
+        aria-hidden="true"
+        className="size-4 shrink-0"
+        data-slot="icon"
+      />
+      {/* Text and the ⌘K hint are desktop-only: on a phone the bar is width-constrained
+          and ⌘K does not exist on Android/iOS keyboards. */}
+      <span className="hidden min-w-0 flex-1 truncate text-start text-sm sm:block">
         Search...
       </span>
-      <Text className="text-muted-fg text-xs">⌘K</Text>
+      <Text className="hidden text-muted-fg text-xs sm:block">⌘K</Text>
     </InputGroup>
   </GlobalCommandMenu>
 );
