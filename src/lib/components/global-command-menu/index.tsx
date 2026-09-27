@@ -98,7 +98,7 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
                 onAction={() => handleNavigate(item.path)}
                 textValue={item.title}
               >
-                {item.icon}
+                <span className="[&_svg]:size-4.5">{item.icon}</span>
                 <CommandMenuLabel>{item.title}</CommandMenuLabel>
                 <CommandMenuDescription className="col-start-2 row-start-2 ms-0">
                   {item.description}

@@ -115,7 +115,10 @@ export function HomepageTools() {
                   aria-hidden="true"
                   className="grid size-10 place-items-center rounded-lg bg-primary-subtle text-primary-subtle-fg motion-safe:transition-[background-color,color] motion-safe:group-hover:bg-primary motion-safe:group-hover:text-primary-fg"
                 >
-                  {tool.icon}
+                  {/* Force every icon into the tile's box. intentui icons
+                      self-apply size-4; lucide ships a bare 24x24 svg, so
+                      without this the grid mixes 16px and 24px glyphs. */}
+                  <span className="[&_svg]:size-5">{tool.icon}</span>
                 </span>
                 <ArrowUpRight
                   aria-hidden="true"

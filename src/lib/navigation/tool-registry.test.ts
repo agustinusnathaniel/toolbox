@@ -29,26 +29,45 @@ describe('getToolNavItems', () => {
 });
 
 describe('getMobileNavItems', () => {
-  test('derives items from mobile-enabled definitions within the nav bound', () => {
-    const items = getMobileNavItems();
-    const mobileDefinitions = TOOL_DEFINITIONS.filter(
+  test('orders by mobilePriority, not by catalog position', () => {
+    const priorities = TOOL_DEFINITIONS.filter(
       (definition) => definition.showInMobile
-    );
+    ).map((definition) => definition.mobilePriority);
 
-    expect(items.map((item) => item.slug)).toEqual(
-      mobileDefinitions.map((definition) => definition.slug)
+    // A total order means the rendered bar can never depend on how the
+    // catalog happens to be sorted for the homepage grid.
+    expect(priorities.every((p) => p !== undefined)).toBe(true);
+    expect(new Set(priorities).size).toBe(priorities.length);
+
+    expect(getMobileNavItems().map((item) => item.slug)).toEqual(
+      TOOL_DEFINITIONS.filter((definition) => definition.showInMobile)
+        .slice()
+        .sort((a, b) => (a.mobilePriority ?? 0) - (b.mobilePriority ?? 0))
+        .map((definition) => definition.slug)
     );
-    expect(items.length).toBeLessThanOrEqual(6);
+  });
+
+  test('ranks the tools that get a phone in their hands above the rest', () => {
+    // QR Code and CSV were previously unreachable from the mobile bar because
+    // the selection was positional and the first four won.
+    const slugs = getMobileNavItems().map((item) => item.slug);
+    expect(slugs).toContain('qrcode');
+    expect(slugs).toContain('csv-converter');
+  });
+
+  test('stays within the bar bound', () => {
+    expect(getMobileNavItems().length).toBeLessThanOrEqual(6);
   });
 
   test('maps mobile labels with a page title fallback', () => {
-    const items = getMobileNavItems();
-
-    expect(items.map((item) => item.title)).toEqual(
-      TOOL_DEFINITIONS.filter((definition) => definition.showInMobile).map(
-        (definition) => definition.mobileTitle ?? definition.pageTitle
-      )
+    const bySlug = new Map(
+      TOOL_DEFINITIONS.map((definition) => [definition.slug, definition])
     );
+
+    for (const item of getMobileNavItems()) {
+      const definition = bySlug.get(item.slug);
+      expect(item.title).toBe(definition?.mobileTitle ?? definition?.pageTitle);
+    }
   });
 });
 
