@@ -80,6 +80,13 @@ export interface ToolDefinition {
   category: ToolCategory;
   description: string;
   icon: JSX.Element;
+  /**
+   * Rank within the mobile bottom bar, 1 = leftmost. Only meaningful when
+   * showInMobile is set. Lower sorts first; ties fall back to catalog order.
+   * Selection is by rank, never by array position, so reordering the catalog
+   * for the homepage grid cannot silently change the phone's menu.
+   */
+  mobilePriority?: number;
   mobileTitle?: string;
   pageTitle: string;
   showInMobile?: boolean;
@@ -95,6 +102,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Links & Sharing',
     icon: <IconBrandWhatsapp />,
+    mobilePriority: 1,
     mobileTitle: 'WA Link',
     showInMobile: true,
     ...waLinkHelperMeta,
@@ -102,6 +110,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Design & Media',
     icon: <IconColorPalette />,
+    mobilePriority: 5,
     mobileTitle: 'Color',
     showInMobile: true,
     ...colorConverterMeta,
@@ -109,6 +118,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Text & Data',
     icon: <IconBrackets />,
+    mobilePriority: 3,
     mobileTitle: 'JSON',
     showInMobile: true,
     ...jsonFormatterMeta,
@@ -131,6 +141,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Developer',
     icon: <Link2 />,
+    mobilePriority: 4,
     mobileTitle: 'URL',
     showInMobile: true,
     ...urlCodecMeta,
@@ -138,6 +149,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Links & Sharing',
     icon: <IconQrCode />,
+    mobilePriority: 2,
     mobileTitle: 'QR Code',
     showInMobile: true,
     ...qrcodeMeta,
@@ -208,6 +220,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Text & Data',
     icon: <Table2 />,
+    mobilePriority: 6,
     mobileTitle: 'CSV',
     showInMobile: true,
     ...csvConverterMeta,
