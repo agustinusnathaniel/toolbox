@@ -25,6 +25,7 @@ import {
   useSidebar,
 } from '@/lib/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
+import { usePrefetchRoute } from '@/lib/hooks/use-prefetch-route';
 import { getToolNavCategories } from '@/lib/navigation/tool-registry';
 
 const navCategories = getToolNavCategories();
@@ -33,6 +34,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { setIsOpenOnMobile } = useSidebar();
   const isMobile = useIsMobile();
   const location = useLocation();
+  const prefetchRoute = usePrefetchRoute();
 
   const handleMobileClose = useCallback(() => {
     if (isMobile) {
@@ -82,7 +84,11 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
                       textValue={item.title}
                     >
                       <SidebarTreeContent>
-                        <SidebarTreeLink onPress={handleMobileClose}>
+                        <SidebarTreeLink
+                          onFocus={() => prefetchRoute(item.path)}
+                          onHoverStart={() => prefetchRoute(item.path)}
+                          onPress={handleMobileClose}
+                        >
                           {item.icon}
                           <SidebarTreeLabel>{item.title}</SidebarTreeLabel>
                         </SidebarTreeLink>

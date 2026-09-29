@@ -7,12 +7,10 @@ import {
 } from 'react-aria-components/FileTrigger'
 import type { VariantProps } from 'tailwind-variants'
 import { Button, type buttonStyles } from './button'
-import { Loader } from './loader'
 
 export interface FileTriggerProps
   extends FileTriggerPrimitiveProps, VariantProps<typeof buttonStyles> {
   isDisabled?: boolean
-  isPending?: boolean
   ref?: React.RefObject<HTMLInputElement>
   className?: string
 }
@@ -34,16 +32,12 @@ export function FileTrigger({
         size={size}
         isCircle={isCircle}
       >
-        {!props.isPending ? (
-          props.defaultCamera ? (
-            <CameraIcon />
-          ) : props.acceptDirectory ? (
-            <FolderIcon />
-          ) : (
-            <PaperClipIcon />
-          )
+        {props.defaultCamera ? (
+          <CameraIcon />
+        ) : props.acceptDirectory ? (
+          <FolderIcon />
         ) : (
-          <Loader />
+          <PaperClipIcon />
         )}
         {props.children ? (
           props.children

@@ -3,7 +3,7 @@
 import type { FileDiffMetadata, FileDiffOptions } from '@pierre/diffs';
 import { lazy, Suspense } from 'react';
 
-import { Loader } from '@/lib/components/ui/loader';
+import { Skeleton } from '@/lib/components/ui/skeleton';
 
 interface DiffViewerProps {
   className?: string;
@@ -32,12 +32,12 @@ export function DiffViewer({ className, fileDiff, options }: DiffViewerProps) {
   return (
     <Suspense
       fallback={
-        <div className="flex h-96 items-center justify-center rounded-lg border bg-(--card-bg)/50">
-          <Loader
-            aria-label="Loading diff view"
-            className="size-5 text-muted-fg"
-          />
-        </div>
+        <Skeleton
+          aria-label="Loading diff view"
+          className="h-96 w-full rounded-lg border"
+          isLoading
+          role="status"
+        />
       }
     >
       <PierreDiffView
