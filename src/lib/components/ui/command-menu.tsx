@@ -19,11 +19,9 @@ import { SearchField, type SearchFieldProps } from 'react-aria-components/Search
 import { twMerge } from 'tailwind-merge'
 import { cx } from '@/lib/styles/primitive'
 import { DropdownKeyboard } from './dropdown'
-import { Loader } from './loader'
 import { MenuDescription, MenuItem, MenuLabel, type MenuSectionProps, MenuSeparator } from './menu'
 
 interface CommandMenuProviderProps {
-  isPending?: boolean
   escapeButton?: boolean
 }
 
@@ -63,7 +61,6 @@ const CommandMenu = ({
   className,
   isDismissable = true,
   escapeButton = true,
-  isPending,
   overlay,
   size = 'lg',
   shortcut,
@@ -84,7 +81,7 @@ const CommandMenu = ({
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [shortcut, onOpenChange])
   return (
-    <CommandMenuContext value={{ isPending: isPending, escapeButton: escapeButton }}>
+    <CommandMenuContext value={{ escapeButton: escapeButton }}>
       <ModalContext value={{ isOpen: props.isOpen, onOpenChange: onOpenChange }}>
         <ModalOverlay
           {...props}
@@ -128,7 +125,7 @@ interface CommandMenuSearchProps extends SearchFieldProps {
 
 const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSearchProps) => {
   const state = use(OverlayTriggerStateContext)!
-  const { isPending, escapeButton } = useCommandMenu()
+  const { escapeButton } = useCommandMenu()
   return (
     <SearchField
       aria-label="Quick search"
@@ -136,14 +133,10 @@ const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSear
       className={cx('flex w-full items-center px-2.5 py-1', className)}
       {...props}
     >
-      {isPending ? (
-        <Loader className="size-4.5" variant="spin" />
-      ) : (
-        <MagnifyingGlassIcon
-          data-slot="command-menu-search-icon"
-          className="size-5 shrink-0 text-muted-fg"
-        />
-      )}
+      <MagnifyingGlassIcon
+        data-slot="command-menu-search-icon"
+        className="size-5 shrink-0 text-muted-fg"
+      />
       <Input
         placeholder={placeholder ?? 'Search...'}
         className="w-full min-w-0 bg-transparent px-2.5 py-2 text-base text-fg placeholder-muted-fg outline-hidden focus:outline-hidden sm:px-2 sm:py-1.5 sm:text-sm [&::-ms-reveal]:hidden [&::-webkit-search-cancel-button]:hidden"

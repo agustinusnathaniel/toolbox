@@ -22,7 +22,9 @@ function ScriptEditorField({
       <span className="font-medium text-sm">{label}</span>
       <span className="text-muted-fg text-xs">{description}</span>
       <div className="overflow-hidden rounded-md border">
-        <Suspense fallback={<Skeleton className="h-[100px] w-full" />}>
+        <Suspense
+          fallback={<Skeleton className="h-[100px] w-full" isLoading />}
+        >
           <MonacoEditor
             height="100px"
             language="javascript"

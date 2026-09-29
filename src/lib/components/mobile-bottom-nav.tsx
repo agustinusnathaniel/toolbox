@@ -2,6 +2,7 @@ import { IconGlobe, IconHamburger } from '@intentui/icons';
 import { useRouterState } from '@tanstack/react-router';
 import { Link } from 'react-aria-components';
 
+import { usePrefetchRoute } from '@/lib/hooks/use-prefetch-route';
 import { getMobileNavItems } from '@/lib/navigation/tool-registry';
 
 import { SidebarTrigger } from './ui/sidebar';
@@ -23,6 +24,7 @@ const itemClass =
 export const MobileBottomNav = () => {
   const { location } = useRouterState();
   const currentPath = location.pathname;
+  const prefetchRoute = usePrefetchRoute();
 
   const toolItems = getMobileNavItems()
     .slice(0, MAX_MOBILE_TOOLS)
@@ -49,6 +51,8 @@ export const MobileBottomNav = () => {
             }`}
             href={href}
             key={href}
+            onFocus={() => prefetchRoute(href)}
+            onHoverStart={() => prefetchRoute(href)}
           >
             <span className={iconClass}>{icon}</span>
             <span className="max-w-full truncate">{label}</span>

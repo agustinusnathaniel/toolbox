@@ -75,7 +75,7 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --animate-blink: blink 1.4s both infinite;
+  --animate-blink: blink 0.9s both infinite;
 
   --animate-disclosure-collapsed: disclosure-collapsed 0.2s ease-out;
   --animate-disclosure-expanded: disclosure-expanded 0.2s ease-out;
