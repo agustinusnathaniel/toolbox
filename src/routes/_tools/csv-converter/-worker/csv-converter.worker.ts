@@ -3,18 +3,18 @@ import type {
   WorkerResponse,
 } from '@/lib/hooks/worker-protocol';
 import {
-  type CsvConverterResult,
   type CsvMode,
   csvToJson,
   jsonToCsv,
 } from '@/lib/tools/csv-converter/adapters/csv-converter';
+import type { TransformResult } from '@/lib/utils/transform';
 
 export type CsvConverterRequest = WorkerRequest<{
   input: string;
   mode: CsvMode;
 }>;
 
-export type CsvConverterResponse = WorkerResponse<CsvConverterResult>;
+export type CsvConverterResponse = WorkerResponse<TransformResult>;
 
 self.onmessage = (event: MessageEvent<CsvConverterRequest>) => {
   const { id, input, mode } = event.data;

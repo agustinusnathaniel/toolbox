@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -14,10 +15,10 @@ import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import type { Base64Result } from '@/lib/tools/base64/adapters/base64';
 import { decodeBase64, encodeBase64 } from '@/lib/tools/base64/adapters/base64';
 import { buildBase64Params } from '@/lib/tools/base64/adapters/base64-params';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
+import type { TransformResult } from '@/lib/utils/transform';
 
 import { meta } from './-meta';
 
@@ -34,7 +35,7 @@ export const Route = createFileRoute('/_tools/base64/')({
 function useBase64State() {
   const search = useSearch({ from: '/_tools/base64/' });
   const [input, setInput] = useState(search.input ?? '');
-  const [result, setResult] = useState<Base64Result | null>(null);
+  const [result, setResult] = useState<TransformResult | null>(null);
   const [activeAction, setActiveAction] = useState<'encode' | 'decode' | null>(
     null
   );
@@ -43,8 +44,8 @@ function useBase64State() {
 
 function useBase64Actions(
   input: string,
-  result: Base64Result | null,
-  setResult: (v: Base64Result | null) => void,
+  result: TransformResult | null,
+  setResult: (v: TransformResult | null) => void,
   setActiveAction: (v: 'encode' | 'decode' | null) => void,
   trackAction: (a: string) => void,
   copy: (text: string, key: string, toast: string) => Promise<boolean>
@@ -79,24 +80,19 @@ function Base64Input({
 }: {
   input: string;
   setInput: (v: string) => void;
-  setResult: (v: Base64Result | null) => void;
+  setResult: (v: TransformResult | null) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="base64-input">
-        Input
-      </label>
-      <textarea
-        className="field-sizing-content min-h-40 w-full rounded-lg border border-input bg-transparent p-3 font-mono text-fg text-sm outline-hidden placeholder:text-muted-fg focus:border-ring/70 focus:ring-3 focus:ring-ring/20"
-        id="base64-input"
-        onChange={(e) => {
-          setInput(e.target.value);
-          setResult(null);
-        }}
-        placeholder="Type or paste text to encode or decode..."
-        value={input}
-      />
-    </div>
+    <LabeledTextarea
+      id="base64-input"
+      label="Input"
+      onChange={(e) => {
+        setInput(e.target.value);
+        setResult(null);
+      }}
+      placeholder="Type or paste text to encode or decode..."
+      value={input}
+    />
   );
 }
 
@@ -123,13 +119,13 @@ function Base64Actions({
   );
 }
 
-function Base64ResultPanel({
+function TransformResultPanel({
   result,
   label,
   copiedKey,
   onCopy,
 }: {
-  result: Base64Result | null;
+  result: TransformResult | null;
   label: string;
   copiedKey: string | null;
   onCopy: () => void;
@@ -163,13 +159,13 @@ function Base64CardBody({
 }: {
   input: string;
   setInput: (v: string) => void;
-  setResult: (v: Base64Result | null) => void;
+  setResult: (v: TransformResult | null) => void;
   onEncode: () => void;
   onDecode: () => void;
   onCopyLink: () => void;
   hintVisible: boolean;
   errorVisible: boolean;
-  result: Base64Result | null;
+  result: TransformResult | null;
   label: string;
   copiedKey: string | null;
   onCopy: () => void;
@@ -190,7 +186,7 @@ function Base64CardBody({
       {errorVisible && (
         <ToolError message={result?.error} title="Invalid base64" />
       )}
-      <Base64ResultPanel
+      <TransformResultPanel
         copiedKey={copiedKey}
         label={label}
         onCopy={onCopy}

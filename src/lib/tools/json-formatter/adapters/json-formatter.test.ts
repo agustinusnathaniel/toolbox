@@ -21,13 +21,13 @@ describe('formatJson', () => {
   test('formats valid JSON object', () => {
     const result = formatJson(VALID_OBJECT);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('{\n  "name": "John",\n  "age": 30\n}');
+    expect(result.output).toBe('{\n  "name": "John",\n  "age": 30\n}');
   });
 
   test('formats valid JSON array', () => {
     const result = formatJson(VALID_ARRAY);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('[\n  1,\n  2,\n  3\n]');
+    expect(result.output).toBe('[\n  1,\n  2,\n  3\n]');
   });
 
   test.each([
@@ -38,13 +38,13 @@ describe('formatJson', () => {
   ])('formats JSON %s scalar', (_kind, input, expected) => {
     const result = formatJson(input);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe(expected);
+    expect(result.output).toBe(expected);
   });
 
   test('formats nested objects with proper indentation', () => {
     const result = formatJson(VALID_NESTED);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe(
+    expect(result.output).toBe(
       '{\n  "person": {\n    "name": "John",\n    "address": {\n      "city": "NYC",\n      "zip": 10001\n    }\n  }\n}'
     );
   });
@@ -52,7 +52,7 @@ describe('formatJson', () => {
   test('uses custom indent size', () => {
     const result = formatJson(VALID_OBJECT, 4);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('{\n    "name": "John",\n    "age": 30\n}');
+    expect(result.output).toBe('{\n    "name": "John",\n    "age": 30\n}');
   });
 
   test('returns error for trailing comma', () => {
@@ -90,7 +90,7 @@ describe('validateJson', () => {
   test('returns normalized formatted output', () => {
     const result = validateJson('  {"name":"John"}  ');
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('{"name":"John"}');
+    expect(result.output).toBe('{"name":"John"}');
   });
 
   test('returns invalid for malformed JSON', () => {
@@ -111,7 +111,7 @@ describe('minifyJson', () => {
     const input = '{\n  "a": 1,\n  "b": 2\n}';
     const result = minifyJson(input);
     expect(result.isValid).toBe(true);
-    expect(result.formatted).toBe('{"a":1,"b":2}');
+    expect(result.output).toBe('{"a":1,"b":2}');
   });
 
   test('returns error for invalid JSON', () => {

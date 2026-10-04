@@ -4,11 +4,11 @@ import { RotateCcw } from 'lucide-react';
 
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { CopyRow } from '@/lib/components/copy-row';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 
 export function TimestampInput({
   input,
@@ -24,18 +24,14 @@ export function TimestampInput({
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-muted-fg text-sm" htmlFor="timestamp-input">
-            Timestamp or Date
-          </label>
-          <Textarea
-            className="min-h-24 font-mono text-xs"
-            id="timestamp-input"
-            onChange={(e) => onInput(e.target.value)}
-            placeholder="Paste an epoch timestamp (10 or 13 digits) or a date string..."
-            value={input}
-          />
-        </div>
+        <LabeledTextarea
+          className="min-h-24 font-mono text-xs"
+          id="timestamp-input"
+          label="Timestamp or Date"
+          onChange={(e) => onInput(e.target.value)}
+          placeholder="Paste an epoch timestamp (10 or 13 digits) or a date string..."
+          value={input}
+        />
         <div className="flex flex-wrap gap-2">
           <Button intent="outline" onPress={onUseNow} size="sm">
             <RotateCcw className="size-4" />

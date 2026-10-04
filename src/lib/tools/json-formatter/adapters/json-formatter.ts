@@ -1,44 +1,15 @@
-export interface JsonFormatterResult {
-  error?: string;
-  formatted: string;
-  isValid: boolean;
+import { runTransform, type TransformResult } from '@/lib/utils/transform';
+
+export function formatJson(input: string, indent = 2): TransformResult {
+  return runTransform(input, (trimmed) =>
+    JSON.stringify(JSON.parse(trimmed), null, indent)
+  );
 }
 
-export function formatJson(input: string, indent = 2): JsonFormatterResult {
-  const trimmed = input.trim();
-  if (!trimmed) {
-    return { error: 'Input is empty', formatted: '', isValid: false };
-  }
-  try {
-    const parsed = JSON.parse(trimmed);
-    return { formatted: JSON.stringify(parsed, null, indent), isValid: true };
-  } catch (e) {
-    return { error: (e as Error).message, formatted: '', isValid: false };
-  }
+export function minifyJson(input: string): TransformResult {
+  return runTransform(input, (trimmed) => JSON.stringify(JSON.parse(trimmed)));
 }
 
-export function validateJson(input: string): JsonFormatterResult {
-  const trimmed = input.trim();
-  if (!trimmed) {
-    return { error: 'Input is empty', formatted: '', isValid: false };
-  }
-  try {
-    const parsed = JSON.parse(trimmed);
-    return { formatted: JSON.stringify(parsed), isValid: true };
-  } catch (e) {
-    return { error: (e as Error).message, formatted: '', isValid: false };
-  }
-}
-
-export function minifyJson(input: string): JsonFormatterResult {
-  const trimmed = input.trim();
-  if (!trimmed) {
-    return { error: 'Input is empty', formatted: '', isValid: false };
-  }
-  try {
-    const parsed = JSON.parse(trimmed);
-    return { formatted: JSON.stringify(parsed), isValid: true };
-  } catch (e) {
-    return { error: (e as Error).message, formatted: '', isValid: false };
-  }
+export function validateJson(input: string): TransformResult {
+  return minifyJson(input);
 }

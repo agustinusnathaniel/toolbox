@@ -1,3 +1,9 @@
+import {
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
+
 export interface RegexSearchParams {
   flags?: string;
   input?: string;
@@ -9,17 +15,11 @@ export function buildRegexParams(
   flags: string,
   input: string
 ): URLSearchParams {
-  const params = new URLSearchParams();
-  if (pattern.trim()) {
-    params.set('pattern', pattern);
-  }
-  if (flags.trim()) {
-    params.set('flags', flags);
-  }
-  if (input) {
-    params.set('input', input);
-  }
-  return params;
+  return recordToSearchParams({
+    flags: trimmed(flags),
+    input: trimmed(input),
+    pattern: trimmed(pattern),
+  });
 }
 
 export function buildRegexStateFromSearch(search: RegexSearchParams): {
@@ -28,8 +28,8 @@ export function buildRegexStateFromSearch(search: RegexSearchParams): {
   input: string;
 } {
   return {
-    flags: search.flags ?? '',
-    input: search.input ?? '',
-    pattern: search.pattern ?? '',
+    flags: readString(search.flags),
+    input: readString(search.input),
+    pattern: readString(search.pattern),
   };
 }

@@ -1,4 +1,9 @@
-import { coerceEnum, readString } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 import type { HtmlEntitiesMode } from './html-entities';
 
@@ -17,14 +22,10 @@ export function buildHtmlEntitiesParams(
   input: string,
   mode: string
 ): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input.trim()) {
-    params.set('input', input);
-  }
-  if (mode === 'decode') {
-    params.set('mode', 'decode');
-  }
-  return params;
+  return recordToSearchParams({
+    input: trimmed(input),
+    mode: mode === 'decode' ? mode : undefined,
+  });
 }
 
 export function buildHtmlEntitiesStateFromSearch(

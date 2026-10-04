@@ -4,6 +4,7 @@ import { ArrowUpDown } from 'lucide-react';
 
 import { CopyButton } from '@/lib/components/copy-button';
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
@@ -14,7 +15,6 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
-import { Textarea } from '@/lib/components/ui/textarea';
 import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
 
 const MODE_OPTIONS: ReadonlyArray<{ id: CsvMode; label: string }> = [
@@ -73,23 +73,18 @@ export function CsvInput({
   onInput: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="csv-input">
-        {mode === 'json-to-csv' ? 'JSON Input' : 'CSV Input'}
-      </label>
-      <Textarea
-        aria-label="Input data"
-        className="min-h-40 font-mono"
-        id="csv-input"
-        onChange={(e) => onInput(e.target.value)}
-        placeholder={
-          mode === 'json-to-csv'
-            ? 'Paste your JSON here...'
-            : 'Paste your CSV here...'
-        }
-        value={input}
-      />
-    </div>
+    <LabeledTextarea
+      aria-label="Input data"
+      id="csv-input"
+      label={mode === 'json-to-csv' ? 'JSON Input' : 'CSV Input'}
+      onChange={(e) => onInput(e.target.value)}
+      placeholder={
+        mode === 'json-to-csv'
+          ? 'Paste your JSON here...'
+          : 'Paste your CSV here...'
+      }
+      value={input}
+    />
   );
 }
 

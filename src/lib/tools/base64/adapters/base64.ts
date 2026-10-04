@@ -1,8 +1,4 @@
-export interface Base64Result {
-  error?: string;
-  isValid: boolean;
-  output: string;
-}
+import { runTransform, type TransformResult } from '@/lib/utils/transform';
 
 function bytesToBinary(bytes: Uint8Array): string {
   let binary = '';
@@ -22,7 +18,9 @@ function binaryToBytes(binary: string): Uint8Array {
 
 const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
 
-export function encodeBase64(input: string): Base64Result {
+export function encodeBase64(input: string): TransformResult {
+  // Encoding preserves the raw input (including whitespace); only fully
+  // empty input is rejected.
   if (!input) {
     return { error: 'Input is empty', isValid: false, output: '' };
   }
@@ -30,30 +28,16 @@ export function encodeBase64(input: string): Base64Result {
   return { isValid: true, output: btoa(bytesToBinary(bytes)) };
 }
 
-export function decodeBase64(input: string): Base64Result {
-  const trimmed = input.trim();
-  if (!trimmed) {
-    return { error: 'Input is empty', isValid: false, output: '' };
-  }
-  if (trimmed.length % 4 !== 0) {
-    return {
-      error: 'Invalid base64: length must be a multiple of 4',
-      isValid: false,
-      output: '',
-    };
-  }
-  if (!BASE64_PATTERN.test(trimmed)) {
-    return {
-      error: 'Invalid base64: contains invalid characters',
-      isValid: false,
-      output: '',
-    };
-  }
-  try {
-    const bytes = binaryToBytes(atob(trimmed));
-    const output = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-    return { isValid: true, output };
-  } catch (e) {
-    return { error: (e as Error).message, isValid: false, output: '' };
-  }
+export function decodeBase64(input: string): TransformResult {
+  return runTransform(input, (trimmed) => {
+    if (trimmed.length % 4 !== 0) {
+      throw new Error('Invalid base64: length must be a multiple of 4');
+    }
+    if (!BASE64_PATTERN.test(trimmed)) {
+      throw new Error('Invalid base64: contains invalid characters');
+    }
+    return new TextDecoder('utf-8', { fatal: true }).decode(
+      binaryToBytes(atob(trimmed))
+    );
+  });
 }

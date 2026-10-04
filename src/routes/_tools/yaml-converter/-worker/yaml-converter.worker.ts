@@ -5,9 +5,9 @@ import type {
 import {
   convertJsonToYaml,
   convertYamlToJson,
-  type YamlConverterResult,
 } from '@/lib/tools/yaml-converter/adapters/yaml-converter';
 import type { YamlMode } from '@/lib/tools/yaml-converter/adapters/yaml-params';
+import type { TransformResult } from '@/lib/utils/transform';
 
 export type YamlConverterRequest = WorkerRequest<{
   input: string;
@@ -15,12 +15,12 @@ export type YamlConverterRequest = WorkerRequest<{
 }>;
 
 export type YamlConverterResponse = WorkerResponse<
-  YamlConverterResult & { timedOut?: boolean }
+  TransformResult & { timedOut?: boolean }
 >;
 
 self.onmessage = (event: MessageEvent<YamlConverterRequest>) => {
   const { id, input, mode } = event.data;
-  let result: YamlConverterResult;
+  let result: TransformResult;
   if (mode === 'yaml-to-json') {
     result = convertYamlToJson(input);
   } else {

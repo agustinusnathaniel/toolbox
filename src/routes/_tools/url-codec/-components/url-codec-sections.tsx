@@ -1,15 +1,25 @@
 'use client';
 
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ResultPanel } from '@/lib/components/result-panel';
+import { ToggleBar } from '@/lib/components/toggle-bar';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
-import { Textarea } from '@/lib/components/ui/textarea';
 import type { UrlCodecDecodeResult } from '@/lib/tools/url-codec/adapters/url-codec';
 
 const MODE_HINT =
   'Component mode encodes every reserved character (/ ? &), so a value can be embedded in a query parameter. Full URL mode keeps the URL structure readable.';
+
+const DIRECTION_OPTIONS = [
+  { action: 'encode', id: 'encode', label: 'Encode' },
+  { action: 'decode', id: 'decode', label: 'Decode' },
+] as const;
+
+const MODE_OPTIONS = [
+  { action: 'mode_component', id: 'component', label: 'Component' },
+  { action: 'mode_full', id: 'full', label: 'Full URL' },
+] as const;
 
 export function UrlCodecInputs({
   input,
@@ -19,19 +29,14 @@ export function UrlCodecInputs({
   onInput: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="url-codec-input">
-        URL or text
-      </label>
-      <Textarea
-        aria-label="URL or text"
-        className="min-h-40 font-mono"
-        id="url-codec-input"
-        onChange={(e) => onInput(e.target.value)}
-        placeholder="Paste a URL or text to encode or decode..."
-        value={input}
-      />
-    </div>
+    <LabeledTextarea
+      aria-label="URL or text"
+      id="url-codec-input"
+      label="URL or text"
+      onChange={(e) => onInput(e.target.value)}
+      placeholder="Paste a URL or text to encode or decode..."
+      value={input}
+    />
   );
 }
 
@@ -45,26 +50,12 @@ export function UrlCodecDirectionBar({
   track: (a: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        intent={direction === 'encode' ? 'primary' : 'outline'}
-        onPress={() => {
-          onChange('encode');
-          track('encode');
-        }}
-      >
-        Encode
-      </Button>
-      <Button
-        intent={direction === 'decode' ? 'primary' : 'outline'}
-        onPress={() => {
-          onChange('decode');
-          track('decode');
-        }}
-      >
-        Decode
-      </Button>
-    </div>
+    <ToggleBar
+      onSelectionChange={onChange}
+      options={DIRECTION_OPTIONS}
+      track={track}
+      value={direction}
+    />
   );
 }
 
@@ -79,28 +70,13 @@ export function UrlCodecModeBar({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex flex-wrap gap-2">
-        <Button
-          intent={mode === 'component' ? 'primary' : 'outline'}
-          onPress={() => {
-            onChange('component');
-            track('mode_component');
-          }}
-          size="sm"
-        >
-          Component
-        </Button>
-        <Button
-          intent={mode === 'full' ? 'primary' : 'outline'}
-          onPress={() => {
-            onChange('full');
-            track('mode_full');
-          }}
-          size="sm"
-        >
-          Full URL
-        </Button>
-      </div>
+      <ToggleBar
+        onSelectionChange={onChange}
+        options={MODE_OPTIONS}
+        size="sm"
+        track={track}
+        value={mode}
+      />
       <p className="text-muted-fg text-xs">{MODE_HINT}</p>
     </div>
   );

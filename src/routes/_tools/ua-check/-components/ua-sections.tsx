@@ -2,10 +2,10 @@
 
 import { Link as LinkIcon, RotateCcw } from 'lucide-react';
 
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 import type { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 
 type UaResult = ReturnType<typeof parseUserAgent>;
@@ -46,18 +46,14 @@ export function UaInput({
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-muted-fg text-sm" htmlFor="ua-input">
-            User Agent String
-          </label>
-          <Textarea
-            className="min-h-24 font-mono text-xs"
-            id="ua-input"
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="Paste any user agent string to parse it..."
-            value={value}
-          />
-        </div>
+        <LabeledTextarea
+          className="min-h-24 font-mono text-xs"
+          id="ua-input"
+          label="User Agent String"
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Paste any user agent string to parse it..."
+          value={value}
+        />
         <div className="flex flex-wrap gap-2">
           <Button intent="outline" onPress={onUseMine} size="sm">
             <RotateCcw className="size-4" />

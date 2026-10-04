@@ -73,6 +73,7 @@ Detailed testing guide: [CONTRIBUTING.md → Testing](./CONTRIBUTING.md#testing)
 - Three icon libs coexist: `lucide-react` (preferred for new tool UI), `@intentui/icons` (system/nav), `@heroicons/react` (IntentUI component library dependency — do NOT remove, it's embedded in shared UI components).
 - Never edit `src/routeTree.gen.ts` (auto-generated). Never modify `dist/` (build output).
 - Never copy IntentUI component code — use `pnpm dlx shadcn@latest add @intentui/<name>`.
+- Never delete `src/lib/components/ui/**` registry components as dead-code pruning, even when unused — they are a deliberate IntentUI inventory kept so future tools can adopt them without regenerating; knip ignores the directory by design.
 - PWA service worker is disabled in dev, enabled only in production builds.
 
 ---

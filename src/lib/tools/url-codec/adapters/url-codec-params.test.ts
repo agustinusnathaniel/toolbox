@@ -22,7 +22,7 @@ describe('buildUrlCodecParams', () => {
       input: 'x',
       mode: 'full',
     });
-    expect(params.toString()).toBe('input=x&direction=decode&mode=full');
+    expect(params.toString()).toBe('direction=decode&input=x&mode=full');
   });
 
   test('omits the param for whitespace-only input', () => {

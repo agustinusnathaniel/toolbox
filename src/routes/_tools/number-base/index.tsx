@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { CopyRow } from '@/lib/components/copy-row';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
@@ -19,7 +20,6 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/lib/components/ui/select';
-import { Textarea } from '@/lib/components/ui/textarea';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { NumberBase } from '@/lib/tools/number-base/adapters/number-base';
@@ -76,19 +76,15 @@ function NumberBaseInput({
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-muted-fg text-sm" htmlFor="number-base-input">
-          Number input
-        </label>
-        <Textarea
-          aria-label="Number input"
-          className="font-mono"
-          id="number-base-input"
-          onChange={(e) => onInputChange(e.target.value)}
-          placeholder="Enter number... e.g. 255, 0xFF, 0b1010"
-          value={input}
-        />
-      </div>
+      <LabeledTextarea
+        aria-label="Number input"
+        className="font-mono"
+        id="number-base-input"
+        label="Number input"
+        onChange={(e) => onInputChange(e.target.value)}
+        placeholder="Enter number... e.g. 255, 0xFF, 0b1010"
+        value={input}
+      />
     </div>
   );
 }

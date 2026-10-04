@@ -9,64 +9,21 @@ export interface NumberBaseResult {
   octal: string;
 }
 
-const BINARY_PREFIX_RE = /^0[bB]/;
-const OCTAL_PREFIX_RE = /^0[oO]/;
-const HEX_PREFIX_RE = /^0[xX]/;
-const BINARY_RE = /^[01]+$/;
-const OCTAL_RE = /^[0-7]+$/;
-const DECIMAL_RE = /^[0-9]+$/;
-const HEX_RE = /^[0-9a-fA-F]+$/;
-
-function getBaseName(base: NumberBase): string {
-  if (base === 2) {
-    return 'binary';
-  }
-  if (base === 8) {
-    return 'octal';
-  }
-  if (base === 10) {
-    return 'decimal';
-  }
-  return 'hexadecimal';
-}
+const BASE_RULES: Record<
+  NumberBase,
+  { name: string; pattern: RegExp; prefix: string }
+> = {
+  2: { name: 'binary', pattern: /^[01]+$/, prefix: '0b' },
+  8: { name: 'octal', pattern: /^[0-7]+$/, prefix: '0o' },
+  10: { name: 'decimal', pattern: /^[0-9]+$/, prefix: '' },
+  16: { name: 'hexadecimal', pattern: /^[0-9a-fA-F]+$/, prefix: '0x' },
+};
 
 function stripPrefix(value: string, base: NumberBase): string {
-  if (base === 2 && BINARY_PREFIX_RE.test(value)) {
-    return value.slice(2);
-  }
-  if (base === 8 && OCTAL_PREFIX_RE.test(value)) {
-    return value.slice(2);
-  }
-  if (base === 16 && HEX_PREFIX_RE.test(value)) {
-    return value.slice(2);
-  }
-  return value;
-}
-
-function getPattern(base: NumberBase): RegExp {
-  if (base === 2) {
-    return BINARY_RE;
-  }
-  if (base === 8) {
-    return OCTAL_RE;
-  }
-  if (base === 10) {
-    return DECIMAL_RE;
-  }
-  return HEX_RE;
-}
-
-function getPrefixForBase(base: NumberBase): string {
-  if (base === 2) {
-    return '0b';
-  }
-  if (base === 8) {
-    return '0o';
-  }
-  if (base === 16) {
-    return '0x';
-  }
-  return '';
+  const { prefix } = BASE_RULES[base];
+  return prefix && value.startsWith(prefix)
+    ? value.slice(prefix.length)
+    : value;
 }
 
 export function isValidForBase(value: string, base: NumberBase): boolean {
@@ -75,17 +32,12 @@ export function isValidForBase(value: string, base: NumberBase): boolean {
     return false;
   }
   const withoutSign = trimmed.startsWith('-') ? trimmed.slice(1) : trimmed;
-  if (!withoutSign) {
-    return false;
-  }
   const stripped = stripPrefix(withoutSign, base);
-  if (!stripped) {
-    return false;
-  }
-  if (stripped.length > 500) {
-    return false;
-  }
-  return getPattern(base).test(stripped);
+  return (
+    Boolean(stripped) &&
+    stripped.length <= 500 &&
+    BASE_RULES[base].pattern.test(stripped)
+  );
 }
 
 export function normalizeBase(value: string | undefined): NumberBase {
@@ -95,61 +47,40 @@ export function normalizeBase(value: string | undefined): NumberBase {
   return 10;
 }
 
+function invalidResult(error: string): NumberBaseResult {
+  return {
+    binary: '',
+    decimal: '',
+    error,
+    hex: '',
+    isValid: false,
+    octal: '',
+  };
+}
+
 export function convertNumberBase(
   input: string,
   fromBase: NumberBase
 ): NumberBaseResult {
   const trimmed = input.trim();
   if (!trimmed) {
-    return {
-      binary: '',
-      decimal: '',
-      error: 'Input is empty',
-      hex: '',
-      isValid: false,
-      octal: '',
-    };
+    return invalidResult('Input is empty');
   }
   const isNegative = trimmed.startsWith('-');
   const absolute = isNegative ? trimmed.slice(1) : trimmed;
-  if (!absolute) {
-    return {
-      binary: '',
-      decimal: '',
-      error: `Invalid ${getBaseName(fromBase)} number`,
-      hex: '',
-      isValid: false,
-      octal: '',
-    };
-  }
   const stripped = stripPrefix(absolute, fromBase);
-  if (stripped.length > 500) {
-    return {
-      binary: '',
-      decimal: '',
-      error: 'Input too long (max 500 digits)',
-      hex: '',
-      isValid: false,
-      octal: '',
-    };
+  if (!absolute) {
+    return invalidResult(`Invalid ${BASE_RULES[fromBase].name} number`);
   }
-  if (!getPattern(fromBase).test(stripped)) {
-    return {
-      binary: '',
-      decimal: '',
-      error: `Invalid ${getBaseName(fromBase)} number`,
-      hex: '',
-      isValid: false,
-      octal: '',
-    };
+  if (stripped.length > 500) {
+    return invalidResult('Input too long (max 500 digits)');
+  }
+  if (!BASE_RULES[fromBase].pattern.test(stripped)) {
+    return invalidResult(`Invalid ${BASE_RULES[fromBase].name} number`);
   }
   try {
-    let n: bigint;
-    if (fromBase === 10) {
-      n = BigInt(absolute);
-    } else {
-      n = BigInt(getPrefixForBase(fromBase) + stripped);
-    }
+    const { prefix } = BASE_RULES[fromBase];
+    let n = fromBase === 10 ? BigInt(absolute) : BigInt(prefix + stripped);
     if (isNegative) {
       n = -n;
     }
@@ -161,13 +92,8 @@ export function convertNumberBase(
       octal: n.toString(8),
     };
   } catch (error) {
-    return {
-      binary: '',
-      decimal: '',
-      error: (error as Error).message,
-      hex: '',
-      isValid: false,
-      octal: '',
-    };
+    return invalidResult(
+      error instanceof Error ? error.message : 'Invalid number'
+    );
   }
 }

@@ -3,8 +3,8 @@
 import { type Dispatch, type SetStateAction, useEffect } from 'react';
 
 import { useWorkerDeadline } from '@/lib/hooks/use-worker-deadline';
-import type { YamlConverterResult } from '@/lib/tools/yaml-converter/adapters/yaml-converter';
 import type { YamlMode } from '@/lib/tools/yaml-converter/adapters/yaml-params';
+import type { TransformResult } from '@/lib/utils/transform';
 
 import type {
   YamlConverterRequest,
@@ -15,14 +15,14 @@ import YamlConverterWorker from '../-worker/yaml-converter.worker.ts?worker';
 const YAML_CONVERTER_TIMEOUT_ERROR =
   'Conversion took too long — the input is too large. Try a smaller file.';
 
-const TIMEOUT_RESULT: YamlConverterResult & { timedOut: true } = {
+const TIMEOUT_RESULT: TransformResult & { timedOut: true } = {
   error: YAML_CONVERTER_TIMEOUT_ERROR,
   isValid: false,
   output: '',
   timedOut: true,
 };
 
-type YamlConverterState = YamlConverterResult & { timedOut?: boolean };
+type YamlConverterState = TransformResult & { timedOut?: boolean };
 
 export interface UseYamlConverterReturn {
   computing: boolean;
@@ -52,6 +52,8 @@ export function useYamlConverter(
     workerFactory,
   });
 
+  // Re-posts on input/mode change so conversion recomputes live once the
+  // first explicit run happened; trigger alone drives nothing.
   // biome-ignore lint/correctness/useExhaustiveDependencies: input/mode captured via buildRequest closure, trigger drives execution
   useEffect(() => {
     if (trigger <= 0) {

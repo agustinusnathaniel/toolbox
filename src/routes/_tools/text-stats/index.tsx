@@ -7,10 +7,10 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import {
@@ -101,19 +101,14 @@ function TextStatsPage() {
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="text-stats-input">
-              Text input
-            </label>
-            <Textarea
-              aria-label="Text input"
-              className="min-h-40 font-mono"
-              id="text-stats-input"
-              onChange={(e) => handleInputChange(e.target.value)}
-              placeholder="Paste or type text here..."
-              value={state.input}
-            />
-          </div>
+          <LabeledTextarea
+            aria-label="Text input"
+            id="text-stats-input"
+            label="Text input"
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder="Paste or type text here..."
+            value={state.input}
+          />
 
           <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
             <StatCell label="Characters" value={stats.characters} />

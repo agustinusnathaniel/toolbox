@@ -35,10 +35,10 @@ export function useJsonPage(
   );
 
   const handleCopy = useCallback(async () => {
-    if (!(result?.isValid && result.formatted)) {
+    if (!(result?.isValid && result.output)) {
       return;
     }
-    if (await copy(result.formatted, 'copy', 'Copied JSON')) {
+    if (await copy(result.output, 'copy', 'Copied JSON')) {
       trackAction('copy');
     }
   }, [result, copy, trackAction]);

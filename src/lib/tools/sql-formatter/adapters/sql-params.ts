@@ -1,4 +1,9 @@
-import { coerceEnum, readString } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 import type { SqlDialect } from './sql-formatter';
 
@@ -26,13 +31,11 @@ export function buildSqlParams(
   dialect: SqlDialect,
   action: SqlSearchAction
 ): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input !== '') {
-    params.set('input', input);
-  }
-  params.set('dialect', dialect);
-  params.set('action', action);
-  return params;
+  return recordToSearchParams({
+    action,
+    dialect,
+    input: trimmed(input),
+  });
 }
 
 export function buildSqlStateFromSearch(search: Record<string, unknown>): {
@@ -40,8 +43,9 @@ export function buildSqlStateFromSearch(search: Record<string, unknown>): {
   dialect: SqlDialect;
   input: string;
 } {
-  const input = readString(search.input);
-  const dialect = coerceEnum(search.dialect, ALLOWED_DIALECTS, DEFAULT_DIALECT);
-  const action = coerceEnum(search.action, ALLOWED_ACTIONS, DEFAULT_ACTION);
-  return { action, dialect, input };
+  return {
+    action: coerceEnum(search.action, ALLOWED_ACTIONS, DEFAULT_ACTION),
+    dialect: coerceEnum(search.dialect, ALLOWED_DIALECTS, DEFAULT_DIALECT),
+    input: readString(search.input),
+  };
 }

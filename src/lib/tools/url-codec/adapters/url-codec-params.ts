@@ -1,4 +1,9 @@
-import { coerceEnum, readString } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 import type { UrlCodecDirection, UrlCodecMode } from './url-codec';
 
@@ -22,17 +27,11 @@ const ALLOWED_MODES: ReadonlySet<UrlCodecMode> = new Set<UrlCodecMode>([
 ]);
 
 export function buildUrlCodecParams(state: UrlCodecState): URLSearchParams {
-  const params = new URLSearchParams();
-  if (state.input.trim()) {
-    params.set('input', state.input);
-  }
-  if (state.direction !== 'encode') {
-    params.set('direction', state.direction);
-  }
-  if (state.mode !== 'component') {
-    params.set('mode', state.mode);
-  }
-  return params;
+  return recordToSearchParams({
+    direction: state.direction === 'encode' ? undefined : state.direction,
+    input: trimmed(state.input),
+    mode: state.mode === 'component' ? undefined : state.mode,
+  });
 }
 
 export function buildUrlCodecStateFromSearch(

@@ -1,4 +1,8 @@
-import { readString } from '@/lib/utils/search-params';
+import {
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 import type { NumberBase } from './number-base';
 import { normalizeBase } from './number-base';
@@ -12,14 +16,10 @@ export function buildNumberBaseParams(
   input: string,
   fromBase: NumberBase
 ): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input.trim()) {
-    params.set('input', input);
-  }
-  if (fromBase !== 10) {
-    params.set('from', String(fromBase));
-  }
-  return params;
+  return recordToSearchParams({
+    from: fromBase === 10 ? undefined : String(fromBase),
+    input: trimmed(input),
+  });
 }
 
 export function buildNumberBaseStateFromSearch(

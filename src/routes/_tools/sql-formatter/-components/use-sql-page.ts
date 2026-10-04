@@ -49,15 +49,15 @@ function useSqlEdits(
 
 function useSqlCopy(
   state: { action: SqlSearchAction; dialect: SqlDialect; input: string },
-  result: { formatted?: string; isValid: boolean } | null,
+  result: { output?: string; isValid: boolean } | null,
   copy: (v: string, k: string, l: string) => Promise<boolean>,
   trackAction: (a: string) => void
 ) {
   const handleCopy = useCallback(async () => {
-    if (!(result?.isValid && result.formatted)) {
+    if (!(result?.isValid && result.output)) {
       return;
     }
-    if (await copy(result.formatted, 'copy', 'Copied SQL')) {
+    if (await copy(result.output, 'copy', 'Copied SQL')) {
       trackAction('copy');
     }
   }, [result, copy, trackAction]);

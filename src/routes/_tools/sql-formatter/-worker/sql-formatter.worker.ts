@@ -6,9 +6,9 @@ import {
   formatSql,
   minifySql,
   type SqlDialect,
-  type SqlFormatterResult,
 } from '@/lib/tools/sql-formatter/adapters/sql-formatter';
 import type { SqlSearchAction } from '@/lib/tools/sql-formatter/adapters/sql-params';
+import type { TransformResult } from '@/lib/utils/transform';
 
 export type SqlFormatterRequest = WorkerRequest<{
   action: SqlSearchAction;
@@ -17,12 +17,12 @@ export type SqlFormatterRequest = WorkerRequest<{
 }>;
 
 export type SqlFormatterResponse = WorkerResponse<
-  SqlFormatterResult & { timedOut?: boolean }
+  TransformResult & { timedOut?: boolean }
 >;
 
 self.onmessage = (event: MessageEvent<SqlFormatterRequest>) => {
   const { id, input, dialect, action } = event.data;
-  let result: SqlFormatterResult;
+  let result: TransformResult;
   if (action === 'minify') {
     result = minifySql(input, dialect);
   } else {

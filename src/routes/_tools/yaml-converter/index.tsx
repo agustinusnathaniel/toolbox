@@ -4,8 +4,8 @@ import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { useYamlPage } from './-components/use-yaml-page';
@@ -41,23 +41,20 @@ function YamlConverterPage() {
             onConvert={page.handleConvert}
             onModeChange={page.handleModeChange}
           />
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="yaml-input">
-              {page.state.mode === 'json-to-yaml' ? 'JSON Input' : 'YAML Input'}
-            </label>
-            <Textarea
-              aria-label="Input data"
-              className="min-h-40 font-mono"
-              id="yaml-input"
-              onChange={(e) => page.handleInputChange(e.target.value)}
-              placeholder={
-                page.state.mode === 'json-to-yaml'
-                  ? 'Paste your JSON here...'
-                  : 'Paste your YAML here...'
-              }
-              value={page.state.input}
-            />
-          </div>
+          <LabeledTextarea
+            aria-label="Input data"
+            id="yaml-input"
+            label={
+              page.state.mode === 'json-to-yaml' ? 'JSON Input' : 'YAML Input'
+            }
+            onChange={(e) => page.handleInputChange(e.target.value)}
+            placeholder={
+              page.state.mode === 'json-to-yaml'
+                ? 'Paste your JSON here...'
+                : 'Paste your YAML here...'
+            }
+            value={page.state.input}
+          />
           <YamlResultView
             computing={page.computing}
             copiedKey={page.copiedKey}
