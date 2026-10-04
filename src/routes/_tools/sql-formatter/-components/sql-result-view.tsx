@@ -30,7 +30,7 @@ export function SqlResultView({
       <div className="flex flex-wrap gap-2">
         <CopyButton
           copied={copiedKey === 'copy'}
-          disabled={!(result?.isValid && result.formatted) || result.timedOut}
+          disabled={!(result?.isValid && result.output) || result.timedOut}
           label="Copy output"
           onPress={onCopy}
           text="Copy output"
@@ -53,12 +53,12 @@ export function SqlResultView({
         <ToolError message={result.error} title="Formatting timed out" />
       )}
 
-      {result?.isValid && result.formatted && (
+      {result?.isValid && result.output && (
         <ResultPanel
           copied={copiedKey === 'copy'}
           label="Output"
           onCopy={onCopy}
-          value={result.formatted}
+          value={result.output}
         />
       )}
     </>

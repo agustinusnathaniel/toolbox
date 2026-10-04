@@ -1,7 +1,7 @@
 'use client';
 
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { Input } from '@/lib/components/ui/input';
-import { Textarea } from '@/lib/components/ui/textarea';
 
 export function RegexPatternInput({
   pattern,
@@ -60,18 +60,13 @@ export function RegexTestInput({
   setInput: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="regex-input">
-        Test text
-      </label>
-      <Textarea
-        aria-label="Test text"
-        className="min-h-40 font-mono"
-        id="regex-input"
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Paste or type the text to test against..."
-        value={input}
-      />
-    </div>
+    <LabeledTextarea
+      aria-label="Test text"
+      id="regex-input"
+      label="Test text"
+      onChange={(e) => setInput(e.target.value)}
+      placeholder="Paste or type the text to test against..."
+      value={input}
+    />
   );
 }

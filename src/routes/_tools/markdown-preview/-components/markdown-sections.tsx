@@ -2,11 +2,11 @@
 
 import { CopyButton } from '@/lib/components/copy-button';
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 
 export function MarkdownEditor({
   onInput,
@@ -18,19 +18,15 @@ export function MarkdownEditor({
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-muted-fg text-sm" htmlFor="markdown-input">
-            Markdown
-          </label>
-          <Textarea
-            aria-label="Markdown input"
-            className="min-h-60 font-mono"
-            id="markdown-input"
-            onChange={(e) => onInput(e.target.value)}
-            placeholder="Type Markdown here... e.g. # Hello **world**"
-            value={value}
-          />
-        </div>
+        <LabeledTextarea
+          aria-label="Markdown input"
+          className="min-h-60 font-mono"
+          id="markdown-input"
+          label="Markdown"
+          onChange={(e) => onInput(e.target.value)}
+          placeholder="Type Markdown here... e.g. # Hello **world**"
+          value={value}
+        />
       </CardContent>
     </Card>
   );

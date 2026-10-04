@@ -6,7 +6,7 @@ import {
   useWorkerDeadline,
   useWorkerTrigger,
 } from '@/lib/hooks/use-worker-deadline';
-import type { JsonFormatterResult } from '@/lib/tools/json-formatter/adapters/json-formatter';
+import type { TransformResult } from '@/lib/utils/transform';
 
 import type {
   JsonFormatterAction,
@@ -18,14 +18,14 @@ import JsonFormatterWorker from '../-worker/json-formatter.worker.ts?worker';
 const JSON_FORMATTER_TIMEOUT_ERROR =
   'Formatting took too long — the input is too large. Try a smaller file.';
 
-const TIMEOUT_RESULT: JsonFormatterResult & { timedOut: true } = {
+const TIMEOUT_RESULT: TransformResult & { timedOut: true } = {
   error: JSON_FORMATTER_TIMEOUT_ERROR,
-  formatted: '',
   isValid: true,
+  output: '',
   timedOut: true,
 };
 
-type JsonFormatterState = JsonFormatterResult & { timedOut?: boolean };
+type JsonFormatterState = TransformResult & { timedOut?: boolean };
 
 export interface UseJsonFormatterReturn {
   computing: boolean;

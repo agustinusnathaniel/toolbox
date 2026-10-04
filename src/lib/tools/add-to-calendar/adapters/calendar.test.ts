@@ -20,7 +20,7 @@ describe('generateGoogleCalendarLink', () => {
 
     expect(result.provider).toBe('google');
     expect(result.url).toContain(
-      'https://www.google.com/calendar/render?action=TEMPLATE'
+      'https://calendar.google.com/calendar/render?action=TEMPLATE'
     );
     expect(result.url).toContain('text=Team%20Meeting');
     expect(result.url).toContain('dates=');

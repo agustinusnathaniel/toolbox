@@ -6,10 +6,8 @@ import {
   useWorkerDeadline,
   useWorkerTrigger,
 } from '@/lib/hooks/use-worker-deadline';
-import type {
-  CsvConverterResult,
-  CsvMode,
-} from '@/lib/tools/csv-converter/adapters/csv-converter';
+import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
+import type { TransformResult } from '@/lib/utils/transform';
 
 import type {
   CsvConverterRequest,
@@ -20,14 +18,14 @@ import CsvConverterWorker from '../-worker/csv-converter.worker.ts?worker';
 export const CSV_CONVERTER_TIMEOUT_ERROR =
   'Conversion took too long — the input is too large. Try a smaller file.';
 
-const TIMEOUT_RESULT: CsvConverterResult & { timedOut: true } = {
+const TIMEOUT_RESULT: TransformResult & { timedOut: true } = {
   error: CSV_CONVERTER_TIMEOUT_ERROR,
   isValid: true,
   output: '',
   timedOut: true,
 };
 
-type CsvConverterState = CsvConverterResult & { timedOut?: boolean };
+type CsvConverterState = TransformResult & { timedOut?: boolean };
 
 export interface UseCsvConverterReturn {
   computing: boolean;

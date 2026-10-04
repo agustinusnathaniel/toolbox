@@ -4,10 +4,10 @@ import type {
 } from '@/lib/hooks/worker-protocol';
 import {
   formatJson,
-  type JsonFormatterResult,
   minifyJson,
   validateJson,
 } from '@/lib/tools/json-formatter/adapters/json-formatter';
+import type { TransformResult } from '@/lib/utils/transform';
 
 export type JsonFormatterAction = 'format' | 'validate' | 'minify';
 
@@ -16,11 +16,11 @@ export type JsonFormatterRequest = WorkerRequest<{
   input: string;
 }>;
 
-export type JsonFormatterResponse = WorkerResponse<JsonFormatterResult>;
+export type JsonFormatterResponse = WorkerResponse<TransformResult>;
 
 self.onmessage = (event: MessageEvent<JsonFormatterRequest>) => {
   const { id, input, action } = event.data;
-  let result: JsonFormatterResult;
+  let result: TransformResult;
   switch (action) {
     case 'format':
       result = formatJson(input);

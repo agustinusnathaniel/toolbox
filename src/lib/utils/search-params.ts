@@ -75,20 +75,32 @@ export function parseIntClamped(
 }
 
 /**
- * Reads the `'1'`/`'0'` URL convention. Any other value (including missing)
- * returns the caller's default, so absent params keep the tool default.
+ * Reads the `'1'`/`'0'` URL convention, also accepting `'true'`/`'false'`
+ * from older share links (lorem-ipsum wrote those before the `'1'`/`'0'`
+ * convention was standardized). Any other value (including missing) returns
+ * the caller's default, so absent params keep the tool default.
  */
 export function readFlag(
   value: string | undefined,
   defaultValue: boolean
 ): boolean {
-  if (value === '1') {
+  if (value === '1' || value === 'true') {
     return true;
   }
-  if (value === '0') {
+  if (value === '0' || value === 'false') {
     return false;
   }
   return defaultValue;
+}
+
+/**
+ * The value when it contains non-whitespace content, otherwise undefined —
+ * the shared emptiness rule for optional string params in share links.
+ * When present, the original value (including surrounding whitespace) is
+ * preserved.
+ */
+export function trimmed(value: string): string | undefined {
+  return value.trim() ? value : undefined;
 }
 
 export function writeFlag(value: boolean): '1' | '0' {

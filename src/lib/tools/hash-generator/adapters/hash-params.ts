@@ -1,4 +1,9 @@
-import { coerceEnum, readString } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 import type { HashAlgorithm } from './hash-generator';
 import { HASH_ALGORITHMS } from './hash-generator';
@@ -17,17 +22,11 @@ export function buildHashParams(
   algorithm: HashAlgorithm,
   expected = ''
 ): URLSearchParams {
-  const params = new URLSearchParams();
-  if (text.trim()) {
-    params.set('text', text);
-  }
-  if (algorithm && algorithm !== 'SHA-256') {
-    params.set('algorithm', algorithm);
-  }
-  if (expected.trim()) {
-    params.set('expected', expected);
-  }
-  return params;
+  return recordToSearchParams({
+    algorithm: algorithm === 'SHA-256' ? undefined : algorithm,
+    expected: trimmed(expected),
+    text: trimmed(text),
+  });
 }
 
 export function buildHashStateFromSearch(search: HashSearchParams): {

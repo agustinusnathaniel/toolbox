@@ -3,6 +3,7 @@
 import { ScanLine, ShieldCheck } from 'lucide-react';
 
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
@@ -16,18 +17,13 @@ export function JwtTokenInput({
   token: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="jwt-token">
-        Token
-      </label>
-      <textarea
-        className="field-sizing-content min-h-40 w-full rounded-lg border border-input bg-transparent p-3 font-mono text-fg text-sm outline-hidden placeholder:text-muted-fg focus:border-ring/70 focus:ring-3 focus:ring-ring/20"
-        id="jwt-token"
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Paste a JWT to decode..."
-        value={token}
-      />
-    </div>
+    <LabeledTextarea
+      id="jwt-token"
+      label="Token"
+      onChange={(e) => onChange(e.target.value)}
+      placeholder="Paste a JWT to decode..."
+      value={token}
+    />
   );
 }
 

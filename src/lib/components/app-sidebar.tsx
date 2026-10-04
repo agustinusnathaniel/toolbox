@@ -61,6 +61,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
         <SidebarContent>
           <SidebarSectionGroup>
             <SidebarTree
+              aria-label="Tool navigation"
               defaultExpandedKeys={navCategories.map(
                 ({ category }) => category
               )}

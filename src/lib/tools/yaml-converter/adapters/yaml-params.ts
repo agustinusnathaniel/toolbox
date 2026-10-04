@@ -1,4 +1,9 @@
-import { coerceEnum, readString } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 export type YamlMode = 'json-to-yaml' | 'yaml-to-json';
 
@@ -12,19 +17,18 @@ export function buildYamlParams(
   input: string,
   mode: YamlMode
 ): URLSearchParams {
-  const params = new URLSearchParams();
-  if (input !== '') {
-    params.set('input', input);
-  }
-  params.set('mode', mode);
-  return params;
+  return recordToSearchParams({
+    input: trimmed(input),
+    mode,
+  });
 }
 
 export function buildYamlStateFromSearch(search: Record<string, unknown>): {
   input: string;
   mode: YamlMode;
 } {
-  const input = readString(search.input);
-  const mode = coerceEnum(search.mode, ALLOWED_MODES, DEFAULT_MODE);
-  return { input, mode };
+  return {
+    input: readString(search.input),
+    mode: coerceEnum(search.mode, ALLOWED_MODES, DEFAULT_MODE),
+  };
 }

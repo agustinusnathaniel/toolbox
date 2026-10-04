@@ -1,5 +1,7 @@
 'use client';
 
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
+
 export function HashTextInput({
   text,
   setText,
@@ -12,22 +14,17 @@ export function HashTextInput({
   setFileName: (v: null) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="hash-text">
-        Text
-      </label>
-      <textarea
-        className="field-sizing-content min-h-40 w-full rounded-lg border border-input bg-transparent p-3 font-mono text-fg text-sm outline-hidden placeholder:text-muted-fg focus:border-ring/70 focus:ring-3 focus:ring-ring/20"
-        id="hash-text"
-        onChange={(e) => {
-          setText(e.target.value);
-          setResult(null);
-          setFileName(null);
-        }}
-        placeholder="Type or paste text to hash..."
-        value={text}
-      />
-    </div>
+    <LabeledTextarea
+      id="hash-text"
+      label="Text"
+      onChange={(e) => {
+        setText(e.target.value);
+        setResult(null);
+        setFileName(null);
+      }}
+      placeholder="Type or paste text to hash..."
+      value={text}
+    />
   );
 }
 

@@ -4,8 +4,8 @@ import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { SqlFormatControls } from './-components/sql-format-controls';
@@ -44,19 +44,14 @@ function SqlFormatterPage() {
             onDialectChange={page.handleDialectChange}
             onFormat={page.handleFormat}
           />
-          <div className="flex flex-col gap-1">
-            <label className="text-muted-fg text-sm" htmlFor="sql-input">
-              SQL Input
-            </label>
-            <Textarea
-              aria-label="SQL input"
-              className="min-h-40 font-mono"
-              id="sql-input"
-              onChange={(e) => page.handleInputChange(e.target.value)}
-              placeholder="Paste your SQL here... e.g. SELECT * FROM users WHERE id = 1"
-              value={page.state.input}
-            />
-          </div>
+          <LabeledTextarea
+            aria-label="SQL input"
+            id="sql-input"
+            label="SQL Input"
+            onChange={(e) => page.handleInputChange(e.target.value)}
+            placeholder="Paste your SQL here... e.g. SELECT * FROM users WHERE id = 1"
+            value={page.state.input}
+          />
           <SqlResultView
             action={page.state.action}
             computing={page.computing}

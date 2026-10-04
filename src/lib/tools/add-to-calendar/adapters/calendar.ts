@@ -1,3 +1,5 @@
+import { google } from 'calendar-link';
+
 export interface CalendarEvent {
   description?: string;
   end: string;
@@ -14,22 +16,7 @@ export interface CalendarLinkResult {
 }
 
 const GOOGLE_CAL_TEMPLATE_LINK =
-  'https://www.google.com/calendar/render?action=TEMPLATE';
-
-function trimmedIsoString(date: string): string {
-  const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) {
-    return '';
-  }
-  // Build YYYYMMDDTHHMMSSZ manually to avoid toISOString() millisecond suffix (.NNN)
-  const year = parsed.getUTCFullYear();
-  const month = String(parsed.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(parsed.getUTCDate()).padStart(2, '0');
-  const hours = String(parsed.getUTCHours()).padStart(2, '0');
-  const minutes = String(parsed.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(parsed.getUTCSeconds()).padStart(2, '0');
-  return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
-}
+  'https://calendar.google.com/calendar/render?action=TEMPLATE';
 
 export function formatLocalDateTimeString(date?: Date | string): string {
   const d = new Date(date ?? new Date());
@@ -61,37 +48,32 @@ export function buildCalendarSearchParams(
   };
 }
 
-function buildQueryString(event: CalendarEvent): string {
-  const parts: Array<string> = [];
-
-  if (event.title) {
-    parts.push(`text=${encodeURIComponent(event.title)}`);
-  }
-  if (event.description) {
-    parts.push(`details=${encodeURIComponent(event.description)}`);
-  }
-  if (event.location) {
-    parts.push(`location=${encodeURIComponent(event.location)}`);
-  }
-
-  const startStr = trimmedIsoString(event.start);
-  const endStr = trimmedIsoString(event.end);
-  if (startStr && endStr) {
-    const dates = `${startStr}%2F${endStr}`;
-    parts.push(`dates=${dates}`);
-  }
-
-  return parts.join('&');
+function hasValidDates(event: CalendarEvent): boolean {
+  return [event.start, event.end].every(
+    (date) => !Number.isNaN(new Date(date).getTime())
+  );
 }
 
 export function generateGoogleCalendarLink(
   event: CalendarEvent
 ): CalendarLinkResult {
-  const queryString = buildQueryString(event);
-  const url = `${GOOGLE_CAL_TEMPLATE_LINK}&${queryString}`;
-
-  return {
-    provider: 'google',
-    url,
-  };
+  // calendar-link serializes unparseable dates into the URL, so the dates
+  // param is only delegated when both bounds parse; otherwise a link without
+  // dates is returned.
+  if (!hasValidDates(event)) {
+    const query = [
+      event.title && `text=${encodeURIComponent(event.title)}`,
+      event.description && `details=${encodeURIComponent(event.description)}`,
+      event.location && `location=${encodeURIComponent(event.location)}`,
+    ]
+      .filter(Boolean)
+      .join('&');
+    return {
+      provider: 'google',
+      url: query
+        ? `${GOOGLE_CAL_TEMPLATE_LINK}&${query}`
+        : GOOGLE_CAL_TEMPLATE_LINK,
+    };
+  }
+  return { provider: 'google', url: google(event) };
 }

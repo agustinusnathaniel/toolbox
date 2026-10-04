@@ -1,10 +1,11 @@
 'use client';
 
-import { CopyButton } from '@/lib/components/copy-button';
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
+import { ResultPanel } from '@/lib/components/result-panel';
+import { ToggleBar } from '@/lib/components/toggle-bar';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Textarea } from '@/lib/components/ui/textarea';
 
 const EXAMPLES = [
   '<div>Hello & "world"</div>',
@@ -12,6 +13,11 @@ const EXAMPLES = [
   '&lt;p&gt;Hello &amp; welcome&lt;/p&gt;',
   '&#60;script&#62;alert(&#34;hi&#34;)&#60;/script&#62;',
 ];
+
+const MODE_OPTIONS = [
+  { action: 'encode', id: 'encode', label: 'Encode' },
+  { action: 'decode', id: 'decode', label: 'Decode' },
+] as const;
 
 export function HtmlEntitiesInput({
   input,
@@ -23,23 +29,18 @@ export function HtmlEntitiesInput({
   onInput: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="html-entities-input">
-        Input
-      </label>
-      <Textarea
-        aria-label="HTML input"
-        className="min-h-40 font-mono"
-        id="html-entities-input"
-        onChange={(e) => onInput(e.target.value)}
-        placeholder={
-          mode === 'encode'
-            ? 'Paste HTML or text to encode (e.g. <div> & "hello")...'
-            : 'Paste encoded HTML to decode (e.g. &lt;div&gt; &amp; &quot;hello&quot;)...'
-        }
-        value={input}
-      />
-    </div>
+    <LabeledTextarea
+      aria-label="HTML input"
+      id="html-entities-input"
+      label="Input"
+      onChange={(e) => onInput(e.target.value)}
+      placeholder={
+        mode === 'encode'
+          ? 'Paste HTML or text to encode (e.g. <div> & "hello")...'
+          : 'Paste encoded HTML to decode (e.g. &lt;div&gt; &amp; &quot;hello&quot;)...'
+      }
+      value={input}
+    />
   );
 }
 
@@ -56,24 +57,12 @@ export function HtmlEntitiesModes({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button
-        intent={mode === 'encode' ? 'primary' : 'outline'}
-        onPress={() => {
-          onMode('encode');
-          track('encode');
-        }}
-      >
-        Encode
-      </Button>
-      <Button
-        intent={mode === 'decode' ? 'primary' : 'outline'}
-        onPress={() => {
-          onMode('decode');
-          track('decode');
-        }}
-      >
-        Decode
-      </Button>
+      <ToggleBar
+        onSelectionChange={onMode}
+        options={MODE_OPTIONS}
+        track={track}
+        value={mode}
+      />
       <Button intent="outline" onPress={onClear} size="sm">
         Clear
       </Button>
@@ -121,15 +110,12 @@ export function HtmlEntitiesOutput({
   return (
     <>
       {result && hasInput && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-fg text-sm">{label}</span>
-            <CopyButton copied={copied} label="Copy result" onPress={onCopy} />
-          </div>
-          <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
-            {result}
-          </pre>
-        </div>
+        <ResultPanel
+          copied={copied}
+          label={label}
+          onCopy={onCopy}
+          value={result}
+        />
       )}
       {!hasInput && (
         <p className="text-muted-fg text-xs">

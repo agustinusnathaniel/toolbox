@@ -1,4 +1,8 @@
-import { coerceEnum, parseIntClamped } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  parseIntClamped,
+  readFlag,
+} from '@/lib/utils/search-params';
 
 import type { LoremIpsumOutputFormat } from './lorem-ipsum';
 
@@ -31,19 +35,6 @@ const DEFAULTS: LoremIpsumParamsState = {
 
 const ALLOWED_FORMATS: ReadonlySet<LoremIpsumOutputFormat> =
   new Set<LoremIpsumOutputFormat>(['html', 'plain']);
-
-function parseBoolean(value: string | undefined, fallback: boolean): boolean {
-  if (value === undefined) {
-    return fallback;
-  }
-  if (value === 'true') {
-    return true;
-  }
-  if (value === 'false') {
-    return false;
-  }
-  return fallback;
-}
 
 export function buildLoremIpsumParams(
   state: LoremIpsumParamsState
@@ -87,10 +78,7 @@ export function buildLoremIpsumStateFromSearch(
       10,
       DEFAULTS.sentencesPerParagraph
     ),
-    startWithLorem: parseBoolean(
-      search.startWithLorem,
-      DEFAULTS.startWithLorem
-    ),
+    startWithLorem: readFlag(search.startWithLorem, DEFAULTS.startWithLorem),
     wordsMax,
     wordsMin,
   };

@@ -7,10 +7,10 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { CopyRow } from '@/lib/components/copy-row';
+import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { Textarea } from '@/lib/components/ui/textarea';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { CaseFormat } from '@/lib/tools/case-converter/adapters/case-converter';
@@ -49,19 +49,14 @@ function CaseInput({
   setInput: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="case-input">
-        Input text
-      </label>
-      <Textarea
-        aria-label="Input text"
-        className="min-h-40 font-mono"
-        id="case-input"
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Paste text to convert..."
-        value={input}
-      />
-    </div>
+    <LabeledTextarea
+      aria-label="Input text"
+      id="case-input"
+      label="Input text"
+      onChange={(e) => setInput(e.target.value)}
+      placeholder="Paste text to convert..."
+      value={input}
+    />
   );
 }
 

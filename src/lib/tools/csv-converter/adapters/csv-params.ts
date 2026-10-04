@@ -1,4 +1,9 @@
-import { coerceEnum, readString } from '@/lib/utils/search-params';
+import {
+  coerceEnum,
+  readString,
+  recordToSearchParams,
+  trimmed,
+} from '@/lib/utils/search-params';
 
 import type { CsvMode } from './csv-converter';
 
@@ -17,14 +22,10 @@ export function buildCsvParams(options: {
   input: string;
   mode: CsvMode;
 }): URLSearchParams {
-  const params = new URLSearchParams();
-  if (options.input) {
-    params.set('input', options.input);
-  }
-  if (options.mode !== 'csv-to-json') {
-    params.set('mode', options.mode);
-  }
-  return params;
+  return recordToSearchParams({
+    input: trimmed(options.input),
+    mode: options.mode === 'csv-to-json' ? undefined : options.mode,
+  });
 }
 
 export function buildCsvStateFromSearch(search: CsvSearchParams): {
