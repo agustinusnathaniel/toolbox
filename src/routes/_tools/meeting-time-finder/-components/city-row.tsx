@@ -21,7 +21,7 @@ function getStatusColor(
   if (status === 'edge') {
     return 'bg-orange-500/40';
   }
-  return 'bg-muted-foreground/20';
+  return 'bg-muted-foreground/60';
 }
 
 function getStatusTextColor(

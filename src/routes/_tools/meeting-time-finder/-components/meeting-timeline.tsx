@@ -216,12 +216,16 @@ function TimelineGrid({
 
           {bestTime && (
             <div
-              className="pointer-events-none absolute top-0 bottom-0 border-emerald-500/50 border-x-2 bg-emerald-500/15"
+              className="pointer-events-none absolute top-0 bottom-0 border-emerald-500/60 border-x-2 bg-emerald-500/20"
               style={{
                 left: `${(bestStart / 24) * 100}%`,
                 width: `${(bestDurationHours / 24) * 100}%`,
               }}
-            />
+            >
+              <span className="absolute top-1 left-1/2 -translate-x-1/2 rounded bg-emerald-500/90 px-1.5 py-0.5 font-medium text-[10px] text-white">
+                Best
+              </span>
+            </div>
           )}
 
           <div
