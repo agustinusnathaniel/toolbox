@@ -61,49 +61,46 @@ export function CityRow({
   const status = getCityStatus(selectedHour, city);
 
   return (
-    <div
-      className="group grid grid-cols-[100px_1fr_80px] items-center gap-2 sm:grid-cols-[140px_1fr_100px]"
-      key={city.id}
-    >
-      <div className="flex min-w-0 flex-col">
-        <div className="flex items-center gap-1">
+    <div className="group flex flex-col gap-1" key={city.id}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1">
           <span className="truncate font-medium text-sm">{city.name}</span>
           <button
             aria-label={`Remove ${city.name}`}
-            className="text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+            className="text-muted-foreground transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100"
             onClick={() => onRemove(city.id)}
             type="button"
           >
             ×
           </button>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <span className="font-mono text-[10px] text-muted-foreground">
             {offsetLabel}
+          </span>
+          <span className={`font-mono text-xs ${getStatusTextColor(status)}`}>
+            {localTime}
           </span>
           <WorkHoursEditor city={city} onUpdate={onUpdateWorkHours} />
         </div>
       </div>
 
-      <div className="grid grid-cols-24 gap-0">
+      <div
+        className="grid gap-0"
+        style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
+      >
         {HOURS.map((h) => {
           const s = getCityStatus(h, city);
           const isSelected = h === selectedHour;
           return (
             <div
-              className={`h-6 rounded-sm ${getStatusColor(s)} ${
+              className={`h-8 rounded-sm ${getStatusColor(s)} ${
                 isSelected ? 'ring-2 ring-foreground ring-offset-1' : ''
               } transition-colors`}
               key={`cell-${city.id}-${h}`}
             />
           );
         })}
-      </div>
-
-      <div className="text-right">
-        <span className={`font-mono text-xs ${getStatusTextColor(status)}`}>
-          {localTime}
-        </span>
       </div>
     </div>
   );

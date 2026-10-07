@@ -35,46 +35,50 @@ export function WorkHoursEditor({ city, onUpdate }: WorkHoursEditorProps) {
   }
 
   return (
-    <div className="flex items-center gap-1">
-      <select
-        aria-label="Work start hour"
-        className="rounded border border-input bg-background px-1 py-0.5 text-xs"
-        onChange={(e) => setStart(Number(e.target.value))}
-        value={start}
-      >
-        {Array.from({ length: 24 }, (_, i) => i).map((h) => (
-          <option key={`hour-${h}`} value={h}>
-            {String(h).padStart(2, '0')}:00
-          </option>
-        ))}
-      </select>
-      <span className="text-muted-foreground text-xs">–</span>
-      <select
-        aria-label="Work end hour"
-        className="rounded border border-input bg-background px-1 py-0.5 text-xs"
-        onChange={(e) => setEnd(Number(e.target.value))}
-        value={end}
-      >
-        {Array.from({ length: 24 }, (_, i) => i).map((h) => (
-          <option key={h} value={h}>
-            {String(h).padStart(2, '0')}:00
-          </option>
-        ))}
-      </select>
-      <button
-        className="font-medium text-primary text-xs hover:text-primary/80"
-        onClick={handleSave}
-        type="button"
-      >
-        Save
-      </button>
-      <button
-        className="text-muted-foreground text-xs hover:text-foreground"
-        onClick={() => setIsEditing(false)}
-        type="button"
-      >
-        Cancel
-      </button>
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-1">
+        <select
+          aria-label="Work start hour"
+          className="w-16 rounded border border-input bg-background px-1 py-0.5 text-xs"
+          onChange={(e) => setStart(Number(e.target.value))}
+          value={start}
+        >
+          {Array.from({ length: 24 }, (_, i) => i).map((h) => (
+            <option key={`hour-${h}`} value={h}>
+              {String(h).padStart(2, '0')}:00
+            </option>
+          ))}
+        </select>
+        <span className="text-muted-foreground text-xs">–</span>
+        <select
+          aria-label="Work end hour"
+          className="w-16 rounded border border-input bg-background px-1 py-0.5 text-xs"
+          onChange={(e) => setEnd(Number(e.target.value))}
+          value={end}
+        >
+          {Array.from({ length: 24 }, (_, i) => i).map((h) => (
+            <option key={h} value={h}>
+              {String(h).padStart(2, '0')}:00
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          className="font-medium text-primary text-xs hover:text-primary/80"
+          onClick={handleSave}
+          type="button"
+        >
+          Save
+        </button>
+        <button
+          className="text-muted-foreground text-xs hover:text-foreground"
+          onClick={() => setIsEditing(false)}
+          type="button"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
