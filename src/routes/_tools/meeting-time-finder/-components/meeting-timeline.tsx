@@ -109,7 +109,7 @@ function TimelineGrid({
       aria-valuemax={23}
       aria-valuemin={0}
       aria-valuenow={selectedHour}
-      className="relative cursor-crosshair select-none"
+      className="relative cursor-crosshair touch-none select-none"
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
@@ -119,15 +119,18 @@ function TimelineGrid({
           onHourChange((selectedHour + 1) % 24);
         }
       }}
+      onPointerCancel={handlePointerUp}
       onPointerDown={handlePointerDown}
-      onPointerLeave={handlePointerUp}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       ref={timelineRef}
       role="slider"
       tabIndex={0}
     >
-      <div className="mb-1 grid grid-cols-24 gap-0">
+      <div
+        className="mb-1 grid gap-0"
+        style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
+      >
         {HOURS.map((h) => (
           <div
             className={`text-center font-mono text-[10px] ${
@@ -140,7 +143,10 @@ function TimelineGrid({
         ))}
       </div>
 
-      <div className="mb-1 grid grid-cols-24 gap-0">
+      <div
+        className="mb-1 grid gap-0"
+        style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
+      >
         {HOURS.map((h) => {
           const s = getOverallScore(h, cities);
           return (
