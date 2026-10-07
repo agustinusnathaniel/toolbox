@@ -1,5 +1,6 @@
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
+  findBestTime,
   getOverallScore,
   getStatusSummary,
 } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
@@ -10,6 +11,7 @@ import { useTimelineDrag } from './use-timeline-drag';
 
 interface MeetingTimelineProps {
   cities: ReadonlyArray<City>;
+  duration: number;
   onAddCity: (city: City) => void;
   onHourChange: (hour: number) => void;
   onRemoveCity: (cityId: string) => void;
@@ -37,6 +39,10 @@ function getScoreColor(score: number): string {
     return 'bg-orange-500/15';
   }
   return 'bg-transparent';
+}
+
+function getCurrentUtcHour(): number {
+  return new Date().getUTCHours();
 }
 
 function TimelineHeader({
@@ -83,14 +89,81 @@ function TimelineHeader({
   );
 }
 
+function TimelineContent({
+  cities,
+  selectedHour,
+  onRemoveCity,
+  onUpdateWorkHours,
+}: {
+  cities: ReadonlyArray<City>;
+  selectedHour: number;
+  onRemoveCity: (cityId: string) => void;
+  onUpdateWorkHours: (
+    cityId: string,
+    workStart: number,
+    workEnd: number
+  ) => void;
+}) {
+  return (
+    <div className="overflow-x-auto pb-2">
+      <div className="min-w-[600px]">
+        <div
+          className="mb-1 grid gap-px"
+          style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
+        >
+          {HOURS.map((h) => (
+            <div
+              className={`text-center font-mono text-[10px] ${
+                h % 6 === 0 ? 'text-foreground' : 'text-muted-foreground/50'
+              }`}
+              key={`label-${h}`}
+            >
+              {h % 6 === 0 ? String(h).padStart(2, '0') : ''}
+            </div>
+          ))}
+        </div>
+
+        <div
+          className="mb-1 grid gap-px"
+          style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
+        >
+          {HOURS.map((h) => {
+            const s = getOverallScore(h, cities);
+            return (
+              <div
+                className={`h-1 rounded-sm ${getScoreColor(s)}`}
+                key={`score-${h}`}
+              />
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          {cities.map((city) => (
+            <CityRow
+              city={city}
+              key={city.id}
+              onRemove={onRemoveCity}
+              onUpdateWorkHours={onUpdateWorkHours}
+              selectedHour={selectedHour}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TimelineGrid({
   cities,
+  duration,
   selectedHour,
   onHourChange,
   onRemoveCity,
   onUpdateWorkHours,
 }: {
   cities: ReadonlyArray<City>;
+  duration: number;
   selectedHour: number;
   onHourChange: (hour: number) => void;
   onRemoveCity: (cityId: string) => void;
@@ -102,6 +175,11 @@ function TimelineGrid({
 }) {
   const { timelineRef, handlePointerDown, handlePointerMove, handlePointerUp } =
     useTimelineDrag(onHourChange);
+
+  const currentHour = getCurrentUtcHour();
+  const bestTime = findBestTime(cities, duration);
+  const bestStart = bestTime?.startHour ?? 0;
+  const bestDurationHours = Math.max(1, Math.ceil(duration / 60));
 
   return (
     <div
@@ -127,48 +205,27 @@ function TimelineGrid({
       role="slider"
       tabIndex={0}
     >
-      <div
-        className="mb-1 grid gap-0"
-        style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
-      >
-        {HOURS.map((h) => (
-          <div
-            className={`text-center font-mono text-[10px] ${
-              h % 6 === 0 ? 'text-foreground' : 'text-muted-foreground/50'
-            }`}
-            key={`label-${h}`}
-          >
-            {h % 6 === 0 ? String(h).padStart(2, '0') : ''}
-          </div>
-        ))}
-      </div>
+      <TimelineContent
+        cities={cities}
+        onRemoveCity={onRemoveCity}
+        onUpdateWorkHours={onUpdateWorkHours}
+        selectedHour={selectedHour}
+      />
+
+      {bestTime && (
+        <div
+          className="pointer-events-none absolute top-0 bottom-0 bg-emerald-500/10"
+          style={{
+            left: `${(bestStart / 24) * 100}%`,
+            width: `${(bestDurationHours / 24) * 100}%`,
+          }}
+        />
+      )}
 
       <div
-        className="mb-1 grid gap-0"
-        style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
-      >
-        {HOURS.map((h) => {
-          const s = getOverallScore(h, cities);
-          return (
-            <div
-              className={`h-1 rounded-sm ${getScoreColor(s)}`}
-              key={`score-${h}`}
-            />
-          );
-        })}
-      </div>
-
-      <div className="flex flex-col gap-1">
-        {cities.map((city) => (
-          <CityRow
-            city={city}
-            key={city.id}
-            onRemove={onRemoveCity}
-            onUpdateWorkHours={onUpdateWorkHours}
-            selectedHour={selectedHour}
-          />
-        ))}
-      </div>
+        className="pointer-events-none absolute top-0 bottom-0 w-px bg-blue-500"
+        style={{ left: `${(currentHour / 24) * 100}%` }}
+      />
 
       <div
         className="pointer-events-none absolute top-0 bottom-0 w-px bg-foreground"
@@ -180,7 +237,7 @@ function TimelineGrid({
 
 function TimelineLegend() {
   return (
-    <div className="flex items-center gap-4 text-xs">
+    <div className="flex flex-wrap items-center gap-4 text-xs">
       <div className="flex items-center gap-1">
         <div className="h-3 w-3 rounded-sm bg-emerald-500/80" />
         <span className="text-muted-foreground">Core hours</span>
@@ -197,12 +254,21 @@ function TimelineLegend() {
         <div className="h-3 w-3 rounded-sm bg-muted" />
         <span className="text-muted-foreground">Asleep</span>
       </div>
+      <div className="flex items-center gap-1">
+        <div className="h-3 w-0.5 bg-blue-500" />
+        <span className="text-muted-foreground">Now</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <div className="h-3 w-3 rounded-sm bg-emerald-500/20" />
+        <span className="text-muted-foreground">Best time</span>
+      </div>
     </div>
   );
 }
 
 export function MeetingTimeline({
   cities,
+  duration,
   selectedHour,
   onHourChange,
   onRemoveCity,
@@ -216,6 +282,7 @@ export function MeetingTimeline({
       <TimelineHeader cities={cities} selectedHour={selectedHour} />
       <TimelineGrid
         cities={cities}
+        duration={duration}
         onHourChange={onHourChange}
         onRemoveCity={onRemoveCity}
         onUpdateWorkHours={onUpdateWorkHours}

@@ -21,7 +21,7 @@ function getStatusColor(
   if (status === 'edge') {
     return 'bg-orange-500/40';
   }
-  return 'bg-transparent';
+  return 'bg-muted';
 }
 
 function getStatusTextColor(
@@ -86,7 +86,7 @@ export function CityRow({
       </div>
 
       <div
-        className="grid gap-0"
+        className="grid gap-px"
         style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
       >
         {HOURS.map((h) => {
