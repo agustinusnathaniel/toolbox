@@ -29,6 +29,7 @@ import { Route as ToolsJsonToTsIndexRouteImport } from './routes/_tools/json-to-
 import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-decoder/index'
 import { Route as ToolsLoremIpsumIndexRouteImport } from './routes/_tools/lorem-ipsum/index'
 import { Route as ToolsMarkdownPreviewIndexRouteImport } from './routes/_tools/markdown-preview/index'
+import { Route as ToolsMeetingTimeFinderIndexRouteImport } from './routes/_tools/meeting-time-finder/index'
 import { Route as ToolsNumberBaseIndexRouteImport } from './routes/_tools/number-base/index'
 import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools/password-generator/index'
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
@@ -147,6 +148,12 @@ const ToolsMarkdownPreviewIndexRoute =
     path: '/markdown-preview/',
     getParentRoute: () => ToolsRouteRoute,
   } as any)
+const ToolsMeetingTimeFinderIndexRoute =
+  ToolsMeetingTimeFinderIndexRouteImport.update({
+    id: '/meeting-time-finder/',
+    path: '/meeting-time-finder/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsNumberBaseIndexRoute = ToolsNumberBaseIndexRouteImport.update({
   id: '/number-base/',
   path: '/number-base/',
@@ -245,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
   '/lorem-ipsum/': typeof ToolsLoremIpsumIndexRoute
   '/markdown-preview/': typeof ToolsMarkdownPreviewIndexRoute
+  '/meeting-time-finder/': typeof ToolsMeetingTimeFinderIndexRoute
   '/number-base/': typeof ToolsNumberBaseIndexRoute
   '/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode/': typeof ToolsQrcodeIndexRoute
@@ -281,6 +289,7 @@ export interface FileRoutesByTo {
   '/jwt-decoder': typeof ToolsJwtDecoderIndexRoute
   '/lorem-ipsum': typeof ToolsLoremIpsumIndexRoute
   '/markdown-preview': typeof ToolsMarkdownPreviewIndexRoute
+  '/meeting-time-finder': typeof ToolsMeetingTimeFinderIndexRoute
   '/number-base': typeof ToolsNumberBaseIndexRoute
   '/password-generator': typeof ToolsPasswordGeneratorIndexRoute
   '/qrcode': typeof ToolsQrcodeIndexRoute
@@ -319,6 +328,7 @@ export interface FileRoutesById {
   '/_tools/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
   '/_tools/lorem-ipsum/': typeof ToolsLoremIpsumIndexRoute
   '/_tools/markdown-preview/': typeof ToolsMarkdownPreviewIndexRoute
+  '/_tools/meeting-time-finder/': typeof ToolsMeetingTimeFinderIndexRoute
   '/_tools/number-base/': typeof ToolsNumberBaseIndexRoute
   '/_tools/password-generator/': typeof ToolsPasswordGeneratorIndexRoute
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
@@ -357,6 +367,7 @@ export interface FileRouteTypes {
     | '/jwt-decoder/'
     | '/lorem-ipsum/'
     | '/markdown-preview/'
+    | '/meeting-time-finder/'
     | '/number-base/'
     | '/password-generator/'
     | '/qrcode/'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/jwt-decoder'
     | '/lorem-ipsum'
     | '/markdown-preview'
+    | '/meeting-time-finder'
     | '/number-base'
     | '/password-generator'
     | '/qrcode'
@@ -430,6 +442,7 @@ export interface FileRouteTypes {
     | '/_tools/jwt-decoder/'
     | '/_tools/lorem-ipsum/'
     | '/_tools/markdown-preview/'
+    | '/_tools/meeting-time-finder/'
     | '/_tools/number-base/'
     | '/_tools/password-generator/'
     | '/_tools/qrcode/'
@@ -596,6 +609,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsMarkdownPreviewIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/meeting-time-finder/': {
+      id: '/_tools/meeting-time-finder/'
+      path: '/meeting-time-finder'
+      fullPath: '/meeting-time-finder/'
+      preLoaderRoute: typeof ToolsMeetingTimeFinderIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/number-base/': {
       id: '/_tools/number-base/'
       path: '/number-base'
@@ -721,6 +741,7 @@ interface ToolsRouteRouteChildren {
   ToolsJwtDecoderIndexRoute: typeof ToolsJwtDecoderIndexRoute
   ToolsLoremIpsumIndexRoute: typeof ToolsLoremIpsumIndexRoute
   ToolsMarkdownPreviewIndexRoute: typeof ToolsMarkdownPreviewIndexRoute
+  ToolsMeetingTimeFinderIndexRoute: typeof ToolsMeetingTimeFinderIndexRoute
   ToolsNumberBaseIndexRoute: typeof ToolsNumberBaseIndexRoute
   ToolsPasswordGeneratorIndexRoute: typeof ToolsPasswordGeneratorIndexRoute
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
@@ -755,6 +776,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsJwtDecoderIndexRoute: ToolsJwtDecoderIndexRoute,
   ToolsLoremIpsumIndexRoute: ToolsLoremIpsumIndexRoute,
   ToolsMarkdownPreviewIndexRoute: ToolsMarkdownPreviewIndexRoute,
+  ToolsMeetingTimeFinderIndexRoute: ToolsMeetingTimeFinderIndexRoute,
   ToolsNumberBaseIndexRoute: ToolsNumberBaseIndexRoute,
   ToolsPasswordGeneratorIndexRoute: ToolsPasswordGeneratorIndexRoute,
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
