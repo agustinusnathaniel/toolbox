@@ -95,7 +95,9 @@ export function CityRow({
           return (
             <div
               className={`h-8 rounded-sm ${getStatusColor(s)} ${
-                isSelected ? 'ring-2 ring-foreground ring-offset-1' : ''
+                isSelected
+                  ? 'outline-2 outline-foreground outline-offset-1'
+                  : ''
               } transition-colors`}
               key={`cell-${city.id}-${h}`}
             />
