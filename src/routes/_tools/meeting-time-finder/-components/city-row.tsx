@@ -21,7 +21,7 @@ function getStatusColor(
   if (status === 'edge') {
     return 'bg-orange-500/40';
   }
-  return 'bg-muted-foreground/60';
+  return 'bg-neutral-400';
 }
 
 function getStatusTextColor(
@@ -61,7 +61,7 @@ export function CityRow({
   const status = getCityStatus(selectedHour, city);
 
   return (
-    <div className="group flex flex-col gap-1" key={city.id}>
+    <div className="group flex flex-col gap-1 pr-2" key={city.id}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1">
           <span className="truncate font-medium text-sm">{city.name}</span>

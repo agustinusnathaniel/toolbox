@@ -41,10 +41,6 @@ function getScoreColor(score: number): string {
   return 'bg-transparent';
 }
 
-function getCurrentUtcHour(): number {
-  return new Date().getUTCHours();
-}
-
 function TimelineHeader({
   cities,
   selectedHour,
@@ -176,7 +172,6 @@ function TimelineGrid({
   const { timelineRef, handlePointerDown, handlePointerMove, handlePointerUp } =
     useTimelineDrag(onHourChange);
 
-  const currentHour = getCurrentUtcHour();
   const bestTime = findBestTime(cities, duration);
   const bestStart = bestTime?.startHour ?? 0;
   const bestDurationHours = Math.max(1, Math.ceil(duration / 60));
@@ -229,11 +224,6 @@ function TimelineGrid({
           )}
 
           <div
-            className="pointer-events-none absolute top-0 bottom-0 w-px bg-blue-500"
-            style={{ left: `${(currentHour / 24) * 100}%` }}
-          />
-
-          <div
             className="pointer-events-none absolute top-0 bottom-0 w-px bg-foreground"
             style={{ left: `${(selectedHour / 24) * 100}%` }}
           />
@@ -261,10 +251,6 @@ function TimelineLegend() {
       <div className="flex items-center gap-1">
         <div className="h-3 w-3 rounded-sm bg-muted" />
         <span className="text-muted-foreground">Asleep</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <div className="h-3 w-0.5 bg-blue-500" />
-        <span className="text-muted-foreground">Now</span>
       </div>
       <div className="flex items-center gap-1">
         <div className="h-3 w-3 rounded-sm bg-emerald-500/20" />
