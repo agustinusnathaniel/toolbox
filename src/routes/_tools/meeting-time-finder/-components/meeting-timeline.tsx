@@ -205,32 +205,36 @@ function TimelineGrid({
       role="slider"
       tabIndex={0}
     >
-      <TimelineContent
-        cities={cities}
-        onRemoveCity={onRemoveCity}
-        onUpdateWorkHours={onUpdateWorkHours}
-        selectedHour={selectedHour}
-      />
+      <div className="overflow-x-auto pb-2">
+        <div className="relative min-w-[600px]">
+          <TimelineContent
+            cities={cities}
+            onRemoveCity={onRemoveCity}
+            onUpdateWorkHours={onUpdateWorkHours}
+            selectedHour={selectedHour}
+          />
 
-      {bestTime && (
-        <div
-          className="pointer-events-none absolute top-0 bottom-0 bg-emerald-500/10"
-          style={{
-            left: `${(bestStart / 24) * 100}%`,
-            width: `${(bestDurationHours / 24) * 100}%`,
-          }}
-        />
-      )}
+          {bestTime && (
+            <div
+              className="pointer-events-none absolute top-0 bottom-0 bg-emerald-500/10"
+              style={{
+                left: `${(bestStart / 24) * 100}%`,
+                width: `${(bestDurationHours / 24) * 100}%`,
+              }}
+            />
+          )}
 
-      <div
-        className="pointer-events-none absolute top-0 bottom-0 w-px bg-blue-500"
-        style={{ left: `${(currentHour / 24) * 100}%` }}
-      />
+          <div
+            className="pointer-events-none absolute top-0 bottom-0 w-px bg-blue-500"
+            style={{ left: `${(currentHour / 24) * 100}%` }}
+          />
 
-      <div
-        className="pointer-events-none absolute top-0 bottom-0 w-px bg-foreground"
-        style={{ left: `${(selectedHour / 24) * 100}%` }}
-      />
+          <div
+            className="pointer-events-none absolute top-0 bottom-0 w-px bg-foreground"
+            style={{ left: `${(selectedHour / 24) * 100}%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
