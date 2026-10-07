@@ -21,7 +21,7 @@ function getStatusColor(
   if (status === 'edge') {
     return 'bg-orange-500/40';
   }
-  return 'bg-muted';
+  return 'bg-muted-foreground/20';
 }
 
 function getStatusTextColor(
@@ -91,14 +91,9 @@ export function CityRow({
       >
         {HOURS.map((h) => {
           const s = getCityStatus(h, city);
-          const isSelected = h === selectedHour;
           return (
             <div
-              className={`h-8 rounded-sm ${getStatusColor(s)} ${
-                isSelected
-                  ? 'outline-2 outline-foreground outline-offset-1'
-                  : ''
-              } transition-colors`}
+              className={`h-8 rounded-sm ${getStatusColor(s)} transition-colors`}
               key={`cell-${city.id}-${h}`}
             />
           );

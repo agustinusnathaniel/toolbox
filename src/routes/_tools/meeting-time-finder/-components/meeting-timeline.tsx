@@ -114,11 +114,11 @@ function TimelineContent({
           {HOURS.map((h) => (
             <div
               className={`text-center font-mono text-[10px] ${
-                h % 6 === 0 ? 'text-foreground' : 'text-muted-foreground/50'
+                h % 3 === 0 ? 'text-foreground' : 'text-muted-foreground/50'
               }`}
               key={`label-${h}`}
             >
-              {h % 6 === 0 ? String(h).padStart(2, '0') : ''}
+              {h % 3 === 0 ? String(h).padStart(2, '0') : ''}
             </div>
           ))}
         </div>
@@ -216,7 +216,7 @@ function TimelineGrid({
 
           {bestTime && (
             <div
-              className="pointer-events-none absolute top-0 bottom-0 bg-emerald-500/10"
+              className="pointer-events-none absolute top-0 bottom-0 border-emerald-500/50 border-x-2 bg-emerald-500/15"
               style={{
                 left: `${(bestStart / 24) * 100}%`,
                 width: `${(bestDurationHours / 24) * 100}%`,
