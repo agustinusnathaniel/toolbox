@@ -35,6 +35,7 @@ function MeetingTimeFinderPage() {
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[90%] md:max-w-4xl">
       <MeetingTimeline
         cities={page.cities}
+        duration={page.duration}
         onAddCity={page.addCity}
         onHourChange={page.setSelectedHour}
         onRemoveCity={page.removeCity}
