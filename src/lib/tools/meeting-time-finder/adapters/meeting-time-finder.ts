@@ -43,6 +43,74 @@ export function getLocalHour(
 }
 
 /**
+ * Get the local time (hour + minute) in a timezone for a given UTC hour.
+ * Needed for half-hour zones (e.g. Asia/Kolkata is UTC+5:30), where
+ * hour-only math would silently drop the :30.
+ */
+export function getLocalHourMinute(
+  utcHour: number,
+  timezone: string,
+  date: Date = new Date()
+): { hour: number; minute: number } {
+  const offsetMinutes = getTimezoneOffsetMinutes(timezone, date);
+  const localMinutes = utcHour * 60 + offsetMinutes;
+  const normalized = ((localMinutes % 1440) + 1440) % 1440;
+  return {
+    hour: Math.floor(normalized / 60),
+    minute: normalized % 60,
+  };
+}
+
+/**
+ * Format a UTC hour as seen in a timezone: "14:00", or "14:30" when the
+ * zone offset has a fractional hour.
+ */
+export function formatHourInZone(
+  utcHour: number,
+  timezone: string,
+  date: Date = new Date()
+): string {
+  if (timezone === 'UTC') {
+    return `${String(utcHour).padStart(2, '0')}:00`;
+  }
+  const { hour, minute } = getLocalHourMinute(utcHour, timezone, date);
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+/**
+ * Compact axis label for a UTC hour column as seen in a reference zone.
+ * Whole-hour offsets render as "14", fractional ones as "14:30".
+ */
+export function getAxisLabel(
+  utcHour: number,
+  timezone: string,
+  date: Date = new Date()
+): string {
+  if (timezone === 'UTC') {
+    return String(utcHour).padStart(2, '0');
+  }
+  const { hour, minute } = getLocalHourMinute(utcHour, timezone, date);
+  const hh = String(hour).padStart(2, '0');
+  return minute === 0 ? hh : `${hh}:${String(minute).padStart(2, '0')}`;
+}
+
+/**
+ * Current local time ("HH:MM") in a timezone, for search results and menus.
+ */
+export function getCurrentTimeLabel(
+  timezone: string,
+  date: Date = new Date()
+): string {
+  const offsetMinutes = getTimezoneOffsetMinutes(timezone, date);
+  const utcMinutes =
+    date.getUTCHours() * 60 + date.getUTCMinutes() + offsetMinutes;
+  const normalized = ((utcMinutes % 1440) + 1440) % 1440;
+  const hour = Math.floor(normalized / 60);
+  const minute = normalized % 60;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+/**
  * Get the timezone offset in hours as a display string, e.g. "UTC+5:30" or "UTC-7".
  */
 export function getTimezoneOffsetLabel(
@@ -249,4 +317,43 @@ export function getStatusSummary(
     summary[status]++;
   }
   return summary;
+}
+
+export type OutOfHoursRelation = 'early' | 'late';
+
+export interface OutlierNote {
+  name: string;
+  relation: OutOfHoursRelation;
+}
+
+/**
+ * Smart status summary: how many cities are in core hours, plus which
+ * cities fall outside (and on which side). Powers the
+ * "3 of 4 · early in San Francisco" status line.
+ */
+export function getOutlierSummary(
+  utcHour: number,
+  cities: ReadonlyArray<City>,
+  date: Date = new Date()
+): { inHours: number; total: number; outliers: Array<OutlierNote> } {
+  const outliers: Array<OutlierNote> = [];
+  let inHours = 0;
+  for (const city of cities) {
+    if (getCityStatus(utcHour, city, date) === 'core') {
+      inHours++;
+      continue;
+    }
+    const localHour = getLocalHour(utcHour, city.timezone, date);
+    let relation: OutOfHoursRelation;
+    if (city.workEnd <= city.workStart) {
+      // Overnight schedule (e.g. 22–6): the out-of-hours gap is
+      // [workEnd, workStart). Split at its midpoint.
+      const midpoint = (city.workEnd + city.workStart) / 2;
+      relation = localHour < midpoint ? 'late' : 'early';
+    } else {
+      relation = localHour < city.workStart ? 'early' : 'late';
+    }
+    outliers.push({ name: city.name, relation });
+  }
+  return { inHours, outliers, total: cities.length };
 }

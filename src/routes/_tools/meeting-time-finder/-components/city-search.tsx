@@ -10,6 +10,7 @@ import {
   type City,
   searchCities,
 } from '@/lib/tools/meeting-time-finder/adapters/cities';
+import { getCurrentTimeLabel } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 
 interface CitySearchProps {
   existingIds: ReadonlySet<string>;
@@ -44,9 +45,14 @@ export function CitySearch({ onAdd, existingIds }: CitySearchProps) {
       <ComboBoxContent>
         {(city: City) => (
           <ComboBoxItem id={city.id} textValue={`${city.name} ${city.country}`}>
-            <span>{city.name}</span>
-            <span className="text-muted-foreground text-xs">
-              {city.country}
+            <span className="col-span-full flex w-full items-baseline gap-1.5">
+              <span className="truncate">{city.name}</span>
+              <span className="shrink-0 text-muted-foreground text-xs">
+                {city.country}
+              </span>
+              <span className="ml-auto shrink-0 font-mono text-muted-foreground text-xs tabular-nums">
+                {getCurrentTimeLabel(city.timezone)}
+              </span>
             </span>
           </ComboBoxItem>
         )}

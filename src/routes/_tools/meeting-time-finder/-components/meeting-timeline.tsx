@@ -3,12 +3,14 @@ import { useMemo } from 'react';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
   findBestTime,
+  getAxisLabel,
+  getOutlierSummary,
   getOverallScore,
-  getStatusSummary,
 } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 
 import { CityRow } from './city-row';
 import { CitySearch } from './city-search';
+import { StripAnchor } from './strip-anchor';
 import { useTimelineDrag } from './use-timeline-drag';
 
 interface MeetingTimelineProps {
@@ -16,12 +18,15 @@ interface MeetingTimelineProps {
   duration: number;
   onAddCity: (city: City) => void;
   onHourChange: (hour: number) => void;
+  onJumpToNow: () => void;
+  onReferenceChange: (timezone: string) => void;
   onRemoveCity: (cityId: string) => void;
   onUpdateWorkHours: (
     cityId: string,
     workStart: number,
     workEnd: number
   ) => void;
+  referenceZone: string;
   selectedHour: number;
 }
 
@@ -45,14 +50,22 @@ function getScoreColor(score: number): string {
 
 function TimelineHeader({
   cities,
+  onJumpToNow,
+  onReferenceChange,
+  referenceZone,
   selectedHour,
 }: {
   cities: ReadonlyArray<City>;
+  onJumpToNow: () => void;
+  onReferenceChange: (timezone: string) => void;
+  referenceZone: string;
   selectedHour: number;
 }) {
-  const summary = getStatusSummary(selectedHour, cities);
+  const outlier = getOutlierSummary(selectedHour, cities);
   const score = getOverallScore(selectedHour, cities);
   const scorePercent = Math.round(score * 100);
+  const firstOutlier = outlier.outliers[0];
+  const extraOutliers = outlier.outliers.length - 1;
 
   return (
     <>
@@ -63,13 +76,23 @@ function TimelineHeader({
             Drag to explore times across timezones
           </p>
         </div>
-        <div className="text-right">
-          <div className="font-medium text-sm">
-            {String(selectedHour).padStart(2, '0')}:00 UTC
-          </div>
+        <div className="flex flex-col items-end gap-1">
+          <StripAnchor
+            cities={cities}
+            onJumpToNow={onJumpToNow}
+            onReferenceChange={onReferenceChange}
+            referenceZone={referenceZone}
+            selectedHour={selectedHour}
+          />
           <div className="text-muted-foreground text-xs">
-            {summary.core} in hours · {summary.shoulder} shoulder ·{' '}
-            {summary.edge} edge · {summary.asleep} asleep
+            {outlier.inHours} of {outlier.total} in hours
+            {firstOutlier && (
+              <>
+                {' · '}
+                {firstOutlier.relation} in {firstOutlier.name}
+                {extraOutliers > 0 && ` +${extraOutliers} more`}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -91,6 +114,7 @@ function TimelineContent({
   cities,
   duration,
   onHourChange,
+  referenceZone,
   selectedHour,
   onRemoveCity,
   onUpdateWorkHours,
@@ -98,6 +122,7 @@ function TimelineContent({
   cities: ReadonlyArray<City>;
   duration: number;
   onHourChange: (hour: number) => void;
+  referenceZone: string;
   selectedHour: number;
   onRemoveCity: (cityId: string) => void;
   onUpdateWorkHours: (
@@ -140,12 +165,12 @@ function TimelineContent({
         >
           {HOURS.map((h) => (
             <div
-              className={`text-center font-mono text-[10px] ${
+              className={`text-center font-mono text-[10px] tabular-nums ${
                 h % 3 === 0 ? 'text-foreground' : 'text-muted-foreground/50'
               }`}
               key={`label-${h}`}
             >
-              {h % 3 === 0 ? String(h).padStart(2, '0') : ''}
+              {h % 3 === 0 ? getAxisLabel(h, referenceZone) : ''}
             </div>
           ))}
         </div>
@@ -254,21 +279,31 @@ export function MeetingTimeline({
   duration,
   selectedHour,
   onHourChange,
+  onJumpToNow,
+  onReferenceChange,
   onRemoveCity,
   onUpdateWorkHours,
   onAddCity,
+  referenceZone,
 }: MeetingTimelineProps) {
   const existingIds = new Set(cities.map((c) => c.id));
 
   return (
     <div className="flex flex-col gap-4">
-      <TimelineHeader cities={cities} selectedHour={selectedHour} />
+      <TimelineHeader
+        cities={cities}
+        onJumpToNow={onJumpToNow}
+        onReferenceChange={onReferenceChange}
+        referenceZone={referenceZone}
+        selectedHour={selectedHour}
+      />
       <TimelineContent
         cities={cities}
         duration={duration}
         onHourChange={onHourChange}
         onRemoveCity={onRemoveCity}
         onUpdateWorkHours={onUpdateWorkHours}
+        referenceZone={referenceZone}
         selectedHour={selectedHour}
       />
       <div className="flex items-center gap-2">

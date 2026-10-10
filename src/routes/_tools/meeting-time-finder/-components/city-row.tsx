@@ -78,7 +78,9 @@ export function CityRow({
           <span className="font-mono text-[10px] text-muted-foreground">
             {offsetLabel}
           </span>
-          <span className={`font-mono text-xs ${getStatusTextColor(status)}`}>
+          <span
+            className={`font-mono text-xs tabular-nums ${getStatusTextColor(status)}`}
+          >
             {localTime}
           </span>
           <WorkHoursEditor city={city} onUpdate={onUpdateWorkHours} />

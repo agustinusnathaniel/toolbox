@@ -39,8 +39,11 @@ function MeetingTimeFinderPage() {
         duration={page.duration}
         onAddCity={page.addCity}
         onHourChange={page.setSelectedHour}
+        onJumpToNow={page.jumpToNow}
+        onReferenceChange={page.setReferenceZone}
         onRemoveCity={page.removeCity}
         onUpdateWorkHours={page.updateWorkHours}
+        referenceZone={page.referenceZone}
         selectedHour={page.selectedHour}
       />
 

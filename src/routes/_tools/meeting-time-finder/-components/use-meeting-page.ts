@@ -21,6 +21,7 @@ import { copyToClipboard } from '@/lib/utils/clipboard';
 const STORAGE_KEY = 'meeting-time-finder:cities';
 const DURATION_KEY = 'meeting-time-finder:duration';
 const HOUR_KEY = 'meeting-time-finder:hour';
+const REFERENCE_KEY = 'meeting-time-finder:reference';
 const DEFAULT_DURATION = 60;
 
 function currentUtcHour(): number {
@@ -71,6 +72,32 @@ function useCityActions(
   return { addCity, removeCity, updateWorkHours };
 }
 
+function useReferenceZone(
+  cities: ReadonlyArray<City>,
+  setSelectedHour: React.Dispatch<React.SetStateAction<number>>,
+  trackAction: (action: string) => void
+) {
+  const [storedReference, setReferenceZone] = usePersistedState<string>(
+    REFERENCE_KEY,
+    'UTC'
+  );
+
+  // The strip zone must be UTC or one of the added cities. A stored zone
+  // whose city was removed falls back to UTC instead of rendering garbage.
+  const referenceZone =
+    storedReference === 'UTC' ||
+    cities.some((c) => c.timezone === storedReference)
+      ? storedReference
+      : 'UTC';
+
+  const jumpToNow = useCallback(() => {
+    setSelectedHour(currentUtcHour());
+    trackAction('jump_to_now');
+  }, [setSelectedHour, trackAction]);
+
+  return { jumpToNow, referenceZone, setReferenceZone };
+}
+
 function useMeetingActions(
   cities: ReadonlyArray<City>,
   duration: number,
@@ -116,7 +143,12 @@ function useMeetingActions(
     });
   }, [selectedHour, duration, cities.length, navigate, trackAction]);
 
-  return { copyTimes, findBestTime, getCalendarUrl };
+  const shareableParams = useMemo(
+    () => buildMeetingParams(cities, duration, selectedHour),
+    [cities, duration, selectedHour]
+  );
+
+  return { copyTimes, findBestTime, getCalendarUrl, shareableParams };
 }
 
 export function useMeetingPage(
@@ -145,22 +177,24 @@ export function useMeetingPage(
       : urlParams.hour
   );
 
-  const { addCity, removeCity, updateWorkHours } = useCityActions(
-    setCities,
-    trackAction
-  );
-  const { findBestTime, copyTimes, getCalendarUrl } = useMeetingActions(
+  const { jumpToNow, referenceZone, setReferenceZone } = useReferenceZone(
     cities,
-    duration,
-    selectedHour,
     setSelectedHour,
     trackAction
   );
 
-  const shareableParams = useMemo(
-    () => buildMeetingParams(cities, duration, selectedHour),
-    [cities, duration, selectedHour]
+  const { addCity, removeCity, updateWorkHours } = useCityActions(
+    setCities,
+    trackAction
   );
+  const { findBestTime, copyTimes, getCalendarUrl, shareableParams } =
+    useMeetingActions(
+      cities,
+      duration,
+      selectedHour,
+      setSelectedHour,
+      trackAction
+    );
 
   return {
     addCity,
@@ -169,9 +203,12 @@ export function useMeetingPage(
     duration,
     findBestTime,
     getCalendarUrl,
+    jumpToNow,
+    referenceZone,
     removeCity,
     selectedHour,
     setDuration,
+    setReferenceZone,
     setSelectedHour,
     shareableParams,
     updateWorkHours,
