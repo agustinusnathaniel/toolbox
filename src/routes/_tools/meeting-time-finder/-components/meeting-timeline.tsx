@@ -151,6 +151,7 @@ function AxisHeader({ referenceZone }: { referenceZone: string }) {
       </span>
       <div
         className="grid min-w-0 gap-px"
+        data-strip-col="true"
         style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
       >
         {HOURS.map((h) => (

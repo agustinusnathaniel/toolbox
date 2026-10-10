@@ -7,6 +7,7 @@ import {
   getAxisLabel,
   getCurrentTimeLabel,
   getOutlierSummary,
+  hourFromStripX,
 } from './meeting-time-finder';
 
 // Fixed reference date (a Wednesday, no DST ambiguity for these zones).
@@ -103,5 +104,25 @@ describe('formatCopyText', () => {
     expect(lines[0]).toContain('1 of 2 in hours · late in Jakarta');
     expect(lines[1]).toBe('Jakarta: 23:00 (UTC+7)');
     expect(lines[2]).toBe('New York: 12:00 (UTC-4)');
+  });
+});
+
+describe('hourFromStripX', () => {
+  // Strip at x=100, 240px wide → 10px per hour.
+  test('maps edges and interior hours', () => {
+    expect(hourFromStripX(100, 240, 100)).toBe(0);
+    expect(hourFromStripX(100, 240, 109)).toBe(0);
+    expect(hourFromStripX(100, 240, 110)).toBe(1);
+    expect(hourFromStripX(100, 240, 220)).toBe(12);
+    expect(hourFromStripX(100, 240, 339)).toBe(23);
+  });
+
+  test('clamps outside positions instead of wrapping', () => {
+    expect(hourFromStripX(100, 240, 40)).toBe(0);
+    expect(hourFromStripX(100, 240, 500)).toBe(23);
+  });
+
+  test('zero-width strip selects midnight', () => {
+    expect(hourFromStripX(100, 0, 150)).toBe(0);
   });
 });

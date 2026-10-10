@@ -258,6 +258,23 @@ export function findBestTime(
 }
 
 /**
+ * Map a pointer x-coordinate to a 0-23 hour within a strip rect.
+ * Out-of-strip positions clamp to the nearest edge so drags that start
+ * on the info/time columns still select an hour instead of jumping.
+ */
+export function hourFromStripX(
+  stripLeft: number,
+  stripWidth: number,
+  clientX: number
+): number {
+  if (stripWidth <= 0) {
+    return 0;
+  }
+  const hour = Math.floor(((clientX - stripLeft) / stripWidth) * 24);
+  return Math.max(0, Math.min(23, hour));
+}
+
+/**
  * Get a human-readable status for a city at a given UTC hour.
  */
 export function getCityStatus(
