@@ -72,11 +72,11 @@ export function CityRow({
           <span className="truncate font-medium text-sm">{city.name}</span>
           <button
             aria-label={`Remove ${city.name}`}
-            className="-m-2 inline-flex shrink-0 items-center justify-center p-2 text-muted-foreground transition-opacity hover:text-foreground sm:m-0 sm:p-0 sm:opacity-0 sm:group-hover:opacity-100"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted-foreground/20 hover:text-foreground sm:h-6 sm:w-6 sm:bg-transparent sm:opacity-0 sm:group-hover:opacity-100"
             onClick={() => onRemove(city.id)}
             type="button"
           >
-            <XMarkIcon className="size-5 sm:size-4" />
+            <XMarkIcon className="size-4 sm:size-3.5" />
           </button>
         </div>
         <div className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
