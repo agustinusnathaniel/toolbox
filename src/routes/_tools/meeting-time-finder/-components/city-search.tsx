@@ -41,7 +41,7 @@ export function CitySearch({ onAdd, existingIds }: CitySearchProps) {
         }
       }}
     >
-      <ComboBoxInput placeholder="Add a city..." />
+      <ComboBoxInput placeholder="+ Add a city..." />
       <ComboBoxContent>
         {(city: City) => (
           <ComboBoxItem id={city.id} textValue={`${city.name} ${city.country}`}>

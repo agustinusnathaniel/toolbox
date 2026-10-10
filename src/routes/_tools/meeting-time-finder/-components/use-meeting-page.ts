@@ -10,7 +10,7 @@ import {
 } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
   findBestTime as computeBestTime,
-  getLocalTimeLabel,
+  formatCopyText,
 } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 import {
   buildMeetingParams,
@@ -116,12 +116,7 @@ function useMeetingActions(
   }, [cities, duration, setSelectedHour, trackAction]);
 
   const copyTimes = useCallback(async () => {
-    const windowHours = Math.max(1, Math.ceil(duration / 60));
-    const endHour = (selectedHour + windowHours) % 24;
-    const lines = cities.map(
-      (c) => `${c.name}: ${getLocalTimeLabel(selectedHour, c)}`
-    );
-    const text = `Meeting time (${duration} min): ${String(selectedHour).padStart(2, '0')}:00–${String(endHour).padStart(2, '0')}:00 UTC\n${lines.join('\n')}`;
+    const text = formatCopyText(cities, selectedHour, duration);
     await copyToClipboard(text);
     trackAction('copy_times');
   }, [cities, duration, selectedHour, trackAction]);

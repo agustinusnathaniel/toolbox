@@ -28,13 +28,13 @@ function getStatusTextColor(
   status: 'core' | 'shoulder' | 'edge' | 'asleep'
 ): string {
   if (status === 'core') {
-    return 'text-emerald-600';
+    return 'text-emerald-600 dark:text-emerald-400';
   }
   if (status === 'shoulder') {
-    return 'text-amber-600';
+    return 'text-amber-600 dark:text-amber-400';
   }
   if (status === 'edge') {
-    return 'text-orange-600';
+    return 'text-orange-600 dark:text-orange-400';
   }
   return 'text-muted-foreground';
 }
@@ -61,41 +61,38 @@ export function CityRow({
   const status = getCityStatus(selectedHour, city);
 
   return (
-    <div className="group flex flex-col gap-1 pr-2" key={city.id}>
-      <div className="flex items-center justify-between gap-2">
+    <div
+      className="grid grid-cols-[var(--info)_1fr_var(--time)] items-center gap-x-2"
+      key={city.id}
+    >
+      <div className="group min-w-0">
         <div className="flex min-w-0 items-center gap-1">
           <span className="truncate font-medium text-sm">{city.name}</span>
           <button
             aria-label={`Remove ${city.name}`}
-            className="text-muted-foreground transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100"
+            className="shrink-0 text-muted-foreground transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100"
             onClick={() => onRemove(city.id)}
             type="button"
           >
             ×
           </button>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-muted-foreground">
-            {offsetLabel}
-          </span>
-          <span
-            className={`font-mono text-xs tabular-nums ${getStatusTextColor(status)}`}
-          >
-            {localTime}
-          </span>
+        <div className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+          <span className="shrink-0">{offsetLabel}</span>
+          <span aria-hidden="true">·</span>
           <WorkHoursEditor city={city} onUpdate={onUpdateWorkHours} />
         </div>
       </div>
 
       <div
-        className="grid gap-px"
+        className="grid min-w-0 gap-px"
         style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
       >
         {HOURS.map((h) => {
           const s = getCityStatus(h, city);
           return (
             <div
-              className={`h-8 rounded-sm ${getStatusColor(s)} transition-colors${
+              className={`h-8 rounded-sm ${getStatusColor(s)} transition-[filter] hover:brightness-110${
                 h === selectedHour
                   ? 'outline outline-2 outline-foreground/70 outline-offset-[-2px]'
                   : ''
@@ -105,6 +102,12 @@ export function CityRow({
           );
         })}
       </div>
+
+      <span
+        className={`whitespace-nowrap text-right font-mono text-[10px] tabular-nums sm:text-xs ${getStatusTextColor(status)}`}
+      >
+        {localTime}
+      </span>
     </div>
   );
 }

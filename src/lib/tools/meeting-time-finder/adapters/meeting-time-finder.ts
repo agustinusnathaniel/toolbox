@@ -304,6 +304,33 @@ export function getLocalTimeLabel(
 }
 
 /**
+ * Format the selected meeting window as shareable plain text, e.g.
+ * "Meeting 15:00–16:00 UTC (60 min) · 4 of 4 works for everyone"
+ * followed by one "Name: HH:00 (UTC±h)" line per city.
+ */
+export function formatCopyText(
+  cities: ReadonlyArray<City>,
+  utcHour: number,
+  durationMinutes: number,
+  date: Date = new Date()
+): string {
+  const windowHours = Math.max(1, Math.ceil(durationMinutes / 60));
+  const endHour = (utcHour + windowHours) % 24;
+  const pad = (h: number) => String(h).padStart(2, '0');
+  const header = `Meeting ${pad(utcHour)}:00–${pad(endHour)}:00 UTC (${durationMinutes} min)`;
+  const { inHours, outliers, total } = getOutlierSummary(utcHour, cities, date);
+  const status =
+    inHours === total
+      ? `${inHours} of ${total} works for everyone`
+      : `${inHours} of ${total} in hours · ${outliers[0].relation} in ${outliers[0].name}${outliers.length > 1 ? ` +${outliers.length - 1} more` : ''}`;
+  const lines = cities.map(
+    (c) =>
+      `${c.name}: ${getLocalTimeLabel(utcHour, c, date)} (${getTimezoneOffsetLabel(c.timezone, date)})`
+  );
+  return `${header} · ${status}\n${lines.join('\n')}`;
+}
+
+/**
  * Get a summary of how many cities are in each status category.
  */
 export function getStatusSummary(

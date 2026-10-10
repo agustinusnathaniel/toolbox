@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vite-plus/test';
 
 import { getCityById } from './cities';
 import {
+  formatCopyText,
   formatHourInZone,
   getAxisLabel,
   getCurrentTimeLabel,
@@ -81,5 +82,26 @@ describe('getOutlierSummary', () => {
     const summary = getOutlierSummary(10, cities, DATE);
     expect(summary.inHours).toBe(1);
     expect(summary.outliers).toEqual([]);
+  });
+});
+
+describe('formatCopyText', () => {
+  test('all in hours reports works for everyone', () => {
+    const text = formatCopyText([city('europe/london')], 10, 60, DATE);
+    const lines = text.split('\n');
+    expect(lines[0]).toBe(
+      'Meeting 10:00–11:00 UTC (60 min) · 1 of 1 works for everyone'
+    );
+    expect(lines[1]).toBe('London: 11:00 (UTC+1)');
+  });
+
+  test('outlier hour names the outlier with day shift', () => {
+    const cities = [city('asia/jakarta'), city('america/new_york')];
+    const text = formatCopyText(cities, 16, 120, DATE);
+    const lines = text.split('\n');
+    expect(lines[0]).toContain('Meeting 16:00–18:00 UTC (120 min)');
+    expect(lines[0]).toContain('1 of 2 in hours · late in Jakarta');
+    expect(lines[1]).toBe('Jakarta: 23:00 (UTC+7)');
+    expect(lines[2]).toBe('New York: 12:00 (UTC-4)');
   });
 });
