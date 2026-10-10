@@ -44,6 +44,7 @@ import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
 import { meta as loremIpsumMeta } from '@/routes/_tools/lorem-ipsum/-meta';
 import { meta as markdownPreviewMeta } from '@/routes/_tools/markdown-preview/-meta';
+import { meta as meetingTimeFinderMeta } from '@/routes/_tools/meeting-time-finder/-meta';
 import { meta as numberBaseMeta } from '@/routes/_tools/number-base/-meta';
 import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generator/-meta';
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
@@ -165,6 +166,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Links & Sharing',
     icon: <IconCalendar />,
     ...addToCalendarMeta,
+  },
+  {
+    category: 'Calculators',
+    icon: <Clock />,
+    ...meetingTimeFinderMeta,
   },
   {
     category: 'Calculators',
