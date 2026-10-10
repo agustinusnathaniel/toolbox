@@ -1,5 +1,15 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
+import { CopyLinkButton } from '@/lib/components/copy-link-button';
+import { Button } from '@/lib/components/ui/button';
+import { Label } from '@/lib/components/ui/field';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/lib/components/ui/select';
+import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import { findBestTime } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 
@@ -10,13 +20,15 @@ interface MeetingActionsProps {
   onCopy: () => void;
   onDurationChange: (duration: number) => void;
   onFindBestTime: () => void;
+  shareableParams: URLSearchParams;
+  trackAction: (action: string) => void;
 }
 
 const DURATION_OPTIONS = [
-  { label: '30 min', value: 30 },
-  { label: '1 hour', value: 60 },
-  { label: '2 hours', value: 120 },
-  { label: '3 hours', value: 180 },
+  { id: '30', label: '30 min' },
+  { id: '60', label: '1 hour' },
+  { id: '120', label: '2 hours' },
+  { id: '180', label: '3 hours' },
 ];
 
 export function MeetingActions({
@@ -26,6 +38,8 @@ export function MeetingActions({
   onFindBestTime,
   onCopy,
   onAddToCalendar,
+  shareableParams,
+  trackAction,
 }: MeetingActionsProps) {
   const [copied, setCopied] = useState(false);
 
@@ -35,30 +49,32 @@ export function MeetingActions({
     setTimeout(() => setCopied(false), 2000);
   }, [onCopy]);
 
-  const bestTime = findBestTime(cities, duration);
+  const handleCopyLink = useCopyShareableLink(
+    () => shareableParams,
+    trackAction
+  );
+
+  const bestTime = useMemo(
+    () => findBestTime(cities, duration),
+    [cities, duration]
+  );
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Duration selector */}
-      <div className="flex items-center gap-2">
-        <label className="font-medium text-sm" htmlFor="duration">
-          Duration:
-        </label>
-        <select
-          className="rounded-lg border border-input bg-background px-3 py-1.5 text-sm"
-          id="duration"
-          onChange={(e) => onDurationChange(Number(e.target.value))}
-          value={duration}
+      <div className="flex flex-col gap-1">
+        <Label htmlFor="meeting-duration">Duration</Label>
+        <Select
+          aria-label="Meeting duration"
+          onSelectionChange={(key) => onDurationChange(Number(key as string))}
+          selectedKey={String(duration)}
         >
-          {DURATION_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="meeting-duration" />
+          <SelectContent items={DURATION_OPTIONS}>
+            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Best time result */}
       {bestTime && (
         <div className="rounded-lg bg-muted/50 p-3">
           <div className="font-medium text-sm">Best time: {bestTime.label}</div>
@@ -69,29 +85,17 @@ export function MeetingActions({
         </div>
       )}
 
-      {/* Action buttons */}
       <div className="flex flex-wrap gap-2">
-        <button
-          className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-fg text-sm transition-colors hover:bg-primary/90"
-          onClick={onFindBestTime}
-          type="button"
-        >
+        <Button intent="primary" onPress={onFindBestTime} size="sm">
           Find Best Time
-        </button>
-        <button
-          className="rounded-lg border border-input bg-background px-4 py-2 font-medium text-sm transition-colors hover:bg-accent"
-          onClick={handleCopy}
-          type="button"
-        >
+        </Button>
+        <Button intent="outline" onPress={handleCopy} size="sm">
           {copied ? 'Copied!' : 'Copy Times'}
-        </button>
-        <button
-          className="rounded-lg border border-input bg-background px-4 py-2 font-medium text-sm transition-colors hover:bg-accent"
-          onClick={onAddToCalendar}
-          type="button"
-        >
+        </Button>
+        <CopyLinkButton onPress={handleCopyLink} />
+        <Button intent="outline" onPress={onAddToCalendar} size="sm">
           Add to Calendar
-        </button>
+        </Button>
       </div>
     </div>
   );

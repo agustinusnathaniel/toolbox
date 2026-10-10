@@ -1,6 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useCallback, useMemo } from 'react';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
+import { formatLocalDateTimeString } from '@/lib/tools/add-to-calendar/adapters/calendar';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
   DEFAULT_CITY_IDS,
@@ -17,7 +19,13 @@ import {
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
 const STORAGE_KEY = 'meeting-time-finder:cities';
+const DURATION_KEY = 'meeting-time-finder:duration';
+const HOUR_KEY = 'meeting-time-finder:hour';
 const DEFAULT_DURATION = 60;
+
+function currentUtcHour(): number {
+  return new Date().getUTCHours();
+}
 
 function loadDefaultCities(): Array<City> {
   return DEFAULT_CITY_IDS.map((id) => getCityById(id)).filter(
@@ -70,6 +78,8 @@ function useMeetingActions(
   setSelectedHour: React.Dispatch<React.SetStateAction<number>>,
   trackAction: (action: string) => void
 ) {
+  const navigate = useNavigate();
+
   const findBestTime = useCallback(() => {
     const best = computeBestTime(cities, duration);
     if (best) {
@@ -79,36 +89,38 @@ function useMeetingActions(
   }, [cities, duration, setSelectedHour, trackAction]);
 
   const copyTimes = useCallback(async () => {
+    const windowHours = Math.max(1, Math.ceil(duration / 60));
+    const endHour = (selectedHour + windowHours) % 24;
     const lines = cities.map(
       (c) => `${c.name}: ${getLocalTimeLabel(selectedHour, c)}`
     );
-    const text = `Meeting time: ${String(selectedHour).padStart(2, '0')}:00 UTC\n${lines.join('\n')}`;
+    const text = `Meeting time (${duration} min): ${String(selectedHour).padStart(2, '0')}:00–${String(endHour).padStart(2, '0')}:00 UTC\n${lines.join('\n')}`;
     await copyToClipboard(text);
     trackAction('copy_times');
-  }, [cities, selectedHour, trackAction]);
+  }, [cities, duration, selectedHour, trackAction]);
 
   const getCalendarUrl = useCallback(() => {
     const start = new Date();
     start.setUTCHours(selectedHour, 0, 0, 0);
     const end = new Date(start.getTime() + duration * 60_000);
 
-    const params = new URLSearchParams({
-      desc: `Meeting across ${cities.length} timezones`,
-      end: end.toISOString(),
-      start: start.toISOString(),
-      title: 'Meeting',
-    });
-
-    const url = `/_tools/add-to-calendar/?${params.toString()}`;
-    window.location.href = url;
     trackAction('add_to_calendar');
-  }, [selectedHour, duration, cities.length, trackAction]);
+    navigate({
+      search: {
+        desc: `Meeting across ${cities.length} timezones`,
+        end: formatLocalDateTimeString(end),
+        start: formatLocalDateTimeString(start),
+        title: 'Meeting',
+      },
+      to: '/add-to-calendar',
+    });
+  }, [selectedHour, duration, cities.length, navigate, trackAction]);
 
   return { copyTimes, findBestTime, getCalendarUrl };
 }
 
 export function useMeetingPage(
-  search: { cities?: string; duration?: string },
+  search: { cities?: string; duration?: string; hour?: string },
   trackAction: (action: string) => void
 ) {
   const urlParams = useMemo(() => parseMeetingParams(search), [search]);
@@ -119,10 +131,19 @@ export function useMeetingPage(
     urlParams.cities.length > 0 ? urlParams.cities : undefined
   );
 
-  const [duration, setDuration] = useState(
-    urlParams.duration || DEFAULT_DURATION
+  const [duration, setDuration] = usePersistedState<number>(
+    DURATION_KEY,
+    DEFAULT_DURATION,
+    search.duration === undefined ? undefined : urlParams.duration
   );
-  const [selectedHour, setSelectedHour] = useState(14);
+
+  const [selectedHour, setSelectedHour] = usePersistedState<number>(
+    HOUR_KEY,
+    currentUtcHour(),
+    search.hour === undefined || urlParams.hour === null
+      ? undefined
+      : urlParams.hour
+  );
 
   const { addCity, removeCity, updateWorkHours } = useCityActions(
     setCities,
@@ -137,8 +158,8 @@ export function useMeetingPage(
   );
 
   const shareableParams = useMemo(
-    () => buildMeetingParams(cities, duration),
-    [cities, duration]
+    () => buildMeetingParams(cities, duration, selectedHour),
+    [cities, duration, selectedHour]
   );
 
   return {

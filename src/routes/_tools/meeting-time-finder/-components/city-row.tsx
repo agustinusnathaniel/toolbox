@@ -93,7 +93,11 @@ export function CityRow({
           const s = getCityStatus(h, city);
           return (
             <div
-              className={`h-8 rounded-sm ${getStatusColor(s)} transition-colors`}
+              className={`h-8 rounded-sm ${getStatusColor(s)} transition-colors${
+                h === selectedHour
+                  ? 'outline outline-2 outline-foreground/70 outline-offset-[-2px]'
+                  : ''
+              }`}
               key={`cell-${city.id}-${h}`}
             />
           );

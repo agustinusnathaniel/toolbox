@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
   findBestTime,
@@ -54,7 +56,7 @@ function TimelineHeader({
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
         <div>
           <h2 className="font-semibold text-lg">Timeline</h2>
           <p className="text-muted-foreground text-sm">
@@ -67,7 +69,7 @@ function TimelineHeader({
           </div>
           <div className="text-muted-foreground text-xs">
             {summary.core} in hours · {summary.shoulder} shoulder ·{' '}
-            {summary.asleep} asleep
+            {summary.edge} edge · {summary.asleep} asleep
           </div>
         </div>
       </div>
@@ -87,11 +89,15 @@ function TimelineHeader({
 
 function TimelineContent({
   cities,
+  duration,
+  onHourChange,
   selectedHour,
   onRemoveCity,
   onUpdateWorkHours,
 }: {
   cities: ReadonlyArray<City>;
+  duration: number;
+  onHourChange: (hour: number) => void;
   selectedHour: number;
   onRemoveCity: (cityId: string) => void;
   onUpdateWorkHours: (
@@ -100,9 +106,34 @@ function TimelineContent({
     workEnd: number
   ) => void;
 }) {
+  const { timelineRef, handlePointerDown, handlePointerMove, handlePointerUp } =
+    useTimelineDrag(onHourChange);
+
   return (
     <div className="overflow-x-auto pb-2">
-      <div className="min-w-[600px]">
+      <div
+        aria-label="Meeting time selector"
+        aria-valuemax={23}
+        aria-valuemin={0}
+        aria-valuenow={selectedHour}
+        className="cursor-crosshair touch-none select-none"
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            onHourChange((selectedHour - 1 + 24) % 24);
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            onHourChange((selectedHour + 1) % 24);
+          }
+        }}
+        onPointerCancel={handlePointerUp}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        ref={timelineRef}
+        role="slider"
+        tabIndex={0}
+      >
         <div
           className="mb-1 grid gap-px"
           style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
@@ -134,102 +165,56 @@ function TimelineContent({
           })}
         </div>
 
-        <div className="flex flex-col gap-1">
-          {cities.map((city) => (
-            <CityRow
-              city={city}
-              key={city.id}
-              onRemove={onRemoveCity}
-              onUpdateWorkHours={onUpdateWorkHours}
-              selectedHour={selectedHour}
-            />
-          ))}
+        <div className="relative">
+          <div className="flex flex-col gap-1">
+            {cities.map((city) => (
+              <CityRow
+                city={city}
+                key={city.id}
+                onRemove={onRemoveCity}
+                onUpdateWorkHours={onUpdateWorkHours}
+                selectedHour={selectedHour}
+              />
+            ))}
+          </div>
+          <BestTimeBand cities={cities} duration={duration} />
         </div>
       </div>
     </div>
   );
 }
 
-function TimelineGrid({
+/**
+ * Best-time highlight band, aligned exactly to the hour grid.
+ * The grid uses 24 columns with 1px gaps, so plain % positioning would
+ * drift by up to 23px. CSS calc accounts for the gaps:
+ * left edge of hour h = h * ((100% - 23px) / 24) + h * 1px.
+ */
+function BestTimeBand({
   cities,
   duration,
-  selectedHour,
-  onHourChange,
-  onRemoveCity,
-  onUpdateWorkHours,
 }: {
   cities: ReadonlyArray<City>;
   duration: number;
-  selectedHour: number;
-  onHourChange: (hour: number) => void;
-  onRemoveCity: (cityId: string) => void;
-  onUpdateWorkHours: (
-    cityId: string,
-    workStart: number,
-    workEnd: number
-  ) => void;
 }) {
-  const { timelineRef, handlePointerDown, handlePointerMove, handlePointerUp } =
-    useTimelineDrag(onHourChange);
-
-  const bestTime = findBestTime(cities, duration);
-  const bestStart = bestTime?.startHour ?? 0;
+  const bestTime = useMemo(
+    () => findBestTime(cities, duration),
+    [cities, duration]
+  );
+  if (!bestTime) {
+    return null;
+  }
+  const bestStart = bestTime.startHour;
   const bestDurationHours = Math.max(1, Math.ceil(duration / 60));
-
   return (
     <div
-      aria-label="Meeting time selector"
-      aria-valuemax={23}
-      aria-valuemin={0}
-      aria-valuenow={selectedHour}
-      className="relative cursor-crosshair touch-none select-none"
-      onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          onHourChange((selectedHour - 1 + 24) % 24);
-        } else if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          onHourChange((selectedHour + 1) % 24);
-        }
+      aria-hidden="true"
+      className="pointer-events-none absolute top-0 bottom-0 border-emerald-500/50 border-x-2 bg-emerald-500/10"
+      style={{
+        left: `calc((100% - 23px) * ${bestStart} / 24 + ${bestStart}px)`,
+        width: `calc((100% - 23px) * ${bestDurationHours} / 24 + ${bestDurationHours - 1}px)`,
       }}
-      onPointerCancel={handlePointerUp}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      ref={timelineRef}
-      role="slider"
-      tabIndex={0}
-    >
-      <div className="overflow-x-auto pb-2">
-        <div className="relative min-w-[600px]">
-          <TimelineContent
-            cities={cities}
-            onRemoveCity={onRemoveCity}
-            onUpdateWorkHours={onUpdateWorkHours}
-            selectedHour={selectedHour}
-          />
-
-          {bestTime && (
-            <div
-              className="pointer-events-none absolute top-0 bottom-0 border-emerald-500/60 border-x-2 bg-emerald-500/20"
-              style={{
-                left: `${(bestStart / 24) * 100}%`,
-                width: `${(bestDurationHours / 24) * 100}%`,
-              }}
-            >
-              <span className="absolute top-1 left-1/2 -translate-x-1/2 rounded bg-emerald-500/90 px-1.5 py-0.5 font-medium text-[10px] text-white">
-                Best
-              </span>
-            </div>
-          )}
-
-          <div
-            className="pointer-events-none absolute top-0 bottom-0 w-px bg-foreground"
-            style={{ left: `${(selectedHour / 24) * 100}%` }}
-          />
-        </div>
-      </div>
-    </div>
+    />
   );
 }
 
@@ -249,12 +234,16 @@ function TimelineLegend() {
         <span className="text-muted-foreground">Edge</span>
       </div>
       <div className="flex items-center gap-1">
-        <div className="h-3 w-3 rounded-sm bg-muted" />
+        <div className="h-3 w-3 rounded-sm bg-neutral-400" />
         <span className="text-muted-foreground">Asleep</span>
       </div>
       <div className="flex items-center gap-1">
-        <div className="h-3 w-3 rounded-sm bg-emerald-500/20" />
+        <div className="h-3 w-3 rounded-sm bg-emerald-500/10 ring-2 ring-emerald-500/50 ring-inset" />
         <span className="text-muted-foreground">Best time</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <div className="h-3 w-3 rounded-sm bg-muted outline outline-2 outline-foreground/70 outline-offset-[-2px]" />
+        <span className="text-muted-foreground">Selected</span>
       </div>
     </div>
   );
@@ -274,7 +263,7 @@ export function MeetingTimeline({
   return (
     <div className="flex flex-col gap-4">
       <TimelineHeader cities={cities} selectedHour={selectedHour} />
-      <TimelineGrid
+      <TimelineContent
         cities={cities}
         duration={duration}
         onHourChange={onHourChange}

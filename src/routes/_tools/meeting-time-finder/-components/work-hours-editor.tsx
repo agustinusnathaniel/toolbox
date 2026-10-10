@@ -1,10 +1,47 @@
 import { useState } from 'react';
 
+import { Button } from '@/lib/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/lib/components/ui/select';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 
 interface WorkHoursEditorProps {
   city: City;
   onUpdate: (cityId: string, workStart: number, workEnd: number) => void;
+}
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, h) => ({
+  id: String(h),
+  label: `${String(h).padStart(2, '0')}:00`,
+}));
+
+function HourSelect({
+  ariaLabel,
+  id,
+  onChange,
+  value,
+}: {
+  ariaLabel: string;
+  id: string;
+  onChange: (hour: number) => void;
+  value: number;
+}) {
+  return (
+    <Select
+      aria-label={ariaLabel}
+      onSelectionChange={(key) => onChange(Number(key as string))}
+      selectedKey={String(value)}
+    >
+      <SelectTrigger className="h-7 px-2 text-xs" id={id} />
+      <SelectContent items={HOUR_OPTIONS}>
+        {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+      </SelectContent>
+    </Select>
+  );
 }
 
 export function WorkHoursEditor({ city, onUpdate }: WorkHoursEditorProps) {
@@ -37,47 +74,27 @@ export function WorkHoursEditor({ city, onUpdate }: WorkHoursEditorProps) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-1">
-        <select
-          aria-label="Work start hour"
-          className="w-16 rounded border border-input bg-background px-1 py-0.5 text-xs"
-          onChange={(e) => setStart(Number(e.target.value))}
+        <HourSelect
+          ariaLabel={`Work start hour for ${city.name}`}
+          id={`work-start-${city.id}`}
+          onChange={setStart}
           value={start}
-        >
-          {Array.from({ length: 24 }, (_, i) => i).map((h) => (
-            <option key={`hour-${h}`} value={h}>
-              {String(h).padStart(2, '0')}:00
-            </option>
-          ))}
-        </select>
+        />
         <span className="text-muted-foreground text-xs">–</span>
-        <select
-          aria-label="Work end hour"
-          className="w-16 rounded border border-input bg-background px-1 py-0.5 text-xs"
-          onChange={(e) => setEnd(Number(e.target.value))}
+        <HourSelect
+          ariaLabel={`Work end hour for ${city.name}`}
+          id={`work-end-${city.id}`}
+          onChange={setEnd}
           value={end}
-        >
-          {Array.from({ length: 24 }, (_, i) => i).map((h) => (
-            <option key={h} value={h}>
-              {String(h).padStart(2, '0')}:00
-            </option>
-          ))}
-        </select>
+        />
       </div>
-      <div className="flex items-center gap-2">
-        <button
-          className="font-medium text-primary text-xs hover:text-primary/80"
-          onClick={handleSave}
-          type="button"
-        >
+      <div className="flex items-center gap-1">
+        <Button intent="primary" onPress={handleSave} size="xs">
           Save
-        </button>
-        <button
-          className="text-muted-foreground text-xs hover:text-foreground"
-          onClick={() => setIsEditing(false)}
-          type="button"
-        >
+        </Button>
+        <Button intent="plain" onPress={() => setIsEditing(false)} size="xs">
           Cancel
-        </button>
+        </Button>
       </div>
     </div>
   );

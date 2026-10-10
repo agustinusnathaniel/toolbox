@@ -15,6 +15,7 @@ import { meta } from './-meta';
 const searchSchema = z.object({
   cities: z.string().optional(),
   duration: z.string().optional(),
+  hour: z.string().optional(),
 });
 
 export const Route = createFileRoute('/_tools/meeting-time-finder/')({
@@ -50,6 +51,8 @@ function MeetingTimeFinderPage() {
         onCopy={page.copyTimes}
         onDurationChange={page.setDuration}
         onFindBestTime={page.findBestTime}
+        shareableParams={page.shareableParams}
+        trackAction={trackAction}
       />
 
       <ToolHelp

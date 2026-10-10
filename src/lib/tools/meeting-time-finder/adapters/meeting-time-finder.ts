@@ -3,14 +3,30 @@ import type { City } from './cities';
 /**
  * Get the current UTC offset in minutes for a timezone.
  * Uses Intl.DateTimeFormat for reliable DST handling.
+ *
+ * Offsets are memoized per timezone + UTC day: a single drag across the
+ * timeline re-renders 24 header scores plus every city cell, and each
+ * uncached lookup costs two toLocaleString calls.
  */
+const offsetCache = new Map<string, number>();
+
 export function getTimezoneOffsetMinutes(
   timezone: string,
   date: Date = new Date()
 ): number {
+  const key = `${timezone}|${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
+  const cached = offsetCache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  if (offsetCache.size > 1000) {
+    offsetCache.clear();
+  }
   const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
   const tzDate = new Date(date.toLocaleString('en-US', { timeZone: timezone }));
-  return (tzDate.getTime() - utcDate.getTime()) / 60_000;
+  const offset = (tzDate.getTime() - utcDate.getTime()) / 60_000;
+  offsetCache.set(key, offset);
+  return offset;
 }
 
 /**
