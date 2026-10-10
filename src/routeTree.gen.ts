@@ -19,6 +19,7 @@ import { Route as ToolsCaseConverterIndexRouteImport } from './routes/_tools/cas
 import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
 import { Route as ToolsCronParserIndexRouteImport } from './routes/_tools/cron-parser/index'
 import { Route as ToolsCsvConverterIndexRouteImport } from './routes/_tools/csv-converter/index'
+import { Route as ToolsCurrencyConverterIndexRouteImport } from './routes/_tools/currency-converter/index'
 import { Route as ToolsEvChargingIndexRouteImport } from './routes/_tools/ev-charging/index'
 import { Route as ToolsHashGeneratorIndexRouteImport } from './routes/_tools/hash-generator/index'
 import { Route as ToolsHtmlEntitiesIndexRouteImport } from './routes/_tools/html-entities/index'
@@ -94,6 +95,12 @@ const ToolsCsvConverterIndexRoute = ToolsCsvConverterIndexRouteImport.update({
   path: '/csv-converter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsCurrencyConverterIndexRoute =
+  ToolsCurrencyConverterIndexRouteImport.update({
+    id: '/currency-converter/',
+    path: '/currency-converter/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsEvChargingIndexRoute = ToolsEvChargingIndexRouteImport.update({
   id: '/ev-charging/',
   path: '/ev-charging/',
@@ -228,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/color-converter/': typeof ToolsColorConverterIndexRoute
   '/cron-parser/': typeof ToolsCronParserIndexRoute
   '/csv-converter/': typeof ToolsCsvConverterIndexRoute
+  '/currency-converter/': typeof ToolsCurrencyConverterIndexRoute
   '/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/hash-generator/': typeof ToolsHashGeneratorIndexRoute
   '/html-entities/': typeof ToolsHtmlEntitiesIndexRoute
@@ -263,6 +271,7 @@ export interface FileRoutesByTo {
   '/color-converter': typeof ToolsColorConverterIndexRoute
   '/cron-parser': typeof ToolsCronParserIndexRoute
   '/csv-converter': typeof ToolsCsvConverterIndexRoute
+  '/currency-converter': typeof ToolsCurrencyConverterIndexRoute
   '/ev-charging': typeof ToolsEvChargingIndexRoute
   '/hash-generator': typeof ToolsHashGeneratorIndexRoute
   '/html-entities': typeof ToolsHtmlEntitiesIndexRoute
@@ -300,6 +309,7 @@ export interface FileRoutesById {
   '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
   '/_tools/cron-parser/': typeof ToolsCronParserIndexRoute
   '/_tools/csv-converter/': typeof ToolsCsvConverterIndexRoute
+  '/_tools/currency-converter/': typeof ToolsCurrencyConverterIndexRoute
   '/_tools/ev-charging/': typeof ToolsEvChargingIndexRoute
   '/_tools/hash-generator/': typeof ToolsHashGeneratorIndexRoute
   '/_tools/html-entities/': typeof ToolsHtmlEntitiesIndexRoute
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/color-converter/'
     | '/cron-parser/'
     | '/csv-converter/'
+    | '/currency-converter/'
     | '/ev-charging/'
     | '/hash-generator/'
     | '/html-entities/'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/color-converter'
     | '/cron-parser'
     | '/csv-converter'
+    | '/currency-converter'
     | '/ev-charging'
     | '/hash-generator'
     | '/html-entities'
@@ -408,6 +420,7 @@ export interface FileRouteTypes {
     | '/_tools/color-converter/'
     | '/_tools/cron-parser/'
     | '/_tools/csv-converter/'
+    | '/_tools/currency-converter/'
     | '/_tools/ev-charging/'
     | '/_tools/hash-generator/'
     | '/_tools/html-entities/'
@@ -511,6 +524,13 @@ declare module '@tanstack/react-router' {
       path: '/csv-converter'
       fullPath: '/csv-converter/'
       preLoaderRoute: typeof ToolsCsvConverterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/currency-converter/': {
+      id: '/_tools/currency-converter/'
+      path: '/currency-converter'
+      fullPath: '/currency-converter/'
+      preLoaderRoute: typeof ToolsCurrencyConverterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/ev-charging/': {
@@ -691,6 +711,7 @@ interface ToolsRouteRouteChildren {
   ToolsColorConverterIndexRoute: typeof ToolsColorConverterIndexRoute
   ToolsCronParserIndexRoute: typeof ToolsCronParserIndexRoute
   ToolsCsvConverterIndexRoute: typeof ToolsCsvConverterIndexRoute
+  ToolsCurrencyConverterIndexRoute: typeof ToolsCurrencyConverterIndexRoute
   ToolsEvChargingIndexRoute: typeof ToolsEvChargingIndexRoute
   ToolsHashGeneratorIndexRoute: typeof ToolsHashGeneratorIndexRoute
   ToolsHtmlEntitiesIndexRoute: typeof ToolsHtmlEntitiesIndexRoute
@@ -724,6 +745,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsColorConverterIndexRoute: ToolsColorConverterIndexRoute,
   ToolsCronParserIndexRoute: ToolsCronParserIndexRoute,
   ToolsCsvConverterIndexRoute: ToolsCsvConverterIndexRoute,
+  ToolsCurrencyConverterIndexRoute: ToolsCurrencyConverterIndexRoute,
   ToolsEvChargingIndexRoute: ToolsEvChargingIndexRoute,
   ToolsHashGeneratorIndexRoute: ToolsHashGeneratorIndexRoute,
   ToolsHtmlEntitiesIndexRoute: ToolsHtmlEntitiesIndexRoute,
