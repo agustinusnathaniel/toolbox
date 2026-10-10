@@ -2,6 +2,12 @@ import { useState } from 'react';
 
 import { Button } from '@/lib/components/ui/button';
 import {
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverFooter,
+} from '@/lib/components/ui/popover';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -45,57 +51,56 @@ function HourSelect({
 }
 
 export function WorkHoursEditor({ city, onUpdate }: WorkHoursEditorProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [start, setStart] = useState(city.workStart);
   const [end, setEnd] = useState(city.workEnd);
 
   const handleSave = () => {
     onUpdate(city.id, start, end);
-    setIsEditing(false);
+    setIsOpen(false);
   };
 
-  if (!isEditing) {
-    return (
-      <button
-        className="font-mono text-muted-foreground text-xs underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
-        onClick={() => {
+  return (
+    <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
+      <Button
+        aria-label={`Edit working hours for ${city.name}, currently ${city.workStart} to ${city.workEnd}`}
+        className="h-auto min-h-8 min-w-8 justify-start px-1 font-mono text-[11px] text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground sm:min-h-0 sm:min-w-0"
+        intent="plain"
+        onPress={() => {
           setStart(city.workStart);
           setEnd(city.workEnd);
-          setIsEditing(true);
+          setIsOpen(true);
         }}
-        title="Click to edit working hours"
-        type="button"
       >
         {city.workStart}–{city.workEnd}
-      </button>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-1">
-        <HourSelect
-          ariaLabel={`Work start hour for ${city.name}`}
-          id={`work-start-${city.id}`}
-          onChange={setStart}
-          value={start}
-        />
-        <span className="text-muted-foreground text-xs">–</span>
-        <HourSelect
-          ariaLabel={`Work end hour for ${city.name}`}
-          id={`work-end-${city.id}`}
-          onChange={setEnd}
-          value={end}
-        />
-      </div>
-      <div className="flex items-center gap-1">
-        <Button intent="primary" onPress={handleSave} size="xs">
-          Save
-        </Button>
-        <Button intent="plain" onPress={() => setIsEditing(false)} size="xs">
-          Cancel
-        </Button>
-      </div>
-    </div>
+      </Button>
+      <PopoverContent placement="bottom start">
+        <PopoverBody>
+          <div className="flex items-center gap-1">
+            <HourSelect
+              ariaLabel={`Work start hour for ${city.name}`}
+              id={`work-start-${city.id}`}
+              onChange={setStart}
+              value={start}
+            />
+            <span className="text-muted-foreground text-xs">–</span>
+            <HourSelect
+              ariaLabel={`Work end hour for ${city.name}`}
+              id={`work-end-${city.id}`}
+              onChange={setEnd}
+              value={end}
+            />
+          </div>
+        </PopoverBody>
+        <PopoverFooter>
+          <Button intent="primary" onPress={handleSave} size="xs">
+            Save
+          </Button>
+          <Button intent="plain" onPress={() => setIsOpen(false)} size="xs">
+            Cancel
+          </Button>
+        </PopoverFooter>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -1,3 +1,5 @@
+import { XMarkIcon } from '@heroicons/react/20/solid';
+
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
   getCityStatus,
@@ -70,11 +72,11 @@ export function CityRow({
           <span className="truncate font-medium text-sm">{city.name}</span>
           <button
             aria-label={`Remove ${city.name}`}
-            className="shrink-0 text-muted-foreground transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100"
+            className="-m-2 inline-flex shrink-0 items-center justify-center p-2 text-muted-foreground transition-opacity hover:text-foreground sm:m-0 sm:p-0 sm:opacity-0 sm:group-hover:opacity-100"
             onClick={() => onRemove(city.id)}
             type="button"
           >
-            ×
+            <XMarkIcon className="size-5 sm:size-4" />
           </button>
         </div>
         <div className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">

@@ -58,6 +58,7 @@ export function StripAnchor({
           }
         }}
         placement="bottom end"
+        popover={{ shouldFlip: false }}
         selectedKeys={[referenceZone]}
         selectionMode="single"
       >
