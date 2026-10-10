@@ -12,14 +12,14 @@ import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import {
+  ComboBox,
+  ComboBoxContent,
+  ComboBoxInput,
+  ComboBoxItem,
+} from '@/lib/components/ui/combo-box';
 import { Label } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/lib/components/ui/select';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
@@ -33,6 +33,7 @@ import {
   formatRate,
   isCacheFresh,
   normalizeCurrency,
+  parseAmount,
   parseRatesResponse,
   rateAgeDays,
   ratesUrl,
@@ -60,6 +61,7 @@ export const Route = createFileRoute('/_tools/currency-converter/')({
 const CURRENCY_OPTIONS = CURRENCIES.map((c) => ({
   id: c.code,
   label: `${c.code} — ${c.name}`,
+  name: c.name,
 }));
 
 const HOW_IT_WORKS = {
@@ -118,7 +120,6 @@ function useCurrencyConverterState(persisted: Pair) {
 interface RatesFetch {
   date: string | null;
   error: string | null;
-  fromCache: boolean;
   rates: Record<string, number> | null;
   status: 'loading' | 'ready' | 'error';
 }
@@ -182,20 +183,13 @@ function useRates(base: string, needed: boolean) {
   const [state, setState] = useState<RatesFetch>({
     date: null,
     error: null,
-    fromCache: false,
     rates: null,
     status: 'loading',
   });
 
   const load = useCallback(() => {
     if (!needed) {
-      setState({
-        date: null,
-        error: null,
-        fromCache: false,
-        rates: null,
-        status: 'ready',
-      });
+      setState({ date: null, error: null, rates: null, status: 'ready' });
       return;
     }
     const cached = readCachedRates(base);
@@ -203,7 +197,6 @@ function useRates(base: string, needed: boolean) {
       setState({
         date: cached.date,
         error: null,
-        fromCache: true,
         rates: cached.rates,
         status: 'ready',
       });
@@ -212,7 +205,6 @@ function useRates(base: string, needed: boolean) {
     setState({
       date: cached?.date ?? null,
       error: null,
-      fromCache: cached !== null,
       rates: cached?.rates ?? null,
       status: cached ? 'ready' : 'loading',
     });
@@ -221,13 +213,12 @@ function useRates(base: string, needed: boolean) {
         setState({
           date: data.date,
           error: null,
-          fromCache: false,
           rates: data.rates,
           status: 'ready',
         });
       },
       (error) => {
-        // Stale cache keeps serving — the rate line labels it. Only a
+        // Stale cache keeps serving — the rate line labels its date. Only a
         // cache miss surfaces as an error with a retry button.
         if (cached) {
           return;
@@ -236,7 +227,6 @@ function useRates(base: string, needed: boolean) {
           date: null,
           error:
             error instanceof Error ? error.message : 'Failed to load rates',
-          fromCache: false,
           rates: null,
           status: 'error',
         });
@@ -254,13 +244,11 @@ function useRates(base: string, needed: boolean) {
 function RateStatusLine({
   date,
   from,
-  fromCache,
   rate,
   to,
 }: {
   date: string | null;
   from: string;
-  fromCache: boolean;
   rate: number | undefined;
   to: string;
 }) {
@@ -272,22 +260,25 @@ function RateStatusLine({
     <p className="text-muted-fg text-xs">
       1 {from} = {formatRate(rate)} {to} · ECB {date}
       {age > 1 ? ` · ${age} days old` : ''}
-      {fromCache ? ' · cached' : ''}
     </p>
   );
 }
 
 function ConversionOutput({
+  amountValid,
   copiedKey,
   hasInput,
   onCopy,
   onRetry,
+  ratesLoading,
   result,
 }: {
+  amountValid: boolean;
   copiedKey: string | null;
   hasInput: boolean;
   onCopy: () => void;
   onRetry: () => void;
+  ratesLoading: boolean;
   result: ConversionResult & { loadError: string | null };
 }) {
   if (!hasInput) {
@@ -296,6 +287,12 @@ function ConversionOutput({
         Enter an amount to see the conversion.
       </p>
     );
+  }
+  if (!amountValid) {
+    return <ToolError title="Enter a valid amount" />;
+  }
+  if (ratesLoading) {
+    return <p className="text-muted-fg text-xs">Loading latest rates…</p>;
   }
   if (!result.isValid) {
     return (
@@ -339,16 +336,30 @@ function CurrencySelectors({
     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
       <div className="flex flex-col gap-1">
         <Label htmlFor="currency-converter-from">From</Label>
-        <Select
+        <ComboBox
           aria-label="From currency"
-          onSelectionChange={(key) => onFromChange(key as string)}
+          onSelectionChange={(key) => {
+            if (typeof key === 'string') {
+              onFromChange(key);
+            }
+          }}
           selectedKey={from}
         >
-          <SelectTrigger id="currency-converter-from" />
-          <SelectContent items={CURRENCY_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
-          </SelectContent>
-        </Select>
+          <ComboBoxInput
+            id="currency-converter-from"
+            placeholder="Search currency..."
+          />
+          <ComboBoxContent items={CURRENCY_OPTIONS}>
+            {(option) => (
+              <ComboBoxItem
+                id={option.id}
+                textValue={`${option.id} ${option.name}`}
+              >
+                {option.label}
+              </ComboBoxItem>
+            )}
+          </ComboBoxContent>
+        </ComboBox>
       </div>
       <div className="flex items-end justify-center pb-1">
         <Button
@@ -362,16 +373,30 @@ function CurrencySelectors({
       </div>
       <div className="flex flex-col gap-1">
         <Label htmlFor="currency-converter-to">To</Label>
-        <Select
+        <ComboBox
           aria-label="To currency"
-          onSelectionChange={(key) => onToChange(key as string)}
+          onSelectionChange={(key) => {
+            if (typeof key === 'string') {
+              onToChange(key);
+            }
+          }}
           selectedKey={to}
         >
-          <SelectTrigger id="currency-converter-to" />
-          <SelectContent items={CURRENCY_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
-          </SelectContent>
-        </Select>
+          <ComboBoxInput
+            id="currency-converter-to"
+            placeholder="Search currency..."
+          />
+          <ComboBoxContent items={CURRENCY_OPTIONS}>
+            {(option) => (
+              <ComboBoxItem
+                id={option.id}
+                textValue={`${option.id} ${option.name}`}
+              >
+                {option.label}
+              </ComboBoxItem>
+            )}
+          </ComboBoxContent>
+        </ComboBox>
       </div>
     </div>
   );
@@ -391,10 +416,7 @@ function CurrencyConverterPage() {
   const { copiedKey, copy } = useCopyFeedback();
 
   const needsRates = state.from !== state.to;
-  const { date, fromCache, rates, retry, status } = useRates(
-    state.from,
-    needsRates
-  );
+  const { date, rates, retry, status } = useRates(state.from, needsRates);
 
   const result = useMemo(
     () =>
@@ -462,6 +484,7 @@ function CurrencyConverterPage() {
   }, [trackAction, setState]);
 
   const hasInput = state.amount.trim().length > 0;
+  const amountValid = parseAmount(state.amount) !== null;
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
@@ -492,22 +515,20 @@ function CurrencyConverterPage() {
           </div>
           <div className="flex flex-col gap-2">
             <ConversionOutput
+              amountValid={amountValid}
               copiedKey={copiedKey as string | null}
               hasInput={hasInput}
               onCopy={handleCopyResult}
               onRetry={handleRetry}
+              ratesLoading={status === 'loading'}
               result={{
                 ...result,
                 loadError: status === 'error' ? 'load' : null,
               }}
             />
-            {status === 'loading' && hasInput && result.isValid && (
-              <p className="text-muted-fg text-xs">Loading latest rates…</p>
-            )}
             <RateStatusLine
               date={date}
               from={state.from}
-              fromCache={fromCache}
               rate={result.rate}
               to={state.to}
             />

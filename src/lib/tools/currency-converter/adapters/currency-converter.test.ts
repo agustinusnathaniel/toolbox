@@ -5,6 +5,7 @@ import {
   formatRate,
   isCacheFresh,
   normalizeCurrency,
+  parseAmount,
   parseRatesResponse,
   RATES_CACHE_TTL_MS,
   rateAgeDays,
@@ -69,6 +70,15 @@ describe('convertCurrency', () => {
     const result = convertCurrency('10', 'USD', 'JPY', rates);
     expect(result.isValid).toBe(false);
     expect(result.value).toBeUndefined();
+  });
+});
+
+describe('parseAmount', () => {
+  test('parses numeric input and rejects the rest', () => {
+    expect(parseAmount('100')).toBe(100);
+    expect(parseAmount(' 12.5 ')).toBe(12.5);
+    expect(parseAmount('')).toBeNull();
+    expect(parseAmount('abc')).toBeNull();
   });
 });
 

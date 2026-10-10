@@ -134,6 +134,15 @@ export interface ConversionResult {
   value?: number;
 }
 
+/** Parse a free-typed amount, or null when it is empty/non-numeric. */
+export function parseAmount(raw: string): number | null {
+  if (raw.trim() === '') {
+    return null;
+  }
+  const amount = Number(raw);
+  return Number.isFinite(amount) ? amount : null;
+}
+
 /**
  * Convert an amount string with a fetched rate. Same-currency is rate 1
  * and never requires a network result.
@@ -144,8 +153,8 @@ export function convertCurrency(
   to: string,
   rates: Record<string, number> | null
 ): ConversionResult {
-  const amount = Number(amountRaw);
-  if (amountRaw.trim() === '' || !Number.isFinite(amount)) {
+  const amount = parseAmount(amountRaw);
+  if (amount === null) {
     return { error: 'Enter a valid amount', isValid: false };
   }
   if (from === to) {
