@@ -14,6 +14,7 @@ import {
   Braces,
   CaseSensitive,
   Clock,
+  Coins,
   Dices,
   FileText,
   Fingerprint,
@@ -33,6 +34,7 @@ import { meta as caseConverterMeta } from '@/routes/_tools/case-converter/-meta'
 import { meta as colorConverterMeta } from '@/routes/_tools/color-converter/-meta';
 import { meta as cronParserMeta } from '@/routes/_tools/cron-parser/-meta';
 import { meta as csvConverterMeta } from '@/routes/_tools/csv-converter/-meta';
+import { meta as currencyConverterMeta } from '@/routes/_tools/currency-converter/-meta';
 import { meta as evChargingMeta } from '@/routes/_tools/ev-charging/-meta';
 import { meta as hashGeneratorMeta } from '@/routes/_tools/hash-generator/-meta';
 import { meta as htmlEntitiesMeta } from '@/routes/_tools/html-entities/-meta';
@@ -264,6 +266,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Calculators',
     icon: <Scale />,
     ...unitConverterMeta,
+  },
+  {
+    category: 'Calculators',
+    icon: <Coins />,
+    ...currencyConverterMeta,
   },
   {
     category: 'Text & Data',
