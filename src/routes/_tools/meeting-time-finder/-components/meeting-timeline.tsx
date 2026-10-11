@@ -98,34 +98,32 @@ function TimelineHeader({
             Drag to explore times across timezones
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <StripAnchor
-            cities={cities}
-            onJumpToNow={onJumpToNow}
-            onReferenceChange={onReferenceChange}
-            referenceZone={referenceZone}
-            selectedHour={selectedHour}
-          />
-          <div className="flex items-center gap-1.5 text-xs">
-            <span
-              aria-hidden="true"
-              className={`size-1.5 rounded-full ${allIn ? 'bg-emerald-500' : 'bg-amber-500'}`}
-            />
-            <span className="font-medium text-foreground tabular-nums">
-              {outlier.inHours} of {outlier.total}
+        <StripAnchor
+          cities={cities}
+          onJumpToNow={onJumpToNow}
+          onReferenceChange={onReferenceChange}
+          referenceZone={referenceZone}
+          selectedHour={selectedHour}
+        />
+      </div>
+      <div className="flex items-center gap-1.5 text-xs">
+        <span
+          aria-hidden="true"
+          className={`size-1.5 rounded-full ${allIn ? 'bg-emerald-500' : 'bg-amber-500'}`}
+        />
+        <span className="font-medium text-foreground tabular-nums">
+          {outlier.inHours} of {outlier.total}
+        </span>
+        {allIn ? (
+          <span className="text-muted-foreground">works for everyone</span>
+        ) : (
+          firstOutlier && (
+            <span className="text-muted-foreground">
+              in hours · {firstOutlier.relation} in {firstOutlier.name}
+              {extraOutliers > 0 && ` +${extraOutliers} more`}
             </span>
-            {allIn ? (
-              <span className="text-muted-foreground">works for everyone</span>
-            ) : (
-              firstOutlier && (
-                <span className="text-muted-foreground">
-                  in hours · {firstOutlier.relation} in {firstOutlier.name}
-                  {extraOutliers > 0 && ` +${extraOutliers} more`}
-                </span>
-              )
-            )}
-          </div>
-        </div>
+          )
+        )}
       </div>
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground text-xs">Score:</span>

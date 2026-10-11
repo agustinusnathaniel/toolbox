@@ -40,11 +40,11 @@ export function StripAnchor({
 
   return (
     <Menu>
-      <MenuTrigger className="inline-flex min-w-52 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-primary-fg text-sm transition-opacity hover:opacity-90">
-        <span className="tabular-nums">
+      <MenuTrigger className="inline-flex w-56 max-w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-primary-fg text-sm transition-opacity hover:opacity-90">
+        <span className="shrink-0 tabular-nums">
           {formatHourInZone(selectedHour, referenceZone)}
         </span>
-        <span className="font-sans text-xs opacity-80">
+        <span className="min-w-0 flex-1 truncate text-center font-sans text-xs opacity-80">
           {zoneLabel(referenceZone, cities)}
         </span>
         <ChevronDownIcon className="size-4 opacity-70" data-slot="chevron" />
