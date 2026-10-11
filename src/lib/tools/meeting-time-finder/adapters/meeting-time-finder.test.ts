@@ -5,9 +5,15 @@ import {
   formatCopyText,
   formatHourInZone,
   getAxisLabel,
+  getCityStatus,
+  getCityStatusAtReferenceHour,
   getCurrentTimeLabel,
   getOutlierSummary,
+  getOverallScore,
+  getOverallScoreAtReferenceHour,
   hourFromStripX,
+  referenceHourToUtcHour,
+  utcHourToReferenceHour,
 } from './meeting-time-finder';
 
 // Fixed reference date (a Wednesday, no DST ambiguity for these zones).
@@ -124,5 +130,88 @@ describe('hourFromStripX', () => {
 
   test('zero-width strip selects midnight', () => {
     expect(hourFromStripX(100, 0, 150)).toBe(0);
+  });
+});
+
+describe('reference-zone column mapping', () => {
+  test('UTC reference is identity', () => {
+    expect(utcHourToReferenceHour(16, 'UTC', DATE)).toBe(16);
+    expect(referenceHourToUtcHour(16, 'UTC', DATE)).toBe(16);
+  });
+
+  test('whole-hour zones shift exactly', () => {
+    // 16:00 UTC = 12:00 in New York (UTC-4 in October).
+    expect(utcHourToReferenceHour(16, 'America/New_York', DATE)).toBe(12);
+    expect(referenceHourToUtcHour(12, 'America/New_York', DATE)).toBe(16);
+    // 16:00 UTC = 01:00 next day in Tokyo (UTC+9, no DST).
+    expect(utcHourToReferenceHour(16, 'Asia/Tokyo', DATE)).toBe(1);
+    expect(referenceHourToUtcHour(1, 'Asia/Tokyo', DATE)).toBe(16);
+  });
+
+  test('wraps around midnight both ways', () => {
+    // 02:00 UTC = 22:00 previous-day New York.
+    expect(utcHourToReferenceHour(2, 'America/New_York', DATE)).toBe(22);
+    expect(referenceHourToUtcHour(22, 'America/New_York', DATE)).toBe(2);
+  });
+
+  test('fractional offsets keep minute precision', () => {
+    // 14:00 UTC = 19:30 in Kolkata (UTC+5:30).
+    expect(utcHourToReferenceHour(14, 'Asia/Kolkata', DATE)).toBe(19.5);
+    expect(referenceHourToUtcHour(19, 'Asia/Kolkata', DATE)).toBe(14);
+  });
+
+  test('round trip preserves the instant for whole-hour zones', () => {
+    for (const zone of ['UTC', 'America/New_York', 'Asia/Tokyo']) {
+      for (let h = 0; h < 24; h++) {
+        const col = Math.floor(utcHourToReferenceHour(h, zone, DATE));
+        expect(referenceHourToUtcHour(col, zone, DATE)).toBe(h);
+      }
+    }
+  });
+});
+
+describe('getCityStatusAtReferenceHour', () => {
+  const ny = city('america/new_york');
+
+  test('matches UTC-keyed status under UTC reference', () => {
+    for (let h = 0; h < 24; h++) {
+      expect(getCityStatusAtReferenceHour(ny, h, 'UTC', DATE)).toBe(
+        getCityStatus(h, ny, DATE)
+      );
+    }
+  });
+
+  test('shifts the matrix by the zone offset', () => {
+    // Column 12 in a New York day = 16:00 UTC = 12:00 local → core.
+    expect(getCityStatusAtReferenceHour(ny, 12, 'America/New_York', DATE)).toBe(
+      'core'
+    );
+    // Column 21 in a New York day = 01:00 UTC = 21:00 local → asleep.
+    expect(getCityStatusAtReferenceHour(ny, 21, 'America/New_York', DATE)).toBe(
+      'asleep'
+    );
+  });
+});
+
+describe('getOverallScoreAtReferenceHour', () => {
+  test('matches UTC-keyed scores under UTC reference', () => {
+    const cities = [
+      city('america/new_york'),
+      city('europe/london'),
+      city('asia/tokyo'),
+    ];
+    for (let h = 0; h < 24; h++) {
+      expect(
+        getOverallScoreAtReferenceHour(h, cities, 'UTC', DATE)
+      ).toBeCloseTo(getOverallScore(h, cities, DATE), 10);
+    }
+  });
+
+  test('same instant scores the same in any reference zone', () => {
+    const cities = [city('america/new_york'), city('europe/london')];
+    // 16:00 UTC is column 16 under UTC, column 12 under New York.
+    expect(
+      getOverallScoreAtReferenceHour(12, cities, 'America/New_York', DATE)
+    ).toBeCloseTo(getOverallScore(16, cities, DATE), 10);
   });
 });

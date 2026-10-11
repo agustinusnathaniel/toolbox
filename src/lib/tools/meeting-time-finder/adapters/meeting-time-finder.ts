@@ -283,7 +283,12 @@ export function getCityStatus(
   date: Date = new Date()
 ): 'core' | 'shoulder' | 'edge' | 'asleep' {
   const localHour = getLocalHour(utcHour, city.timezone, date);
-  const score = getHourScore(localHour, city.workStart, city.workEnd);
+  return statusForScore(getHourScore(localHour, city.workStart, city.workEnd));
+}
+
+function statusForScore(
+  score: number
+): 'core' | 'shoulder' | 'edge' | 'asleep' {
   if (score >= 1.0) {
     return 'core';
   }
@@ -294,6 +299,73 @@ export function getCityStatus(
     return 'edge';
   }
   return 'asleep';
+}
+
+/**
+ * Reference-zone column mapping. The matrix renders reference-zone hours
+ * 0-23 as columns while the selection stays a UTC instant internally, so
+ * switching zones visibly re-orients the whole grid around the new zone.
+ * Whole-hour zones map exactly; fractional offsets resolve to minute
+ * precision (comparisons in getHourScore are float-safe).
+ */
+
+/** UTC hour -> fractional reference-zone hour in [0, 24). */
+export function utcHourToReferenceHour(
+  utcHour: number,
+  referenceZone: string,
+  date: Date = new Date()
+): number {
+  const offsetMinutes = getTimezoneOffsetMinutes(referenceZone, date);
+  return ((((utcHour * 60 + offsetMinutes) % 1440) + 1440) % 1440) / 60;
+}
+
+/** Reference-zone column -> nearest UTC hour 0-23. */
+export function referenceHourToUtcHour(
+  refHour: number,
+  referenceZone: string,
+  date: Date = new Date()
+): number {
+  const offsetMinutes = getTimezoneOffsetMinutes(referenceZone, date);
+  const utcMinutes = (((refHour * 60 - offsetMinutes) % 1440) + 1440) % 1440;
+  return Math.round(utcMinutes / 60) % 24;
+}
+
+/**
+ * City status for a reference-zone column: the city's local time at that
+ * column's instant, scored against its working hours.
+ */
+export function getCityStatusAtReferenceHour(
+  city: City,
+  refHour: number,
+  referenceZone: string,
+  date: Date = new Date()
+): 'core' | 'shoulder' | 'edge' | 'asleep' {
+  const refOffset = getTimezoneOffsetMinutes(referenceZone, date);
+  const cityOffset = getTimezoneOffsetMinutes(city.timezone, date);
+  const localHour = refHour + (cityOffset - refOffset) / 60;
+  return statusForScore(getHourScore(localHour, city.workStart, city.workEnd));
+}
+
+/**
+ * Overall goodness score for a reference-zone column across all cities.
+ */
+export function getOverallScoreAtReferenceHour(
+  refHour: number,
+  cities: ReadonlyArray<City>,
+  referenceZone: string,
+  date: Date = new Date()
+): number {
+  if (cities.length === 0) {
+    return 0;
+  }
+  const refOffset = getTimezoneOffsetMinutes(referenceZone, date);
+  let total = 0;
+  for (const city of cities) {
+    const cityOffset = getTimezoneOffsetMinutes(city.timezone, date);
+    const localHour = refHour + (cityOffset - refOffset) / 60;
+    total += getHourScore(localHour, city.workStart, city.workEnd);
+  }
+  return total / cities.length;
 }
 
 /**

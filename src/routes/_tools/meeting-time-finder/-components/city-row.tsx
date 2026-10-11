@@ -3,8 +3,10 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
   getCityStatus,
+  getCityStatusAtReferenceHour,
   getLocalTimeLabel,
   getTimezoneOffsetLabel,
+  utcHourToReferenceHour,
 } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 
 import { WorkHoursEditor } from './work-hours-editor';
@@ -49,11 +51,13 @@ interface CityRowProps {
     workStart: number,
     workEnd: number
   ) => void;
+  referenceZone: string;
   selectedHour: number;
 }
 
 export function CityRow({
   city,
+  referenceZone,
   selectedHour,
   onRemove,
   onUpdateWorkHours,
@@ -61,6 +65,8 @@ export function CityRow({
   const localTime = getLocalTimeLabel(selectedHour, city);
   const offsetLabel = getTimezoneOffsetLabel(city.timezone);
   const status = getCityStatus(selectedHour, city);
+  const selectedColumn =
+    Math.floor(utcHourToReferenceHour(selectedHour, referenceZone)) % 24;
 
   return (
     <div
@@ -107,11 +113,11 @@ export function CityRow({
         style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
       >
         {HOURS.map((h) => {
-          const s = getCityStatus(h, city);
+          const s = getCityStatusAtReferenceHour(city, h, referenceZone);
           return (
             <div
               className={`h-8 rounded-sm ${getStatusColor(s)} transition-[filter] hover:brightness-110${
-                h === selectedHour
+                h === selectedColumn
                   ? 'outline outline-2 outline-foreground/70 outline-offset-[-2px]'
                   : ''
               }`}

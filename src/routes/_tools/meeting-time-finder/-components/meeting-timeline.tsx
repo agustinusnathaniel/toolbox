@@ -6,9 +6,11 @@ import type { BestTimeResult } from '@/lib/tools/meeting-time-finder/adapters/me
 import {
   findBestTime,
   formatHourInZone,
-  getAxisLabel,
   getOutlierSummary,
   getOverallScore,
+  getOverallScoreAtReferenceHour,
+  referenceHourToUtcHour,
+  utcHourToReferenceHour,
 } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 
 import { CityRow } from './city-row';
@@ -77,19 +79,23 @@ function getScoreColor(score: number): string {
 function TimelineHeader({
   bestTime,
   cities,
+  duration,
   onFindBestTime,
   onJumpToNow,
   onReferenceChange,
   referenceZone,
   selectedHour,
+  zoneName,
 }: {
   bestTime: BestTimeResult | null;
   cities: ReadonlyArray<City>;
+  duration: number;
   onFindBestTime: () => void;
   onJumpToNow: () => void;
   onReferenceChange: (timezone: string) => void;
   referenceZone: string;
   selectedHour: number;
+  zoneName: string;
 }) {
   const outlier = getOutlierSummary(selectedHour, cities);
   const score = getOverallScore(selectedHour, cities);
@@ -155,7 +161,12 @@ function TimelineHeader({
         <p className="text-muted-foreground text-xs">
           Best:{' '}
           <span className="font-medium text-foreground tabular-nums">
-            {bestTime.label}
+            {formatHourInZone(bestTime.startHour, referenceZone)} –{' '}
+            {formatHourInZone(
+              (bestTime.startHour + Math.max(1, Math.ceil(duration / 60))) % 24,
+              referenceZone
+            )}{' '}
+            {zoneName}
           </span>{' '}
           · {Math.round(bestTime.score * 100)}% overlap
         </p>
@@ -164,11 +175,11 @@ function TimelineHeader({
   );
 }
 
-function AxisHeader({ referenceZone }: { referenceZone: string }) {
+function AxisHeader({ zoneName }: { zoneName: string }) {
   return (
     <div className="mb-1 sm:grid sm:grid-cols-[var(--info)_1fr_var(--time)] sm:items-end sm:gap-x-2">
-      <span className="hidden text-[10px] text-muted-foreground uppercase tracking-wider sm:block">
-        UTC
+      <span className="hidden truncate text-[10px] text-muted-foreground uppercase tracking-wider sm:block">
+        {zoneName}
       </span>
       <div
         className="grid min-w-0 gap-px"
@@ -182,7 +193,7 @@ function AxisHeader({ referenceZone }: { referenceZone: string }) {
             }`}
             key={`label-${h}`}
           >
-            {h % 6 === 0 ? getAxisLabel(h, referenceZone) : '·'}
+            {h % 6 === 0 ? String(h).padStart(2, '0') : '·'}
           </div>
         ))}
       </div>
@@ -193,7 +204,13 @@ function AxisHeader({ referenceZone }: { referenceZone: string }) {
   );
 }
 
-function ScoreStrip({ cities }: { cities: ReadonlyArray<City> }) {
+function ScoreStrip({
+  cities,
+  referenceZone,
+}: {
+  cities: ReadonlyArray<City>;
+  referenceZone: string;
+}) {
   return (
     <div className="mb-1 sm:grid sm:grid-cols-[var(--info)_1fr_var(--time)] sm:gap-x-2">
       <span className="hidden sm:block" />
@@ -202,7 +219,7 @@ function ScoreStrip({ cities }: { cities: ReadonlyArray<City> }) {
         style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
       >
         {HOURS.map((h) => {
-          const s = getOverallScore(h, cities);
+          const s = getOverallScoreAtReferenceHour(h, cities, referenceZone);
           return (
             <div
               className={`h-1 rounded-sm ${getScoreColor(s)}`}
@@ -224,12 +241,14 @@ function TimelineContent({
   selectedHour,
   onRemoveCity,
   onUpdateWorkHours,
+  zoneName,
 }: {
   cities: ReadonlyArray<City>;
   duration: number;
   onHourChange: (hour: number) => void;
   referenceZone: string;
   selectedHour: number;
+  zoneName: string;
   onRemoveCity: (cityId: string) => void;
   onUpdateWorkHours: (
     cityId: string,
@@ -238,7 +257,9 @@ function TimelineContent({
   ) => void;
 }) {
   const { timelineRef, handlePointerDown, handlePointerMove, handlePointerUp } =
-    useTimelineDrag(onHourChange);
+    useTimelineDrag((column) =>
+      onHourChange(referenceHourToUtcHour(column, referenceZone))
+    );
 
   if (cities.length === 0) {
     return (
@@ -251,6 +272,9 @@ function TimelineContent({
     );
   }
 
+  const selectedColumn =
+    Math.floor(utcHourToReferenceHour(selectedHour, referenceZone)) % 24;
+
   return (
     <div className="rounded-xl bg-muted/40 p-3 [--cgap:0px] [--info:0px] [--time:0px] sm:[--cgap:16px] sm:[--info:168px] sm:[--time:84px]">
       <div
@@ -262,10 +286,14 @@ function TimelineContent({
         onKeyDown={(e) => {
           if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            onHourChange((selectedHour - 1 + 24) % 24);
+            onHourChange(
+              referenceHourToUtcHour((selectedColumn + 23) % 24, referenceZone)
+            );
           } else if (e.key === 'ArrowRight') {
             e.preventDefault();
-            onHourChange((selectedHour + 1) % 24);
+            onHourChange(
+              referenceHourToUtcHour((selectedColumn + 1) % 24, referenceZone)
+            );
           }
         }}
         onPointerCancel={handlePointerUp}
@@ -276,10 +304,10 @@ function TimelineContent({
         role="slider"
         tabIndex={0}
       >
-        <AxisHeader referenceZone={referenceZone} />
+        <AxisHeader zoneName={zoneName} />
 
         <div className="relative mb-8">
-          <ScoreStrip cities={cities} />
+          <ScoreStrip cities={cities} referenceZone={referenceZone} />
           <div className="flex flex-col gap-2 sm:gap-1">
             {cities.map((city) => (
               <CityRow
@@ -287,16 +315,21 @@ function TimelineContent({
                 key={city.id}
                 onRemove={onRemoveCity}
                 onUpdateWorkHours={onUpdateWorkHours}
+                referenceZone={referenceZone}
                 selectedHour={selectedHour}
               />
             ))}
           </div>
-          <SelectedColumnBand selectedHour={selectedHour} />
-          <BestTimeBand cities={cities} duration={duration} />
+          <SelectedColumnBand selectedHour={selectedColumn} />
+          <BestTimeBand
+            cities={cities}
+            duration={duration}
+            referenceZone={referenceZone}
+          />
           <div
             aria-hidden="true"
             className="pointer-events-none absolute top-full z-10 mt-2 -translate-x-1/2 whitespace-nowrap rounded-full border bg-card px-2 py-0.5 font-mono text-[11px] tabular-nums shadow-sm"
-            style={{ left: colCenter(selectedHour) }}
+            style={{ left: colCenter(selectedColumn) }}
           >
             {formatHourInZone(selectedHour, referenceZone)}
           </div>
@@ -327,9 +360,11 @@ function SelectedColumnBand({ selectedHour }: { selectedHour: number }) {
 function BestTimeBand({
   cities,
   duration,
+  referenceZone,
 }: {
   cities: ReadonlyArray<City>;
   duration: number;
+  referenceZone: string;
 }) {
   const bestTime = useMemo(
     () => findBestTime(cities, duration),
@@ -338,7 +373,8 @@ function BestTimeBand({
   if (!bestTime) {
     return null;
   }
-  const bestStart = bestTime.startHour;
+  const bestStart =
+    Math.floor(utcHourToReferenceHour(bestTime.startHour, referenceZone)) % 24;
   const bestDurationHours = Math.max(1, Math.ceil(duration / 60));
   return (
     <div
@@ -401,17 +437,23 @@ export function MeetingTimeline({
     () => findBestTime(cities, duration),
     [cities, duration]
   );
+  const zoneName =
+    referenceZone === 'UTC'
+      ? 'UTC'
+      : (cities.find((c) => c.timezone === referenceZone)?.name ?? 'UTC');
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <TimelineHeader
         bestTime={bestTime}
         cities={cities}
+        duration={duration}
         onFindBestTime={onFindBestTime}
         onJumpToNow={onJumpToNow}
         onReferenceChange={onReferenceChange}
         referenceZone={referenceZone}
         selectedHour={selectedHour}
+        zoneName={zoneName}
       />
       <TimelineContent
         cities={cities}
@@ -421,6 +463,7 @@ export function MeetingTimeline({
         onUpdateWorkHours={onUpdateWorkHours}
         referenceZone={referenceZone}
         selectedHour={selectedHour}
+        zoneName={zoneName}
       />
       <div className="flex items-center gap-2">
         <CitySearch existingIds={existingIds} onAdd={onAddCity} />
