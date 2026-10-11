@@ -75,7 +75,7 @@ export function CityRow({
           <span className="truncate font-medium text-sm">{city.name}</span>
           <button
             aria-label={`Remove ${city.name}`}
-            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted-foreground/20 hover:text-foreground sm:h-6 sm:w-6 sm:bg-transparent sm:opacity-0 sm:group-hover:opacity-100"
+            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted-foreground/20 hover:text-foreground sm:h-6 sm:w-6 sm:bg-transparent sm:opacity-0 sm:group-hover:opacity-100"
             onClick={() => onRemove(city.id)}
             type="button"
           >

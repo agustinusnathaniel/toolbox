@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
+import { toast } from 'sonner';
 
 import { usePersistedState } from '@/lib/hooks/use-persisted-state';
 import { formatLocalDateTimeString } from '@/lib/tools/add-to-calendar/adapters/calendar';
@@ -51,10 +52,40 @@ function useCityActions(
     [setCities, trackAction]
   );
 
+  const lastRemoved = useRef<{ city: City; index: number } | null>(null);
+
   const removeCity = useCallback(
     (cityId: string) => {
-      setCities((prev) => prev.filter((c) => c.id !== cityId));
+      setCities((prev) => {
+        const index = prev.findIndex((c) => c.id === cityId);
+        if (index === -1) {
+          return prev;
+        }
+        lastRemoved.current = { city: prev[index], index };
+        return prev.filter((c) => c.id !== cityId);
+      });
       trackAction('remove_city');
+      const removed = lastRemoved.current;
+      lastRemoved.current = null;
+      if (removed) {
+        toast(`Removed ${removed.city.name}`, {
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              const { city, index } = removed;
+              setCities((prev) => {
+                if (prev.some((c) => c.id === city.id)) {
+                  return prev;
+                }
+                const next = [...prev];
+                next.splice(Math.min(index, next.length), 0, city);
+                return next;
+              });
+              trackAction('undo_remove_city');
+            },
+          },
+        });
+      }
     },
     [setCities, trackAction]
   );
