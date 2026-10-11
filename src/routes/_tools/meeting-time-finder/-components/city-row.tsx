@@ -64,10 +64,13 @@ export function CityRow({
 
   return (
     <div
-      className="grid grid-cols-[var(--info)_1fr_var(--time)] items-center gap-x-2"
+      className="group flex flex-col gap-1 sm:grid sm:grid-cols-[var(--info)_1fr_var(--time)] sm:items-center sm:gap-x-2"
       key={city.id}
     >
-      <div className="group min-w-0">
+      <div
+        className="flex min-w-0 items-center justify-between gap-2 sm:block"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <div className="flex min-w-0 items-center gap-1">
           <span className="truncate font-medium text-sm">{city.name}</span>
           <button
@@ -79,7 +82,20 @@ export function CityRow({
             <XMarkIcon className="size-4 sm:size-3.5" />
           </button>
         </div>
-        <div className="flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+        <div className="flex shrink-0 items-center gap-1.5 font-mono text-[11px] sm:hidden">
+          <span className="text-muted-foreground">{offsetLabel}</span>
+          <span aria-hidden="true" className="text-muted-foreground">
+            ·
+          </span>
+          <WorkHoursEditor city={city} onUpdate={onUpdateWorkHours} />
+          <span aria-hidden="true" className="text-muted-foreground">
+            ·
+          </span>
+          <span className={`tabular-nums ${getStatusTextColor(status)}`}>
+            {localTime}
+          </span>
+        </div>
+        <div className="mt-0.5 hidden items-center gap-1 font-mono text-[11px] text-muted-foreground sm:flex">
           <span className="shrink-0">{offsetLabel}</span>
           <span aria-hidden="true">·</span>
           <WorkHoursEditor city={city} onUpdate={onUpdateWorkHours} />
@@ -106,7 +122,7 @@ export function CityRow({
       </div>
 
       <span
-        className={`whitespace-nowrap text-right font-mono text-[10px] tabular-nums sm:text-xs ${getStatusTextColor(status)}`}
+        className={`hidden whitespace-nowrap text-right font-mono text-xs tabular-nums sm:block ${getStatusTextColor(status)}`}
       >
         {localTime}
       </span>

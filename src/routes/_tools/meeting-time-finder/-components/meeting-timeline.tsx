@@ -35,14 +35,16 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 /**
  * Column geometry for the overlay bands. Every row (and the axis) shares
- * the grid `var(--info) 1fr var(--time)` with an 8px column gap, and each
- * strip is 24 columns with 1px gaps. BASE is the strip width minus its
- * internal gaps, so one cell plus its trailing gap is BASE / 24 + 1px.
+ * the grid `var(--info) 1fr var(--time)` with a `var(--cgap)` total column
+ * gap, and each strip is 24 columns with 1px gaps. BASE is the strip width
+ * minus its internal gaps, so one cell plus its trailing gap is
+ * BASE / 24 + 1px. On mobile the side columns collapse to zero and rows
+ * stack full-width, so the same calc keeps bands aligned with no fork.
  */
-const STRIP_BASE = '(100% - var(--info) - var(--time) - 16px - 23px)';
+const STRIP_BASE = '(100% - var(--info) - var(--time) - var(--cgap) - 23px)';
 
 function colLeft(hour: number): string {
-  return `calc(var(--info) + 8px + ${STRIP_BASE} * ${hour} / 24 + ${hour}px)`;
+  return `calc(var(--info) + var(--cgap) / 2 + ${STRIP_BASE} * ${hour} / 24 + ${hour}px)`;
 }
 
 function spanWidth(hours: number): string {
@@ -143,8 +145,8 @@ function TimelineHeader({
 
 function AxisHeader({ referenceZone }: { referenceZone: string }) {
   return (
-    <div className="mb-1 grid grid-cols-[var(--info)_1fr_var(--time)] items-end gap-x-2">
-      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+    <div className="mb-1 sm:grid sm:grid-cols-[var(--info)_1fr_var(--time)] sm:items-end sm:gap-x-2">
+      <span className="hidden text-[10px] text-muted-foreground uppercase tracking-wider sm:block">
         UTC
       </span>
       <div
@@ -159,17 +161,11 @@ function AxisHeader({ referenceZone }: { referenceZone: string }) {
             }`}
             key={`label-${h}`}
           >
-            {h % 6 === 0 ? (
-              <span className={h === 18 ? 'hidden sm:inline' : undefined}>
-                {getAxisLabel(h, referenceZone)}
-              </span>
-            ) : (
-              '·'
-            )}
+            {h % 6 === 0 ? getAxisLabel(h, referenceZone) : '·'}
           </div>
         ))}
       </div>
-      <span className="text-right text-[10px] text-muted-foreground uppercase tracking-wider">
+      <span className="hidden text-right text-[10px] text-muted-foreground uppercase tracking-wider sm:block">
         Local
       </span>
     </div>
@@ -178,8 +174,8 @@ function AxisHeader({ referenceZone }: { referenceZone: string }) {
 
 function ScoreStrip({ cities }: { cities: ReadonlyArray<City> }) {
   return (
-    <div className="mb-1 grid grid-cols-[var(--info)_1fr_var(--time)] gap-x-2">
-      <span />
+    <div className="mb-1 sm:grid sm:grid-cols-[var(--info)_1fr_var(--time)] sm:gap-x-2">
+      <span className="hidden sm:block" />
       <div
         className="grid min-w-0 gap-px"
         style={{ gridTemplateColumns: 'repeat(24, 1fr)' }}
@@ -194,7 +190,7 @@ function ScoreStrip({ cities }: { cities: ReadonlyArray<City> }) {
           );
         })}
       </div>
-      <span />
+      <span className="hidden sm:block" />
     </div>
   );
 }
@@ -235,7 +231,7 @@ function TimelineContent({
   }
 
   return (
-    <div className="rounded-xl bg-muted/40 p-3 [--info:96px] [--time:76px] sm:[--info:168px] sm:[--time:84px]">
+    <div className="rounded-xl bg-muted/40 p-3 [--cgap:0px] [--info:0px] [--time:0px] sm:[--cgap:16px] sm:[--info:168px] sm:[--time:84px]">
       <div
         aria-label="Meeting time selector"
         aria-valuemax={23}
@@ -263,7 +259,7 @@ function TimelineContent({
 
         <div className="relative mb-8">
           <ScoreStrip cities={cities} />
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2 sm:gap-1">
             {cities.map((city) => (
               <CityRow
                 city={city}
