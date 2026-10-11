@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.10.0...v1.11.0) (2026-10-11)
+
+### Features
+
+* **currency-converter:** add ECB-backed currency converter tool ([#96](https://github.com/agustinusnathaniel/toolbox/issues/96)) ([83f6266](https://github.com/agustinusnathaniel/toolbox/commit/83f6266f544053e9025cba5a3531dbb6729698cf))
+* **meeting-time-finder:** visual timezone-overlap planner with drag-to-explore timeline ([#97](https://github.com/agustinusnathaniel/toolbox/issues/97)) ([f945e61](https://github.com/agustinusnathaniel/toolbox/commit/f945e6181dd143b8154c1bbb7f460a7731a1020c))
+* **nav:** rank the mobile bar by value, and contain mixed icon libraries ([#92](https://github.com/agustinusnathaniel/toolbox/issues/92)) ([2eb32d4](https://github.com/agustinusnathaniel/toolbox/commit/2eb32d44c86a5511167dea0bf8e47f0b522e7386)), closes [#90](https://github.com/agustinusnathaniel/toolbox/issues/90)
+* **ui-polish:** batch 1 interfaces.dev cross-fade tabular outlines wrapping ([#87](https://github.com/agustinusnathaniel/toolbox/issues/87)) ([0a9d0f4](https://github.com/agustinusnathaniel/toolbox/commit/0a9d0f47feaa2b0016cd9515bc8856e619e12bf6))
+
+### Bug Fixes
+
+* drop wrangler.toml to use value from cf dashboard ([f1fc5a7](https://github.com/agustinusnathaniel/toolbox/commit/f1fc5a73d5af17a3fc5ac1e8b98621d0f1a3469c))
+* **ui:** make mobile bottom nav and search trigger consistent ([#90](https://github.com/agustinusnathaniel/toolbox/issues/90)) ([5124363](https://github.com/agustinusnathaniel/toolbox/commit/5124363add367f35618728055a71e5d5c586c812))
+* **ui:** match the mobile search trigger to the SidebarTrigger ([#91](https://github.com/agustinusnathaniel/toolbox/issues/91)) ([a153763](https://github.com/agustinusnathaniel/toolbox/commit/a153763acadb20bf2062fd4e93463028751d821b)), references [#90](https://github.com/agustinusnathaniel/toolbox/issues/90)
+
 ## [1.10.0](https://github.com/agustinusnathaniel/toolbox/compare/v1.9.0...v1.10.0) (2026-09-11)
 
 ### Features
