@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 
+import { Button } from '@/lib/components/ui/button';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
+import type { BestTimeResult } from '@/lib/tools/meeting-time-finder/adapters/meeting-time-finder';
 import {
   findBestTime,
   formatHourInZone,
@@ -18,6 +20,7 @@ interface MeetingTimelineProps {
   cities: ReadonlyArray<City>;
   duration: number;
   onAddCity: (city: City) => void;
+  onFindBestTime: () => void;
   onHourChange: (hour: number) => void;
   onJumpToNow: () => void;
   onReferenceChange: (timezone: string) => void;
@@ -72,13 +75,17 @@ function getScoreColor(score: number): string {
 }
 
 function TimelineHeader({
+  bestTime,
   cities,
+  onFindBestTime,
   onJumpToNow,
   onReferenceChange,
   referenceZone,
   selectedHour,
 }: {
+  bestTime: BestTimeResult | null;
   cities: ReadonlyArray<City>;
+  onFindBestTime: () => void;
   onJumpToNow: () => void;
   onReferenceChange: (timezone: string) => void;
   referenceZone: string;
@@ -100,13 +107,18 @@ function TimelineHeader({
             Drag to explore times across timezones
           </p>
         </div>
-        <StripAnchor
-          cities={cities}
-          onJumpToNow={onJumpToNow}
-          onReferenceChange={onReferenceChange}
-          referenceZone={referenceZone}
-          selectedHour={selectedHour}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <StripAnchor
+            cities={cities}
+            onJumpToNow={onJumpToNow}
+            onReferenceChange={onReferenceChange}
+            referenceZone={referenceZone}
+            selectedHour={selectedHour}
+          />
+          <Button intent="primary" onPress={onFindBestTime} size="sm">
+            Find Best Time
+          </Button>
+        </div>
       </div>
       <div className="flex items-center gap-1.5 text-xs">
         <span
@@ -139,6 +151,15 @@ function TimelineHeader({
           {scorePercent}%
         </span>
       </div>
+      {bestTime && (
+        <p className="text-muted-foreground text-xs">
+          Best:{' '}
+          <span className="font-medium text-foreground tabular-nums">
+            {bestTime.label}
+          </span>{' '}
+          · {Math.round(bestTime.score * 100)}% overlap
+        </p>
+      )}
     </>
   );
 }
@@ -366,6 +387,7 @@ export function MeetingTimeline({
   cities,
   duration,
   selectedHour,
+  onFindBestTime,
   onHourChange,
   onJumpToNow,
   onReferenceChange,
@@ -375,11 +397,17 @@ export function MeetingTimeline({
   referenceZone,
 }: MeetingTimelineProps) {
   const existingIds = new Set(cities.map((c) => c.id));
+  const bestTime = useMemo(
+    () => findBestTime(cities, duration),
+    [cities, duration]
+  );
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border bg-card p-4 shadow-sm sm:p-6">
       <TimelineHeader
+        bestTime={bestTime}
         cities={cities}
+        onFindBestTime={onFindBestTime}
         onJumpToNow={onJumpToNow}
         onReferenceChange={onReferenceChange}
         referenceZone={referenceZone}

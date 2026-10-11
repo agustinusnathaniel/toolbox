@@ -9,6 +9,7 @@ import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { MeetingActions } from './-components/meeting-actions';
 import { MeetingTimeline } from './-components/meeting-timeline';
+import { ShareRow } from './-components/share-row';
 import { useMeetingPage } from './-components/use-meeting-page';
 import { meta } from './-meta';
 
@@ -38,6 +39,7 @@ function MeetingTimeFinderPage() {
         cities={page.cities}
         duration={page.duration}
         onAddCity={page.addCity}
+        onFindBestTime={page.findBestTime}
         onHourChange={page.setSelectedHour}
         onJumpToNow={page.jumpToNow}
         onReferenceChange={page.setReferenceZone}
@@ -47,15 +49,16 @@ function MeetingTimeFinderPage() {
         selectedHour={page.selectedHour}
       />
 
-      <MeetingActions
-        cities={page.cities}
-        duration={page.duration}
-        onAddToCalendar={page.getCalendarUrl}
+      <ShareRow
         onCopy={page.copyTimes}
-        onDurationChange={page.setDuration}
-        onFindBestTime={page.findBestTime}
         shareableParams={page.shareableParams}
         trackAction={trackAction}
+      />
+
+      <MeetingActions
+        duration={page.duration}
+        onAddToCalendar={page.getCalendarUrl}
+        onDurationChange={page.setDuration}
       />
 
       <ToolHelp

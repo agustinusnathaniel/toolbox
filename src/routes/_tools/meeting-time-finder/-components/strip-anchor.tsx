@@ -40,7 +40,7 @@ export function StripAnchor({
 
   return (
     <Menu>
-      <MenuTrigger className="inline-flex w-56 max-w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-primary-fg text-sm transition-opacity hover:opacity-90">
+      <MenuTrigger className="inline-flex w-auto min-w-36 max-w-56 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-primary-fg text-sm transition-opacity hover:opacity-90">
         <span className="shrink-0 tabular-nums">
           {formatHourInZone(selectedHour, referenceZone)}
         </span>
@@ -62,7 +62,7 @@ export function StripAnchor({
         selectedKeys={[referenceZone]}
         selectionMode="single"
       >
-        <MenuHeader>Show the strip in</MenuHeader>
+        <MenuHeader>View in timezone</MenuHeader>
         <MenuItem id="UTC" textValue="UTC">
           UTC
         </MenuItem>
