@@ -161,7 +161,13 @@ function AxisHeader({ referenceZone }: { referenceZone: string }) {
             }`}
             key={`label-${h}`}
           >
-            {h % 6 === 0 ? getAxisLabel(h, referenceZone) : '·'}
+            {h % 6 === 0 ? (
+              <span className={h === 18 ? 'hidden sm:inline' : undefined}>
+                {getAxisLabel(h, referenceZone)}
+              </span>
+            ) : (
+              '·'
+            )}
           </div>
         ))}
       </div>

@@ -40,7 +40,7 @@ export function StripAnchor({
 
   return (
     <Menu>
-      <MenuTrigger className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-primary-fg text-sm transition-opacity hover:opacity-90">
+      <MenuTrigger className="inline-flex min-w-52 items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-primary-fg text-sm transition-opacity hover:opacity-90">
         <span className="tabular-nums">
           {formatHourInZone(selectedHour, referenceZone)}
         </span>
