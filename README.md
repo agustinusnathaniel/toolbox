@@ -38,9 +38,12 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **URL Encoder/Decoder** — Encode and decode URLs in component or full-URL mode with shareable links
 - **HTML Entity Codec** — Encode and decode HTML entities (&amp; &lt; &gt; &quot;) entirely in your browser
 - **SQL Formatter** — Format and beautify SQL queries with dialect support entirely in your browser
+- **XML Formatter** — Format, validate, and minify XML entirely in your browser
 - **Number Base Converter** — Convert numbers between binary, octal, decimal, and hexadecimal entirely in your browser
 - **Text Statistics** — Count characters, words, lines, and estimate reading time entirely in your browser
 - **Unit Converter** — Convert between units of length, weight, temperature, volume, and data storage entirely in your browser
+- **Currency Converter** — ECB-backed currency converter
+- **Meeting Time Finder** — visual timezone-overlap planner
 - **Lorem Ipsum Generator** — Generate lorem ipsum placeholder text with shareable links
 
 ## Tech Stack

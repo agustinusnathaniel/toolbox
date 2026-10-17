@@ -58,6 +58,7 @@ import { meta as unitConverterMeta } from '@/routes/_tools/unit-converter/-meta'
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
+import { meta as xmlFormatterMeta } from '@/routes/_tools/xml-formatter/-meta';
 import { meta as yamlConverterMeta } from '@/routes/_tools/yaml-converter/-meta';
 import { meta as zippyImgMeta } from '@/routes/_tools/zippy-img/-meta';
 
@@ -257,6 +258,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Braces />,
     ...sqlFormatterMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Braces />,
+    ...xmlFormatterMeta,
   },
   {
     category: 'Developer',
