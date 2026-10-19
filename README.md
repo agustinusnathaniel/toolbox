@@ -41,6 +41,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **XML Formatter** — Format, validate, and minify XML entirely in your browser
 - **Number Base Converter** — Convert numbers between binary, octal, decimal, and hexadecimal entirely in your browser
 - **Text Statistics** — Count characters, words, lines, and estimate reading time entirely in your browser
+- **Unicode Inspector** — Inspect code points, UTF-8 bytes, normalization forms, and hidden characters entirely in your browser
 - **Unit Converter** — Convert between units of length, weight, temperature, volume, and data storage entirely in your browser
 - **Currency Converter** — ECB-backed currency converter
 - **Meeting Time Finder** — visual timezone-overlap planner
