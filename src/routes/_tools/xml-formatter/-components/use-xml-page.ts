@@ -4,19 +4,14 @@ import { useCallback, useState } from 'react';
 
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
-import {
-  formatXml,
-  minifyXml,
-  validateXml,
-  type XmlIndent,
-} from '@/lib/tools/xml-formatter/adapters/xml-formatter';
+import type { XmlIndent } from '@/lib/tools/xml-formatter/adapters/xml-formatter';
 import {
   buildXmlParams,
   buildXmlStateFromSearch,
+  type XmlAction,
 } from '@/lib/tools/xml-formatter/adapters/xml-params';
-import type { TransformResult } from '@/lib/utils/transform';
 
-export type XmlAction = 'format' | 'minify' | 'validate';
+import { useXmlFormatter } from './use-xml-formatter';
 
 export function useXmlPage(
   search: Parameters<typeof buildXmlStateFromSearch>[0],
@@ -24,42 +19,40 @@ export function useXmlPage(
 ) {
   const [state, setState] = useState(() => buildXmlStateFromSearch(search));
   const [activeAction, setActiveAction] = useState<XmlAction | null>(null);
-  const [result, setResult] = useState<TransformResult | null>(null);
+  const [formatTrigger, setFormatTrigger] = useState(0);
   const { copiedKey, copy } = useCopyFeedback();
+  const { computing, result, setResult } = useXmlFormatter(
+    state.input,
+    state.indent,
+    activeAction ?? 'format',
+    formatTrigger
+  );
 
   const runAction = useCallback(
     (action: XmlAction) => {
       setActiveAction(action);
-      if (action === 'validate') {
-        const validation = validateXml(state.input);
-        setResult(
-          validation.valid
-            ? { isValid: true, output: '' }
-            : {
-                error: validation.error,
-                isValid: false,
-                output: '',
-              }
-        );
-      } else if (action === 'minify') {
-        setResult(minifyXml(state.input));
-      } else {
-        setResult(formatXml(state.input, state.indent));
-      }
+      setResult(null);
+      setFormatTrigger((t) => t + 1);
       trackAction(action);
     },
-    [state.indent, state.input, trackAction]
+    [setResult, trackAction]
   );
 
-  const handleInputChange = useCallback((input: string) => {
-    setState((prev) => ({ ...prev, input }));
-    setResult(null);
-  }, []);
+  const handleInputChange = useCallback(
+    (input: string) => {
+      setState((prev) => ({ ...prev, input }));
+      setResult(null);
+    },
+    [setResult]
+  );
 
-  const handleIndentChange = useCallback((indent: XmlIndent) => {
-    setState((prev) => ({ ...prev, indent }));
-    setResult(null);
-  }, []);
+  const handleIndentChange = useCallback(
+    (indent: XmlIndent) => {
+      setState((prev) => ({ ...prev, indent }));
+      setResult(null);
+    },
+    [setResult]
+  );
 
   const handleCopy = useCallback(async () => {
     if (!(result?.isValid && result.output)) {
@@ -77,6 +70,7 @@ export function useXmlPage(
 
   return {
     activeAction,
+    computing,
     copiedKey,
     handleCopy,
     handleCopyLink,

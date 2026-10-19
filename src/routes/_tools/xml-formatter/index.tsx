@@ -37,6 +37,7 @@ function XmlFormatterPage() {
       <Card>
         <CardContent className="flex flex-col gap-4">
           <XmlActions
+            computing={page.computing}
             indent={page.state.indent}
             onCopyLink={page.handleCopyLink}
             onIndentChange={page.handleIndentChange}
@@ -45,6 +46,7 @@ function XmlFormatterPage() {
           <XmlInput onInput={page.handleInputChange} value={page.state.input} />
           <XmlOutput
             activeAction={page.activeAction}
+            computing={page.computing}
             copied={page.copiedKey === 'copy'}
             hasInput={Boolean(page.state.input.trim())}
             onCopy={page.handleCopy}

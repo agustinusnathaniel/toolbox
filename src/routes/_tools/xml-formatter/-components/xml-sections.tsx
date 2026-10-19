@@ -16,8 +16,7 @@ import {
   SelectTrigger,
 } from '@/lib/components/ui/select';
 import type { XmlIndent } from '@/lib/tools/xml-formatter/adapters/xml-formatter';
-
-import type { XmlAction } from './use-xml-page';
+import type { XmlAction } from '@/lib/tools/xml-formatter/adapters/xml-params';
 
 const INDENT_OPTIONS: ReadonlyArray<{ id: XmlIndent; label: string }> = [
   { id: '2', label: '2 spaces' },
@@ -45,11 +44,13 @@ export function XmlInput({
 }
 
 export function XmlActions({
+  computing,
   indent,
   onCopyLink,
   onIndentChange,
   onRun,
 }: {
+  computing: boolean;
   indent: XmlIndent;
   onCopyLink: () => void;
   onIndentChange: (indent: XmlIndent) => void;
@@ -82,6 +83,11 @@ export function XmlActions({
           Minify
         </Button>
         <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+        {computing && (
+          <span aria-live="polite" className="text-muted-fg text-xs">
+            Processing…
+          </span>
+        )}
       </div>
     </div>
   );
@@ -89,12 +95,14 @@ export function XmlActions({
 
 export function XmlOutput({
   activeAction,
+  computing,
   copied,
   hasInput,
   onCopy,
   result,
 }: {
   activeAction: XmlAction | null;
+  computing: boolean;
   copied: boolean;
   hasInput: boolean;
   onCopy: () => void;
@@ -102,6 +110,7 @@ export function XmlOutput({
     error?: string;
     output?: string;
     isValid: boolean;
+    timedOut?: boolean;
   } | null;
 }) {
   const labels: Record<string, string> = {
@@ -113,13 +122,16 @@ export function XmlOutput({
 
   return (
     <>
-      {hasInput && !result && (
+      {hasInput && !result && !computing && (
         <p className="text-muted-fg text-xs">
           Click Format, Validate, or Minify to process your XML.
         </p>
       )}
-      {result && !result.isValid && (
+      {result && !result.isValid && !result.timedOut && (
         <ToolError message={result.error} title="Invalid XML" />
+      )}
+      {result?.timedOut && (
+        <ToolError message={result.error} title="Processing timed out" />
       )}
       {activeAction === 'validate' && showResult && (
         <p
