@@ -43,6 +43,7 @@ import { Route as ToolsUnitConverterIndexRouteImport } from './routes/_tools/uni
 import { Route as ToolsUrlCodecIndexRouteImport } from './routes/_tools/url-codec/index'
 import { Route as ToolsUuidGeneratorIndexRouteImport } from './routes/_tools/uuid-generator/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
+import { Route as ToolsXmlFormatterIndexRouteImport } from './routes/_tools/xml-formatter/index'
 import { Route as ToolsYamlConverterIndexRouteImport } from './routes/_tools/yaml-converter/index'
 import { Route as ToolsZippyImgIndexRouteImport } from './routes/_tools/zippy-img/index'
 
@@ -221,6 +222,11 @@ const ToolsWaLinkHelperIndexRoute = ToolsWaLinkHelperIndexRouteImport.update({
   path: '/wa-link-helper/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsXmlFormatterIndexRoute = ToolsXmlFormatterIndexRouteImport.update({
+  id: '/xml-formatter/',
+  path: '/xml-formatter/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsYamlConverterIndexRoute = ToolsYamlConverterIndexRouteImport.update({
   id: '/yaml-converter/',
   path: '/yaml-converter/',
@@ -266,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/url-codec/': typeof ToolsUrlCodecIndexRoute
   '/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
+  '/xml-formatter/': typeof ToolsXmlFormatterIndexRoute
   '/yaml-converter/': typeof ToolsYamlConverterIndexRoute
   '/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/url-codec': typeof ToolsUrlCodecIndexRoute
   '/uuid-generator': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
+  '/xml-formatter': typeof ToolsXmlFormatterIndexRoute
   '/yaml-converter': typeof ToolsYamlConverterIndexRoute
   '/zippy-img': typeof ToolsZippyImgIndexRoute
 }
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/_tools/url-codec/': typeof ToolsUrlCodecIndexRoute
   '/_tools/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
+  '/_tools/xml-formatter/': typeof ToolsXmlFormatterIndexRoute
   '/_tools/yaml-converter/': typeof ToolsYamlConverterIndexRoute
   '/_tools/zippy-img/': typeof ToolsZippyImgIndexRoute
 }
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/url-codec/'
     | '/uuid-generator/'
     | '/wa-link-helper/'
+    | '/xml-formatter/'
     | '/yaml-converter/'
     | '/zippy-img/'
   fileRoutesByTo: FileRoutesByTo
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/url-codec'
     | '/uuid-generator'
     | '/wa-link-helper'
+    | '/xml-formatter'
     | '/yaml-converter'
     | '/zippy-img'
   id:
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/_tools/url-codec/'
     | '/_tools/uuid-generator/'
     | '/_tools/wa-link-helper/'
+    | '/_tools/xml-formatter/'
     | '/_tools/yaml-converter/'
     | '/_tools/zippy-img/'
   fileRoutesById: FileRoutesById
@@ -707,6 +719,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsWaLinkHelperIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/xml-formatter/': {
+      id: '/_tools/xml-formatter/'
+      path: '/xml-formatter'
+      fullPath: '/xml-formatter/'
+      preLoaderRoute: typeof ToolsXmlFormatterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/yaml-converter/': {
       id: '/_tools/yaml-converter/'
       path: '/yaml-converter'
@@ -755,6 +774,7 @@ interface ToolsRouteRouteChildren {
   ToolsUrlCodecIndexRoute: typeof ToolsUrlCodecIndexRoute
   ToolsUuidGeneratorIndexRoute: typeof ToolsUuidGeneratorIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
+  ToolsXmlFormatterIndexRoute: typeof ToolsXmlFormatterIndexRoute
   ToolsYamlConverterIndexRoute: typeof ToolsYamlConverterIndexRoute
   ToolsZippyImgIndexRoute: typeof ToolsZippyImgIndexRoute
 }
@@ -790,6 +810,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsUrlCodecIndexRoute: ToolsUrlCodecIndexRoute,
   ToolsUuidGeneratorIndexRoute: ToolsUuidGeneratorIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
+  ToolsXmlFormatterIndexRoute: ToolsXmlFormatterIndexRoute,
   ToolsYamlConverterIndexRoute: ToolsYamlConverterIndexRoute,
   ToolsZippyImgIndexRoute: ToolsZippyImgIndexRoute,
 }
