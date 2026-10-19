@@ -20,6 +20,7 @@ import {
   Fingerprint,
   GitCompare,
   KeyRound,
+  Languages,
   Link2,
   Regex,
   Scale,
@@ -54,6 +55,7 @@ import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as textStatsMeta } from '@/routes/_tools/text-stats/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
 import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
+import { meta as unicodeInspectorMeta } from '@/routes/_tools/unicode-inspector/-meta';
 import { meta as unitConverterMeta } from '@/routes/_tools/unit-converter/-meta';
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
@@ -220,6 +222,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     icon: <GitCompare />,
     mobileTitle: 'Diff',
     ...textDiffMeta,
+  },
+  {
+    category: 'Text & Data',
+    icon: <Languages />,
+    ...unicodeInspectorMeta,
   },
   {
     category: 'Developer',
