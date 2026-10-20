@@ -42,6 +42,7 @@ import { Route as ToolsUaCheckIndexRouteImport } from './routes/_tools/ua-check/
 import { Route as ToolsUnicodeInspectorIndexRouteImport } from './routes/_tools/unicode-inspector/index'
 import { Route as ToolsUnitConverterIndexRouteImport } from './routes/_tools/unit-converter/index'
 import { Route as ToolsUrlCodecIndexRouteImport } from './routes/_tools/url-codec/index'
+import { Route as ToolsUrlInspectorIndexRouteImport } from './routes/_tools/url-inspector/index'
 import { Route as ToolsUuidGeneratorIndexRouteImport } from './routes/_tools/uuid-generator/index'
 import { Route as ToolsWaLinkHelperIndexRouteImport } from './routes/_tools/wa-link-helper/index'
 import { Route as ToolsXmlFormatterIndexRouteImport } from './routes/_tools/xml-formatter/index'
@@ -219,6 +220,11 @@ const ToolsUrlCodecIndexRoute = ToolsUrlCodecIndexRouteImport.update({
   path: '/url-codec/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsUrlInspectorIndexRoute = ToolsUrlInspectorIndexRouteImport.update({
+  id: '/url-inspector/',
+  path: '/url-inspector/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ToolsUuidGeneratorIndexRoute = ToolsUuidGeneratorIndexRouteImport.update({
   id: '/uuid-generator/',
   path: '/uuid-generator/',
@@ -278,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/unicode-inspector/': typeof ToolsUnicodeInspectorIndexRoute
   '/unit-converter/': typeof ToolsUnitConverterIndexRoute
   '/url-codec/': typeof ToolsUrlCodecIndexRoute
+  '/url-inspector/': typeof ToolsUrlInspectorIndexRoute
   '/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/xml-formatter/': typeof ToolsXmlFormatterIndexRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/unicode-inspector': typeof ToolsUnicodeInspectorIndexRoute
   '/unit-converter': typeof ToolsUnitConverterIndexRoute
   '/url-codec': typeof ToolsUrlCodecIndexRoute
+  '/url-inspector': typeof ToolsUrlInspectorIndexRoute
   '/uuid-generator': typeof ToolsUuidGeneratorIndexRoute
   '/wa-link-helper': typeof ToolsWaLinkHelperIndexRoute
   '/xml-formatter': typeof ToolsXmlFormatterIndexRoute
@@ -358,6 +366,7 @@ export interface FileRoutesById {
   '/_tools/unicode-inspector/': typeof ToolsUnicodeInspectorIndexRoute
   '/_tools/unit-converter/': typeof ToolsUnitConverterIndexRoute
   '/_tools/url-codec/': typeof ToolsUrlCodecIndexRoute
+  '/_tools/url-inspector/': typeof ToolsUrlInspectorIndexRoute
   '/_tools/uuid-generator/': typeof ToolsUuidGeneratorIndexRoute
   '/_tools/wa-link-helper/': typeof ToolsWaLinkHelperIndexRoute
   '/_tools/xml-formatter/': typeof ToolsXmlFormatterIndexRoute
@@ -399,6 +408,7 @@ export interface FileRouteTypes {
     | '/unicode-inspector/'
     | '/unit-converter/'
     | '/url-codec/'
+    | '/url-inspector/'
     | '/uuid-generator/'
     | '/wa-link-helper/'
     | '/xml-formatter/'
@@ -438,6 +448,7 @@ export interface FileRouteTypes {
     | '/unicode-inspector'
     | '/unit-converter'
     | '/url-codec'
+    | '/url-inspector'
     | '/uuid-generator'
     | '/wa-link-helper'
     | '/xml-formatter'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/_tools/unicode-inspector/'
     | '/_tools/unit-converter/'
     | '/_tools/url-codec/'
+    | '/_tools/url-inspector/'
     | '/_tools/uuid-generator/'
     | '/_tools/wa-link-helper/'
     | '/_tools/xml-formatter/'
@@ -725,6 +737,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsUrlCodecIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/url-inspector/': {
+      id: '/_tools/url-inspector/'
+      path: '/url-inspector'
+      fullPath: '/url-inspector/'
+      preLoaderRoute: typeof ToolsUrlInspectorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/uuid-generator/': {
       id: '/_tools/uuid-generator/'
       path: '/uuid-generator'
@@ -793,6 +812,7 @@ interface ToolsRouteRouteChildren {
   ToolsUnicodeInspectorIndexRoute: typeof ToolsUnicodeInspectorIndexRoute
   ToolsUnitConverterIndexRoute: typeof ToolsUnitConverterIndexRoute
   ToolsUrlCodecIndexRoute: typeof ToolsUrlCodecIndexRoute
+  ToolsUrlInspectorIndexRoute: typeof ToolsUrlInspectorIndexRoute
   ToolsUuidGeneratorIndexRoute: typeof ToolsUuidGeneratorIndexRoute
   ToolsWaLinkHelperIndexRoute: typeof ToolsWaLinkHelperIndexRoute
   ToolsXmlFormatterIndexRoute: typeof ToolsXmlFormatterIndexRoute
@@ -830,6 +850,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsUnicodeInspectorIndexRoute: ToolsUnicodeInspectorIndexRoute,
   ToolsUnitConverterIndexRoute: ToolsUnitConverterIndexRoute,
   ToolsUrlCodecIndexRoute: ToolsUrlCodecIndexRoute,
+  ToolsUrlInspectorIndexRoute: ToolsUrlInspectorIndexRoute,
   ToolsUuidGeneratorIndexRoute: ToolsUuidGeneratorIndexRoute,
   ToolsWaLinkHelperIndexRoute: ToolsWaLinkHelperIndexRoute,
   ToolsXmlFormatterIndexRoute: ToolsXmlFormatterIndexRoute,

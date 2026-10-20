@@ -25,6 +25,7 @@ import {
   Regex,
   Scale,
   ScanLine,
+  Search,
   Table2,
 } from 'lucide-react';
 import type { JSX } from 'react';
@@ -58,6 +59,7 @@ import { meta as uaCheckMeta } from '@/routes/_tools/ua-check/-meta';
 import { meta as unicodeInspectorMeta } from '@/routes/_tools/unicode-inspector/-meta';
 import { meta as unitConverterMeta } from '@/routes/_tools/unit-converter/-meta';
 import { meta as urlCodecMeta } from '@/routes/_tools/url-codec/-meta';
+import { meta as urlInspectorMeta } from '@/routes/_tools/url-inspector/-meta';
 import { meta as uuidGeneratorMeta } from '@/routes/_tools/uuid-generator/-meta';
 import { meta as waLinkHelperMeta } from '@/routes/_tools/wa-link-helper/-meta';
 import { meta as xmlFormatterMeta } from '@/routes/_tools/xml-formatter/-meta';
@@ -151,6 +153,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     mobileTitle: 'URL',
     showInMobile: true,
     ...urlCodecMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Search />,
+    ...urlInspectorMeta,
   },
   {
     category: 'Links & Sharing',
