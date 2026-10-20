@@ -35,6 +35,7 @@ import { Route as ToolsPasswordGeneratorIndexRouteImport } from './routes/_tools
 import { Route as ToolsQrcodeIndexRouteImport } from './routes/_tools/qrcode/index'
 import { Route as ToolsRegexTesterIndexRouteImport } from './routes/_tools/regex-tester/index'
 import { Route as ToolsSqlFormatterIndexRouteImport } from './routes/_tools/sql-formatter/index'
+import { Route as ToolsSubnetCalculatorIndexRouteImport } from './routes/_tools/subnet-calculator/index'
 import { Route as ToolsTextDiffIndexRouteImport } from './routes/_tools/text-diff/index'
 import { Route as ToolsTextStatsIndexRouteImport } from './routes/_tools/text-stats/index'
 import { Route as ToolsTimestampConverterIndexRouteImport } from './routes/_tools/timestamp-converter/index'
@@ -183,6 +184,12 @@ const ToolsSqlFormatterIndexRoute = ToolsSqlFormatterIndexRouteImport.update({
   path: '/sql-formatter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsSubnetCalculatorIndexRoute =
+  ToolsSubnetCalculatorIndexRouteImport.update({
+    id: '/subnet-calculator/',
+    path: '/subnet-calculator/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsTextDiffIndexRoute = ToolsTextDiffIndexRouteImport.update({
   id: '/text-diff/',
   path: '/text-diff/',
@@ -277,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/qrcode/': typeof ToolsQrcodeIndexRoute
   '/regex-tester/': typeof ToolsRegexTesterIndexRoute
   '/sql-formatter/': typeof ToolsSqlFormatterIndexRoute
+  '/subnet-calculator/': typeof ToolsSubnetCalculatorIndexRoute
   '/text-diff/': typeof ToolsTextDiffIndexRoute
   '/text-stats/': typeof ToolsTextStatsIndexRoute
   '/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
@@ -317,6 +325,7 @@ export interface FileRoutesByTo {
   '/qrcode': typeof ToolsQrcodeIndexRoute
   '/regex-tester': typeof ToolsRegexTesterIndexRoute
   '/sql-formatter': typeof ToolsSqlFormatterIndexRoute
+  '/subnet-calculator': typeof ToolsSubnetCalculatorIndexRoute
   '/text-diff': typeof ToolsTextDiffIndexRoute
   '/text-stats': typeof ToolsTextStatsIndexRoute
   '/timestamp-converter': typeof ToolsTimestampConverterIndexRoute
@@ -359,6 +368,7 @@ export interface FileRoutesById {
   '/_tools/qrcode/': typeof ToolsQrcodeIndexRoute
   '/_tools/regex-tester/': typeof ToolsRegexTesterIndexRoute
   '/_tools/sql-formatter/': typeof ToolsSqlFormatterIndexRoute
+  '/_tools/subnet-calculator/': typeof ToolsSubnetCalculatorIndexRoute
   '/_tools/text-diff/': typeof ToolsTextDiffIndexRoute
   '/_tools/text-stats/': typeof ToolsTextStatsIndexRoute
   '/_tools/timestamp-converter/': typeof ToolsTimestampConverterIndexRoute
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/qrcode/'
     | '/regex-tester/'
     | '/sql-formatter/'
+    | '/subnet-calculator/'
     | '/text-diff/'
     | '/text-stats/'
     | '/timestamp-converter/'
@@ -441,6 +452,7 @@ export interface FileRouteTypes {
     | '/qrcode'
     | '/regex-tester'
     | '/sql-formatter'
+    | '/subnet-calculator'
     | '/text-diff'
     | '/text-stats'
     | '/timestamp-converter'
@@ -482,6 +494,7 @@ export interface FileRouteTypes {
     | '/_tools/qrcode/'
     | '/_tools/regex-tester/'
     | '/_tools/sql-formatter/'
+    | '/_tools/subnet-calculator/'
     | '/_tools/text-diff/'
     | '/_tools/text-stats/'
     | '/_tools/timestamp-converter/'
@@ -688,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsSqlFormatterIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/subnet-calculator/': {
+      id: '/_tools/subnet-calculator/'
+      path: '/subnet-calculator'
+      fullPath: '/subnet-calculator/'
+      preLoaderRoute: typeof ToolsSubnetCalculatorIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/_tools/text-diff/': {
       id: '/_tools/text-diff/'
       path: '/text-diff'
@@ -805,6 +825,7 @@ interface ToolsRouteRouteChildren {
   ToolsQrcodeIndexRoute: typeof ToolsQrcodeIndexRoute
   ToolsRegexTesterIndexRoute: typeof ToolsRegexTesterIndexRoute
   ToolsSqlFormatterIndexRoute: typeof ToolsSqlFormatterIndexRoute
+  ToolsSubnetCalculatorIndexRoute: typeof ToolsSubnetCalculatorIndexRoute
   ToolsTextDiffIndexRoute: typeof ToolsTextDiffIndexRoute
   ToolsTextStatsIndexRoute: typeof ToolsTextStatsIndexRoute
   ToolsTimestampConverterIndexRoute: typeof ToolsTimestampConverterIndexRoute
@@ -843,6 +864,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsQrcodeIndexRoute: ToolsQrcodeIndexRoute,
   ToolsRegexTesterIndexRoute: ToolsRegexTesterIndexRoute,
   ToolsSqlFormatterIndexRoute: ToolsSqlFormatterIndexRoute,
+  ToolsSubnetCalculatorIndexRoute: ToolsSubnetCalculatorIndexRoute,
   ToolsTextDiffIndexRoute: ToolsTextDiffIndexRoute,
   ToolsTextStatsIndexRoute: ToolsTextStatsIndexRoute,
   ToolsTimestampConverterIndexRoute: ToolsTimestampConverterIndexRoute,
