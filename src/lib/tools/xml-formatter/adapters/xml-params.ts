@@ -15,6 +15,8 @@ const ALLOWED_INDENTS: ReadonlySet<XmlIndent> = new Set<XmlIndent>([
 
 const DEFAULT_INDENT: XmlIndent = '2';
 
+export type XmlAction = 'format' | 'minify' | 'validate';
+
 export function buildXmlParams(
   input: string,
   indent: XmlIndent
