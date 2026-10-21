@@ -105,6 +105,33 @@ describe('calculateSubnet edge prefixes and notation', () => {
   });
 });
 
+describe('calculateSubnet address-space extremes', () => {
+  test('handles /0 default route without 32-bit overflow', () => {
+    const result = calculateSubnet('0.0.0.0/0');
+
+    expect(result.isValid).toBe(true);
+    expect(result.info?.network).toBe('0.0.0.0');
+    expect(result.info?.broadcast).toBe('255.255.255.255');
+    expect(result.info?.subnetMask).toBe('0.0.0.0');
+    expect(result.info?.wildcardMask).toBe('255.255.255.255');
+    expect(result.info?.firstUsable).toBe('0.0.0.1');
+    expect(result.info?.lastUsable).toBe('255.255.255.254');
+    expect(result.info?.totalAddresses).toBe(4_294_967_296);
+    expect(result.info?.usableHosts).toBe(4_294_967_294);
+  });
+
+  test('halves the address space for /1', () => {
+    const result = calculateSubnet('192.168.1.0/1');
+
+    expect(result.isValid).toBe(true);
+    expect(result.info?.network).toBe('128.0.0.0');
+    expect(result.info?.broadcast).toBe('255.255.255.255');
+    expect(result.info?.subnetMask).toBe('128.0.0.0');
+    expect(result.info?.totalAddresses).toBe(2_147_483_648);
+    expect(result.info?.usableHosts).toBe(2_147_483_646);
+  });
+});
+
 describe('calculateSubnet invalid inputs', () => {
   test('rejects a bare address with a prefix hint', () => {
     const result = calculateSubnet('192.168.1.10');
