@@ -22,6 +22,7 @@ import {
   KeyRound,
   Languages,
   Link2,
+  Network,
   Regex,
   Scale,
   ScanLine,
@@ -52,6 +53,7 @@ import { meta as passwordGeneratorMeta } from '@/routes/_tools/password-generato
 import { meta as qrcodeMeta } from '@/routes/_tools/qrcode/-meta';
 import { meta as regexTesterMeta } from '@/routes/_tools/regex-tester/-meta';
 import { meta as sqlFormatterMeta } from '@/routes/_tools/sql-formatter/-meta';
+import { meta as subnetCalculatorMeta } from '@/routes/_tools/subnet-calculator/-meta';
 import { meta as textDiffMeta } from '@/routes/_tools/text-diff/-meta';
 import { meta as textStatsMeta } from '@/routes/_tools/text-stats/-meta';
 import { meta as timestampConverterMeta } from '@/routes/_tools/timestamp-converter/-meta';
@@ -272,6 +274,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Braces />,
     ...sqlFormatterMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <Network />,
+    ...subnetCalculatorMeta,
   },
   {
     category: 'Developer',
