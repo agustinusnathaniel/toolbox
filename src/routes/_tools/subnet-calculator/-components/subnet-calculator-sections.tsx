@@ -14,6 +14,7 @@ import type {
   SubnetCalcResultV6,
   SubnetInfoV6,
 } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-v6';
+import { ipv6ScopeLabel } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-v6';
 
 export function SubnetCalculatorInputs({
   input,
@@ -197,6 +198,7 @@ function SubnetV6Rows({
     info.firstAddress === info.lastAddress
       ? info.firstAddress
       : `${info.firstAddress} – ${info.lastAddress}`;
+  const typeAndScope = `${info.addressType} · ${ipv6ScopeLabel(info)}`;
   return (
     <>
       <CopyRow
@@ -243,13 +245,13 @@ function SubnetV6Rows({
       />
       <CopyRow
         copied={copiedKey === 'type'}
-        copyLabel="Copy address type"
-        label="Type"
+        copyLabel="Copy address type and scope"
+        label="Type / scope"
         mono
         onCopy={() =>
-          onCopyPart(info.addressType, 'type', 'Copied address type')
+          onCopyPart(typeAndScope, 'type', 'Copied address type and scope')
         }
-        value={info.addressType}
+        value={typeAndScope}
       />
     </>
   );

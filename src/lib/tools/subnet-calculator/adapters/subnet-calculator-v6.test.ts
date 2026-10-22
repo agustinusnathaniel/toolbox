@@ -1,6 +1,10 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { calculateSubnetV6, compressIpv6 } from './subnet-calculator-v6';
+import {
+  calculateSubnetV6,
+  compressIpv6,
+  ipv6ScopeLabel,
+} from './subnet-calculator-v6';
 
 const PREFIX_HINT_PATTERN = /prefix/i;
 const IPV6_HINT_PATTERN = /ipv6/i;
@@ -217,5 +221,30 @@ describe('calculateSubnetV6 invalid inputs', () => {
 
     expect(result.isValid).toBe(false);
     expect(result.info).toBeNull();
+  });
+});
+
+describe('ipv6ScopeLabel', () => {
+  test('marks unique-local space as private', () => {
+    const result = calculateSubnetV6('fc00::/7');
+
+    expect(result.isValid).toBe(true);
+    expect(result.info && ipv6ScopeLabel(result.info)).toBe('Private');
+  });
+
+  test('marks global unicast as public', () => {
+    const result = calculateSubnetV6('2606:4700:4700::1111/128');
+
+    expect(result.isValid).toBe(true);
+    expect(result.info && ipv6ScopeLabel(result.info)).toBe('Public');
+  });
+
+  test('marks reserved ranges as special-use, not public', () => {
+    for (const input of ['::1/128', 'fe80::1/10', 'ff02::1/8']) {
+      const result = calculateSubnetV6(input);
+
+      expect(result.isValid).toBe(true);
+      expect(result.info && ipv6ScopeLabel(result.info)).toBe('Special-use');
+    }
   });
 });

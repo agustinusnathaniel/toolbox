@@ -192,6 +192,24 @@ function addressTypeOf(addr: bigint): string {
 }
 
 /**
+ * Scope qualifier for the v6 Type row — mirrors the v4 "Class / scope" row.
+ * Only Unique Local space (`fc00::/7`) is private and only Global Unicast is
+ * public; reserved ranges (loopback, link-local, multicast, …) are neither,
+ * so they get an honest third label instead of a wrong "Public".
+ */
+export function ipv6ScopeLabel(
+  info: Pick<SubnetInfoV6, 'addressType' | 'isPrivate'>
+): string {
+  if (info.isPrivate) {
+    return 'Private';
+  }
+  if (info.addressType === 'Global Unicast') {
+    return 'Public';
+  }
+  return 'Special-use';
+}
+
+/**
  * Calculates subnet details for an IPv6 CIDR input (`2001:db8::/32`).
  * 128-bit math needs BigInt — plain numbers overflow past 2^53.
  * IPv6 has no broadcast address and no classes: the range runs from the
