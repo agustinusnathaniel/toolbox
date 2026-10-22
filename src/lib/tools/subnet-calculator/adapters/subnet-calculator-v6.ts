@@ -75,6 +75,12 @@ function parseIpv6Address(input: string): bigint | null {
   if (halves.length > 2) {
     return null;
   }
+  // Dotted-quad (embedded IPv4) is only valid as the final 32 bits (RFC 4291
+  // §2.2) — reject it anywhere else, e.g. `1:2:3:4:5:192.168.1.1:7`.
+  const pieces = halves.flatMap((half) => (half === '' ? [] : half.split(':')));
+  if (pieces.slice(0, -1).some((piece) => piece.includes('.'))) {
+    return null;
+  }
   const head = parseGroup(halves[0]);
   const tail = halves.length === 2 ? parseGroup(halves[1]) : [];
   if (head === null || tail === null) {
