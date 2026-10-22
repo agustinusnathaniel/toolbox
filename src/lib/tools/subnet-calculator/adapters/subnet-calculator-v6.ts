@@ -176,6 +176,12 @@ function addressTypeOf(addr: bigint): string {
   if (addr === 1n) {
     return 'Loopback';
   }
+  // IPv4-mapped (`::ffff:0:0/96`) embeds a dotted quad — neither private
+  // unique-local space nor public global unicast, so it gets its own label
+  // instead of falling through to Global Unicast.
+  if (prefixValue(addr, 96) === 0xffffn) {
+    return 'IPv4-Mapped (::ffff:0:0/96)';
+  }
   if (prefixValue(addr, 8) === 0xffn) {
     return 'Multicast (ff00::/8)';
   }

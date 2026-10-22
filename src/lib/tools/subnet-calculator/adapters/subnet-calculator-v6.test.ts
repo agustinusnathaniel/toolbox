@@ -102,6 +102,14 @@ describe('calculateSubnetV6 address types', () => {
     expect(result.info?.network).toBe('2001:db8::');
   });
 
+  test('classifies IPv4-mapped addresses instead of global unicast', () => {
+    const result = calculateSubnetV6('::ffff:192.168.1.1/128');
+
+    expect(result.isValid).toBe(true);
+    expect(result.info?.addressType).toBe('IPv4-Mapped (::ffff:0:0/96)');
+    expect(result.info && ipv6ScopeLabel(result.info)).toBe('Special-use');
+  });
+
   test('accepts an embedded IPv4 tail', () => {
     const result = calculateSubnetV6('::ffff:192.168.1.1/128');
 
@@ -153,6 +161,12 @@ describe('compressIpv6', () => {
 
   test('compresses the full zero address to ::', () => {
     expect(compressIpv6(0n)).toBe('::');
+  });
+
+  test('shortens the leftmost run on a tie (RFC 5952 4.2.3)', () => {
+    expect(compressIpv6(0x00010000000000020000000000030004n)).toBe(
+      '1::2:0:0:3:4'
+    );
   });
 });
 
