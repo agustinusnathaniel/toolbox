@@ -41,7 +41,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **SQL Formatter** — Format and beautify SQL queries with dialect support entirely in your browser
 - **XML Formatter** — Format, validate, and minify XML entirely in your browser
 - **Number Base Converter** — Convert numbers between binary, octal, decimal, and hexadecimal entirely in your browser
-- **Subnet Calculator** — Calculate network, broadcast, usable host range, masks, and IP class from an IPv4 CIDR entirely in your browser
+- **Subnet Calculator** — Calculate network, address range, masks, and address type from an IPv4 or IPv6 CIDR entirely in your browser
 - **Text Statistics** — Count characters, words, lines, and estimate reading time entirely in your browser
 - **Unicode Inspector** — Inspect code points, UTF-8 bytes, normalization forms, and hidden characters entirely in your browser
 - **Unit Converter** — Convert between units of length, weight, temperature, volume, and data storage entirely in your browser

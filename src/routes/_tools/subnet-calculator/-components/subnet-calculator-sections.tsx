@@ -10,6 +10,11 @@ import type {
   SubnetCalcResult,
   SubnetInfo,
 } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator';
+import type {
+  SubnetCalcResultV6,
+  SubnetInfoV6,
+} from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-v6';
+import { ipv6ScopeLabel } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-v6';
 
 export function SubnetCalculatorInputs({
   input,
@@ -22,11 +27,11 @@ export function SubnetCalculatorInputs({
     <div className="flex flex-col gap-1">
       <Label htmlFor="subnet-calculator-input">Network (CIDR)</Label>
       <Input
-        aria-label="IPv4 network in CIDR notation"
+        aria-label="Network in CIDR notation (IPv4 or IPv6)"
         autoComplete="off"
         id="subnet-calculator-input"
         onChange={(e) => onInput(e.target.value)}
-        placeholder="e.g. 192.168.1.0/24"
+        placeholder="e.g. 192.168.1.0/24 or 2001:db8::/32"
         spellCheck={false}
         value={input}
       />
@@ -176,6 +181,82 @@ function MaskRows({
   );
 }
 
+function formatBigInt(value: string): string {
+  return BigInt(value).toLocaleString('en-US');
+}
+
+function SubnetV6Rows({
+  copiedKey,
+  info,
+  onCopyPart,
+}: {
+  copiedKey: string | number | null;
+  info: SubnetInfoV6;
+  onCopyPart: (value: string, key: string, label: string) => void;
+}) {
+  const range =
+    info.firstAddress === info.lastAddress
+      ? info.firstAddress
+      : `${info.firstAddress} – ${info.lastAddress}`;
+  const typeAndScope = `${info.addressType} · ${ipv6ScopeLabel(info)}`;
+  return (
+    <>
+      <CopyRow
+        copied={copiedKey === 'network'}
+        copyLabel="Copy network address"
+        label="Network"
+        mono
+        onCopy={() =>
+          onCopyPart(
+            `${info.network}/${info.prefix}`,
+            'network',
+            'Copied network address'
+          )
+        }
+        value={`${info.network}/${info.prefix}`}
+      />
+      <CopyRow
+        copied={copiedKey === 'range'}
+        copyLabel="Copy address range"
+        label="Address range"
+        mono
+        onCopy={() => onCopyPart(range, 'range', 'Copied address range')}
+        value={range}
+      />
+      <CopyRow
+        copied={copiedKey === 'total'}
+        copyLabel="Copy total address count"
+        label="Total addresses"
+        mono
+        onCopy={() =>
+          onCopyPart(info.totalAddresses, 'total', 'Copied total address count')
+        }
+        value={formatBigInt(info.totalAddresses)}
+      />
+      <CopyRow
+        copied={copiedKey === 'expanded'}
+        copyLabel="Copy expanded form"
+        label="Expanded"
+        mono
+        onCopy={() =>
+          onCopyPart(info.expanded, 'expanded', 'Copied expanded form')
+        }
+        value={info.expanded}
+      />
+      <CopyRow
+        copied={copiedKey === 'type'}
+        copyLabel="Copy address type and scope"
+        label="Type / scope"
+        mono
+        onCopy={() =>
+          onCopyPart(typeAndScope, 'type', 'Copied address type and scope')
+        }
+        value={typeAndScope}
+      />
+    </>
+  );
+}
+
 export function SubnetCalculatorResult({
   copiedKey,
   onCopyPart,
@@ -183,18 +264,31 @@ export function SubnetCalculatorResult({
 }: {
   copiedKey: string | number | null;
   onCopyPart: (value: string, key: string, label: string) => void;
-  result: SubnetCalcResult | null;
+  result: SubnetCalcResult | SubnetCalcResultV6 | null;
 }) {
   if (!result) {
     return (
       <p className="text-muted-fg text-xs">
-        Enter a network in CIDR notation to see the subnet breakdown.
+        Enter an IPv4 or IPv6 network in CIDR notation to see the subnet
+        breakdown.
       </p>
     );
   }
   const { info } = result;
   if (!info) {
     return <ToolError message={result.error} />;
+  }
+  if ('addressType' in info) {
+    return (
+      <div className="flex flex-col gap-2">
+        {info.note && <p className="text-muted-fg text-xs">{info.note}</p>}
+        <SubnetV6Rows
+          copiedKey={copiedKey}
+          info={info}
+          onCopyPart={onCopyPart}
+        />
+      </div>
+    );
   }
   return (
     <div className="flex flex-col gap-2">
@@ -211,8 +305,13 @@ export function SubnetCalculatorHelp() {
       faq={[
         {
           answer:
-            'CIDR notation pairs an IPv4 address with a prefix length: 192.168.1.0/24 means the first 24 bits are the network and the remaining 8 bits address 256 hosts (.0–.255). A plain address without /prefix is rejected — add the prefix so the tool never guesses.',
+            'CIDR notation pairs an IP address with a prefix length: 192.168.1.0/24 means the first 24 bits are the network and the remaining 8 bits address 256 hosts (.0–.255). IPv6 works the same way with 128-bit addresses — 2001:db8::/32 fixes the first 32 bits. A plain address without /prefix is rejected — add the prefix so the tool never guesses.',
           question: 'What is CIDR notation?',
+        },
+        {
+          answer:
+            'IPv6 has no broadcast addresses and no classes, so the breakdown shows the network, the full address range, and the address type (global unicast, unique local, link-local, multicast, …) instead. Scope follows the standard prefixes: fc00::/7 is private unique-local space, fe80::/10 is link-local, ff00::/8 is multicast.',
+          question: 'What changes for IPv6?',
         },
         {
           answer:
