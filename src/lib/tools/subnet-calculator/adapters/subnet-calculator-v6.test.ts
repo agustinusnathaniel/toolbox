@@ -222,7 +222,9 @@ describe('calculateSubnetV6 invalid inputs', () => {
     expect(result.info).toBeNull();
     expect(typeof result.error).toBe('string');
   });
+});
 
+describe('calculateSubnetV6 embedded IPv4 placement', () => {
   test('rejects embedded IPv4 outside the final 32 bits', () => {
     const result = calculateSubnetV6('1:2:3:4:5:192.168.1.1:7/64');
 
@@ -232,6 +234,13 @@ describe('calculateSubnetV6 invalid inputs', () => {
 
   test('rejects embedded IPv4 in the head when compressing', () => {
     const result = calculateSubnetV6('192.168.1.1::5/64');
+
+    expect(result.isValid).toBe(false);
+    expect(result.info).toBeNull();
+  });
+
+  test('rejects embedded IPv4 followed by a trailing ::', () => {
+    const result = calculateSubnetV6('1:2:3:4:5:192.168.0.1::/64');
 
     expect(result.isValid).toBe(false);
     expect(result.info).toBeNull();

@@ -81,6 +81,11 @@ function parseIpv6Address(input: string): bigint | null {
   if (pieces.slice(0, -1).some((piece) => piece.includes('.'))) {
     return null;
   }
+  // Dotted-quad head (`1:2:3:4:5:192.168.0.1::`) puts the embedded IPv4
+  // outside the final 32 bits — reject before parseGroup accepts it.
+  if (halves.length === 2 && halves[0].includes('.')) {
+    return null;
+  }
   const head = parseGroup(halves[0]);
   const tail = halves.length === 2 ? parseGroup(halves[1]) : [];
   if (head === null || tail === null) {
