@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
+import type { JsonSchemaValidatorSearchParams } from './json-schema-params';
 import {
   buildJsonSchemaParams,
   buildJsonSchemaStateFromSearch,
@@ -45,6 +46,42 @@ describe('buildJsonSchemaStateFromSearch', () => {
     expect(buildJsonSchemaStateFromSearch({})).toEqual({
       document: '',
       schema: '',
+    });
+  });
+
+  test('falls back to empty for coerced non-string values', () => {
+    expect(
+      buildJsonSchemaStateFromSearch({
+        input: 123,
+        schema: 456,
+      } as unknown as JsonSchemaValidatorSearchParams)
+    ).toEqual({
+      document: '',
+      schema: '',
+    });
+  });
+
+  test('preserves numeric-looking string input', () => {
+    expect(
+      buildJsonSchemaStateFromSearch({ input: '123', schema: '456' })
+    ).toEqual({
+      document: '123',
+      schema: '456',
+    });
+  });
+
+  test('round-trips state through share-link params', () => {
+    const params = buildJsonSchemaParams({
+      document: '{"name":"Ada"}',
+      schema: '{"type":"object"}',
+    });
+    const search: JsonSchemaValidatorSearchParams = {};
+    for (const [key, value] of params.entries()) {
+      search[key as keyof JsonSchemaValidatorSearchParams] = value;
+    }
+    expect(buildJsonSchemaStateFromSearch(search)).toEqual({
+      document: '{"name":"Ada"}',
+      schema: '{"type":"object"}',
     });
   });
 });
