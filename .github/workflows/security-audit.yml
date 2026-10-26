@@ -33,6 +33,11 @@ jobs:
           echo "audit_output<<JSONEOF" >> "$GITHUB_OUTPUT"
           echo "$OUTPUT" >> "$GITHUB_OUTPUT"
           echo "JSONEOF" >> "$GITHUB_OUTPUT"
+          # Persist to a workspace file too: interpolating step outputs into
+          # later scripts via 'VAR=...' breaks when advisory text contains
+          # apostrophes (e.g. "subtree's" in a DOMPurify title killed the
+          # parse step with exit 2). File reads have no quoting hazard.
+          echo "$OUTPUT" > "$GITHUB_WORKSPACE/audit-full.json"
         continue-on-error: true
 
       - name: Run pnpm audit (production only)
@@ -43,6 +48,8 @@ jobs:
           echo "audit_output<<JSONEOF" >> "$GITHUB_OUTPUT"
           echo "$OUTPUT" >> "$GITHUB_OUTPUT"
           echo "JSONEOF" >> "$GITHUB_OUTPUT"
+          # Same workspace-file persistence as the full audit (see above).
+          echo "$OUTPUT" > "$GITHUB_WORKSPACE/audit-prod.json"
         continue-on-error: true
 
       - name: Parse and summarize audit results
@@ -81,8 +88,8 @@ jobs:
             echo "$((critical + high + moderate + low + info))"
           }
 
-          FULL_JSON='${{ steps.audit-full.outputs.audit_output }}'
-          PROD_JSON='${{ steps.audit-prod.outputs.audit_output }}'
+          FULL_JSON=$(cat "$GITHUB_WORKSPACE/audit-full.json" 2>/dev/null || true)
+          PROD_JSON=$(cat "$GITHUB_WORKSPACE/audit-prod.json" 2>/dev/null || true)
 
           echo "## Security Audit Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -114,8 +121,8 @@ jobs:
         id: check-critical
         run: |
           set -euo pipefail
-          FULL_JSON='${{ steps.audit-full.outputs.audit_output }}'
-          PROD_JSON='${{ steps.audit-prod.outputs.audit_output }}'
+          FULL_JSON=$(cat "$GITHUB_WORKSPACE/audit-full.json" 2>/dev/null || true)
+          PROD_JSON=$(cat "$GITHUB_WORKSPACE/audit-prod.json" 2>/dev/null || true)
 
           has_critical=0
           for json in "$FULL_JSON" "$PROD_JSON"; do
@@ -144,8 +151,8 @@ jobs:
             exit 0
           fi
 
-          FULL_JSON='${{ steps.audit-full.outputs.audit_output }}'
-          PROD_JSON='${{ steps.audit-prod.outputs.audit_output }}'
+          FULL_JSON=$(cat "$GITHUB_WORKSPACE/audit-full.json" 2>/dev/null || true)
+          PROD_JSON=$(cat "$GITHUB_WORKSPACE/audit-prod.json" 2>/dev/null || true)
 
           BODY="## Critical Vulnerabilities Detected
 

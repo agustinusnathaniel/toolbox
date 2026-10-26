@@ -10,6 +10,8 @@ import {
   buildSubnetCalculatorParams,
   buildSubnetCalculatorStateFromSearch,
 } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-params';
+import type { SubnetCalcResultV6 } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-v6';
+import { calculateSubnetV6 } from '@/lib/tools/subnet-calculator/adapters/subnet-calculator-v6';
 
 export function useSubnetCalculatorPage(
   search: Parameters<typeof buildSubnetCalculatorStateFromSearch>[0],
@@ -21,11 +23,14 @@ export function useSubnetCalculatorPage(
   );
   const { copiedKey, copy } = useCopyFeedback();
 
-  const result = useMemo<SubnetCalcResult | null>(() => {
+  const result = useMemo<SubnetCalcResult | SubnetCalcResultV6 | null>(() => {
     if (!state.input.trim()) {
       return null;
     }
-    return calculateSubnet(state.input);
+    // A colon only ever appears in IPv6 input — route to the 128-bit path.
+    return state.input.includes(':')
+      ? calculateSubnetV6(state.input)
+      : calculateSubnet(state.input);
   }, [state.input]);
 
   useEffect(() => {
