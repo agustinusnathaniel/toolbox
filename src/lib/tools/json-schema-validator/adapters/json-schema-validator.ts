@@ -69,6 +69,16 @@ export function validateJsonAgainstSchema(
   } catch {
     return failure('Document is not valid JSON.');
   }
+  // The shared Ajv instance remembers compiled `$id`s across validations
+  // (the worker reuses this module). Evict the previous registration so
+  // clicking Validate twice on the same `$id` schema recompiles instead of
+  // throwing "schema with key or id already exists".
+  if (typeof schema === 'object' && schema !== null && !Array.isArray(schema)) {
+    const schemaId = (schema as { $id?: unknown }).$id;
+    if (typeof schemaId === 'string' && schemaId) {
+      ajv.removeSchema(schemaId);
+    }
+  }
   let validate: ValidateFunction;
   try {
     validate = ajv.compile(schema);

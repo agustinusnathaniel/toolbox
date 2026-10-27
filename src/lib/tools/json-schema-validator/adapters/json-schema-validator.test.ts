@@ -91,6 +91,32 @@ describe('validateJsonAgainstSchema verdicts', () => {
   });
 });
 
+describe('validateJsonAgainstSchema $id handling', () => {
+  test('re-validates schemas carrying an $id without stale-registration errors', () => {
+    const schema = JSON.stringify({
+      $id: 'https://example.com/regression-schema',
+      properties: { name: { type: 'string' } },
+      required: ['name'],
+      type: 'object',
+    });
+    expect(validateJsonAgainstSchema(schema, '{"name":"Ada"}')).toEqual({
+      issues: [],
+      isValid: true,
+      truncated: false,
+    });
+    const repeat = validateJsonAgainstSchema(schema, '{"name":"Ada"}');
+    expect(repeat.error).toBeUndefined();
+    expect(repeat.isValid).toBe(true);
+    const failing = validateJsonAgainstSchema(schema, '{}');
+    expect(failing.isValid).toBe(false);
+    expect(failing.error).toBeUndefined();
+    expect(failing.issues).toContainEqual({
+      message: "must have required property 'name'",
+      path: '(root)',
+    });
+  });
+});
+
 describe('validateJsonAgainstSchema input errors', () => {
   test('rejects a document that is not JSON', () => {
     const result = validateJsonAgainstSchema(USER_SCHEMA, '{oops}');
