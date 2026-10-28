@@ -71,7 +71,7 @@ function ToolSearchControls({
 
       <ToggleGroup
         aria-label="Filter tools by category"
-        className="flex flex-wrap"
+        className="inset-ring-0 flex flex-wrap gap-2 overflow-visible rounded-none p-0"
         disallowEmptySelection
         onSelectionChange={(keys) => {
           const next = Array.from(keys)[0];
@@ -83,9 +83,18 @@ function ToolSearchControls({
         selectionMode="single"
         size="sm"
       >
-        <ToggleGroupItem id={ALL_CATEGORY}>All</ToggleGroupItem>
+        <ToggleGroupItem
+          className="not-selected:inset-ring-border max-w-full rounded-full"
+          id={ALL_CATEGORY}
+        >
+          All
+        </ToggleGroupItem>
         {categories.map(({ category: name }) => (
-          <ToggleGroupItem id={name} key={name}>
+          <ToggleGroupItem
+            className="not-selected:inset-ring-border max-w-full rounded-full"
+            id={name}
+            key={name}
+          >
             {name}
           </ToggleGroupItem>
         ))}

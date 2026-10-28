@@ -50,7 +50,15 @@ export function HomepageSkeleton() {
           <Placeholder className="h-9 w-64 max-w-full" />
           <Placeholder className="mt-3 h-5 w-72 max-w-full" />
           <Placeholder className="mt-8 h-9 w-full max-w-md" />
-          <Placeholder className="mt-4 h-9 w-full" />
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Placeholder className="h-9 w-12 max-w-full rounded-full sm:h-8" />
+            <Placeholder className="h-9 w-36 max-w-full rounded-full sm:h-8" />
+            <Placeholder className="h-9 w-32 max-w-full rounded-full sm:h-8" />
+            <Placeholder className="h-9 w-36 max-w-full rounded-full sm:h-8" />
+            <Placeholder className="h-9 w-28 max-w-full rounded-full sm:h-8" />
+            <Placeholder className="h-9 w-28 max-w-full rounded-full sm:h-8" />
+            <Placeholder className="h-9 w-24 max-w-full rounded-full sm:h-8" />
+          </div>
           <Placeholder className="mt-6 mb-4 h-4 w-48 max-w-full" />
           <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
             <ToolPlaceholder />
