@@ -4,8 +4,15 @@ import type { ToolNavItem } from '@/lib/navigation/tool-registry';
 import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
 import { HomepagePage } from './homepage-page';
+import { HomepageSkeleton } from './homepage-skeleton';
 
-export type StressMode = 'demo' | 'worst' | 'empty' | 'one' | 'large';
+export type StressMode =
+  | 'demo'
+  | 'worst'
+  | 'empty'
+  | 'one'
+  | 'large'
+  | 'loading';
 
 const DOC_CHUNK =
   'Formats, validates, and repairs structured payloads with source maps, path filtering, key sorting, duplicate detection, and streaming for large files. ';
@@ -97,6 +104,7 @@ const MODE_LINKS: Array<{ label: string; mode: StressMode }> = [
   { label: 'Empty', mode: 'empty' },
   { label: 'One', mode: 'one' },
   { label: '1,000 rows', mode: 'large' },
+  { label: 'Loading', mode: 'loading' },
 ];
 
 export function HomepageStressBar({ current }: { current: StressMode }) {
@@ -136,7 +144,11 @@ export function StressHomepage({ mode }: { mode: StressMode }) {
           'body:has([aria-label="Stress data preview"]) { padding-block-end: 10rem; }'
         }
       </style>
-      <HomepagePage tools={getStressTools(mode)} />
+      {mode === 'loading' ? (
+        <HomepageSkeleton />
+      ) : (
+        <HomepagePage tools={getStressTools(mode)} />
+      )}
       <HomepageStressBar current={mode} />
     </>
   );

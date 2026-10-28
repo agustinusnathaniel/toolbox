@@ -4,6 +4,7 @@ import { lazy, Suspense } from 'react';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { HomepagePage } from './-components/homepage-page';
+import { HomepageSkeleton } from './-components/homepage-skeleton';
 import type { StressMode } from './-components/homepage-stress';
 
 const meta = {
@@ -15,6 +16,7 @@ const meta = {
 
 export const Route = createFileRoute('/homepage/')({
   component: HomepageRoute,
+  pendingComponent: HomepageSkeleton,
   ...createToolRouteMetadata(meta),
   staticData: {
     meta,
@@ -37,7 +39,8 @@ function parseStressMode(searchStr: string): StressMode | null {
     value === 'worst' ||
     value === 'empty' ||
     value === 'one' ||
-    value === 'large'
+    value === 'large' ||
+    value === 'loading'
   ) {
     return value;
   }
@@ -49,7 +52,7 @@ function HomepageRoute() {
   const mode = parseStressMode(searchStr);
   if (import.meta.env.DEV && StressPreview && mode) {
     return (
-      <Suspense fallback={<HomepagePage />}>
+      <Suspense fallback={<HomepageSkeleton />}>
         <StressPreview mode={mode} />
       </Suspense>
     );
