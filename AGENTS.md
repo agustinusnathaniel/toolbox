@@ -75,6 +75,7 @@ Detailed testing guide: [CONTRIBUTING.md → Testing](./CONTRIBUTING.md#testing)
 - Never copy IntentUI component code — use `pnpm dlx shadcn@latest add @intentui/<name>`.
 - Never delete `src/lib/components/ui/**` registry components as dead-code pruning, even when unused — they are a deliberate IntentUI inventory kept so future tools can adopt them without regenerating; knip ignores the directory by design.
 - PWA service worker is disabled in dev, enabled only in production builds.
+- Homepage stress harness is dev-only: `pnpm dev`, then `/homepage?data=demo|worst|empty|one|large|loading`. Fixtures and the loading-state preview live in `src/routes/homepage/-components/homepage-stress.tsx`, loaded via DEV-gated dynamic import, never in production.
 
 ---
 

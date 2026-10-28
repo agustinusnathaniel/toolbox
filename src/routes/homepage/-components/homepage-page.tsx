@@ -1,30 +1,17 @@
-import { Check } from 'lucide-react';
-
-import { Badge } from '@/lib/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/lib/components/ui/card';
+import type { ToolNavItem } from '@/lib/navigation/tool-registry';
+import { getToolNavItems } from '@/lib/navigation/tool-registry';
 
 import { HomepagePrivacy } from './homepage-privacy';
-import {
-  HomepageHeader,
-  HomepageHero,
-  HomepageTools,
-} from './homepage-sections';
+import { HomepageHeader, HomepageHero } from './homepage-sections';
+import { HomepageTools } from './homepage-tools';
 
-const EXAMPLE_OUTPUT = [
-  '{',
-  '  "name": "Toolbox",',
-  '  "mode": "browser",',
-  '  "status": "ready"',
-  '}',
-].join('\n');
+const defaultTools = getToolNavItems();
 
-export function HomepagePage() {
+export function HomepagePage({
+  tools = defaultTools,
+}: {
+  tools?: Array<ToolNavItem>;
+}) {
   return (
     <div className="overflow-x-clip">
       <a
@@ -39,45 +26,10 @@ export function HomepagePage() {
         id="main-content"
         tabIndex={-1}
       >
-        <HomepageHero example={<ExampleWorkbench />} />
-        <HomepageTools />
+        <HomepageHero tools={tools} />
+        <HomepageTools tools={tools} />
         <HomepagePrivacy />
       </main>
     </div>
-  );
-}
-
-function ExampleWorkbench() {
-  return (
-    <figure className="mx-auto w-full max-w-md">
-      <figcaption className="sr-only">
-        Static example of a formatted JSON result
-      </figcaption>
-      <Card className="bg-bg">
-        <CardHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <CardTitle>JSON Formatter</CardTitle>
-              <CardDescription>A compact, browser-first result</CardDescription>
-            </div>
-            <Badge intent="success">Example output</Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-1">
-          <div className="rounded-lg border bg-muted/40 p-3">
-            <pre className="overflow-x-auto font-mono text-fg text-sm/6">
-              <code>{EXAMPLE_OUTPUT}</code>
-            </pre>
-          </div>
-          <div className="mt-4 flex items-center gap-2 text-muted-fg text-xs">
-            <Check
-              aria-hidden="true"
-              className="size-3.5 text-success-subtle-fg"
-            />
-            A static example of a local result
-          </div>
-        </CardContent>
-      </Card>
-    </figure>
   );
 }
