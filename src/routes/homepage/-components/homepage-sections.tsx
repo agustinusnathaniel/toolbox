@@ -1,13 +1,26 @@
 import { IconGlobe } from '@intentui/icons';
 import { Link } from '@tanstack/react-router';
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Image as ImageIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 import { ThemeToggle } from '@/lib/components/theme-toggle';
 import { buttonStyles } from '@/lib/components/ui/button';
-import { Card } from '@/lib/components/ui/card';
-import { getToolNavItems } from '@/lib/navigation/tool-registry';
+import {
+  getToolNavItems,
+  type ToolNavItem,
+} from '@/lib/navigation/tool-registry';
 
-const sectionClass = 'mx-auto w-full max-w-7xl px-4 lg:px-6';
+export const sectionClass = 'mx-auto w-full max-w-7xl px-4 lg:px-6';
+
+export const allTools = getToolNavItems();
+
+const JSON_EXAMPLE = [
+  '{',
+  '  "name": "Toolbox",',
+  '  "mode": "browser",',
+  '  "status": "ready"',
+  '}',
+].join('\n');
 
 export function HomepageHeader() {
   return (
@@ -28,13 +41,13 @@ export function HomepageHeader() {
           className="flex items-center gap-2 sm:gap-5"
         >
           <a
-            className="hidden rounded-md px-2 py-1.5 text-muted-fg text-sm no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-colors motion-safe:hover:text-fg sm:inline"
+            className="hidden rounded-md px-2 py-1.5 text-muted-fg text-sm no-underline hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:inline"
             href="#tools"
           >
             Tools
           </a>
           <a
-            className="hidden rounded-md px-2 py-1.5 text-muted-fg text-sm no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-colors motion-safe:hover:text-fg sm:inline"
+            className="hidden rounded-md px-2 py-1.5 text-muted-fg text-sm no-underline hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:inline"
             href="#privacy"
           >
             Why local?
@@ -46,102 +59,161 @@ export function HomepageHeader() {
   );
 }
 
-export function HomepageHero({ example }: { example: React.ReactNode }) {
+function ShowcasePane({
+  children,
+  tool,
+}: {
+  children: ReactNode;
+  tool: ToolNavItem;
+}) {
   return (
-    <section className="border-border/70 border-b bg-muted/40">
-      <div
-        className={`${sectionClass} grid gap-10 py-14 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14`}
-      >
-        <div className="max-w-2xl">
-          <p className="mb-5 flex items-center gap-2 font-medium text-primary-subtle-fg text-sm">
-            <IconGlobe aria-hidden="true" className="size-4" />
-            The Local Workbench
-          </p>
-          <h1 className="max-w-xl text-pretty font-semibold text-4xl/10 tracking-[-0.03em] sm:text-5xl/11">
-            Useful tools.
-            <br />
-            <span className="text-primary-subtle-fg">Private by default.</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-pretty text-lg/8 text-muted-fg">
-            A focused bench of browser-based utilities for the small jobs that
-            keep your day moving. Bring a task, leave with an answer.
-          </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <a
-              className={buttonStyles({ intent: 'primary', size: 'lg' })}
-              href="#tools"
-            >
-              Browse the tools
-              <ArrowDownRight aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-        {example}
+    <Link
+      aria-label={`${tool.title}, example`}
+      className="flex min-w-0 flex-col rounded-xl border border-transparent bg-bg p-4 text-fg no-underline hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+      to={tool.path}
+    >
+      <div className="mb-3 flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary-subtle text-primary-subtle-fg"
+        >
+          <span className="[&_svg]:size-4">{tool.icon}</span>
+        </span>
+        <h2
+          className="wrap-anywhere min-w-0 flex-1 text-balance font-semibold text-fg text-sm"
+          title={tool.title}
+        >
+          {tool.title}
+        </h2>
       </div>
-    </section>
+      {children}
+    </Link>
   );
 }
 
-export function HomepageTools() {
-  const featuredTools = getToolNavItems().slice(0, 6);
+export function HomepageHero({
+  tools = allTools,
+}: {
+  tools?: Array<ToolNavItem>;
+}) {
+  const jsonTool = tools.find((tool) => tool.slug === 'json-formatter');
+  const imageTool = tools.find((tool) => tool.slug === 'zippy-img');
+  const colorTool = tools.find((tool) => tool.slug === 'color-converter');
+  const hasSamples = Boolean(jsonTool || imageTool || colorTool);
+
   return (
-    <section className={`${sectionClass} py-16 sm:py-20`} id="tools">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="mb-2 font-medium text-primary-subtle-fg text-sm">
-            On the bench
-          </p>
-          <h2 className="max-w-xl text-pretty font-semibold text-3xl/9 tracking-[-0.025em] sm:text-4xl/10">
-            A useful starting point for everyday work.
-          </h2>
-        </div>
-        <p className="max-w-sm text-muted-fg text-sm/6">
-          Start with a few favorites, then explore the full catalog when a more
-          specific job lands on your desk.
+    <section className="border-border/70 border-b bg-bg">
+      <div className={`${sectionClass} py-12 text-center sm:py-16`}>
+        <h1 className="wrap-anywhere mx-auto max-w-5xl text-balance font-semibold text-5xl text-fg sm:text-6xl lg:text-7xl">
+          Small tasks.
+          <br />
+          Consider them handled.
+        </h1>
+        <p className="mx-auto mt-5 max-w-xl text-pretty text-lg text-muted-fg">
+          Format JSON, compress images, and convert colors with small tools that
+          open fast and stay focused.
         </p>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {featuredTools.map((tool) => (
-          <Card
-            className="p-0 motion-safe:transition-[border-color,box-shadow] motion-safe:hover:border-primary/50 motion-safe:hover:shadow-sm"
-            key={tool.slug}
+        <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <a
+            className={buttonStyles({ intent: 'primary', size: 'lg' })}
+            href="#tools"
           >
-            <Link
-              className="group flex h-full flex-col p-5 text-fg no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-              to={tool.path}
-            >
-              <div className="mb-7 flex items-start justify-between gap-4">
-                <span
-                  aria-hidden="true"
-                  className="grid size-10 place-items-center rounded-lg bg-primary-subtle text-primary-subtle-fg motion-safe:transition-[background-color,color] motion-safe:group-hover:bg-primary motion-safe:group-hover:text-primary-fg"
-                >
-                  {/* Force every icon into the tile's box. intentui icons
-                      self-apply size-4; lucide ships a bare 24x24 svg, so
-                      without this the grid mixes 16px and 24px glyphs. */}
-                  <span className="[&_svg]:size-5">{tool.icon}</span>
-                </span>
-                <ArrowUpRight
-                  aria-hidden="true"
-                  className="size-4 text-muted-fg motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5"
-                />
-              </div>
-              <h3 className="font-semibold text-fg text-lg">{tool.title}</h3>
-              <p className="mt-2 text-muted-fg text-sm/6">{tool.description}</p>
-              <span className="mt-5 inline-flex items-center gap-1 font-medium text-primary-subtle-fg text-sm">
-                Open tool
-              </span>
-            </Link>
-          </Card>
-        ))}
-      </div>
-      <div className="mt-10 flex justify-center border-border border-t pt-8">
-        <Link
-          className={buttonStyles({ intent: 'outline', size: 'lg' })}
-          to="/"
-        >
-          Explore the full catalog
-          <ArrowUpRight aria-hidden="true" />
-        </Link>
+            Browse the tools
+            <ArrowDownRight aria-hidden="true" />
+          </a>
+          <Link
+            className={buttonStyles({ intent: 'outline', size: 'lg' })}
+            to="/"
+          >
+            Open full catalog
+            <ArrowUpRight aria-hidden="true" />
+          </Link>
+        </div>
+
+        {hasSamples ? (
+          <div className="mx-auto mt-10 w-full max-w-5xl rounded-2xl border border-border bg-muted/40 p-2 text-left">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-3 py-2">
+              <p className="font-medium text-fg text-sm">Example workbench</p>
+              <p className="text-muted-fg text-xs">Runs in your browser</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {jsonTool ? (
+                <ShowcasePane tool={jsonTool}>
+                  <div className="rounded-lg border border-border bg-muted/40 p-3">
+                    <pre
+                      className="wrap-anywhere whitespace-pre-wrap font-mono text-fg text-xs"
+                      dir="ltr"
+                    >
+                      <code>{JSON_EXAMPLE}</code>
+                    </pre>
+                  </div>
+                  <p className="mt-auto text-pretty pt-3 text-muted-fg text-sm">
+                    Make messy data readable.
+                  </p>
+                </ShowcasePane>
+              ) : null}
+              {imageTool ? (
+                <ShowcasePane tool={imageTool}>
+                  <div className="rounded-lg border border-border bg-muted/40 p-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="grid size-11 shrink-0 place-items-center rounded-md bg-secondary text-secondary-fg"
+                      >
+                        <ImageIcon className="size-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="wrap-anywhere font-medium text-fg text-sm">
+                          photo.jpg
+                        </p>
+                        <p className="text-muted-fg text-xs">
+                          Smaller file, same picture
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      <div
+                        aria-hidden="true"
+                        className="h-2 w-full rounded-full bg-secondary"
+                      />
+                      <div
+                        aria-hidden="true"
+                        className="h-2 w-2/3 rounded-full bg-primary-subtle"
+                      />
+                    </div>
+                  </div>
+                  <p className="mt-auto text-pretty pt-3 text-muted-fg text-sm">
+                    Lighter images, ready to share.
+                  </p>
+                </ShowcasePane>
+              ) : null}
+              {colorTool ? (
+                <ShowcasePane tool={colorTool}>
+                  <div className="rounded-lg border border-border bg-muted/40 p-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="size-11 shrink-0 rounded-md"
+                        style={{ backgroundColor: '#6366F1' }}
+                      />
+                      <ul
+                        className="wrap-anywhere min-w-0 flex-1 space-y-0.5 font-mono text-muted-fg text-xs"
+                        dir="ltr"
+                      >
+                        <li>HEX #6366F1</li>
+                        <li>RGB 99 102 241</li>
+                        <li>HSL 239 84% 67%</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <p className="mt-auto text-pretty pt-3 text-muted-fg text-sm">
+                    One color, every format.
+                  </p>
+                </ShowcasePane>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );
