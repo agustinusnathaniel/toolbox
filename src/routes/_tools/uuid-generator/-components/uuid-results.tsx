@@ -38,7 +38,7 @@ export function UuidResults({
         <ol className="flex max-h-96 flex-col gap-2 overflow-auto">
           {result.uuids.map((uuid, index) => (
             <li
-              className="flex items-center justify-between gap-2 rounded-lg border bg-(--card-bg)/50 p-3"
+              className="flex items-center justify-between gap-2 rounded-lg border bg-muted/40 p-3"
               key={uuid}
             >
               <code className="min-w-0 truncate font-mono text-sm">{uuid}</code>

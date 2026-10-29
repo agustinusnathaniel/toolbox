@@ -8,6 +8,8 @@ import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
+import { Input } from '@/lib/components/ui/input';
 
 export function JwtTokenInput({
   onChange,
@@ -53,19 +55,16 @@ export function JwtSecretInput({
   secret: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-foreground text-sm" htmlFor="jwt-secret">
-        Shared secret (optional)
-      </label>
-      <input
-        className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
+    <Field>
+      <FieldLabel htmlFor="jwt-secret">Shared secret (optional)</FieldLabel>
+      <Input
         id="jwt-secret"
         onChange={(e) => onChange(e.target.value)}
         placeholder="Enter a secret to verify the HMAC signature"
         type="password"
         value={secret}
       />
-    </div>
+    </Field>
   );
 }
 
@@ -145,7 +144,7 @@ export function JwtClaims({
       />
       <div className="overflow-hidden rounded-lg border">
         <table className="w-full text-left text-sm">
-          <thead className="bg-(--card-bg)/50 text-muted-foreground">
+          <thead className="bg-muted/40 text-muted-foreground">
             <tr>
               <th className="p-3 font-medium">Claim</th>
               <th className="p-3 font-medium">Value</th>

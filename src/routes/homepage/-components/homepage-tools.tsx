@@ -112,7 +112,7 @@ function ToolRows({
 }) {
   if (tools.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-background p-8 text-center">
+      <div className="rounded-2xl border border-border bg-background p-8 text-center">
         <h3 className="text-balance font-semibold text-foreground">
           No tools match.
         </h3>

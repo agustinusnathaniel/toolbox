@@ -174,7 +174,7 @@ function CronHumanReadable({
           onClick={onCopy}
         />
       </div>
-      <p className="rounded-lg border bg-(--card-bg)/50 p-3 text-sm">
+      <p className="rounded-lg border bg-muted/40 p-3 text-sm">
         {result.humanReadable}
       </p>
     </div>
@@ -210,7 +210,7 @@ function CronNextRuns({
       <ul className="flex flex-col gap-1.5">
         {(result.nextRuns ?? []).map((run, index) => (
           <li
-            className="flex items-center justify-between gap-2 rounded-lg border bg-(--card-bg)/50 px-3 py-2"
+            className="flex items-center justify-between gap-2 rounded-lg border bg-muted/40 px-3 py-2"
             key={run}
           >
             <span className="font-mono text-sm tabular-nums">

@@ -34,7 +34,7 @@ export function DiffViewer({ className, fileDiff, options }: DiffViewerProps) {
       fallback={
         <Skeleton
           aria-label="Loading diff view"
-          className="h-96 w-full rounded-lg border"
+          className="h-96 w-full border"
           role="status"
         />
       }

@@ -38,7 +38,7 @@ export const MobileBottomNav = () => {
   return (
     <nav
       aria-label="Mobile bottom navigation"
-      className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t bg-background/80 px-1 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur-xs md:hidden"
+      className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-border/50 border-t bg-background/95 px-1 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur-xs md:hidden"
     >
       {navItems.map(({ href, icon, label }) => {
         const isActive = currentPath === href;

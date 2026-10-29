@@ -1,6 +1,8 @@
 'use client';
 
 import { LabeledTextarea } from '@/lib/components/labeled-textarea';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
+import { Input } from '@/lib/components/ui/input';
 
 export function HashTextInput({
   text,
@@ -36,17 +38,15 @@ export function HashExpectedInput({
   setExpected: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-foreground text-sm" htmlFor="hash-expected">
-        Expected hash (optional)
-      </label>
-      <input
-        className="w-full rounded-lg border bg-background px-3 py-2 font-mono text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
+    <Field>
+      <FieldLabel htmlFor="hash-expected">Expected hash (optional)</FieldLabel>
+      <Input
+        className="font-mono"
         id="hash-expected"
         onChange={(e) => setExpected(e.target.value)}
         placeholder="Paste an expected hash to compare against"
         value={expected}
       />
-    </div>
+    </Field>
   );
 }

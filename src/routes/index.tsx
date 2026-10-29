@@ -107,7 +107,7 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
 
   return (
     <Link
-      className="group/card flex flex-col rounded-lg border p-6 no-underline transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="group/card flex flex-col rounded-2xl border p-6 no-underline transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       to={tool.path}
     >
       <div className="mb-3 text-muted-foreground transition-colors group-hover/card:text-primary">
@@ -140,7 +140,7 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
               )}
             </button>
             {shortcut !== undefined && (
-              <kbd className="inline-flex size-5 items-center justify-center rounded border bg-secondary font-mono text-[10px] text-muted-foreground">
+              <kbd className="inline-flex size-5 items-center justify-center rounded-lg border bg-secondary font-mono text-[10px] text-muted-foreground">
                 {shortcut}
               </kbd>
             )}

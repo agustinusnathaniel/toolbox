@@ -55,7 +55,7 @@ export function RegexHighlights({
     return null;
   }
   return (
-    <pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
+    <pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-lg border bg-muted/40 p-3 font-mono text-sm">
       {segments.map((segment) =>
         segment.matched ? (
           <mark
@@ -79,10 +79,7 @@ export function RegexMatchList({ result }: { result: RegexTestResult }) {
   return (
     <ol className="flex max-h-80 flex-col gap-2 overflow-auto">
       {result.matches.map((match) => (
-        <li
-          className="rounded-lg border bg-(--card-bg)/50 p-3"
-          key={match.index}
-        >
+        <li className="rounded-lg border bg-muted/40 p-3" key={match.index}>
           <div className="flex items-center justify-between gap-2">
             <code className="min-w-0 truncate font-mono text-sm">
               {match.full}

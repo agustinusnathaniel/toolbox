@@ -46,7 +46,7 @@ const PendingPage = () => (
     role="status"
   >
     <Skeleton aria-hidden="true" className="h-8 w-56" />
-    <Skeleton aria-hidden="true" className="h-72 w-full rounded-lg border" />
+    <Skeleton aria-hidden="true" className="h-72 w-full border" />
   </div>
 );
 

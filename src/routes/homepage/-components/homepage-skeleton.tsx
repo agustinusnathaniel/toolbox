@@ -87,7 +87,7 @@ export function HomepageSkeleton() {
 }
 
 function Placeholder({ className }: { className: string }) {
-  return <Skeleton className={`rounded-md bg-secondary ${className}`} />;
+  return <Skeleton className={className} />;
 }
 
 function PreviewPlaceholder({ bodyClassName }: { bodyClassName: string }) {

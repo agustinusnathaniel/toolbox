@@ -101,7 +101,7 @@ export function DiffResults({
         ref={view.ref as React.RefObject<HTMLDivElement>}
       >
         <DiffViewer
-          className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50"
+          className="max-h-96 overflow-auto rounded-lg border bg-muted/40"
           fileDiff={fileDiff as never}
           options={fileDiffOptions as never}
         />
@@ -119,7 +119,7 @@ export function NoDifferences({ show }: { show: boolean }) {
       <span className="text-muted-foreground text-sm">
         0 additions, 0 deletions
       </span>
-      <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed bg-(--card-bg)/50 p-4">
+      <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed bg-muted/40 p-4">
         <p className="text-muted-foreground text-sm">No differences found</p>
       </div>
     </div>

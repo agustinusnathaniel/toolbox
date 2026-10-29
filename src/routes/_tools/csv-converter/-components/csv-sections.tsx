@@ -149,7 +149,7 @@ export function CsvOutput({
         <ToolError message={result.error} title="Conversion timed out" />
       )}
       {result?.isValid && result.output && (
-        <pre className="max-h-80 overflow-auto rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
+        <pre className="max-h-80 overflow-auto rounded-lg border bg-muted/40 p-3 font-mono text-sm">
           {result.output}
         </pre>
       )}
