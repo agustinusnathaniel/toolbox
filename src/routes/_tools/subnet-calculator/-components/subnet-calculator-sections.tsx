@@ -4,7 +4,7 @@ import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { CopyRow } from '@/lib/components/copy-row';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { FieldLabel } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import type {
   SubnetCalcResult,
@@ -24,7 +24,7 @@ export function SubnetCalculatorInputs({
   onInput: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <Field>
       <FieldLabel htmlFor="subnet-calculator-input">Network (CIDR)</FieldLabel>
       <Input
         aria-label="Network in CIDR notation (IPv4 or IPv6)"
@@ -35,7 +35,7 @@ export function SubnetCalculatorInputs({
         spellCheck={false}
         value={input}
       />
-    </div>
+    </Field>
   );
 }
 

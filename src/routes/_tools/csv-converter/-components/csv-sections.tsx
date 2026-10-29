@@ -8,7 +8,7 @@ import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { FieldLabel } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -36,7 +36,7 @@ export function CsvToolbar({
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex flex-col gap-1">
+      <Field>
         <FieldLabel htmlFor="csv-mode">Mode</FieldLabel>
         <Select
           onValueChange={(key) => onModeChange(key as CsvMode)}
@@ -53,7 +53,7 @@ export function CsvToolbar({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <div className="flex items-center gap-2">
         <Button onClick={onConvert} size="sm" variant="default">
           <ArrowUpDown className="size-4" />

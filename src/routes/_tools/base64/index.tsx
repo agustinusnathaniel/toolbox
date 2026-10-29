@@ -215,7 +215,7 @@ function Base64Page() {
   );
   const label = activeAction === 'encode' ? 'Encoded' : 'Decoded';
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <Base64CardBody
           copiedKey={copiedKey}

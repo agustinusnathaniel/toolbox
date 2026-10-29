@@ -1,7 +1,7 @@
 import { ArrowLeftRight, Trash2 } from 'lucide-react';
 
 import { Button } from '@/lib/components/ui/button';
-import { FieldLabel } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -33,7 +33,7 @@ export function YamlFormatControls({
 }: YamlFormatControlsProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex flex-col gap-1">
+      <Field>
         <FieldLabel htmlFor="yaml-mode">Mode</FieldLabel>
         <Select
           onValueChange={(key) => onModeChange(key as YamlMode)}
@@ -50,7 +50,7 @@ export function YamlFormatControls({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <div className="flex items-center gap-2">
         <Button onClick={onConvert} size="sm" variant="default">
           <ArrowLeftRight className="size-4" />

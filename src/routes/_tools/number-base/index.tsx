@@ -13,7 +13,7 @@ import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { FieldLabel } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -64,7 +64,7 @@ function NumberBaseInput({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
+      <Field>
         <FieldLabel htmlFor="number-base-from">From base</FieldLabel>
         <Select
           onValueChange={(key) => onFromChange(key as NumberBase)}
@@ -81,7 +81,7 @@ function NumberBaseInput({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <LabeledTextarea
         aria-label="Number input"
         className="font-mono"
@@ -230,7 +230,7 @@ function NumberBasePage() {
   const hasInput = state.input.trim().length > 0;
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <NumberBaseInput

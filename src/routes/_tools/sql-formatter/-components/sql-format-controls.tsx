@@ -1,7 +1,7 @@
 import { FileText, Trash2 } from 'lucide-react';
 
 import { Button } from '@/lib/components/ui/button';
-import { FieldLabel } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -47,7 +47,7 @@ export function SqlFormatControls({
 }: SqlFormatControlsProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex flex-col gap-1">
+      <Field>
         <FieldLabel htmlFor="sql-dialect">Dialect</FieldLabel>
         <Select
           onValueChange={(key) => onDialectChange(key as SqlDialect)}
@@ -64,8 +64,8 @@ export function SqlFormatControls({
             ))}
           </SelectContent>
         </Select>
-      </div>
-      <div className="flex flex-col gap-1">
+      </Field>
+      <Field>
         <FieldLabel htmlFor="sql-action">Action</FieldLabel>
         <Select
           onValueChange={(key) => onActionChange(key as SqlSearchAction)}
@@ -82,7 +82,7 @@ export function SqlFormatControls({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <div className="flex items-center gap-2">
         <Button onClick={onFormat} size="sm" variant="default">
           <FileText className="size-4" />

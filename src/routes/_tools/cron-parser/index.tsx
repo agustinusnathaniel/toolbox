@@ -250,7 +250,7 @@ function CronParserPage() {
     trackAction
   );
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <CronInput expression={expression} setExpression={setExpression} />

@@ -8,7 +8,7 @@ import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { FieldLabel } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -59,7 +59,7 @@ export function XmlActions({
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex flex-col gap-1">
+      <Field>
         <FieldLabel htmlFor="xml-indent">Indent</FieldLabel>
         <Select
           onValueChange={(key) => onIndentChange(key as XmlIndent)}
@@ -76,7 +76,7 @@ export function XmlActions({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={() => onRun('format')} size="sm" variant="default">
           <FileCode2 className="size-4" />
