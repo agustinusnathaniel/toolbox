@@ -344,6 +344,9 @@ function CurrencySelectors({
         <FieldLabel htmlFor="currency-converter-from">From</FieldLabel>
         <Combobox
           items={CURRENCY_OPTIONS}
+          itemToStringLabel={(option: CurrencyOption) =>
+            `${option.id} ${option.name}`
+          }
           itemToStringValue={(option: CurrencyOption) =>
             `${option.id} ${option.name}`
           }
@@ -384,6 +387,9 @@ function CurrencySelectors({
         <FieldLabel htmlFor="currency-converter-to">To</FieldLabel>
         <Combobox
           items={CURRENCY_OPTIONS}
+          itemToStringLabel={(option: CurrencyOption) =>
+            `${option.id} ${option.name}`
+          }
           itemToStringValue={(option: CurrencyOption) =>
             `${option.id} ${option.name}`
           }

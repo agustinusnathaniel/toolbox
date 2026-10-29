@@ -78,13 +78,14 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
               <CommandGroup heading="Pinned">
                 {pinnedNavItems.map((item) => (
                   <CommandItem
+                    className="grid grid-cols-[auto_1fr] items-start"
                     key={item.slug}
                     onSelect={() => handleNavigate(item.path)}
                     value={item.title}
                   >
-                    <RiStarLine aria-hidden="true" />
-                    <span>{item.title}</span>
-                    <span className="col-start-2 row-start-2 ms-0 text-muted-foreground">
+                    <RiStarLine aria-hidden="true" className="mt-0.5" />
+                    <span className="font-medium">{item.title}</span>
+                    <span className="col-start-2 row-start-2 text-muted-foreground text-xs">
                       {item.description}
                     </span>
                   </CommandItem>
@@ -92,22 +93,27 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
               </CommandGroup>
             )}
             <CommandGroup heading="Navigation">
-              <CommandItem onSelect={() => handleNavigate('/')} value="Home">
-                <RiGlobalLine aria-hidden="true" />
-                <span>Home</span>
-                <span className="col-start-2 row-start-2 ms-0 text-muted-foreground">
+              <CommandItem
+                className="grid grid-cols-[auto_1fr] items-start"
+                onSelect={() => handleNavigate('/')}
+                value="Home"
+              >
+                <RiGlobalLine aria-hidden="true" className="mt-0.5" />
+                <span className="font-medium">Home</span>
+                <span className="col-start-2 row-start-2 text-muted-foreground text-xs">
                   Open toolbox catalog and tool overview
                 </span>
               </CommandItem>
               {toolNavItems.map((item) => (
                 <CommandItem
+                  className="grid grid-cols-[auto_1fr] items-start"
                   key={item.slug}
                   onSelect={() => handleNavigate(item.path)}
                   value={item.title}
                 >
-                  <span className="[&_svg]:size-4.5">{item.icon}</span>
-                  <span>{item.title}</span>
-                  <span className="col-start-2 row-start-2 ms-0 text-muted-foreground">
+                  <span className="mt-0.5 [&_svg]:size-4.5">{item.icon}</span>
+                  <span className="font-medium">{item.title}</span>
+                  <span className="col-start-2 row-start-2 text-muted-foreground text-xs">
                     {item.description}
                   </span>
                 </CommandItem>

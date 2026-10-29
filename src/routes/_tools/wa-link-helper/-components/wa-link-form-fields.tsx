@@ -40,6 +40,7 @@ export function WaLinkFormFields({
             <FieldLabel htmlFor="country_code">Country Code</FieldLabel>
             <Combobox
               items={countryCodeOptions}
+              itemToStringLabel={(option: CountryOption) => option.name}
               itemToStringValue={(option: CountryOption) => option.name}
               name={field.name}
               onValueChange={(option: CountryOption | null) => {

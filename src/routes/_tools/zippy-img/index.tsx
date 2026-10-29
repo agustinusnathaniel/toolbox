@@ -9,11 +9,8 @@ import { createToolRouteMetadata } from '@/lib/utils/metadata';
 import { CompressionResults } from './-components/compression-results';
 import { FileQueue } from './-components/file-queue';
 import { ImageDropZone } from './-components/image-drop-zone';
-import {
-  MAX_FILES,
-  MAX_SIZE_MB,
-  useZippyImg,
-} from './-components/use-zippy-img';
+import { useZippyImg } from './-components/use-zippy-img';
+import { MAX_FILES, MAX_SIZE_MB } from './-components/zippy-helpers';
 import {
   buildCompressionMessage,
   ZippyActions,

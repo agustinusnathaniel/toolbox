@@ -76,7 +76,12 @@ function NumberController({
             max={max}
             min={min}
             name={field.name}
-            onValueChange={(value) => field.onChange(value ?? undefined)}
+            onValueChange={(value) => {
+              // Pass null through (do not coerce to undefined): the picker
+              // contract treats null as an empty controlled value, and
+              // coercing breaks empty preservation on blur.
+              (field.onChange as (v: number | null) => void)(value);
+            }}
             step={step}
             value={field.value ?? null}
           >

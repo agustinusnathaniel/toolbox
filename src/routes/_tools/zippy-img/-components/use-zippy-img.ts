@@ -16,9 +16,6 @@ import {
   summarizeZippyTotals,
 } from './zippy-helpers';
 
-export const MAX_FILES = 2;
-export const MAX_SIZE_MB = 15;
-
 export interface ImageFile {
   compressed?: File;
   file: File;

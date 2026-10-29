@@ -6,7 +6,7 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import type { CompressionSummary } from '@/lib/tools/zippy-img/adapters/zippy';
 
-import { MAX_FILES, MAX_SIZE_MB } from './use-zippy-img';
+import { MAX_FILES, MAX_SIZE_MB } from './zippy-helpers';
 
 export function buildCompressionMessage(
   summary: CompressionSummary | null

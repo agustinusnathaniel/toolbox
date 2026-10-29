@@ -33,6 +33,7 @@ export function CitySearch({ onAdd, existingIds }: CitySearchProps) {
         aria-label="Search for a city to add"
         inputValue={query}
         items={results}
+        itemToStringLabel={(city: City) => city.name}
         itemToStringValue={(city: City) => city.name}
         onInputValueChange={setQuery}
         onValueChange={(city: City | null) => {
