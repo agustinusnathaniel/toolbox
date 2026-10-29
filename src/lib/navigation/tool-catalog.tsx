@@ -24,6 +24,7 @@ import {
   Link2,
   ListChecks,
   Network,
+  PenLine,
   Regex,
   Scale,
   ScanLine,
@@ -47,6 +48,7 @@ import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta'
 import { meta as jsonSchemaValidatorMeta } from '@/routes/_tools/json-schema-validator/-meta';
 import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
+import { meta as jwtEncoderMeta } from '@/routes/_tools/jwt-encoder/-meta';
 import { meta as loremIpsumMeta } from '@/routes/_tools/lorem-ipsum/-meta';
 import { meta as markdownPreviewMeta } from '@/routes/_tools/markdown-preview/-meta';
 import { meta as meetingTimeFinderMeta } from '@/routes/_tools/meeting-time-finder/-meta';
@@ -212,6 +214,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <ScanLine aria-hidden="true" />,
     ...jwtDecoderMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <PenLine aria-hidden="true" />,
+    ...jwtEncoderMeta,
   },
   {
     category: 'Developer',
