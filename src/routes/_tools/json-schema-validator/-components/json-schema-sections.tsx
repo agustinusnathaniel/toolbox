@@ -9,7 +9,10 @@ import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
-import type { SchemaValidationResult } from '@/lib/tools/json-schema-validator/adapters/json-schema-validator';
+import type {
+  JsonSchemaExample,
+  SchemaValidationResult,
+} from '@/lib/tools/json-schema-validator/adapters/json-schema-validator';
 
 type ValidationState = SchemaValidationResult & { timedOut?: boolean };
 
@@ -67,6 +70,31 @@ export function JsonSchemaActions({
         </span>
       )}
       <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+    </div>
+  );
+}
+
+export function JsonSchemaExamples({
+  examples,
+  onSelect,
+}: {
+  examples: Array<JsonSchemaExample>;
+  onSelect: (example: JsonSchemaExample) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-muted-fg text-xs">Try:</span>
+      {examples.map((example) => (
+        <Button
+          aria-label={`Load ${example.label} example`}
+          intent="outline"
+          key={example.label}
+          onPress={() => onSelect(example)}
+          size="xs"
+        >
+          {example.label}
+        </Button>
+      ))}
     </div>
   );
 }

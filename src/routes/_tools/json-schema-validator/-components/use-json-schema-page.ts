@@ -7,9 +7,25 @@ import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import {
   buildJsonSchemaParams,
   buildJsonSchemaStateFromSearch,
+  type JsonSchemaValidatorState,
 } from '@/lib/tools/json-schema-validator/adapters/json-schema-params';
+import type { SchemaValidationResult } from '@/lib/tools/json-schema-validator/adapters/json-schema-validator';
 
 import { useJsonSchemaValidator } from './use-json-schema-validator';
+
+type ValidationResult = SchemaValidationResult & { timedOut?: boolean };
+
+function summarizeResult(result: ValidationResult | null): string | null {
+  if (!result || result.error) {
+    return null;
+  }
+  if (result.isValid) {
+    return 'Valid — document satisfies the schema';
+  }
+  return result.issues
+    .map((issue) => `${issue.path}: ${issue.message}`)
+    .join('\n');
+}
 
 export function useJsonSchemaPage(
   search: Parameters<typeof buildJsonSchemaStateFromSearch>[0],
@@ -39,32 +55,26 @@ export function useJsonSchemaPage(
     trackAction('validate');
   }, [setResult, trackAction]);
 
-  const updateSchema = useCallback(
-    (schema: string) => {
-      setState((prev) => ({ ...prev, schema }));
+  const patchState = useCallback(
+    (patch: Partial<JsonSchemaValidatorState>) => {
+      setState((prev) => ({ ...prev, ...patch }));
       setResult(null);
     },
     [setResult]
   );
 
-  const updateDocument = useCallback(
-    (document: string) => {
-      setState((prev) => ({ ...prev, document }));
-      setResult(null);
-    },
-    [setResult]
-  );
+  const updateSchema = (schema: string) => patchState({ schema });
+
+  const updateDocument = (document: string) => patchState({ document });
+
+  const loadExample = (schema: string, document: string) => {
+    patchState({ document, schema });
+    trackAction('example');
+  };
 
   const handleCopy = useCallback(async () => {
-    if (!result || result.error) {
-      return;
-    }
-    const summary = result.isValid
-      ? 'Valid — document satisfies the schema'
-      : result.issues
-          .map((issue) => `${issue.path}: ${issue.message}`)
-          .join('\n');
-    if (await copy(summary, 'copy', 'Copied validation result')) {
+    const summary = summarizeResult(result);
+    if (summary && (await copy(summary, 'copy', 'Copied validation result'))) {
       trackAction('copy');
     }
   }, [copy, result, trackAction]);
@@ -79,6 +89,7 @@ export function useJsonSchemaPage(
     copiedKey,
     handleCopy,
     handleCopyLink,
+    loadExample,
     result,
     runValidation,
     state,

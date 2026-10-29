@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { validateJsonAgainstSchema } from './json-schema-validator';
+import {
+  JSON_SCHEMA_EXAMPLES,
+  validateJsonAgainstSchema,
+} from './json-schema-validator';
 
 const USER_SCHEMA = JSON.stringify({
   properties: {
@@ -114,6 +117,27 @@ describe('validateJsonAgainstSchema $id handling', () => {
       message: "must have required property 'name'",
       path: '(root)',
     });
+  });
+});
+
+describe('JSON_SCHEMA_EXAMPLES', () => {
+  test('every example loads and validates to its pinned verdict', () => {
+    expect(JSON_SCHEMA_EXAMPLES.length).toBeGreaterThan(0);
+    for (const example of JSON_SCHEMA_EXAMPLES) {
+      const result = validateJsonAgainstSchema(
+        example.schema,
+        example.document
+      );
+      expect(result.error).toBeUndefined();
+      expect(result.isValid).toBe(example.expectValid);
+    }
+  });
+
+  test('covers both verdict states with one shared schema', () => {
+    const verdicts = new Set(
+      JSON_SCHEMA_EXAMPLES.map((example) => example.expectValid)
+    );
+    expect(verdicts).toEqual(new Set([true, false]));
   });
 });
 

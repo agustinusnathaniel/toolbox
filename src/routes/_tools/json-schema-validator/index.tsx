@@ -5,10 +5,12 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { JSON_SCHEMA_EXAMPLES } from '@/lib/tools/json-schema-validator/adapters/json-schema-validator';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import {
   JsonSchemaActions,
+  JsonSchemaExamples,
   JsonSchemaHelp,
   JsonSchemaInputs,
   JsonSchemaOutput,
@@ -44,6 +46,12 @@ function JsonSchemaValidatorPage() {
             onDocument={page.updateDocument}
             onSchema={page.updateSchema}
             schema={page.state.schema}
+          />
+          <JsonSchemaExamples
+            examples={JSON_SCHEMA_EXAMPLES}
+            onSelect={(example) =>
+              page.loadExample(example.schema, example.document)
+            }
           />
           <JsonSchemaActions
             computing={page.computing}

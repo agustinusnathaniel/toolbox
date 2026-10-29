@@ -13,6 +13,49 @@ export interface SchemaValidationResult {
   truncated: boolean;
 }
 
+export interface JsonSchemaExample {
+  document: string;
+  /** Expected verdict — tests pin this so edited examples can't silently flip. */
+  expectValid: boolean;
+  /** Short button label. */
+  label: string;
+  schema: string;
+}
+
+const EXAMPLE_USER_SCHEMA = JSON.stringify(
+  {
+    properties: {
+      age: { minimum: 0, type: 'integer' },
+      name: { type: 'string' },
+    },
+    required: ['name'],
+    type: 'object',
+  },
+  null,
+  2
+);
+
+/**
+ * One-click starters (mirrors the cron-parser CRON_EXAMPLES pattern). The
+ * pair shares one schema so users see both verdict states with one click
+ * each — the tool's empty-empty starting state otherwise forces newcomers to
+ * invent two coordinated inputs before the first Validate.
+ */
+export const JSON_SCHEMA_EXAMPLES: Array<JsonSchemaExample> = [
+  {
+    document: JSON.stringify({ age: 30, name: 'Ada' }, null, 2),
+    expectValid: true,
+    label: 'Valid user',
+    schema: EXAMPLE_USER_SCHEMA,
+  },
+  {
+    document: JSON.stringify({ age: -1 }, null, 2),
+    expectValid: false,
+    label: 'Invalid user',
+    schema: EXAMPLE_USER_SCHEMA,
+  },
+];
+
 const MAX_REPORTED_ISSUES = 50;
 
 /**
