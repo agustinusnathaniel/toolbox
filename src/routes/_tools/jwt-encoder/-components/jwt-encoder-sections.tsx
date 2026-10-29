@@ -1,13 +1,14 @@
 'use client';
 
-import { PenLine } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { PenLine, ScanSearch } from 'lucide-react';
 
 import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { Button } from '@/lib/components/ui/button';
+import { Button, buttonVariants } from '@/lib/components/ui/button';
 import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import {
@@ -186,13 +187,23 @@ export function JwtEncoderOutput({
     return null;
   }
   return (
-    <ResultPanel
-      copied={copied}
-      copyLabel="Copy token"
-      label="Signed token"
-      onCopy={onCopy}
-      value={result.token}
-    />
+    <div className="flex flex-col gap-2">
+      <ResultPanel
+        copied={copied}
+        copyLabel="Copy token"
+        label="Signed token"
+        onCopy={onCopy}
+        value={result.token}
+      />
+      <Link
+        className={buttonVariants({ size: 'sm', variant: 'outline' })}
+        search={{ token: result.token }}
+        to="/jwt-decoder"
+      >
+        <ScanSearch aria-hidden="true" className="size-4" />
+        Inspect in JWT Decoder
+      </Link>
+    </div>
   );
 }
 
@@ -212,7 +223,7 @@ export function JwtEncoderHelp() {
         },
         {
           answer:
-            'Paste the token into the JWT Decoder tool to inspect its claims, or verify the HMAC signature there with the same secret.',
+            'Click Inspect in JWT Decoder under the signed token — it opens the JWT Decoder tool with the token prefilled, where you can inspect its claims or verify the HMAC signature with the same secret.',
           question: 'How do I check a token this tool made?',
         },
         {
