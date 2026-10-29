@@ -1,8 +1,8 @@
-import { createRouter } from '@tanstack/react-router';
+import { createRouter, Link } from '@tanstack/react-router';
 
 import { analytics } from '@/lib/analytics';
 import { createUmamiTracker } from '@/lib/analytics/trackers/umami';
-import { buttonStyles } from '@/lib/components/ui/button';
+import { Button } from '@/lib/components/ui/button';
 import {
   Card,
   CardContent,
@@ -11,7 +11,6 @@ import {
   CardTitle,
 } from '@/lib/components/ui/card';
 import { Container } from '@/lib/components/ui/container';
-import { Link } from '@/lib/components/ui/link';
 import { Skeleton } from '@/lib/components/ui/skeleton';
 import {
   parseSearchParams,
@@ -30,14 +29,7 @@ const NotFoundPage = () => (
         <CardDescription>Not Found</CardDescription>
       </CardHeader>
       <CardContent>
-        <Link
-          className={(renderProps) =>
-            buttonStyles({ ...renderProps, intent: 'primary' })
-          }
-          href="/"
-        >
-          Back to Home
-        </Link>
+        <Button render={<Link to="/" />}>Back to Home</Button>
       </CardContent>
     </Card>
   </Container>
@@ -53,12 +45,8 @@ const PendingPage = () => (
     className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 md:w-[80%]"
     role="status"
   >
-    <Skeleton aria-hidden="true" className="h-8 w-56" isLoading />
-    <Skeleton
-      aria-hidden="true"
-      className="h-72 w-full rounded-lg border"
-      isLoading
-    />
+    <Skeleton aria-hidden="true" className="h-8 w-56" />
+    <Skeleton aria-hidden="true" className="h-72 w-full rounded-lg border" />
   </div>
 );
 

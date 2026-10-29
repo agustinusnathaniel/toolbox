@@ -4,7 +4,7 @@ import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { CopyRow } from '@/lib/components/copy-row';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import type {
   SubnetCalcResult,
@@ -25,7 +25,7 @@ export function SubnetCalculatorInputs({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <Label htmlFor="subnet-calculator-input">Network (CIDR)</Label>
+      <FieldLabel htmlFor="subnet-calculator-input">Network (CIDR)</FieldLabel>
       <Input
         aria-label="Network in CIDR notation (IPv4 or IPv6)"
         autoComplete="off"
@@ -46,7 +46,7 @@ export function SubnetCalculatorActions({
 }) {
   return (
     <div>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -268,7 +268,7 @@ export function SubnetCalculatorResult({
 }) {
   if (!result) {
     return (
-      <p className="text-muted-fg text-xs">
+      <p className="text-muted-foreground text-xs">
         Enter an IPv4 or IPv6 network in CIDR notation to see the subnet
         breakdown.
       </p>
@@ -281,7 +281,9 @@ export function SubnetCalculatorResult({
   if ('addressType' in info) {
     return (
       <div className="flex flex-col gap-2">
-        {info.note && <p className="text-muted-fg text-xs">{info.note}</p>}
+        {info.note && (
+          <p className="text-muted-foreground text-xs">{info.note}</p>
+        )}
         <SubnetV6Rows
           copiedKey={copiedKey}
           info={info}
@@ -292,7 +294,9 @@ export function SubnetCalculatorResult({
   }
   return (
     <div className="flex flex-col gap-2">
-      {info.note && <p className="text-muted-fg text-xs">{info.note}</p>}
+      {info.note && (
+        <p className="text-muted-foreground text-xs">{info.note}</p>
+      )}
       <AddressRows copiedKey={copiedKey} info={info} onCopyPart={onCopyPart} />
       <MaskRows copiedKey={copiedKey} info={info} onCopyPart={onCopyPart} />
     </div>

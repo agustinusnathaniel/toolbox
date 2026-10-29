@@ -107,14 +107,14 @@ function Base64Actions({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button onPress={onEncode} size="sm">
+      <Button onClick={onEncode} size="sm">
         <Binary className="size-4" />
         Encode
       </Button>
-      <Button intent="outline" onPress={onDecode} size="sm">
+      <Button onClick={onDecode} size="sm" variant="outline">
         Decode
       </Button>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -179,7 +179,7 @@ function Base64CardBody({
         onEncode={onEncode}
       />
       {hintVisible && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click Encode or Decode to process your text.
         </p>
       )}

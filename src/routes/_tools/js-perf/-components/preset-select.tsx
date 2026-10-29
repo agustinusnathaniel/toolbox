@@ -3,6 +3,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { Preset } from '@/lib/js-perf-comp-core/presets';
 
@@ -17,14 +18,21 @@ export function PresetSelect({
 }) {
   return (
     <Select
-      onSelectionChange={(key) => onPresetChange(String(key))}
-      selectedKey={selectedPreset}
+      onValueChange={(key) => onPresetChange(String(key))}
+      value={selectedPreset}
     >
-      <SelectTrigger className="min-w-[160px] flex-1 sm:w-[200px] sm:min-w-[200px] sm:flex-none">
-        {selectedPreset}
+      <SelectTrigger
+        aria-label="Benchmark preset"
+        className="min-w-[160px] flex-1 sm:w-[200px] sm:min-w-[200px] sm:flex-none"
+      >
+        <SelectValue />
       </SelectTrigger>
-      <SelectContent items={presets}>
-        {(preset) => <SelectItem id={preset.name}>{preset.name}</SelectItem>}
+      <SelectContent>
+        {presets.map((preset) => (
+          <SelectItem key={preset.name} value={preset.name}>
+            {preset.name}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );

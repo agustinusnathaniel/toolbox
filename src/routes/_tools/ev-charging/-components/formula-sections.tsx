@@ -28,26 +28,31 @@ export function EfficiencyInfo({
       <p>
         Total capacity: {inputs.totalCapacity} kWh, usable:{' '}
         {inputs.usablePercent}% ={' '}
-        <span className="font-medium text-fg">{usableCapacity} kWh</span> used
-        for calculations.
+        <span className="font-medium text-foreground">
+          {usableCapacity} kWh
+        </span>{' '}
+        used for calculations.
       </p>
       <p>
         Charger efficiency for{' '}
-        <span className="font-medium text-fg">{inputs.chargerType}</span>:{' '}
-        <span className="font-medium text-fg">
+        <span className="font-medium text-foreground">
+          {inputs.chargerType}
+        </span>
+        :{' '}
+        <span className="font-medium text-foreground">
           {(efficiency * 100).toFixed(0)}% below {SOC_THRESHOLD}%
         </span>{' '}
         and drops progressively above it:&nbsp;
-        <span className="font-medium text-fg">
+        <span className="font-medium text-foreground">
           {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% at {SOC_THRESHOLD}
           –90% SOC
         </span>
         ,{' '}
-        <span className="font-medium text-fg">
+        <span className="font-medium text-foreground">
           {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% at 90–95% SOC
         </span>
         ,{' '}
-        <span className="font-medium text-fg">
+        <span className="font-medium text-foreground">
           {((efficiency - SOC_PENALTY) * 100).toFixed(0)}% above 95% SOC
         </span>
         . Charging slows at high SOC to protect battery health, which increases
@@ -56,7 +61,7 @@ export function EfficiencyInfo({
       {inputs.calibrationFactor !== 1 && (
         <p>
           Calibration factor:{' '}
-          <span className="font-medium text-fg">
+          <span className="font-medium text-foreground">
             {inputs.calibrationFactor.toFixed(2)}x
           </span>{' '}
           — adjusted to match a specific vehicle's real-world efficiency.
@@ -82,7 +87,7 @@ export function SplitFormula({
         Since charging spans both efficiency zones, the calculation is split by
         SOC threshold:
       </p>
-      <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
+      <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-foreground text-xs">
         <p>
           below{SOC_THRESHOLD} = ({SOC_THRESHOLD} - {startSOC}) x{' '}
           {usableCapacity} / {efficiency} ={' '}
@@ -151,7 +156,7 @@ export function AboveThresholdFormula({
         Since charging starts at or above {SOC_THRESHOLD}%, each SOC band uses
         its own loss rate:
       </p>
-      <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
+      <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-foreground text-xs">
         {endSOC > 80 && startSOC < 90 && (
           <p>
             {SOC_THRESHOLD}–90% = (
@@ -213,7 +218,7 @@ export function SimpleFormula({
         Since charging stays below {SOC_THRESHOLD}%, the standard efficiency
         applies:
       </p>
-      <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-fg text-xs">
+      <div className="overflow-x-auto rounded-md border border-border bg-background p-3 font-mono text-foreground text-xs">
         <p>
           kWh = ({endSOC} - {startSOC}) x {usableCapacity} / {efficiency} ={' '}
           {result.totalKwh} kWh

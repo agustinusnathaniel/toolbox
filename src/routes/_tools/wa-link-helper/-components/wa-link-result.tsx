@@ -2,7 +2,7 @@
 
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 
 export function WaLinkResult({
   isValid,
@@ -18,16 +18,16 @@ export function WaLinkResult({
   }
   return (
     <div className="mt-6 flex flex-col gap-2">
-      <Label>Generated Link</Label>
+      <FieldLabel>Generated Link</FieldLabel>
       <Button
         className="w-full flex-wrap break-words break-all text-start"
-        intent="plain"
+        variant="ghost"
       >
         <a href={link} rel="noopener noreferrer" target="_blank">
           {link}
         </a>
       </Button>
-      <Button intent="outline" onPress={onCopyShareable}>
+      <Button onClick={onCopyShareable} variant="outline">
         Copy Shareable Link
       </Button>
     </div>

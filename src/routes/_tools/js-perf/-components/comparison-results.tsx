@@ -32,8 +32,8 @@ function formatVerdict(verdict: ComparisonVerdict): string {
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-md border border-border/60 bg-muted/20 px-2 py-1.5">
-      <span className="text-muted-fg">{label}</span>
-      <span className="font-medium text-fg">{value}</span>
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-foreground">{value}</span>
     </div>
   );
 }
@@ -51,7 +51,7 @@ function ComparisonInsights({
       <Card>
         <CardContent className="flex flex-col gap-2">
           <span className="font-medium text-sm">Comparison Insights</span>
-          <p className="text-muted-fg text-sm">
+          <p className="text-muted-foreground text-sm">
             Insights require both snippets to complete successfully.
           </p>
         </CardContent>
@@ -103,7 +103,9 @@ function ComparisonInsights({
           <Metric label="CI overlap" value={overlapText} />
           <Metric label="Relative margins" value={relativeMarginsText} />
         </div>
-        <p className="text-muted-fg text-xs">{metrics.confidenceText}</p>
+        <p className="text-muted-foreground text-xs">
+          {metrics.confidenceText}
+        </p>
       </CardContent>
     </Card>
   );
@@ -134,7 +136,7 @@ export function ComparisonResults({
               <span className="font-medium text-sm">Comparison Summary</span>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <ComparisonEntry other={resultB} result={resultA} which="a" />
-                <span className="text-muted-fg text-sm">vs</span>
+                <span className="text-muted-foreground text-sm">vs</span>
                 <ComparisonEntry other={resultA} result={resultB} which="b" />
               </div>
             </CardContent>

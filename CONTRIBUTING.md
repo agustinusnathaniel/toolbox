@@ -41,7 +41,7 @@ We use **Ultracite** (wrapping Biome) for both linting and formatting.
 
 ### Dead Code & Dependencies
 
-Run `pnpm knip` to find unused files and dependencies. Registry-managed IntentUI primitives in `src/lib/components/ui/**` and their dependencies are intentionally kept for future tools and exempted in `knip.ts`; unused application files and dependencies still fail the check.
+Run `pnpm knip` to find unused files and dependencies. Registry-managed shadcn Base UI primitives in `src/lib/components/ui/**` (plus ReUI additions in `src/lib/components/reui/**`) and their dependencies are intentionally kept for future tools and exempted in `knip.ts`; unused application files and dependencies still fail the check.
 
 `pnpm check` runs lint, typecheck, knip, and tests in parallel via turbo.
 
@@ -53,15 +53,20 @@ Run `pnpm knip` to find unused files and dependencies. Registry-managed IntentUI
 
 ### Component Guidelines
 
-- **Adding UI Components**: This project uses the `shadcn` CLI pattern with a custom registry from **IntentUI**. To add a new primitive component:
+- **Adding UI Components**: This project uses the `shadcn` CLI pattern with the Base UI base (`base-rhea` style, preset `b4HQ17IlCb`). To add a new stock component:
   ```bash
-  pnpm dlx shadcn@latest add @intentui/<component-name>
+  pnpm dlx shadcn@latest add <component-name>
   ```
+  For the ReUI color picker or number field:
+  ```bash
+  pnpm dlx shadcn@latest add @reui/<component-name>
+  ```
+  ReUI files land outside the app tree; move them into `src/lib/components/reui/` so imports stay on the `@/lib/...` aliases.
   **Critical**: Do not manually copy component code from the documentation. Always use the CLI to ensure all dependencies and styles are correctly integrated.
 - Place reusable UI components in `src/lib/components/ui`.
 - Place route-specific components in a `-components` folder relative to the route file.
-- Use `tailwind-variants` for styling logic.
-- Prefer `lucide-react` for generic icons, and `@intentui/icons` for system icons.
+- Use `class-variance-authority` (`cva`) for component variant logic.
+- Prefer `@remixicon/react` for generic app/navigation/UI icons (the preset family); `lucide-react` remains in existing tool content.
 
 ### Testing
 

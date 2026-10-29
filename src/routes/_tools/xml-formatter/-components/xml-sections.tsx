@@ -8,12 +8,13 @@ import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { XmlIndent } from '@/lib/tools/xml-formatter/adapters/xml-formatter';
 import type { XmlAction } from '@/lib/tools/xml-formatter/adapters/xml-params';
@@ -59,32 +60,37 @@ export function XmlActions({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="xml-indent">Indent</Label>
+        <FieldLabel htmlFor="xml-indent">Indent</FieldLabel>
         <Select
-          aria-label="Indent style"
-          onSelectionChange={(key) => onIndentChange(key as XmlIndent)}
-          selectedKey={indent}
+          onValueChange={(key) => onIndentChange(key as XmlIndent)}
+          value={indent}
         >
-          <SelectTrigger id="xml-indent" />
-          <SelectContent items={INDENT_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {INDENT_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button intent="primary" onPress={() => onRun('format')} size="sm">
+        <Button onClick={() => onRun('format')} size="sm" variant="default">
           <FileCode2 className="size-4" />
           Format
         </Button>
-        <Button intent="outline" onPress={() => onRun('validate')} size="sm">
+        <Button onClick={() => onRun('validate')} size="sm" variant="outline">
           Validate
         </Button>
-        <Button intent="outline" onPress={() => onRun('minify')} size="sm">
+        <Button onClick={() => onRun('minify')} size="sm" variant="outline">
           Minify
         </Button>
-        <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+        <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
         {computing && (
-          <span aria-live="polite" className="text-muted-fg text-xs">
+          <span aria-live="polite" className="text-muted-foreground text-xs">
             Processing…
           </span>
         )}
@@ -123,7 +129,7 @@ export function XmlOutput({
   return (
     <>
       {hasInput && !result && !computing && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click Format, Validate, or Minify to process your XML.
         </p>
       )}
@@ -135,7 +141,7 @@ export function XmlOutput({
       )}
       {activeAction === 'validate' && showResult && (
         <p
-          className="rounded-lg border border-success/30 bg-success/5 p-3 text-sm"
+          className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm"
           role="status"
         >
           Valid XML. The input is well-formed.

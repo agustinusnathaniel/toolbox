@@ -1,4 +1,4 @@
-import { XMarkIcon } from '@heroicons/react/20/solid';
+import { RiCloseLine } from '@remixicon/react';
 
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 import {
@@ -85,7 +85,7 @@ export function CityRow({
             onClick={() => onRemove(city.id)}
             type="button"
           >
-            <XMarkIcon className="size-4 sm:size-3.5" />
+            <RiCloseLine aria-hidden="true" className="size-4 sm:size-3.5" />
           </button>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 font-mono text-[11px] sm:hidden">

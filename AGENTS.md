@@ -70,10 +70,10 @@ Detailed testing guide: [CONTRIBUTING.md → Testing](./CONTRIBUTING.md#testing)
 - Use `vp` CLI, not `vite` (`vp dev`, `vp build`, `vp test`). Package manager is `pnpm`.
 - Run `pnpm check` before pushing (lint + typecheck + knip + tests).
 - CSP includes `'unsafe-eval'` and `'unsafe-inline'` — intentional for QuickJS WASM. Don't flag it.
-- Three icon libs coexist: `lucide-react` (preferred for new tool UI), `@intentui/icons` (system/nav), `@heroicons/react` (IntentUI component library dependency — do NOT remove, it's embedded in shared UI components).
+- Two icon libs coexist: `@remixicon/react` (preset family, required for generic app/navigation/UI icons) and `lucide-react` (existing tool content). Preserve domain-specific assets such as country flags.
 - Never edit `src/routeTree.gen.ts` (auto-generated). Never modify `dist/` (build output).
-- Never copy IntentUI component code — use `pnpm dlx shadcn@latest add @intentui/<name>`.
-- Never delete `src/lib/components/ui/**` registry components as dead-code pruning, even when unused — they are a deliberate IntentUI inventory kept so future tools can adopt them without regenerating; knip ignores the directory by design.
+- Never copy component code: use `pnpm dlx shadcn@latest add <name>` for stock Base UI components and `pnpm dlx shadcn@latest add @reui/<name>` for ReUI components (color picker, number field live in `src/lib/components/reui/`).
+- Never delete `src/lib/components/ui/**` or `src/lib/components/reui/**` registry components as dead-code pruning, even when unused: they are a deliberate shadcn Base UI inventory kept so future tools can adopt them without regenerating; knip ignores both directories by design.
 - PWA service worker is disabled in dev, enabled only in production builds.
 - Homepage stress harness is dev-only: `pnpm dev`, then `/homepage?data=demo|worst|empty|one|large|loading`. Fixtures and the loading-state preview live in `src/routes/homepage/-components/homepage-stress.tsx`, loaded via DEV-gated dynamic import, never in production.
 

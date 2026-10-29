@@ -16,12 +16,12 @@ export function RegexActions({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
       <CopyButton
         copied={copiedKey === 'matches'}
         disabled={disabled}
         label="Copy matches"
-        onPress={onCopyMatches}
+        onClick={onCopyMatches}
         text="Copy matches"
       />
     </div>

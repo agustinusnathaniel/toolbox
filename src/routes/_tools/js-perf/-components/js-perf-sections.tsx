@@ -11,9 +11,9 @@ export function JsPerfShareButton({ onCopyLink }: { onCopyLink: () => void }) {
     <div className="flex flex-wrap gap-2">
       <Button
         aria-label="Copy shareable link"
-        intent="outline"
-        onPress={onCopyLink}
+        onClick={onCopyLink}
         size="sm"
+        variant="outline"
       >
         <Link className="size-4" />
         Copy link

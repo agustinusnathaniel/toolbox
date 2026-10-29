@@ -8,12 +8,13 @@ import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { CsvMode } from '@/lib/tools/csv-converter/adapters/csv-converter';
 
@@ -36,25 +37,30 @@ export function CsvToolbar({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="csv-mode">Mode</Label>
+        <FieldLabel htmlFor="csv-mode">Mode</FieldLabel>
         <Select
-          aria-label="Conversion mode"
-          onSelectionChange={(key) => onModeChange(key as CsvMode)}
-          selectedKey={mode}
+          onValueChange={(key) => onModeChange(key as CsvMode)}
+          value={mode}
         >
-          <SelectTrigger />
-          <SelectContent items={MODE_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {MODE_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
       <div className="flex items-center gap-2">
-        <Button intent="primary" onPress={onConvert} size="sm">
+        <Button onClick={onConvert} size="sm" variant="default">
           <ArrowUpDown className="size-4" />
           Convert
         </Button>
         {computing && (
-          <span aria-live="polite" className="text-muted-fg text-xs">
+          <span aria-live="polite" className="text-muted-foreground text-xs">
             Converting…
           </span>
         )}
@@ -105,10 +111,10 @@ export function CsvActions({
         copied={copied}
         disabled={!canCopy}
         label="Copy output"
-        onPress={onCopy}
+        onClick={onCopy}
         text="Copy output"
       />
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -130,7 +136,7 @@ export function CsvOutput({
   return (
     <>
       {hasInput && !result && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click Convert to{' '}
           {mode === 'json-to-csv' ? 'turn JSON into CSV' : 'turn CSV into JSON'}
           .

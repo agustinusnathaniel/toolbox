@@ -38,11 +38,11 @@ export function UnicodeInput({
         value={value}
       />
       <div className="flex flex-wrap items-center gap-2">
-        <Button intent="outline" onPress={onClear} size="sm">
+        <Button onClick={onClear} size="sm" variant="outline">
           <Trash2 className="size-4" />
           Clear
         </Button>
-        <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+        <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
       </div>
     </div>
   );
@@ -51,7 +51,7 @@ export function UnicodeInput({
 function SummaryStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-lg border p-3">
-      <span className="text-muted-fg text-xs">{label}</span>
+      <span className="text-muted-foreground text-xs">{label}</span>
       <span className="font-mono text-lg tabular-nums">{value}</span>
     </div>
   );
@@ -144,7 +144,7 @@ export function UnicodeTable({
         <div className="overflow-x-auto">
           <table className="w-full min-w-xl caption-bottom font-mono text-xs tabular-nums">
             <thead>
-              <tr className="text-left text-muted-fg">
+              <tr className="text-left text-muted-foreground">
                 <th className="pr-3 pb-2 font-medium">#</th>
                 <th className="pr-3 pb-2 font-medium">Glyph</th>
                 <th className="pr-3 pb-2 font-medium">Code point</th>
@@ -170,7 +170,7 @@ export function UnicodeTable({
           </table>
         </div>
         {truncated && (
-          <p className="text-muted-fg text-xs">
+          <p className="text-muted-foreground text-xs">
             {`Showing the first ${String(visible.length)} of ${String(total)} characters. Shorten the input to inspect the rest.`}
           </p>
         )}

@@ -1,11 +1,11 @@
+import { RiArrowDownSLine } from '@remixicon/react';
 import { HelpCircleIcon, InfoIcon } from 'lucide-react';
 
 import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/lib/components/ui/collapsible';
 
 type FaqItem = {
   question: string;
@@ -23,50 +23,68 @@ type ToolHelpProps = {
   faq?: Array<FaqItem>;
 };
 
+function HelpSection({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Collapsible>
+      <CollapsibleTrigger className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left font-medium text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <span className="flex flex-1 items-center gap-2">
+          {icon}
+          {title}
+        </span>
+        <RiArrowDownSLine
+          aria-hidden="true"
+          className="size-4 shrink-0 in-data-[panel-open]:rotate-180 transition-transform"
+        />
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="px-2 py-2">{children}</div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
 export function ToolHelp({ howItWorks, faq }: ToolHelpProps) {
   return (
-    <DisclosureGroup>
+    <div className="flex flex-col gap-1">
       {howItWorks && (
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <InfoIcon className="size-4" />
-              {howItWorks.title ?? 'How it works'}
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              <p>{howItWorks.description}</p>
-              <ul className="list-inside list-disc">
-                {howItWorks.steps.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ul>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
+        <HelpSection
+          icon={<InfoIcon aria-hidden="true" className="size-4" />}
+          title={howItWorks.title ?? 'How it works'}
+        >
+          <div className="flex flex-col gap-3 text-muted-foreground text-sm">
+            <p>{howItWorks.description}</p>
+            <ul className="list-inside list-disc">
+              {howItWorks.steps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ul>
+          </div>
+        </HelpSection>
       )}
 
       {faq && faq.length > 0 && (
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="flex items-center gap-2">
-              <HelpCircleIcon className="size-4" />
-              FAQ
-            </span>
-          </DisclosureTrigger>
-          <DisclosurePanel>
-            <div className="flex flex-col gap-3 text-muted-fg text-sm">
-              {faq.map((item) => (
-                <div className="flex flex-col gap-1" key={item.question}>
-                  <p className="font-medium text-fg">{item.question}</p>
-                  <p>{item.answer}</p>
-                </div>
-              ))}
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
+        <HelpSection
+          icon={<HelpCircleIcon aria-hidden="true" className="size-4" />}
+          title="FAQ"
+        >
+          <div className="flex flex-col gap-3 text-muted-foreground text-sm">
+            {faq.map((item) => (
+              <div className="flex flex-col gap-1" key={item.question}>
+                <p className="font-medium text-foreground">{item.question}</p>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </HelpSection>
       )}
-    </DisclosureGroup>
+    </div>
   );
 }

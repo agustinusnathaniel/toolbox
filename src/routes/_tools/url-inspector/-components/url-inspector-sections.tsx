@@ -36,7 +36,7 @@ export function UrlInspectorActions({
 }) {
   return (
     <div>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -165,7 +165,7 @@ function QueryParamRows({
   }
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-muted-fg text-sm">Query parameters</span>
+      <span className="text-muted-foreground text-sm">Query parameters</span>
       {queryParams.map((param, index) => {
         const key = `query-${index}`;
         return (
@@ -205,7 +205,7 @@ export function UrlInspectorResult({
   return (
     <div className="flex flex-col gap-2">
       {result.usedSchemeFallback && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           No scheme detected — parsed as an https:// address.
         </p>
       )}

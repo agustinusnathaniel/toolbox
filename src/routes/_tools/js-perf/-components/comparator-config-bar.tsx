@@ -64,10 +64,10 @@ export function ComparatorConfigBar(props: ComparatorConfigBarProps) {
       {props.showResetToPreset ? (
         <Button
           className="ml-auto sm:ml-0"
-          intent="secondary"
-          isDisabled={running}
-          onPress={props.onResetToPreset}
+          disabled={running}
+          onClick={props.onResetToPreset}
           size="sm"
+          variant="secondary"
         >
           <RotateCcw className="size-4" />
           Reset to Preset

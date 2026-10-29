@@ -8,7 +8,10 @@ interface MarketingLayoutProps {
 
 export function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
-    <div className="min-h-screen bg-bg text-fg" data-shell="marketing">
+    <div
+      className="min-h-screen bg-background text-foreground"
+      data-shell="marketing"
+    >
       {children}
       <div className="mx-auto w-full max-w-7xl">
         <Footer />

@@ -21,11 +21,11 @@ export const ResultPanel = ({
 }: ResultPanelProps) => (
   <div className="flex flex-col gap-2">
     <div className="flex items-center justify-between">
-      <span className="text-muted-fg text-sm">{label}</span>
-      <CopyButton copied={copied} label={copyLabel} onPress={onCopy} />
+      <span className="text-muted-foreground text-sm">{label}</span>
+      <CopyButton copied={copied} label={copyLabel} onClick={onCopy} />
     </div>
     {children}
-    <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
+    <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg border bg-muted/40 p-3 font-mono text-sm">
       {value}
     </pre>
   </div>

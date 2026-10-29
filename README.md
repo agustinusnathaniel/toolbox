@@ -55,7 +55,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **React 19** + **Vite** — Cutting-edge performance and latest React features
 - **TanStack Start** (SPA mode) — Fully type-safe file-based routing built on TanStack Router
 - **Tailwind CSS 4** — Modern styling with native OKLCH support
-- **React Aria Components** — Accessible UI primitives out of the box
+- **shadcn/ui on Base UI**: accessible component primitives (preset `b4HQ17IlCb`) plus ReUI color picker and number field
 - **pnpm** — Fast, efficient package manager
 
 ## Getting Started
@@ -110,7 +110,7 @@ toolbox/
 │       ├── components/     # Shared UI components
 │       │   ├── animations/ # Animation wrappers (stagger-children)
 │       │   ├── global-command-menu/  # Command palette
-│       │   └── ui/         # shadcn/IntentUI component primitives
+│       │   └── ui/         # shadcn Base UI component primitives
 │       ├── hooks/          # Shared React hooks
 │       ├── js-perf-comp-core/  # JS perf comparison engine (grandfathered)
 │       ├── layout/         # Root layout, sidebar, footer

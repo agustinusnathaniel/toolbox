@@ -30,10 +30,10 @@ export function ShareRow({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <Button intent="outline" onPress={handleCopy} size="sm">
+      <Button onClick={handleCopy} size="sm" variant="outline">
         {copied ? 'Copied!' : 'Copy Times'}
       </Button>
-      <CopyLinkButton onPress={handleCopyLink} />
+      <CopyLinkButton onClick={handleCopyLink} />
     </div>
   );
 }

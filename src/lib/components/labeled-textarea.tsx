@@ -13,7 +13,7 @@ export function LabeledTextarea({
 }: LabeledTextareaProps) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor={props.id}>
+      <label className="text-muted-foreground text-sm" htmlFor={props.id}>
         {label}
       </label>
       <Textarea className={className} {...props} />

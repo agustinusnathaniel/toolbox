@@ -77,7 +77,7 @@ export function UrlCodecModeBar({
         track={track}
         value={mode}
       />
-      <p className="text-muted-fg text-xs">{MODE_HINT}</p>
+      <p className="text-muted-foreground text-xs">{MODE_HINT}</p>
     </div>
   );
 }
@@ -99,7 +99,7 @@ export function UrlCodecResult({
   if (!result.isValid) {
     return (
       <div className="flex flex-col gap-2">
-        <span className="font-medium text-danger text-sm">{label}</span>
+        <span className="font-medium text-destructive text-sm">{label}</span>
         <ToolError message={result.error} />
       </div>
     );
@@ -119,7 +119,7 @@ export function UrlCodecResult({
 export function UrlCodecActions({ onCopyLink }: { onCopyLink: () => void }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }

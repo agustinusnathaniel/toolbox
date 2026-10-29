@@ -121,7 +121,7 @@ function TimelineHeader({
             referenceZone={referenceZone}
             selectedHour={selectedHour}
           />
-          <Button intent="primary" onPress={onFindBestTime} size="sm">
+          <Button onClick={onFindBestTime} size="sm" variant="default">
             Find Best Time
           </Button>
         </div>

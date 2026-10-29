@@ -5,6 +5,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { HashAlgorithm } from '@/lib/tools/hash-generator/adapters/hash-generator';
 import { HASH_ALGORITHMS } from '@/lib/tools/hash-generator/adapters/hash-generator';
@@ -20,13 +21,18 @@ export function HashAlgorithmSelect({
 }) {
   return (
     <Select
-      aria-label="Hash algorithm"
-      onSelectionChange={(k) => onChange(k as HashAlgorithm)}
-      selectedKey={algorithm}
+      onValueChange={(value) => onChange(value as HashAlgorithm)}
+      value={algorithm}
     >
-      <SelectTrigger />
-      <SelectContent items={ALGORITHM_OPTIONS}>
-        {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+      <SelectTrigger aria-label="Hash algorithm">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {ALGORITHM_OPTIONS.map((option) => (
+          <SelectItem key={option.id} value={option.id}>
+            {option.label}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );

@@ -12,7 +12,7 @@ export function RegexPatternInput({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="regex-pattern">
+      <label className="text-muted-foreground text-sm" htmlFor="regex-pattern">
         Pattern
       </label>
       <Input
@@ -36,7 +36,7 @@ export function RegexFlagsInput({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="regex-flags">
+      <label className="text-muted-foreground text-sm" htmlFor="regex-flags">
         Flags
       </label>
       <Input
@@ -47,7 +47,7 @@ export function RegexFlagsInput({
         placeholder="gimsuy"
         value={flags}
       />
-      <p className="text-muted-fg text-xs">Valid flags: g i m s u y</p>
+      <p className="text-muted-foreground text-xs">Valid flags: g i m s u y</p>
     </div>
   );
 }

@@ -17,7 +17,10 @@ export function IterationsInput({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <label className="text-muted-fg text-sm" htmlFor="iterations-input">
+      <label
+        className="text-muted-foreground text-sm"
+        htmlFor="iterations-input"
+      >
         Iterations:
       </label>
       <Input
@@ -57,7 +60,10 @@ export function StabilityRoundsInput({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <label className="text-muted-fg text-sm" htmlFor="stability-rounds-input">
+      <label
+        className="text-muted-foreground text-sm"
+        htmlFor="stability-rounds-input"
+      >
         Rounds:
       </label>
       <Input
@@ -95,7 +101,7 @@ export function StabilityToggle({
 }) {
   return (
     <label
-      className="flex cursor-pointer items-center gap-2 text-muted-fg text-sm"
+      className="flex cursor-pointer items-center gap-2 text-muted-foreground text-sm"
       htmlFor="stability-mode-input"
     >
       <input

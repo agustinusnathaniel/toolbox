@@ -14,11 +14,11 @@ export function HashActions({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button onPress={onHashText} size="sm">
+      <Button onClick={onHashText} size="sm">
         <Fingerprint className="size-4" />
         Hash text
       </Button>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }

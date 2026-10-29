@@ -57,7 +57,7 @@ function PasswordGeneratorPage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton
               label="Copy shareable link"
-              onPress={page.handleCopyLink}
+              onClick={page.handleCopyLink}
             />
           </div>
           <PasswordCharset

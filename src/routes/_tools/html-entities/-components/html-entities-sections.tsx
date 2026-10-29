@@ -63,7 +63,7 @@ export function HtmlEntitiesModes({
         track={track}
         value={mode}
       />
-      <Button intent="outline" onPress={onClear} size="sm">
+      <Button onClick={onClear} size="sm" variant="outline">
         Clear
       </Button>
     </div>
@@ -77,13 +77,13 @@ export function HtmlEntitiesExamples({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <span className="text-muted-fg text-xs">Try:</span>
+      <span className="text-muted-foreground text-xs">Try:</span>
       {EXAMPLES.map((ex) => (
         <Button
-          intent="outline"
           key={ex}
-          onPress={() => onExample(ex)}
+          onClick={() => onExample(ex)}
           size="sm"
+          variant="outline"
         >
           <span className="max-w-[20ch] truncate font-mono text-xs">
             {ex.slice(0, 24)}
@@ -118,7 +118,7 @@ export function HtmlEntitiesOutput({
         />
       )}
       {!hasInput && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Type or paste text to see the {label.toLowerCase()} result live.
         </p>
       )}
@@ -158,7 +158,7 @@ export function HtmlEntitiesHelp() {
 export function HtmlEntitiesShare({ onCopyLink }: { onCopyLink: () => void }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }

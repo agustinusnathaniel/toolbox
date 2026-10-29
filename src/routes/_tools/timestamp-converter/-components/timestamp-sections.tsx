@@ -8,7 +8,12 @@ import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
 
 export function TimestampInput({
   input,
@@ -33,14 +38,14 @@ export function TimestampInput({
           value={input}
         />
         <div className="flex flex-wrap gap-2">
-          <Button intent="outline" onPress={onUseNow} size="sm">
+          <Button onClick={onUseNow} size="sm" variant="outline">
             <RotateCcw className="size-4" />
             Use current time
           </Button>
-          <CopyLinkButton onPress={onCopyLink} />
+          <CopyLinkButton onClick={onCopyLink} />
         </div>
         {!input.trim() && (
-          <p className="text-muted-fg text-xs">
+          <p className="text-muted-foreground text-xs">
             Paste a Unix timestamp or a date string above to convert it.
           </p>
         )}
@@ -62,7 +67,9 @@ export function TimestampEpochCards({
 }) {
   return (
     <Card>
-      <CardHeader title="Epoch" />
+      <CardHeader>
+        <CardTitle>Epoch</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col">
         <CopyRow
           copied={copiedKey === 'seconds'}
@@ -110,7 +117,9 @@ export function TimestampDateCards({
 }) {
   return (
     <Card>
-      <CardHeader title="Date" />
+      <CardHeader>
+        <CardTitle>Date</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col">
         <CopyRow
           copied={copiedKey === 'iso'}

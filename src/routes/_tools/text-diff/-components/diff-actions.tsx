@@ -20,20 +20,20 @@ export function DiffActions({
 }: DiffActionsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button onPress={onCompare} size="sm">
+      <Button onClick={onCompare} size="sm">
         <GitCompare className="size-4" />
         Compare
       </Button>
       {computing && (
-        <span aria-live="polite" className="text-muted-fg text-xs">
+        <span aria-live="polite" className="text-muted-foreground text-xs">
           Comparing…
         </span>
       )}
-      <Button intent="outline" onPress={onSwap} size="sm">
+      <Button onClick={onSwap} size="sm" variant="outline">
         <ArrowLeftRight className="size-4" />
         Swap
       </Button>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }

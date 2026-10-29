@@ -1,122 +1,125 @@
 'use client';
 
-import { IconClock, IconGlobe } from '@intentui/icons';
-import { useLocation } from '@tanstack/react-router';
-import { Folder } from 'lucide-react';
+import { RiArrowDownSLine, RiGlobalLine, RiTimeLine } from '@remixicon/react';
+import { Link, useLocation } from '@tanstack/react-router';
 import { useCallback } from 'react';
 
 import { ThemeToggle } from '@/lib/components/theme-toggle';
-import { Link } from '@/lib/components/ui/link';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/lib/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
-  SidebarItem,
-  SidebarLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
-  SidebarSection,
-  SidebarSectionGroup,
-  SidebarTree,
-  SidebarTreeContent,
-  SidebarTreeItem,
-  SidebarTreeLabel,
-  SidebarTreeLink,
+  SidebarSeparator,
   useSidebar,
 } from '@/lib/components/ui/sidebar';
-import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { usePrefetchRoute } from '@/lib/hooks/use-prefetch-route';
 import { getToolNavCategories } from '@/lib/navigation/tool-registry';
 
 const navCategories = getToolNavCategories();
 
 export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
-  const { setIsOpenOnMobile } = useSidebar();
-  const isMobile = useIsMobile();
+  const { isMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
   const prefetchRoute = usePrefetchRoute();
 
   const handleMobileClose = useCallback(() => {
     if (isMobile) {
-      setIsOpenOnMobile(false);
+      setOpenMobile(false);
     }
-  }, [isMobile, setIsOpenOnMobile]);
+  }, [isMobile, setOpenMobile]);
 
   return (
     <Sidebar {...props}>
-      <nav
-        aria-label="Tool navigation"
-        className="flex min-h-0 flex-1 flex-col"
-      >
-        <SidebarHeader>
-          <Link
-            className="flex items-center gap-x-2 group-data-[collapsible=dock]:size-10 group-data-[collapsible=dock]:justify-center"
-            href="/"
-            onClick={handleMobileClose}
-          >
-            <IconGlobe className="size-5" />
-            <SidebarLabel className="font-medium">Toolbox</SidebarLabel>
-          </Link>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarSectionGroup>
-            <SidebarTree
-              aria-label="Tool navigation"
-              defaultExpandedKeys={navCategories.map(
-                ({ category }) => category
-              )}
-              selectedRoute={location.pathname}
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleMobileClose}
+              render={<Link to="/" />}
+              tooltip="Toolbox home"
             >
-              {navCategories.map(({ category, items }) => (
-                <SidebarTreeItem
-                  id={category}
-                  key={category}
-                  textValue={category}
-                >
-                  <SidebarTreeContent className="font-semibold">
-                    <Folder aria-hidden="true" />
-                    <SidebarTreeLabel>{category}</SidebarTreeLabel>
-                  </SidebarTreeContent>
-                  {items.map((item) => (
-                    <SidebarTreeItem
-                      href={item.path}
-                      id={item.slug}
-                      key={item.slug}
-                      textValue={item.title}
-                    >
-                      <SidebarTreeContent>
-                        <SidebarTreeLink
+              <RiGlobalLine aria-hidden="true" />
+              <span className="font-medium">Toolbox</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        {navCategories.map(({ category, items }) => (
+          <Collapsible defaultOpen key={category}>
+            <SidebarGroup>
+              {/* In icon-collapsed mode the label text hides but the trigger
+                  stays mounted and focusable, so keyboard focus never lands
+                  on a removed target. */}
+              <SidebarGroupLabel render={<CollapsibleTrigger />}>
+                <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
+                  {category}
+                </span>
+                <RiArrowDownSLine
+                  aria-hidden="true"
+                  className="in-data-[panel-open]:rotate-180 transition-transform group-data-[collapsible=icon]:hidden"
+                />
+              </SidebarGroupLabel>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {items.map((item) => (
+                      <SidebarMenuItem key={item.slug}>
+                        <SidebarMenuButton
+                          isActive={location.pathname === item.path}
+                          onClick={handleMobileClose}
                           onFocus={() => prefetchRoute(item.path)}
-                          onHoverStart={() => prefetchRoute(item.path)}
-                          onPress={handleMobileClose}
+                          onMouseEnter={() => prefetchRoute(item.path)}
+                          render={<Link to={item.path} />}
+                          tooltip={item.title}
                         >
                           {item.icon}
-                          <SidebarTreeLabel>{item.title}</SidebarTreeLabel>
-                        </SidebarTreeLink>
-                      </SidebarTreeContent>
-                    </SidebarTreeItem>
-                  ))}
-                </SidebarTreeItem>
-              ))}
-            </SidebarTree>
-            <SidebarSection label="More">
-              <SidebarItem
-                href="/changelog"
-                isCurrent={location.pathname === '/changelog'}
-                onClick={handleMobileClose}
-                tooltip="Changelog"
-              >
-                <IconClock />
-                <SidebarLabel>Changelog</SidebarLabel>
-              </SidebarItem>
-            </SidebarSection>
-          </SidebarSectionGroup>
-        </SidebarContent>
-
-        <SidebarFooter className="flex flex-row items-center justify-between gap-2 p-2">
-          <ThemeToggle className="size-8" />
-        </SidebarFooter>
-      </nav>
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        ))}
+        <SidebarSeparator className="mx-0" />
+        <SidebarGroup>
+          <SidebarGroupLabel>More</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={location.pathname === '/changelog'}
+                  onClick={handleMobileClose}
+                  render={<Link to="/changelog" />}
+                  tooltip="Changelog"
+                >
+                  <RiTimeLine aria-hidden="true" />
+                  <span>Changelog</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter className="flex flex-row items-center justify-between gap-2 p-2">
+        <ThemeToggle className="size-8" />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

@@ -1,13 +1,12 @@
-import { IconGlobe, IconHamburger } from '@intentui/icons';
-import { useRouterState } from '@tanstack/react-router';
-import { Link } from 'react-aria-components';
+import { RiGlobalLine, RiMenuLine } from '@remixicon/react';
+import { Link, useRouterState } from '@tanstack/react-router';
 
 import { usePrefetchRoute } from '@/lib/hooks/use-prefetch-route';
 import { getMobileNavItems } from '@/lib/navigation/tool-registry';
 
 import { SidebarTrigger } from './ui/sidebar';
 
-const homeItem = { href: '/' as const, icon: <IconGlobe />, label: 'Home' };
+const homeItem = { href: '/' as const, icon: <RiGlobalLine />, label: 'Home' };
 
 const MAX_MOBILE_TOOLS = 4;
 
@@ -39,7 +38,7 @@ export const MobileBottomNav = () => {
   return (
     <nav
       aria-label="Mobile bottom navigation"
-      className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t bg-navbar/80 px-1 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur-xs md:hidden"
+      className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t bg-background/80 px-1 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur-xs md:hidden"
     >
       {navItems.map(({ href, icon, label }) => {
         const isActive = currentPath === href;
@@ -47,28 +46,25 @@ export const MobileBottomNav = () => {
           <Link
             aria-current={isActive ? 'page' : undefined}
             className={`${itemClass} ${
-              isActive ? 'text-primary' : 'text-muted-fg hover:text-fg'
+              isActive
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
-            href={href}
             key={href}
             onFocus={() => prefetchRoute(href)}
-            onHoverStart={() => prefetchRoute(href)}
+            onMouseEnter={() => prefetchRoute(href)}
+            to={href}
           >
             <span className={iconClass}>{icon}</span>
             <span className="max-w-full truncate">{label}</span>
           </Link>
         );
       })}
-      {/* The sq-md variant's size-11 would cap this button at 44px and the
-          Button base's border would stretch it to 50px, so both are neutralised
-          in favour of the same 48px row height as the link items. */}
       <SidebarTrigger
         aria-label="More navigation"
-        className={`${itemClass} h-auto self-stretch border-0 text-muted-fg`}
-        intent="plain"
-        size="sq-md"
+        className={`${itemClass} h-auto self-stretch border-0 text-muted-foreground`}
       >
-        <IconHamburger className={iconClass} />
+        <RiMenuLine aria-hidden="true" className={iconClass} />
         <span className="max-w-full truncate">More</span>
       </SidebarTrigger>
     </nav>

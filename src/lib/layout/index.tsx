@@ -17,7 +17,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const isMobile = useIsMobile();
   return (
     <SidebarProvider>
-      <AppSidebar collapsible="dock" intent="inset" />
+      <AppSidebar collapsible="icon" variant="inset" />
       <SidebarInset className="mb-16 min-h-[95dvh] md:mb-0">
         <AppSidebarNav />
         <div

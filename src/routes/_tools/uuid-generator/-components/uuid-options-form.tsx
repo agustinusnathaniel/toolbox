@@ -2,15 +2,22 @@
 
 import { Dices } from 'lucide-react';
 
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from '@/lib/components/reui/number-field';
 import { Button } from '@/lib/components/ui/button';
-import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
-import { Label } from '@/lib/components/ui/field';
-import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
+import { Checkbox } from '@/lib/components/ui/checkbox';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { UuidOptions } from '@/lib/tools/uuid-generator/adapters/uuid-generator';
 import { UUID_VERSION_OPTIONS } from '@/lib/tools/uuid-generator/adapters/uuid-generator';
@@ -31,65 +38,80 @@ export function UuidOptionsForm({
   return (
     <>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="uuid-version">Version</Label>
+        <Field>
+          <FieldLabel htmlFor="uuid-version">Version</FieldLabel>
           <Select
-            aria-label="UUID version"
-            onSelectionChange={(key) => {
+            onValueChange={(key) => {
               setOptions((prev) => ({
                 ...prev,
                 version: key as UuidOptions['version'],
               }));
               clearResult();
             }}
-            selectedKey={options.version}
+            value={options.version}
           >
-            <SelectTrigger />
-            <SelectContent items={UUID_VERSION_OPTIONS}>
-              {(option) => (
-                <SelectItem id={option.id}>{option.label}</SelectItem>
-              )}
+            <SelectTrigger aria-label="UUID version" id="uuid-version">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {UUID_VERSION_OPTIONS.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="uuid-count">Count</Label>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="uuid-count">Count</FieldLabel>
           <NumberField
-            maxValue={1000}
-            minValue={1}
-            onChange={(v) => {
-              setOptions((prev) => ({ ...prev, count: v ?? prev.count }));
+            id="uuid-count"
+            max={1000}
+            min={1}
+            onValueChange={(value) => {
+              setOptions((prev) => ({ ...prev, count: value ?? prev.count }));
               clearResult();
             }}
             value={options.count}
           >
-            <NumberInput id="uuid-count" />
+            <NumberFieldGroup>
+              <NumberFieldDecrement aria-label="Decrease count" />
+              <NumberFieldInput />
+              <NumberFieldIncrement aria-label="Increase count" />
+            </NumberFieldGroup>
           </NumberField>
-        </div>
-        <Button onPress={onGenerate} size="sm">
+        </Field>
+        <Button onClick={onGenerate} size="sm">
           <Dices className="size-4" />
           Generate
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <CheckboxField
-          isSelected={options.uppercase}
-          onChange={(selected) => {
-            setOptions((prev) => ({ ...prev, uppercase: selected }));
-            clearResult();
-          }}
-        >
-          <Checkbox>Uppercase (A-Z)</Checkbox>
-        </CheckboxField>
-        <CheckboxField
-          isSelected={options.hyphens}
-          onChange={(selected) => {
-            setOptions((prev) => ({ ...prev, hyphens: selected }));
-            clearResult();
-          }}
-        >
-          <Checkbox>Include hyphens</Checkbox>
-        </CheckboxField>
+        <Field orientation="horizontal">
+          <Checkbox
+            checked={options.uppercase}
+            id="uuid-uppercase"
+            onCheckedChange={(selected) => {
+              setOptions((prev) => ({
+                ...prev,
+                uppercase: selected === true,
+              }));
+              clearResult();
+            }}
+          />
+          <FieldLabel htmlFor="uuid-uppercase">Uppercase (A-Z)</FieldLabel>
+        </Field>
+        <Field orientation="horizontal">
+          <Checkbox
+            checked={options.hyphens}
+            id="uuid-hyphens"
+            onCheckedChange={(selected) => {
+              setOptions((prev) => ({ ...prev, hyphens: selected === true }));
+              clearResult();
+            }}
+          />
+          <FieldLabel htmlFor="uuid-hyphens">Include hyphens</FieldLabel>
+        </Field>
       </div>
     </>
   );

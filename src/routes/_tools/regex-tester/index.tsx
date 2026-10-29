@@ -56,7 +56,9 @@ function RegexTesterPage() {
           <RegexError result={s.result} />
           {!hasError && (
             <div className="flex flex-col gap-3">
-              <span className="text-muted-fg text-sm">{s.matchLabel}</span>
+              <span className="text-muted-foreground text-sm">
+                {s.matchLabel}
+              </span>
               <RegexHighlights segments={s.segments} />
               <RegexMatchList result={s.result} />
             </div>

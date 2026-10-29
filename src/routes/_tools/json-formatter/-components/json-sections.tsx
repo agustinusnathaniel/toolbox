@@ -40,32 +40,32 @@ export function JsonActions({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button isDisabled={computing} onPress={() => onRun('format')} size="sm">
+      <Button disabled={computing} onClick={() => onRun('format')} size="sm">
         <FileJson className="size-4" />
         Format
       </Button>
       <Button
-        intent="outline"
-        isDisabled={computing}
-        onPress={() => onRun('validate')}
+        disabled={computing}
+        onClick={() => onRun('validate')}
         size="sm"
+        variant="outline"
       >
         Validate
       </Button>
       <Button
-        intent="outline"
-        isDisabled={computing}
-        onPress={() => onRun('minify')}
+        disabled={computing}
+        onClick={() => onRun('minify')}
         size="sm"
+        variant="outline"
       >
         Minify
       </Button>
       {computing && (
-        <span aria-live="polite" className="text-muted-fg text-xs">
+        <span aria-live="polite" className="text-muted-foreground text-xs">
           Processing…
         </span>
       )}
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -102,7 +102,7 @@ export function JsonOutput({
   return (
     <>
       {hasInput && !result && !computing && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click Format, Validate, or Minify to process your JSON.
         </p>
       )}

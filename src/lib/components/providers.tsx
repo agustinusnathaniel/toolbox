@@ -1,36 +1,15 @@
 'use client';
 
-import {
-  type NavigateOptions,
-  type ToOptions,
-  useRouter,
-} from '@tanstack/react-router';
-import { ThemeProvider } from 'next-themes';
-import { RouterProvider } from 'react-aria-components';
+import { ThemeProvider as NextThemeProvider } from 'next-themes';
 
-declare module 'react-aria-components' {
-  interface RouterConfig {
-    href: ToOptions['to'];
-    params: ToOptions['params'];
-    routerOptions: Omit<NavigateOptions, 'params'>;
-  }
-}
+import { TooltipProvider } from '@/lib/components/ui/tooltip';
 
-export const Providers = ({ children }: { children: React.ReactNode }) => {
-  const router = useRouter();
-
-  return (
-    <RouterProvider
-      navigate={(to, options) => router.navigate({ to, ...options })}
-      useHref={(to) => router.buildLocation({ to }).href}
-    >
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        storageKey="vite-ui-theme"
-      >
-        {children}
-      </ThemeProvider>
-    </RouterProvider>
-  );
-};
+export const Providers = ({ children }: { children: React.ReactNode }) => (
+  <NextThemeProvider
+    attribute="class"
+    defaultTheme="system"
+    storageKey="vite-ui-theme"
+  >
+    <TooltipProvider>{children}</TooltipProvider>
+  </NextThemeProvider>
+);

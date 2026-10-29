@@ -10,14 +10,15 @@ import { CopyLinkButton } from '@/lib/components/copy-link-button';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
-import { Label } from '@/lib/components/ui/field';
+import { Checkbox } from '@/lib/components/ui/checkbox';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import { Textarea } from '@/lib/components/ui/textarea';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
@@ -157,8 +158,10 @@ function LoremIpsumPage() {
       <Card>
         <CardContent className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="lorem-paragraphs">Paragraphs (1-50)</Label>
+            <Field>
+              <FieldLabel htmlFor="lorem-paragraphs">
+                Paragraphs (1-50)
+              </FieldLabel>
               <Input
                 aria-label="Paragraphs"
                 id="lorem-paragraphs"
@@ -170,11 +173,11 @@ function LoremIpsumPage() {
                 type="number"
                 value={String(state.paragraphs)}
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="lorem-sentences">
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="lorem-sentences">
                 Sentences per paragraph (1-10)
-              </Label>
+              </FieldLabel>
               <Input
                 aria-label="Sentences per paragraph"
                 id="lorem-sentences"
@@ -190,9 +193,11 @@ function LoremIpsumPage() {
                 type="number"
                 value={String(state.sentencesPerParagraph)}
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="lorem-wordsMin">Words per sentence min</Label>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="lorem-wordsMin">
+                Words per sentence min
+              </FieldLabel>
               <Input
                 aria-label="Words min"
                 id="lorem-wordsMin"
@@ -204,9 +209,11 @@ function LoremIpsumPage() {
                 type="number"
                 value={String(state.wordsMin)}
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="lorem-wordsMax">Words per sentence max</Label>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="lorem-wordsMax">
+                Words per sentence max
+              </FieldLabel>
               <Input
                 aria-label="Words max"
                 id="lorem-wordsMax"
@@ -218,47 +225,54 @@ function LoremIpsumPage() {
                 type="number"
                 value={String(state.wordsMax)}
               />
-            </div>
+            </Field>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <CheckboxField
-              isSelected={state.startWithLorem}
-              onChange={(v) =>
-                setState((prev) => ({ ...prev, startWithLorem: v }))
-              }
-            >
-              <Checkbox>Start with Lorem ipsum</Checkbox>
-            </CheckboxField>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="lorem-format">Format</Label>
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={state.startWithLorem}
+                id="lorem-start-with"
+                onCheckedChange={(v) =>
+                  setState((prev) => ({ ...prev, startWithLorem: v === true }))
+                }
+              />
+              <FieldLabel htmlFor="lorem-start-with">
+                Start with Lorem ipsum
+              </FieldLabel>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="lorem-format">Format</FieldLabel>
               <Select
-                aria-label="Format"
-                onSelectionChange={(k) =>
+                onValueChange={(k) =>
                   setState((prev) => ({
                     ...prev,
                     format: k as 'plain' | 'html',
                   }))
                 }
-                selectedKey={state.format}
+                value={state.format}
               >
-                <SelectTrigger id="lorem-format" />
-                <SelectContent items={[...FORMAT_OPTIONS]}>
-                  {(option) => (
-                    <SelectItem id={option.id}>{option.label}</SelectItem>
-                  )}
+                <SelectTrigger aria-label="Format" id="lorem-format">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...FORMAT_OPTIONS].map((option) => (
+                    <SelectItem key={option.id} value={option.id}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button onPress={handleRegenerate} size="sm">
+            <Button onClick={handleRegenerate} size="sm">
               <RefreshCw className="size-4" />
               Generate
             </Button>
-            <CopyLinkButton onPress={handleCopyLink} />
-            <Button intent="outline" onPress={handleClear} size="sm">
+            <CopyLinkButton onClick={handleCopyLink} />
+            <Button onClick={handleClear} size="sm" variant="outline">
               <Trash2 className="size-4" />
               Clear
             </Button>
@@ -266,19 +280,21 @@ function LoremIpsumPage() {
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <Label>Output</Label>
+              <FieldLabel>Output</FieldLabel>
               <div className="flex items-center gap-2">
-                <span className="text-muted-fg text-xs">{wordCount} words</span>
+                <span className="text-muted-foreground text-xs">
+                  {wordCount} words
+                </span>
                 <Button
                   aria-label="Copy output"
-                  intent="outline"
-                  onPress={handleCopy}
-                  size="sq-sm"
+                  onClick={handleCopy}
+                  size="icon-sm"
+                  variant="outline"
                 >
                   <Copy className="size-4" />
                 </Button>
                 {copiedKey === 'output' && (
-                  <span className="text-success text-xs">Copied</span>
+                  <span className="text-emerald-600 text-xs">Copied</span>
                 )}
               </div>
             </div>

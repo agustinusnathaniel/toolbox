@@ -22,7 +22,7 @@ export const CopyRow = ({
   }
   return (
     <div className="flex items-center justify-between gap-4 py-2">
-      <span className="text-muted-fg text-sm">{label}</span>
+      <span className="text-muted-foreground text-sm">{label}</span>
       <div className="flex min-w-0 items-center gap-2">
         <span
           className={`break-words break-all text-right font-medium text-sm ${
@@ -35,7 +35,7 @@ export const CopyRow = ({
           <CopyButton
             copied={copied ?? false}
             label={copyLabel}
-            onPress={onCopy}
+            onClick={onCopy}
           />
         )}
       </div>

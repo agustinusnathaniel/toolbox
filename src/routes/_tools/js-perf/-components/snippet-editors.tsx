@@ -22,9 +22,7 @@ export function SnippetEditors({
       <div className="flex flex-col gap-2">
         <span className="font-medium text-sm">Snippet A</span>
         <div className="overflow-hidden rounded-md border">
-          <Suspense
-            fallback={<Skeleton className="h-[200px] w-full" isLoading />}
-          >
+          <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
             <MonacoEditor
               height="220px"
               language="javascript"
@@ -38,9 +36,7 @@ export function SnippetEditors({
       <div className="flex flex-col gap-2">
         <span className="font-medium text-sm">Snippet B</span>
         <div className="overflow-hidden rounded-md border">
-          <Suspense
-            fallback={<Skeleton className="h-[200px] w-full" isLoading />}
-          >
+          <Suspense fallback={<Skeleton className="h-[200px] w-full" />}>
             <MonacoEditor
               height="220px"
               language="javascript"

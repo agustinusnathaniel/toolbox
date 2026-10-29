@@ -1,12 +1,13 @@
 import { ArrowLeftRight, Trash2 } from 'lucide-react';
 
 import { Button } from '@/lib/components/ui/button';
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { YamlMode } from '@/lib/tools/yaml-converter/adapters/yaml-params';
 
@@ -33,29 +34,34 @@ export function YamlFormatControls({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="yaml-mode">Mode</Label>
+        <FieldLabel htmlFor="yaml-mode">Mode</FieldLabel>
         <Select
-          aria-label="Conversion mode"
-          onSelectionChange={(key) => onModeChange(key as YamlMode)}
-          selectedKey={mode}
+          onValueChange={(key) => onModeChange(key as YamlMode)}
+          value={mode}
         >
-          <SelectTrigger id="yaml-mode" />
-          <SelectContent items={MODE_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {MODE_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
       <div className="flex items-center gap-2">
-        <Button intent="primary" onPress={onConvert} size="sm">
+        <Button onClick={onConvert} size="sm" variant="default">
           <ArrowLeftRight className="size-4" />
           Convert
         </Button>
-        <Button intent="outline" onPress={onClear} size="sm">
+        <Button onClick={onClear} size="sm" variant="outline">
           <Trash2 className="size-4" />
           Clear
         </Button>
         {computing && (
-          <span aria-live="polite" className="text-muted-fg text-xs">
+          <span aria-live="polite" className="text-muted-foreground text-xs">
             Converting…
           </span>
         )}

@@ -1,11 +1,7 @@
 'use client';
 
 import { Button } from '@/lib/components/ui/button';
-import {
-  ProgressBar,
-  ProgressBarTrack,
-  ProgressBarValue,
-} from '@/lib/components/ui/progress-bar';
+import { Progress } from '@/lib/components/ui/progress';
 
 import type { ImageFile } from './use-zippy-img';
 
@@ -27,16 +23,17 @@ export function FileQueue({ inputs, isCompressing, onRemove }: FileQueueProps) {
             <span className="truncate font-medium text-sm">
               {item.file.name}
             </span>
-            <ProgressBar className="w-full" value={item.progress}>
-              <ProgressBarTrack />
-              <ProgressBarValue />
-            </ProgressBar>
+            <Progress
+              aria-label={`Compression progress for ${item.file.name}`}
+              className="w-full"
+              value={item.progress}
+            />
           </div>
           <Button
-            intent="plain"
-            isDisabled={isCompressing}
-            onPress={() => onRemove(item.file.name)}
+            disabled={isCompressing}
+            onClick={() => onRemove(item.file.name)}
             size="sm"
+            variant="ghost"
           >
             Remove
           </Button>

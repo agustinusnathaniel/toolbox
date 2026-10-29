@@ -41,15 +41,15 @@ export function ZippyActions({
   return (
     <div className="flex items-center gap-3">
       <Button
-        intent="primary"
-        isDisabled={!canCompress || compressing}
-        onPress={onCompress}
+        disabled={!canCompress || compressing}
+        onClick={onCompress}
         size="lg"
+        variant="default"
       >
         {compressing ? 'Compressing...' : 'Compress Now'}
       </Button>
       {allDone && hasCompressed && (
-        <Button intent="outline" onPress={onDownload} size="lg">
+        <Button onClick={onDownload} size="lg" variant="outline">
           <Download />
           Download Outputs
         </Button>

@@ -39,7 +39,7 @@ function ZippyImgPage() {
       <Card>
         <CardHeader />
         <CardContent className="flex flex-col gap-4">
-          <p className="text-muted-fg text-sm">
+          <p className="text-muted-foreground text-sm">
             Compress images securely in your browser. No files are uploaded to
             any server.
           </p>
@@ -64,7 +64,7 @@ function ZippyImgPage() {
             onDownload={zippy.handleDownload}
           />
           {zippy.compressionSummary && (
-            <p aria-live="polite" className="text-muted-fg text-sm">
+            <p aria-live="polite" className="text-muted-foreground text-sm">
               {compressionMessage}
             </p>
           )}

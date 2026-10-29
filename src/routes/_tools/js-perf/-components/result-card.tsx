@@ -1,4 +1,9 @@
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
 import type { ExecutionResult } from '@/lib/js-perf-comp-core/models';
 import {
   formatDuration,
@@ -38,82 +43,84 @@ export function ResultCard({
 
   return (
     <Card>
-      <CardHeader title={label} />
+      <CardHeader>
+        <CardTitle>{label}</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {result ? (
           <>
             <div className="flex items-center gap-2">
               <StatusBadge result={result} />
-              <span className="font-mono text-muted-fg text-sm tabular-nums">
+              <span className="font-mono text-muted-foreground text-sm tabular-nums">
                 {formatDuration(result.durationMs)}
               </span>
               {result.statistics && (
-                <span className="text-muted-fg text-xs tabular-nums">
+                <span className="text-muted-foreground text-xs tabular-nums">
                   ({formatStatistics(result.statistics)})
                 </span>
               )}
             </div>
             {result.status === 'success' && result.statistics ? (
               <div className="grid grid-cols-1 gap-1 rounded-md border border-border/60 bg-muted/20 px-2 py-1.5 text-xs sm:grid-cols-2">
-                <span className="text-muted-fg">
+                <span className="text-muted-foreground">
                   Per iteration:{' '}
-                  <span className="font-medium text-fg tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {formatDuration(result.perIterationMs)}
                   </span>
                 </span>
-                <span className="text-muted-fg">
+                <span className="text-muted-foreground">
                   Range:{' '}
-                  <span className="font-medium text-fg tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {formatDuration(result.statistics.minMs)} -{' '}
                     {formatDuration(result.statistics.maxMs)}
                   </span>
                 </span>
-                <span className="text-muted-fg">
+                <span className="text-muted-foreground">
                   Std dev:{' '}
-                  <span className="font-medium text-fg tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {formatDuration(result.statistics.stddevMs)}
                   </span>
                 </span>
-                <span className="text-muted-fg">
+                <span className="text-muted-foreground">
                   Relative margin:{' '}
-                  <span className="font-medium text-fg tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {relativeMargin === null
                       ? '—'
                       : `${relativeMargin.toFixed(2)}%`}
                   </span>
                 </span>
-                <span className="text-muted-fg">
+                <span className="text-muted-foreground">
                   Variability:{' '}
-                  <span className="font-medium text-fg tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {variability === null ? '—' : `${variability.toFixed(2)}%`}
                   </span>
                 </span>
-                <span className="text-muted-fg">
+                <span className="text-muted-foreground">
                   Runs:{' '}
-                  <span className="font-medium text-fg tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {result.statistics.iterations}
                   </span>
                 </span>
               </div>
             ) : null}
             {result.errorMessage && (
-              <div className="rounded-md border border-danger/30 bg-danger/5 p-2 font-mono text-danger text-xs">
+              <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2 font-mono text-destructive text-xs">
                 {result.errorMessage}
               </div>
             )}
             {result.output.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span className="font-medium text-muted-fg text-xs">
+                <span className="font-medium text-muted-foreground text-xs">
                   Output:
                 </span>
                 <div className="flex flex-col gap-0.5 rounded-md bg-muted/50 p-2 font-mono text-xs">
                   {outputPreview.map((entry) => (
-                    <span className="text-fg" key={entry.key}>
+                    <span className="text-foreground" key={entry.key}>
                       {entry.line}
                     </span>
                   ))}
                   {result.output.length > 20 && (
-                    <span className="text-muted-fg">
+                    <span className="text-muted-foreground">
                       ... +{result.output.length - 20} more lines
                     </span>
                   )}
@@ -122,7 +129,7 @@ export function ResultCard({
             )}
           </>
         ) : (
-          <span className="text-muted-fg text-sm">No result yet</span>
+          <span className="text-muted-foreground text-sm">No result yet</span>
         )}
       </CardContent>
     </Card>

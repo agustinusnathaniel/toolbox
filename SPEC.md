@@ -18,7 +18,7 @@ toolbox/
 │       ├── components/     # Shared UI components
 │       │   ├── animations/ # Animation wrappers
 │       │   ├── global-command-menu/  # Command palette
-│       │   └── ui/         # shadcn/IntentUI component primitives
+│       │   └── ui/         # shadcn Base UI component primitives (ReUI additions in reui/)
 │       ├── hooks/          # Shared React hooks
 │       ├── js-perf-comp-core/  # JS perf comparison engine (grandfathered)
 │       ├── layout/         # Root layout, sidebar, footer
@@ -76,9 +76,9 @@ The `src/lib/analytics/` module provides:
 
 Built on:
 
-- **React Aria Components**: Accessible UI primitives
+- **shadcn/ui on Base UI** (preset `b4HQ17IlCb`): Accessible UI primitives
 - **Tailwind CSS 4**: Styling via `@theme` tokens
-- **Tailwind Variants**: Component-level variant logic
+- **class-variance-authority**: Component-level variant logic
 
 ## Data Flow
 

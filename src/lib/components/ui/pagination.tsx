@@ -1,222 +1,130 @@
-'use client'
+import * as React from "react"
+import { cn } from "cn"
 
-import { twMerge } from 'tailwind-merge'
-import { type ButtonProps, buttonStyles } from '@/lib/components/ui/button'
-import { Link, type LinkProps } from '@/lib/components/ui/link'
-import { Text } from '@/lib/components/ui/text'
+import { Button } from "@/lib/components/ui/button"
+import { RiArrowLeftSLine, RiArrowRightSLine, RiMoreLine } from "@remixicon/react"
 
-const Pagination = ({ className, ref, ...props }: React.ComponentProps<'nav'>) => (
-  <nav
-    data-slot="pagination"
-    aria-label="pagination"
-    className={twMerge(
-      'mx-auto flex w-full items-center justify-center gap-(--pagination-gap) [--pagination-gap:--spacing(2)] [--section-radius:calc(var(--radius-lg)-1px)] **:data-[slot=control]:w-auto',
-      '**:data-[slot=pagination-item]:cursor-default',
-      className
-    )}
-    ref={ref}
-    {...props}
-  />
-)
+function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+  return (
+    <nav
+      role="navigation"
+      aria-label="pagination"
+      data-slot="pagination"
+      className={cn("mx-auto flex w-full justify-center", className)}
+      {...props}
+    />
+  )
+}
 
-const PaginationSection = ({ className, ref, ...props }: React.ComponentProps<'ul'>) => (
-  <li data-slot="pagination-section">
-    <ul ref={ref} className={twMerge('flex h-full gap-1.5 text-sm/6', className)} {...props} />
-  </li>
-)
-
-const PaginationList = ({ className, ref, ...props }: React.ComponentProps<'ul'>) => {
+function PaginationContent({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) {
   return (
     <ul
-      ref={ref}
-      data-slot="pagination-list"
-      aria-label={props['aria-label'] || 'Pagination'}
-      className={twMerge('flex gap-1.25', className)}
+      data-slot="pagination-content"
+      className={cn("flex items-center gap-1", className)}
       {...props}
     />
   )
 }
 
-interface PaginationItemProps
-  extends Omit<LinkProps, 'children'>, Pick<ButtonProps, 'isCircle' | 'size' | 'intent'> {
-  className?: string
-  isCurrent?: boolean
-  children?: string | number | React.ReactNode
+function PaginationItem({ ...props }: React.ComponentProps<"li">) {
+  return <li data-slot="pagination-item" {...props} />
 }
 
-const PaginationItem = ({
+type PaginationLinkProps = {
+  isActive?: boolean
+} & Pick<React.ComponentProps<typeof Button>, "size"> &
+  React.ComponentProps<"a">
+
+function PaginationLink({
   className,
-  size = 'sm',
-  isCircle,
-  isCurrent,
+  isActive,
+  size = "icon",
   ...props
-}: PaginationItemProps) => {
+}: PaginationLinkProps) {
   return (
-    <li>
-      <Link
-        data-slot="pagination-item"
-        href={isCurrent ? undefined : props.href}
-        aria-current={isCurrent ? 'page' : undefined}
-        className={buttonStyles({
-          size: size,
-          isCircle: isCircle,
-          intent: isCurrent ? 'outline' : 'plain',
-          className: twMerge('touch-target min-w-9 shrink-0', className),
-        })}
-        {...props}
-      />
-    </li>
+    <Button
+      variant={isActive ? "outline" : "ghost"}
+      size={size}
+      className={cn(className)}
+      nativeButton={false}
+      render={
+        <a
+          aria-current={isActive ? "page" : undefined}
+          data-slot="pagination-link"
+          data-active={isActive}
+          {...props}
+        />
+      }
+    />
   )
 }
 
-const PaginationFirst = (props: PaginationItemProps) => {
-  return (
-    <PaginationItem data-slot="pagination-item" aria-label="First page" {...props}>
-      <>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={16}
-          height={16}
-          fill="none"
-          viewBox="0 0 25 24"
-          aria-hidden="true"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-            d="m17.5 18-6-6 6-6m-10 0v12"
-          />
-        </svg>
-        {props.children}
-      </>
-    </PaginationItem>
-  )
-}
-
-const PaginationPrevious = (props: PaginationItemProps) => {
-  return (
-    <PaginationItem {...props}>
-      <>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-          data-slot="icon"
-        >
-          <path
-            fillRule="evenodd"
-            d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-            clipRule="evenodd"
-          />
-        </svg>
-        {props.children}
-      </>
-    </PaginationItem>
-  )
-}
-
-const PaginationNext = (props: PaginationItemProps) => {
-  return (
-    <PaginationItem aria-label="Next page" {...props}>
-      <>
-        {props.children}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </>
-    </PaginationItem>
-  )
-}
-
-const PaginationLast = (props: PaginationItemProps) => {
-  return (
-    <PaginationItem aria-label="Last page" {...props}>
-      <>
-        {props.children}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={16}
-          height={16}
-          fill="none"
-          viewBox="0 0 25 24"
-          className="intentui-icons size-4"
-          aria-hidden="true"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-            d="m7.5 18 6-6-6-6m10 0v12"
-          />
-        </svg>
-      </>
-    </PaginationItem>
-  )
-}
-
-const PaginationSpacer = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) => {
-  return <div aria-hidden className={twMerge('flex-1', className)} {...props} />
-}
-
-const PaginationGap = ({
+function PaginationPrevious({
   className,
-  children = <>&hellip;</>,
+  text = "Previous",
   ...props
-}: React.ComponentProps<'li'>) => {
+}: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
   return (
-    <li
-      data-slot="pagination-gap"
-      className={twMerge(
-        'w-9 select-none text-center font-semibold text-fg text-sm/6 outline-hidden',
-        className
-      )}
+    <PaginationLink
+      aria-label="Go to previous page"
+      size="default"
+      className={cn("pl-1.5!", className)}
       {...props}
-      aria-hidden
     >
-      {children}
-    </li>
+      <RiArrowLeftSLine data-icon="inline-start" />
+      <span className="hidden sm:block">{text}</span>
+    </PaginationLink>
   )
 }
 
-const PaginationLabel = ({ className, ...props }: React.ComponentPropsWithoutRef<'li'>) => {
+function PaginationNext({
+  className,
+  text = "Next",
+  ...props
+}: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
   return (
-    <li
-      data-slot="pagination-label"
-      className={twMerge(
-        'min-w-4 self-center text-fg *:[strong]:font-medium *:[strong]:text-fg',
+    <PaginationLink
+      aria-label="Go to next page"
+      size="default"
+      className={cn("pr-1.5!", className)}
+      {...props}
+    >
+      <span className="hidden sm:block">{text}</span>
+      <RiArrowRightSLine data-icon="inline-end" />
+    </PaginationLink>
+  )
+}
+
+function PaginationEllipsis({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      aria-hidden
+      data-slot="pagination-ellipsis"
+      className={cn(
+        "flex size-8 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
-    />
+    >
+      <RiMoreLine
+      />
+      <span className="sr-only">More pages</span>
+    </span>
   )
 }
-
-const PaginationInfo = Text
 
 export {
   Pagination,
-  PaginationFirst,
-  PaginationGap,
-  PaginationInfo,
+  PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
-  PaginationLabel,
-  PaginationLast,
-  PaginationList,
+  PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationSection,
-  PaginationSpacer,
 }

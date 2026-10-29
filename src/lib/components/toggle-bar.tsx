@@ -9,7 +9,7 @@ export interface ToggleOption<T extends string> {
 interface ToggleBarProps<T extends string> {
   onSelectionChange: (id: T) => void;
   options: ReadonlyArray<ToggleOption<T>>;
-  size?: 'sm';
+  size?: React.ComponentProps<typeof Button>['size'];
   /** Analytics action fired alongside each selection. */
   track: (action: string) => void;
   value: T;
@@ -26,13 +26,13 @@ export function ToggleBar<T extends string>({
     <div className="flex flex-wrap gap-2">
       {options.map((option) => (
         <Button
-          intent={value === option.id ? 'primary' : 'outline'}
           key={option.id}
-          onPress={() => {
+          onClick={() => {
             onSelectionChange(option.id);
             track(option.action);
           }}
           size={size}
+          variant={value === option.id ? 'default' : 'outline'}
         >
           {option.label}
         </Button>

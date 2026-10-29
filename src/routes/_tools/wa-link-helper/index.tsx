@@ -1,7 +1,6 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Form } from 'react-aria-components';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
@@ -44,7 +43,7 @@ function WALinkHelperPage() {
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-lg">
       <Card>
         <CardContent>
-          <Form
+          <form
             className="grid gap-6 text-start"
             onSubmit={form.handleSubmit(() =>
               copyWaLink(link, isPhoneValid, trackAction)
@@ -52,7 +51,7 @@ function WALinkHelperPage() {
           >
             <WaLinkFormFields form={form} />
             <Button type="submit">Copy Link</Button>
-          </Form>
+          </form>
           <WaLinkResult
             isValid={isValid}
             link={link}

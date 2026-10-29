@@ -1,14 +1,14 @@
 import {
-  IconBolt,
-  IconBrackets,
-  IconBrandWhatsapp,
-  IconCalendar,
-  IconCamera,
-  IconCodeLines,
-  IconColorPalette,
-  IconDeviceDesktop,
-  IconQrCode,
-} from '@intentui/icons';
+  RiBracketsLine,
+  RiCalendarLine,
+  RiCameraLine,
+  RiCodeLine,
+  RiComputerLine,
+  RiFlashlightLine,
+  RiPaletteLine,
+  RiQrCodeLine,
+  RiWhatsappLine,
+} from '@remixicon/react';
 import {
   Binary,
   Braces,
@@ -113,7 +113,7 @@ export interface ToolDefinition {
 export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   {
     category: 'Links & Sharing',
-    icon: <IconBrandWhatsapp />,
+    icon: <RiWhatsappLine />,
     mobilePriority: 1,
     mobileTitle: 'WA Link',
     showInMobile: true,
@@ -121,7 +121,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Design & Media',
-    icon: <IconColorPalette />,
+    icon: <RiPaletteLine />,
     mobilePriority: 5,
     mobileTitle: 'Color',
     showInMobile: true,
@@ -129,7 +129,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Text & Data',
-    icon: <IconBrackets />,
+    icon: <RiBracketsLine />,
     mobilePriority: 3,
     mobileTitle: 'JSON',
     showInMobile: true,
@@ -142,12 +142,12 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Design & Media',
-    icon: <IconCamera />,
+    icon: <RiCameraLine />,
     ...zippyImgMeta,
   },
   {
     category: 'Developer',
-    icon: <IconDeviceDesktop />,
+    icon: <RiComputerLine />,
     ...uaCheckMeta,
   },
   {
@@ -165,7 +165,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Links & Sharing',
-    icon: <IconQrCode />,
+    icon: <RiQrCodeLine />,
     mobilePriority: 2,
     mobileTitle: 'QR Code',
     showInMobile: true,
@@ -173,12 +173,12 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Developer',
-    icon: <IconCodeLines />,
+    icon: <RiCodeLine />,
     ...jsPerfMeta,
   },
   {
     category: 'Links & Sharing',
-    icon: <IconCalendar />,
+    icon: <RiCalendarLine />,
     ...addToCalendarMeta,
   },
   {
@@ -188,7 +188,7 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
   },
   {
     category: 'Calculators',
-    icon: <IconBolt />,
+    icon: <RiFlashlightLine />,
     ...evChargingMeta,
   },
   {

@@ -32,14 +32,14 @@ export function SqlResultView({
           copied={copiedKey === 'copy'}
           disabled={!(result?.isValid && result.output) || result.timedOut}
           label="Copy output"
-          onPress={onCopy}
+          onClick={onCopy}
           text="Copy output"
         />
-        <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+        <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
       </div>
 
       {input.trim() && !result && !computing && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click {action === 'minify' ? 'Minify' : 'Format'} to{' '}
           {action === 'minify' ? 'compress your SQL' : 'beautify your SQL'}.
         </p>

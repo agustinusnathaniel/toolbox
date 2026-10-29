@@ -1,10 +1,11 @@
 import { Button } from '@/lib/components/ui/button';
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 
 interface MeetingActionsProps {
@@ -28,20 +29,25 @@ export function MeetingActions({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
       <div className="flex flex-1 flex-col gap-1">
-        <Label htmlFor="meeting-duration">Duration</Label>
+        <FieldLabel htmlFor="meeting-duration">Duration</FieldLabel>
         <Select
-          aria-label="Meeting duration"
-          onSelectionChange={(key) => onDurationChange(Number(key as string))}
-          selectedKey={String(duration)}
+          onValueChange={(key) => onDurationChange(Number(key as string))}
+          value={String(duration)}
         >
-          <SelectTrigger id="meeting-duration" />
-          <SelectContent items={DURATION_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DURATION_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
 
-      <Button intent="outline" onPress={onAddToCalendar} size="sm">
+      <Button onClick={onAddToCalendar} size="sm" variant="outline">
         Add to Calendar
       </Button>
     </div>

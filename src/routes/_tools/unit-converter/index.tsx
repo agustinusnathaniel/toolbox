@@ -12,13 +12,14 @@ import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Label } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
@@ -98,7 +99,7 @@ function ConversionOutput({
 }) {
   if (!hasInput) {
     return (
-      <p className="text-muted-fg text-xs">
+      <p className="text-muted-foreground text-xs">
         Enter a value to see the conversion.
       </p>
     );
@@ -135,50 +136,52 @@ function UnitSelectors({
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="unit-converter-from">From</Label>
+      <Field>
+        <FieldLabel htmlFor="unit-converter-from">From</FieldLabel>
         <Select
-          aria-label="From unit"
-          onSelectionChange={(key) => onFromChange(key as string)}
-          selectedKey={fromUnit}
+          onValueChange={(key) => onFromChange(key as string)}
+          value={fromUnit}
         >
-          <SelectTrigger id="unit-converter-from" />
-          <SelectContent items={currentUnits}>
-            {(option) => (
-              <SelectItem id={option.id}>
+          <SelectTrigger aria-label="From unit" id="unit-converter-from">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {currentUnits.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
                 {option.label} ({option.symbol})
               </SelectItem>
-            )}
+            ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <div className="flex items-end justify-center pb-1">
         <Button
           aria-label="Swap units"
-          intent="outline"
-          onPress={onSwap}
-          size="sq-sm"
+          onClick={onSwap}
+          size="icon-sm"
+          variant="outline"
         >
           <ArrowLeftRight className="size-4" />
         </Button>
       </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="unit-converter-to">To</Label>
+      <Field>
+        <FieldLabel htmlFor="unit-converter-to">To</FieldLabel>
         <Select
-          aria-label="To unit"
-          onSelectionChange={(key) => onToChange(key as string)}
-          selectedKey={toUnit}
+          onValueChange={(key) => onToChange(key as string)}
+          value={toUnit}
         >
-          <SelectTrigger id="unit-converter-to" />
-          <SelectContent items={currentUnits}>
-            {(option) => (
-              <SelectItem id={option.id}>
+          <SelectTrigger aria-label="To unit" id="unit-converter-to">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {currentUnits.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
                 {option.label} ({option.symbol})
               </SelectItem>
-            )}
+            ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
     </div>
   );
 }
@@ -270,23 +273,24 @@ function UnitConverterPage() {
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="unit-converter-category">Category</Label>
+          <Field>
+            <FieldLabel htmlFor="unit-converter-category">Category</FieldLabel>
             <Select
-              aria-label="Category"
-              onSelectionChange={(key) =>
-                handleCategoryChange(key as UnitCategory)
-              }
-              selectedKey={state.category}
+              onValueChange={(key) => handleCategoryChange(key as UnitCategory)}
+              value={state.category}
             >
-              <SelectTrigger id="unit-converter-category" />
-              <SelectContent items={CATEGORY_OPTIONS}>
-                {(option) => (
-                  <SelectItem id={option.id}>{option.label}</SelectItem>
-                )}
+              <SelectTrigger aria-label="Category" id="unit-converter-category">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORY_OPTIONS.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
           <UnitSelectors
             currentUnits={currentUnits}
             fromUnit={state.fromUnit}
@@ -295,13 +299,8 @@ function UnitConverterPage() {
             onToChange={handleToChange}
             toUnit={state.toUnit}
           />
-          <div className="flex flex-col gap-1">
-            <label
-              className="text-muted-fg text-sm"
-              htmlFor="unit-converter-value"
-            >
-              Value
-            </label>
+          <Field>
+            <FieldLabel htmlFor="unit-converter-value">Value</FieldLabel>
             <Input
               aria-label="Value"
               id="unit-converter-value"
@@ -309,7 +308,7 @@ function UnitConverterPage() {
               placeholder="Enter value..."
               value={state.value}
             />
-          </div>
+          </Field>
           <div className="flex flex-col gap-2">
             <ConversionOutput
               copiedKey={copiedKey as string | null}
@@ -319,8 +318,8 @@ function UnitConverterPage() {
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            <CopyLinkButton onPress={handleCopyLink} />
-            <Button intent="outline" onPress={handleClear} size="sm">
+            <CopyLinkButton onClick={handleCopyLink} />
+            <Button onClick={handleClear} size="sm" variant="outline">
               <Trash2 className="size-4" />
               Clear
             </Button>

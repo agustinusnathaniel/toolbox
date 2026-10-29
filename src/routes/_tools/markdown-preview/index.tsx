@@ -48,7 +48,7 @@ function MarkdownPreviewPage() {
       />
       <Card>
         <CardContent className="flex flex-col gap-2">
-          <span className="text-muted-fg text-sm">Preview</span>
+          <span className="text-muted-foreground text-sm">Preview</span>
           <MarkdownPreview
             computing={page.computing}
             error={page.computed.error}

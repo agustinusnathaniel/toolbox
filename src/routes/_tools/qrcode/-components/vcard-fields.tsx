@@ -1,4 +1,4 @@
-import { Label } from '@/lib/components/ui/field';
+import { FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import type { VCardState } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
@@ -14,7 +14,7 @@ export function VCardNameFields({ vcardState, onUpdateVCardField }: Props) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-firstName">First Name</Label>
+        <FieldLabel htmlFor="vcard-firstName">First Name</FieldLabel>
         <Input
           id="vcard-firstName"
           onChange={(e) =>
@@ -24,7 +24,7 @@ export function VCardNameFields({ vcardState, onUpdateVCardField }: Props) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-lastName">Last Name</Label>
+        <FieldLabel htmlFor="vcard-lastName">Last Name</FieldLabel>
         <Input
           id="vcard-lastName"
           onChange={(e) =>
@@ -41,7 +41,9 @@ export function VCardPhoneFields({ vcardState, onUpdateVCardField }: Props) {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-mobilePhoneNumber">Mobile Phone Number</Label>
+        <FieldLabel htmlFor="vcard-mobilePhoneNumber">
+          Mobile Phone Number
+        </FieldLabel>
         <Input
           id="vcard-mobilePhoneNumber"
           onChange={(e) =>
@@ -52,7 +54,7 @@ export function VCardPhoneFields({ vcardState, onUpdateVCardField }: Props) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-otherPhoneNumber">Phone Number</Label>
+        <FieldLabel htmlFor="vcard-otherPhoneNumber">Phone Number</FieldLabel>
         <Input
           id="vcard-otherPhoneNumber"
           onChange={(e) =>
@@ -70,7 +72,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
   return (
     <>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-emailAddress">Email</Label>
+        <FieldLabel htmlFor="vcard-emailAddress">Email</FieldLabel>
         <Input
           id="vcard-emailAddress"
           onChange={(e) =>
@@ -81,7 +83,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-companyName">Company</Label>
+        <FieldLabel htmlFor="vcard-companyName">Company</FieldLabel>
         <Input
           id="vcard-companyName"
           onChange={(e) =>
@@ -91,7 +93,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-jobTitle">Job Title</Label>
+        <FieldLabel htmlFor="vcard-jobTitle">Job Title</FieldLabel>
         <Input
           id="vcard-jobTitle"
           onChange={(e) =>
@@ -107,7 +109,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
 export function VCardStreetField({ vcardState, onUpdateVCardField }: Props) {
   return (
     <div className="flex flex-col gap-1">
-      <Label htmlFor="vcard-streetAddress">Street</Label>
+      <FieldLabel htmlFor="vcard-streetAddress">Street</FieldLabel>
       <Input
         id="vcard-streetAddress"
         onChange={(e) =>
@@ -126,7 +128,7 @@ export function VCardCityStateFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-city">City</Label>
+        <FieldLabel htmlFor="vcard-city">City</FieldLabel>
         <Input
           id="vcard-city"
           onChange={(e) => onUpdateVCardField('city', e.currentTarget.value)}
@@ -134,7 +136,7 @@ export function VCardCityStateFields({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-state">State</Label>
+        <FieldLabel htmlFor="vcard-state">State</FieldLabel>
         <Input
           id="vcard-state"
           onChange={(e) => onUpdateVCardField('state', e.currentTarget.value)}
@@ -152,7 +154,7 @@ export function VCardPostalCountryFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-postalCode">Postal Code</Label>
+        <FieldLabel htmlFor="vcard-postalCode">Postal Code</FieldLabel>
         <Input
           id="vcard-postalCode"
           onChange={(e) =>
@@ -162,7 +164,7 @@ export function VCardPostalCountryFields({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="vcard-country">Country</Label>
+        <FieldLabel htmlFor="vcard-country">Country</FieldLabel>
         <Input
           id="vcard-country"
           onChange={(e) => onUpdateVCardField('country', e.currentTarget.value)}
@@ -176,7 +178,7 @@ export function VCardPostalCountryFields({
 export function VCardWebsiteField({ vcardState, onUpdateVCardField }: Props) {
   return (
     <div className="flex flex-col gap-1">
-      <Label htmlFor="vcard-websiteURL">Website</Label>
+      <FieldLabel htmlFor="vcard-websiteURL">Website</FieldLabel>
       <Input
         id="vcard-websiteURL"
         onChange={(e) =>

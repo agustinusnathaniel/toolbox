@@ -1,9 +1,8 @@
 import {
-  Disclosure,
-  DisclosureGroup,
-  DisclosurePanel,
-  DisclosureTrigger,
-} from '@/lib/components/ui/disclosure-group';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/lib/components/ui/collapsible';
 import {
   type ChargerType,
   type ChargingResult,
@@ -43,33 +42,31 @@ export function FormulaExplanation({
   const showAboveFormula = inputs.startSOC >= SOC_THRESHOLD;
 
   return (
-    <DisclosureGroup className="mt-4">
-      <Disclosure>
-        <DisclosureTrigger>How is this calculated?</DisclosureTrigger>
-        <DisclosurePanel>
-          <div className="space-y-3 text-muted-fg text-sm">
-            <EfficiencyInfo inputs={inputs} result={result} />
-            {showSplitFormula && (
-              <SplitFormula inputs={inputs} result={result} />
-            )}
-            {showAboveFormula && (
-              <AboveThresholdFormula inputs={inputs} result={result} />
-            )}
-            {!(showSplitFormula || showAboveFormula) && (
-              <SimpleFormula inputs={inputs} result={result} />
-            )}
-            <p>
-              Total loss:{' '}
-              <span className="font-medium text-fg">
-                {result.conversionLossKwh} kWh
-              </span>{' '}
-              ({((result.conversionLossKwh / result.totalKwh) * 100).toFixed(1)}
-              % of total). Real-world losses vary with temperature, battery age,
-              and charger condition.
-            </p>
-          </div>
-        </DisclosurePanel>
-      </Disclosure>
-    </DisclosureGroup>
+    <Collapsible className="mt-4">
+      <CollapsibleTrigger className="font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        How is this calculated?
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="space-y-3 text-muted-foreground text-sm">
+          <EfficiencyInfo inputs={inputs} result={result} />
+          {showSplitFormula && <SplitFormula inputs={inputs} result={result} />}
+          {showAboveFormula && (
+            <AboveThresholdFormula inputs={inputs} result={result} />
+          )}
+          {!(showSplitFormula || showAboveFormula) && (
+            <SimpleFormula inputs={inputs} result={result} />
+          )}
+          <p>
+            Total loss:{' '}
+            <span className="font-medium text-foreground">
+              {result.conversionLossKwh} kWh
+            </span>{' '}
+            ({((result.conversionLossKwh / result.totalKwh) * 100).toFixed(1)}%
+            of total). Real-world losses vary with temperature, battery age, and
+            charger condition.
+          </p>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

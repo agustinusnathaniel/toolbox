@@ -10,7 +10,12 @@ import { CopyRow } from '@/lib/components/copy-row';
 import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type { CaseFormat } from '@/lib/tools/case-converter/adapters/case-converter';
@@ -76,7 +81,9 @@ function CaseResults({
   }
   return (
     <Card>
-      <CardHeader title="Results" />
+      <CardHeader>
+        <CardTitle>Results</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col">
         {FORMAT_OPTIONS.map(({ key, label }) => (
           <CopyRow
@@ -119,13 +126,13 @@ function CaseConverterPage() {
         <CardContent className="flex flex-col gap-4">
           <CaseInput input={input} setInput={setInput} />
           <div className="flex flex-wrap gap-2">
-            <Button intent="outline" onPress={handleCopyLink} size="sm">
+            <Button onClick={handleCopyLink} size="sm" variant="outline">
               <LinkIcon className="size-4" />
               Copy link
             </Button>
           </div>
           {!hasInput && (
-            <p className="text-muted-fg text-xs">
+            <p className="text-muted-foreground text-xs">
               Type or paste text to see all case variants.
             </p>
           )}

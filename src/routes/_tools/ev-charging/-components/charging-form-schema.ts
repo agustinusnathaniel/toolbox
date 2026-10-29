@@ -54,10 +54,3 @@ export function allRequiredFields(
     v.chargerType != null
   );
 }
-
-export const coerceNumber =
-  (onChange: (value: number | undefined) => void) =>
-  (e: React.FormEvent<HTMLInputElement>) => {
-    const parsed = Number.parseFloat(e.currentTarget.value);
-    onChange(Number.isNaN(parsed) ? undefined : parsed);
-  };

@@ -38,16 +38,16 @@ export function JsonToTsActions({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button onPress={onGenerate} size="sm">
+      <Button onClick={onGenerate} size="sm">
         <Braces className="size-4" />
         Generate
       </Button>
       {computing && (
-        <span aria-live="polite" className="text-muted-fg text-xs">
+        <span aria-live="polite" className="text-muted-foreground text-xs">
           Generating…
         </span>
       )}
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -71,7 +71,7 @@ export function JsonToTsOutput({
   return (
     <>
       {hasInput && !result && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click Generate to turn JSON into TypeScript interfaces.
         </p>
       )}

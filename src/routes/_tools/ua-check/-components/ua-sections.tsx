@@ -5,7 +5,12 @@ import { Link as LinkIcon, RotateCcw } from 'lucide-react';
 import { LabeledTextarea } from '@/lib/components/labeled-textarea';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
 import type { parseUserAgent } from '@/lib/tools/ua-check/adapters/ua-check';
 
 type UaResult = ReturnType<typeof parseUserAgent>;
@@ -24,7 +29,7 @@ export function UaInfoRow({
   }
   return (
     <div className="flex items-center justify-between py-2">
-      <span className="text-muted-fg text-sm">{label}</span>
+      <span className="text-muted-foreground text-sm">{label}</span>
       <span className={`font-medium ${capitalize ? 'capitalize' : ''}`}>
         {value}
       </span>
@@ -55,17 +60,17 @@ export function UaInput({
           value={value}
         />
         <div className="flex flex-wrap gap-2">
-          <Button intent="outline" onPress={onUseMine} size="sm">
+          <Button onClick={onUseMine} size="sm" variant="outline">
             <RotateCcw className="size-4" />
             Use my browser&apos;s UA
           </Button>
-          <Button intent="outline" onPress={onCopyLink} size="sm">
+          <Button onClick={onCopyLink} size="sm" variant="outline">
             <LinkIcon className="size-4" />
             Copy link
           </Button>
         </div>
         {!value.trim() && (
-          <p className="text-muted-fg text-xs">
+          <p className="text-muted-foreground text-xs">
             Paste a user agent string above to see its browser, OS, and device
             details.
           </p>
@@ -79,7 +84,9 @@ export function UaResultCards({ result }: { result: UaResult }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
-        <CardHeader title="Browser" />
+        <CardHeader>
+          <CardTitle>Browser</CardTitle>
+        </CardHeader>
         <CardContent className="flex flex-col">
           <UaInfoRow label="Browser" value={result.browser.name} />
           <UaInfoRow label="Version" value={result.browser.version} />
@@ -93,7 +100,9 @@ export function UaResultCards({ result }: { result: UaResult }) {
         </CardContent>
       </Card>
       <Card>
-        <CardHeader title="Operating System" />
+        <CardHeader>
+          <CardTitle>Operating System</CardTitle>
+        </CardHeader>
         <CardContent className="flex flex-col">
           <UaInfoRow label="OS" value={result.os.name} />
           {result.os.version && (
@@ -102,7 +111,9 @@ export function UaResultCards({ result }: { result: UaResult }) {
         </CardContent>
       </Card>
       <Card>
-        <CardHeader title="Device" />
+        <CardHeader>
+          <CardTitle>Device</CardTitle>
+        </CardHeader>
         <CardContent className="flex flex-col">
           <UaInfoRow
             capitalize
@@ -115,7 +126,9 @@ export function UaResultCards({ result }: { result: UaResult }) {
       </Card>
       {result.cpu.architecture && (
         <Card>
-          <CardHeader title="Hardware" />
+          <CardHeader>
+            <CardTitle>Hardware</CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-col">
             <UaInfoRow
               label="CPU Architecture"
@@ -125,9 +138,13 @@ export function UaResultCards({ result }: { result: UaResult }) {
         </Card>
       )}
       <Card>
-        <CardHeader title="Raw User Agent" />
+        <CardHeader>
+          <CardTitle>Raw User Agent</CardTitle>
+        </CardHeader>
         <CardContent>
-          <code className="break-all text-muted-fg text-xs">{result.ua}</code>
+          <code className="break-all text-muted-foreground text-xs">
+            {result.ua}
+          </code>
         </CardContent>
       </Card>
     </div>

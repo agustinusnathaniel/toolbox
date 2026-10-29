@@ -30,9 +30,9 @@ export function DiffViewControl({
       <Button
         aria-pressed={effectiveMode === 'unified'}
         className="touch-target whitespace-nowrap rounded-md"
-        intent={effectiveMode === 'unified' ? 'primary' : 'plain'}
-        onPress={() => onModeChange('unified')}
+        onClick={() => onModeChange('unified')}
         size="sm"
+        variant={effectiveMode === 'unified' ? 'default' : 'ghost'}
       >
         Unified
       </Button>
@@ -42,10 +42,10 @@ export function DiffViewControl({
         }
         aria-pressed={effectiveMode === 'split'}
         className="touch-target whitespace-nowrap rounded-md"
-        intent={effectiveMode === 'split' ? 'primary' : 'plain'}
-        isDisabled={splitDisabled}
-        onPress={() => onModeChange('split')}
+        disabled={splitDisabled}
+        onClick={() => onModeChange('split')}
         size="sm"
+        variant={effectiveMode === 'split' ? 'default' : 'ghost'}
       >
         Split
       </Button>

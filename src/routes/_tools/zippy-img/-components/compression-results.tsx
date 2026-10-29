@@ -1,6 +1,11 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
 import { formatFileSize } from '@/lib/tools/zippy-img/adapters/zippy';
 
 import type { CompressedItem } from './use-zippy-img';
@@ -20,7 +25,9 @@ export function CompressionResults({
 }: CompressionResultsProps) {
   return (
     <Card>
-      <CardHeader title="Compression Results" />
+      <CardHeader>
+        <CardTitle>Compression Results</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {items.map((item) => {
           const savings = Math.round(
@@ -31,18 +38,22 @@ export function CompressionResults({
               <div className="flex items-center justify-between text-sm">
                 <span className="truncate font-medium">{item.file.name}</span>
                 <span
-                  className={savings > 0 ? 'text-success' : 'text-muted-fg'}
+                  className={
+                    savings > 0
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-muted-foreground'
+                  }
                 >
                   {savings > 0 ? `-${savings}%` : 'No reduction'}
                 </span>
               </div>
               <div className="flex h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="rounded-full bg-success transition-all"
+                  className="rounded-full bg-emerald-500 transition-all"
                   style={{ width: `${Math.max(100 - savings, 5)}%` }}
                 />
               </div>
-              <div className="flex justify-between text-muted-fg text-xs">
+              <div className="flex justify-between text-muted-foreground text-xs">
                 <span>{formatFileSize(item.file.size)}</span>
                 <span>{formatFileSize(item.compressed.size)}</span>
               </div>
@@ -52,7 +63,11 @@ export function CompressionResults({
         {items.length > 1 && (
           <div className="flex items-center justify-between border-t pt-3 font-medium text-sm">
             <span>Total savings</span>
-            <span className={totalSavings > 0 ? 'text-success' : ''}>
+            <span
+              className={
+                totalSavings > 0 ? 'text-emerald-600 dark:text-emerald-400' : ''
+              }
+            >
               {totalSavings > 0
                 ? `-${totalSavings}% (${formatFileSize(totalOriginal)} → ${formatFileSize(totalCompressed)})`
                 : 'No reduction'}

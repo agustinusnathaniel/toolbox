@@ -18,16 +18,23 @@ const TAG_LABEL: Record<ChangelogTag, string> = {
   new: 'New',
 };
 
-const TAG_INTENT: Record<ChangelogTag, 'success' | 'info' | 'warning'> = {
-  fixed: 'warning',
-  improved: 'info',
-  new: 'success',
+const TAG_VARIANT: Record<ChangelogTag, 'outline'> = {
+  fixed: 'outline',
+  improved: 'outline',
+  new: 'outline',
+};
+
+const TAG_BADGE_CLASS: Record<ChangelogTag, string> = {
+  fixed:
+    'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  improved: 'border-primary/15 bg-primary/10 text-primary',
+  new: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
 };
 
 const TAG_BORDER: Record<ChangelogTag, string> = {
-  fixed: 'border-l-warning',
-  improved: 'border-l-info',
-  new: 'border-l-success',
+  fixed: 'border-l-amber-500',
+  improved: 'border-l-primary',
+  new: 'border-l-emerald-500',
 };
 
 const entries = getChangelogEntries();
@@ -59,10 +66,13 @@ export default function ChangelogPage() {
           >
             <CardHeader>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge intent={TAG_INTENT[entry.tag]}>
+                <Badge
+                  className={TAG_BADGE_CLASS[entry.tag]}
+                  variant={TAG_VARIANT[entry.tag]}
+                >
                   {TAG_LABEL[entry.tag]}
                 </Badge>
-                <span className="text-muted-fg text-sm">
+                <span className="text-muted-foreground text-sm">
                   v{entry.version} · {formatDate(entry.date)}
                 </span>
               </div>
@@ -71,7 +81,7 @@ export default function ChangelogPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-muted-fg text-sm leading-relaxed [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:font-semibold [&_h3]:text-base [&_h3]:text-fg [&_li]:mb-1 [&_li]:ml-4 [&_p]:mb-3 [&_p]:last:mb-0 [&_strong]:font-medium [&_strong]:text-fg [&_ul]:list-disc [&_ul]:space-y-1">
+              <div className="text-muted-foreground text-sm leading-relaxed [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:font-semibold [&_h3]:text-base [&_h3]:text-foreground [&_li]:mb-1 [&_li]:ml-4 [&_p]:mb-3 [&_p]:last:mb-0 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:space-y-1">
                 <entry.content />
               </div>
             </CardContent>
