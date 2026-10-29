@@ -102,7 +102,13 @@ export const Route = createRootRouteWithContext()({
         name: 'mobile-web-app-capable',
       },
       {
-        content: '#000000',
+        content: '#ffffff',
+        media: '(prefers-color-scheme: light)',
+        name: 'theme-color',
+      },
+      {
+        content: '#09090b',
+        media: '(prefers-color-scheme: dark)',
         name: 'theme-color',
       },
       {

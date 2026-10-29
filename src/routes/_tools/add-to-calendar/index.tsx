@@ -11,6 +11,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
+  CardTitle,
 } from '@/lib/components/ui/card';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
@@ -68,7 +69,9 @@ function AddToCalendarPage() {
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
       <Card>
-        <CardHeader title="Event Info" />
+        <CardHeader>
+          <CardTitle>Event Info</CardTitle>
+        </CardHeader>
         <CardDescription className="px-6 pb-4">
           Enter the details for your calendar event.
         </CardDescription>

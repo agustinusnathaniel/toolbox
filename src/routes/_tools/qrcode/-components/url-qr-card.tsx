@@ -1,24 +1,19 @@
-import { parseColor } from '@react-stately/color';
 import { QRCodeSVG } from 'qrcode.react';
 
+import {
+  ColorPicker,
+  ColorPickerContent,
+  ColorPickerTrigger,
+} from '@/lib/components/reui/color-picker';
 import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { ColorArea } from '@/lib/components/ui/color-area';
-import { ColorField } from '@/lib/components/ui/color-field';
-import { ColorPicker } from '@/lib/components/ui/color-picker';
 import {
-  ColorSlider,
-  ColorSliderTrack,
-} from '@/lib/components/ui/color-slider';
-import { ColorSwatch } from '@/lib/components/ui/color-swatch';
-import { ColorThumb } from '@/lib/components/ui/color-thumb';
-import { Label } from '@/lib/components/ui/field';
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
-import {
-  Popover,
-  PopoverBody,
-  PopoverContent,
-} from '@/lib/components/ui/popover';
 import type { UrlState } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
 type UrlQRCardProps = {
@@ -41,11 +36,11 @@ export function UrlQRCard({
   onCopyShareableLink,
   onUpdateUrlField,
 }: UrlQRCardProps) {
-  const color = parseColor(urlState.fgColor);
-
   return (
     <Card>
-      <CardHeader title="URL QR Code" />
+      <CardHeader>
+        <CardTitle>URL QR Code</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-4">
@@ -61,18 +56,18 @@ export function UrlQRCard({
                 value={urlState.value || ' '}
               />
             </div>
-            <Button intent="primary" onPress={onSaveQR}>
+            <Button onClick={onSaveQR} variant="default">
               Save QR Code
             </Button>
-            <Button intent="outline" onPress={onCopyShareableLink}>
+            <Button onClick={onCopyShareableLink} variant="outline">
               Copy Shareable Link
             </Button>
           </div>
 
           <div className="flex-1">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="url-value">URL / Text</Label>
+              <Field>
+                <FieldLabel htmlFor="url-value">URL / Text</FieldLabel>
                 <Input
                   autoComplete="url"
                   id="url-value"
@@ -84,71 +79,46 @@ export function UrlQRCard({
                   type="url"
                   value={urlState.value}
                 />
-              </div>
+              </Field>
 
               <div className="flex gap-2">
                 <Button
-                  intent="outline"
-                  onPress={() => {
+                  onClick={() => {
                     onUpdateUrlField('fgColor', '#000000');
                     onUpdateUrlField('bgColor', '#ffffff');
                   }}
                   size="sm"
+                  variant="outline"
                 >
                   Standard
                 </Button>
                 <Button
-                  intent="outline"
-                  onPress={() => {
+                  onClick={() => {
                     onUpdateUrlField('fgColor', '#ffffff');
                     onUpdateUrlField('bgColor', '#000000');
                   }}
                   size="sm"
+                  variant="outline"
                 >
                   Dark Mode
                 </Button>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="url-fgColor">Foreground Color</Label>
+              <Field>
+                <FieldLabel htmlFor="url-fgColor">Foreground Color</FieldLabel>
                 <ColorPicker
-                  onChange={(c) =>
-                    onUpdateUrlField(
-                      'fgColor',
-                      c.toFormat('hex').toString() ?? '#000000'
-                    )
+                  aria-label="Foreground color"
+                  format="hex"
+                  id="url-fgColor"
+                  onValueChange={(value) =>
+                    onUpdateUrlField('fgColor', value ?? '#000000')
                   }
-                  value={color}
+                  value={urlState.fgColor}
                 >
-                  <Popover>
-                    <Button data-slot="control" intent="plain">
-                      <ColorSwatch />
-                      Select color
-                    </Button>
-                    <PopoverContent className="[--gutter:--spacing(1)]">
-                      <PopoverBody>
-                        <div className="space-y-(--gutter)">
-                          <ColorArea
-                            colorSpace="rgb"
-                            xChannel="red"
-                            xName="red"
-                            yChannel="green"
-                            yName="green"
-                          />
-                          <ColorSlider channel="hue" colorSpace="hsb">
-                            <ColorSliderTrack>
-                              <ColorThumb />
-                            </ColorSliderTrack>
-                          </ColorSlider>
-                          <ColorField aria-label="Color">
-                            <Input />
-                          </ColorField>
-                        </div>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
+                  <ColorPickerTrigger />
+                  <ColorPickerContent />
                 </ColorPicker>
-              </div>
+              </Field>
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import type { CompressionSummary } from '@/lib/tools/zippy-img/adapters/zippy';
 
-import { MAX_FILES, MAX_SIZE_MB } from './use-zippy-img';
+import { MAX_FILES, MAX_SIZE_MB } from './zippy-helpers';
 
 export function buildCompressionMessage(
   summary: CompressionSummary | null
@@ -41,16 +41,16 @@ export function ZippyActions({
   return (
     <div className="flex items-center gap-3">
       <Button
-        intent="primary"
-        isDisabled={!canCompress || compressing}
-        onPress={onCompress}
+        disabled={!canCompress || compressing}
+        onClick={onCompress}
         size="lg"
+        variant="default"
       >
         {compressing ? 'Compressing...' : 'Compress Now'}
       </Button>
       {allDone && hasCompressed && (
-        <Button intent="outline" onPress={onDownload} size="lg">
-          <Download />
+        <Button onClick={onDownload} size="lg" variant="outline">
+          <Download aria-hidden="true" />
           Download Outputs
         </Button>
       )}

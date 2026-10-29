@@ -4,7 +4,13 @@ import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { ComparisonResults } from './-components/comparison-results';
@@ -43,10 +49,13 @@ function JsPerfComparatorPage() {
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <Card>
-        <CardHeader
-          description="Compare execution behavior of two JavaScript snippets using parallel sandboxed QuickJS runtimes."
-          title="JS Performance Comparator"
-        />
+        <CardHeader>
+          <CardTitle>JS Performance Comparator</CardTitle>
+          <CardDescription>
+            Compare execution behavior of two JavaScript snippets using parallel
+            sandboxed QuickJS runtimes.
+          </CardDescription>
+        </CardHeader>
         <CardContent className="flex flex-col gap-3 md:gap-4">
           <JsPerfConfig page={page} />
           <JsPerfWorkspace

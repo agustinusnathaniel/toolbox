@@ -13,12 +13,13 @@ import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
-import { Label } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
@@ -63,19 +64,24 @@ function NumberBaseInput({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="number-base-from">From base</Label>
+      <Field>
+        <FieldLabel htmlFor="number-base-from">From base</FieldLabel>
         <Select
-          aria-label="From base"
-          onSelectionChange={(key) => onFromChange(key as NumberBase)}
-          selectedKey={fromBase}
+          onValueChange={(key) => onFromChange(key as NumberBase)}
+          value={fromBase}
         >
-          <SelectTrigger id="number-base-from" />
-          <SelectContent items={FROM_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {FROM_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <LabeledTextarea
         aria-label="Number input"
         className="font-mono"
@@ -102,7 +108,7 @@ function NumberBaseOutputs({
 }) {
   if (!hasInput) {
     return (
-      <p className="text-muted-fg text-xs">
+      <p className="text-muted-foreground text-xs">
         Enter a number to see conversions across all bases.
       </p>
     );
@@ -224,7 +230,7 @@ function NumberBasePage() {
   const hasInput = state.input.trim().length > 0;
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <NumberBaseInput
@@ -240,9 +246,9 @@ function NumberBasePage() {
             result={result}
           />
           <div className="flex flex-wrap gap-2">
-            <CopyLinkButton onPress={handleCopyLink} />
-            <Button intent="outline" onPress={handleClear} size="sm">
-              <Trash2 className="size-4" />
+            <CopyLinkButton onClick={handleCopyLink} />
+            <Button onClick={handleClear} size="sm" variant="outline">
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

@@ -30,7 +30,7 @@ export function DiffInputs({
           setResult(null);
           setActiveAction(null);
         }}
-        placeholder="Paste the original text here..."
+        placeholder="Paste the original text here…"
         value={original}
       />
       <LabeledTextarea
@@ -42,7 +42,7 @@ export function DiffInputs({
           setResult(null);
           setActiveAction(null);
         }}
-        placeholder="Paste the modified text here..."
+        placeholder="Paste the modified text here…"
         value={modified}
       />
     </>

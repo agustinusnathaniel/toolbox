@@ -15,7 +15,7 @@ export function HomepagePage({
   return (
     <div className="overflow-x-clip">
       <a
-        className="sr-only z-50 rounded-lg bg-bg px-4 py-2 font-medium text-fg focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        className="sr-only z-50 rounded-lg bg-background px-4 py-2 font-medium text-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         href="#main-content"
       >
         Skip to content

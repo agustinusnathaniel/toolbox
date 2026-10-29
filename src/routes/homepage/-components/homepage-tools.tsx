@@ -2,9 +2,13 @@ import { Link } from '@tanstack/react-router';
 import { ArrowUpRight, Search, X } from 'lucide-react';
 import { type RefObject, useRef, useState } from 'react';
 
-import { Button, buttonStyles } from '@/lib/components/ui/button';
-import { Input, InputGroup } from '@/lib/components/ui/input';
-import { SearchField } from '@/lib/components/ui/search-field';
+import { Button, buttonVariants } from '@/lib/components/ui/button';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@/lib/components/ui/input-group';
 import { ToggleGroup, ToggleGroupItem } from '@/lib/components/ui/toggle-group';
 import { TOOL_CATEGORIES } from '@/lib/navigation/tool-catalog';
 import type { ToolNavItem } from '@/lib/navigation/tool-registry';
@@ -44,56 +48,52 @@ function ToolSearchControls({
 }) {
   return (
     <div className="mb-6 flex flex-col gap-4">
-      <SearchField
-        aria-label="Search tools"
-        className="w-full max-w-md"
-        onChange={(value) => onQueryChange(value)}
-        value={query}
-      >
-        <InputGroup>
-          <Search aria-hidden="true" data-slot="icon" />
-          <Input
-            placeholder="Search by name, task, or category"
-            ref={inputRef}
-          />
-          {query ? (
-            <Button
+      <InputGroup className="w-full max-w-md">
+        <InputGroupAddon>
+          <Search aria-hidden="true" />
+        </InputGroupAddon>
+        <InputGroupInput
+          aria-label="Search tools"
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder="Search by name, task, or category"
+          ref={inputRef}
+          value={query}
+        />
+        {query ? (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
               aria-label="Clear search"
-              intent="plain"
-              onPress={() => onQueryChange('')}
-              size="sq-sm"
+              onClick={() => onQueryChange('')}
+              size="icon-xs"
             >
-              <X aria-hidden="true" className="size-4" />
-            </Button>
-          ) : null}
-        </InputGroup>
-      </SearchField>
+              <X aria-hidden="true" />
+            </InputGroupButton>
+          </InputGroupAddon>
+        ) : null}
+      </InputGroup>
 
       <ToggleGroup
         aria-label="Filter tools by category"
-        className="inset-ring-0 flex flex-wrap gap-2 overflow-visible rounded-none p-0"
-        disallowEmptySelection
-        onSelectionChange={(keys) => {
-          const next = Array.from(keys)[0];
+        className="flex flex-wrap gap-2"
+        onValueChange={(values) => {
+          const next = values[0];
           if (typeof next === 'string') {
             onCategoryChange(next);
           }
         }}
-        selectedKeys={[category]}
-        selectionMode="single"
-        size="sm"
+        value={[category]}
       >
         <ToggleGroupItem
-          className="not-selected:inset-ring-border max-w-full rounded-full"
-          id={ALL_CATEGORY}
+          className="max-w-full rounded-full"
+          value={ALL_CATEGORY}
         >
           All
         </ToggleGroupItem>
         {categories.map(({ category: name }) => (
           <ToggleGroupItem
-            className="not-selected:inset-ring-border max-w-full rounded-full"
-            id={name}
+            className="max-w-full rounded-full"
             key={name}
+            value={name}
           >
             {name}
           </ToggleGroupItem>
@@ -112,12 +112,14 @@ function ToolRows({
 }) {
   if (tools.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-bg p-8 text-center">
-        <h3 className="text-balance font-semibold text-fg">No tools match.</h3>
-        <p className="mx-auto mt-2 max-w-md text-pretty text-muted-fg text-sm">
+      <div className="rounded-2xl border border-border bg-background p-8 text-center">
+        <h3 className="text-balance font-semibold text-foreground">
+          No tools match.
+        </h3>
+        <p className="mx-auto mt-2 max-w-md text-pretty text-muted-foreground text-sm">
           Try a different search term or category.
         </p>
-        <Button className="mt-5" intent="outline" onPress={onReset} size="md">
+        <Button className="mt-5" onClick={onReset} variant="outline">
           Clear search and filters
         </Button>
       </div>
@@ -128,27 +130,27 @@ function ToolRows({
       {tools.map((tool) => (
         <li className="min-w-0 border-border border-b" key={tool.slug}>
           <Link
-            className="flex items-start gap-4 py-4 text-fg no-underline hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className="flex items-start gap-4 py-4 text-foreground no-underline hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             to={tool.path}
           >
             <span
               aria-hidden="true"
-              className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary-subtle text-primary-subtle-fg"
+              className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"
             >
               <span className="[&_svg]:size-4">{tool.icon}</span>
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline gap-x-2">
-                <h3 className="wrap-anywhere text-balance font-semibold text-fg text-sm">
+                <h3 className="wrap-anywhere text-balance font-semibold text-foreground text-sm">
                   {tool.title}
                 </h3>
-                <span className="wrap-anywhere min-w-0 text-muted-fg text-xs">
+                <span className="wrap-anywhere min-w-0 text-muted-foreground text-xs">
                   {tool.category}
                 </span>
               </div>
               {tool.description ? (
                 <p
-                  className="wrap-anywhere mt-0.5 line-clamp-3 text-pretty text-muted-fg text-sm"
+                  className="wrap-anywhere mt-0.5 line-clamp-3 text-pretty text-muted-foreground text-sm"
                   title={tool.description}
                 >
                   {tool.description}
@@ -157,7 +159,7 @@ function ToolRows({
             </div>
             <ArrowUpRight
               aria-hidden="true"
-              className="mt-1 size-4 shrink-0 text-muted-fg"
+              className="mt-1 size-4 shrink-0 text-muted-foreground"
             />
           </Link>
         </li>
@@ -199,19 +201,19 @@ function NoToolsAvailable() {
   return (
     <section className={`${sectionClass} py-12 sm:py-16`} id="tools">
       <div className="mb-8 max-w-2xl">
-        <h2 className="text-balance font-semibold text-3xl text-fg sm:text-4xl">
+        <h2 className="text-balance font-heading font-semibold text-3xl text-foreground sm:text-4xl">
           Find the right tool.
         </h2>
-        <p className="mt-3 text-pretty text-muted-fg">
+        <p className="mt-3 text-pretty text-muted-foreground">
           Search by name, task, or category.
         </p>
       </div>
-      <p className="text-pretty text-muted-fg" role="status">
+      <p className="text-pretty text-muted-foreground" role="status">
         No tools available.
       </p>
       <div className="mt-6">
         <Link
-          className={buttonStyles({ intent: 'outline', size: 'lg' })}
+          className={buttonVariants({ size: 'lg', variant: 'outline' })}
           to="/"
         >
           Return to Toolbox
@@ -271,10 +273,10 @@ export function HomepageTools({
   return (
     <section className={`${sectionClass} py-12 sm:py-16`} id="tools">
       <div className="mb-8 max-w-2xl">
-        <h2 className="text-balance font-semibold text-3xl text-fg sm:text-4xl">
+        <h2 className="text-balance font-heading font-semibold text-3xl text-foreground sm:text-4xl">
           Find the right tool.
         </h2>
-        <p className="mt-3 text-pretty text-muted-fg">
+        <p className="mt-3 text-pretty text-muted-foreground">
           Search by name, task, or category.
         </p>
       </div>
@@ -286,16 +288,18 @@ export function HomepageTools({
         onQueryChange={handleQueryChange}
         query={query}
       />
-      <p className="mb-4 text-muted-fg text-sm tabular-nums" role="status">
+      <p
+        className="mb-4 text-muted-foreground text-sm tabular-nums"
+        role="status"
+      >
         {isFiltering ? filterLabel : defaultLabel}
       </p>
       <ToolRows onReset={handleReset} tools={visible} />
       {isFiltering && capped ? (
         <div className="mt-6 flex justify-center">
           <Button
-            intent="outline"
-            onPress={() => setLimit((value) => value + 12)}
-            size="md"
+            onClick={() => setLimit((value) => value + 12)}
+            variant="outline"
           >
             Show more tools
           </Button>
@@ -303,7 +307,7 @@ export function HomepageTools({
       ) : null}
       <div className="mt-8 flex justify-center">
         <Link
-          className={buttonStyles({ intent: 'outline', size: 'lg' })}
+          className={buttonVariants({ size: 'lg', variant: 'outline' })}
           to="/"
         >
           View all {pluralize(tools.length, 'tool', 'tools')}

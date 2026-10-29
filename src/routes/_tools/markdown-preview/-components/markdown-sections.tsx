@@ -55,15 +55,15 @@ export function MarkdownToolbar({
         copied={copied}
         disabled={computing || isEmpty || !canCopy}
         label="Copy HTML"
-        onPress={onCopyHtml}
+        onClick={onCopyHtml}
         text="Copy HTML"
       />
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
       <Button
         aria-label="Clear markdown"
-        intent="outline"
-        onPress={onClear}
+        onClick={onClear}
         size="sm"
+        variant="outline"
       >
         Clear
       </Button>
@@ -86,7 +86,7 @@ export function MarkdownPreview({
 }) {
   if (computing) {
     return (
-      <p aria-live="polite" className="text-muted-fg text-sm">
+      <p aria-live="polite" className="text-muted-foreground text-sm">
         Rendering…
       </p>
     );
@@ -96,14 +96,14 @@ export function MarkdownPreview({
   }
   if (isEmpty) {
     return (
-      <p className="text-muted-fg text-sm">
+      <p className="text-muted-foreground text-sm">
         Preview will appear here once you type Markdown.
       </p>
     );
   }
   return (
     <div
-      className="markdown-preview prose prose-sm max-w-none rounded-lg border bg-(--card-bg)/50 p-4 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-muted [&_blockquote]:border-l-2 [&_blockquote]:pl-4 [&_blockquote]:text-muted-fg [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:font-bold [&_h1]:text-2xl [&_h1]:leading-tight [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:font-bold [&_h2]:text-xl [&_h2]:leading-tight [&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:leading-snug [&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:font-semibold [&_h4]:text-base [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_pre]:overflow-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-3 [&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-lg [&_table]:border [&_td]:border [&_td]:px-3 [&_td]:py-2 [&_th]:border [&_th]:bg-muted [&_th]:px-3 [&_th]:py-2 [&_th]:font-semibold [&_ul]:list-disc [&_ul]:pl-6"
+      className="markdown-preview prose prose-sm max-w-none rounded-lg border bg-muted/40 p-4 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-muted [&_blockquote]:border-l-2 [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:font-bold [&_h1]:text-2xl [&_h1]:leading-tight [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:font-bold [&_h2]:text-xl [&_h2]:leading-tight [&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:leading-snug [&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:font-semibold [&_h4]:text-base [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_pre]:overflow-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-3 [&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-lg [&_table]:border [&_td]:border [&_td]:px-3 [&_td]:py-2 [&_th]:border [&_th]:bg-muted [&_th]:px-3 [&_th]:py-2 [&_th]:font-semibold [&_ul]:list-disc [&_ul]:pl-6"
       // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized via DOMPurify before rendering
       dangerouslySetInnerHTML={{ __html: html }}
     />

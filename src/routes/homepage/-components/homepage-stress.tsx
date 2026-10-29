@@ -114,9 +114,9 @@ export function HomepageStressBar({ current }: { current: StressMode }) {
       aria-label="Stress data preview"
       className="fixed bottom-[calc(0.5rem+env(safe-area-inset-bottom))] left-1/2 z-40 w-max max-w-[calc(100vw-1rem)] -translate-x-1/2"
     >
-      <div className="flex flex-wrap items-center justify-center gap-1 rounded-full border border-border bg-bg px-2 py-1 text-xs shadow">
+      <div className="flex flex-wrap items-center justify-center gap-1 rounded-full border border-border bg-background px-2 py-1 text-xs shadow">
         <a
-          className="rounded-full px-2 py-1 text-muted-fg no-underline hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="rounded-full px-2 py-1 text-muted-foreground no-underline hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           href={pathname}
         >
           Off
@@ -124,7 +124,7 @@ export function HomepageStressBar({ current }: { current: StressMode }) {
         {MODE_LINKS.map(({ label, mode }) => (
           <a
             aria-current={mode === current ? 'page' : undefined}
-            className="rounded-full px-2 py-1 text-muted-fg no-underline hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-secondary aria-[current=page]:font-medium aria-[current=page]:text-fg"
+            className="rounded-full px-2 py-1 text-muted-foreground no-underline hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-secondary aria-[current=page]:font-medium aria-[current=page]:text-foreground"
             href={`${pathname}?data=${mode}`}
             key={mode}
           >

@@ -34,7 +34,7 @@ export function DiffHint({ show }: { show: boolean }) {
     return null;
   }
   return (
-    <p className="text-muted-fg text-xs">
+    <p className="text-muted-foreground text-xs">
       Click Compare to see the differences.
     </p>
   );
@@ -70,7 +70,7 @@ export function DiffResults({
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-1.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-muted-fg text-sm">
+          <span className="text-muted-foreground text-sm">
             {result?.addedCount ?? 0} additions, {result?.removedCount ?? 0}{' '}
             deletions
           </span>
@@ -83,13 +83,13 @@ export function DiffResults({
             <CopyButton
               copied={copiedKey === 'copy'}
               label="Copy diff"
-              onPress={onCopyDiff}
+              onClick={onCopyDiff}
             />
           </div>
         </div>
         {!view.splitUsable && (
           <p
-            className="text-muted-fg text-xs"
+            className="text-muted-foreground text-xs"
             id={SPLIT_VIEW_UNAVAILABLE_HINT_ID}
           >
             Split view needs a wider screen — showing Unified instead.
@@ -101,7 +101,7 @@ export function DiffResults({
         ref={view.ref as React.RefObject<HTMLDivElement>}
       >
         <DiffViewer
-          className="max-h-96 overflow-auto rounded-lg border bg-(--card-bg)/50"
+          className="max-h-96 overflow-auto rounded-lg border bg-muted/40"
           fileDiff={fileDiff as never}
           options={fileDiffOptions as never}
         />
@@ -116,9 +116,11 @@ export function NoDifferences({ show }: { show: boolean }) {
   }
   return (
     <div className="flex flex-col gap-2" role="status">
-      <span className="text-muted-fg text-sm">0 additions, 0 deletions</span>
-      <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed bg-(--card-bg)/50 p-4">
-        <p className="text-muted-fg text-sm">No differences found</p>
+      <span className="text-muted-foreground text-sm">
+        0 additions, 0 deletions
+      </span>
+      <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed bg-muted/40 p-4">
+        <p className="text-muted-foreground text-sm">No differences found</p>
       </div>
     </div>
   );

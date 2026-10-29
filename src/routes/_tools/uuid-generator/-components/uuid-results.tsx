@@ -23,14 +23,14 @@ export function UuidResults({
     <>
       <div className="flex flex-wrap gap-2">
         {result?.isValid && result.uuids.length > 1 && (
-          <Button intent="outline" onPress={onCopyAll} size="sm">
+          <Button onClick={onCopyAll} size="sm" variant="outline">
             Copy all
           </Button>
         )}
-        <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+        <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
       </div>
       {result && !result.isValid && (
-        <p className="text-danger text-sm" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {result.error}
         </p>
       )}
@@ -38,14 +38,14 @@ export function UuidResults({
         <ol className="flex max-h-96 flex-col gap-2 overflow-auto">
           {result.uuids.map((uuid, index) => (
             <li
-              className="flex items-center justify-between gap-2 rounded-lg border bg-(--card-bg)/50 p-3"
+              className="flex items-center justify-between gap-2 rounded-lg border bg-muted/40 p-3"
               key={uuid}
             >
               <code className="min-w-0 truncate font-mono text-sm">{uuid}</code>
               <CopyButton
                 copied={copiedKey === index}
                 label={`Copy UUID ${index + 1}`}
-                onPress={() => onCopy(uuid, index)}
+                onClick={() => onCopy(uuid, index)}
               />
             </li>
           ))}

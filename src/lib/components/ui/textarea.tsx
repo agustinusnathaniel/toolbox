@@ -1,32 +1,17 @@
-'use client'
+import * as React from "react"
+import { cn } from "cn"
 
-import {
-  TextArea,
-  type TextAreaProps as TextAreaPrimitiveProps,
-} from 'react-aria-components/TextArea'
-import { cx } from '@/lib/styles/primitive'
-
-interface TextAreaProps extends TextAreaPrimitiveProps {
-  ref?: React.Ref<HTMLTextAreaElement>
-}
-export function Textarea({ className, ref, ...props }: TextAreaProps) {
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
-    <span data-slot="control" className="relative block w-full">
-      <TextArea
-        {...props}
-        ref={ref}
-        className={cx(
-          'field-sizing-content relative block min-h-16 w-full appearance-none rounded-lg bg-(--control-bg,transparent) px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
-          'text-base/6 text-fg placeholder:text-muted-fg sm:text-sm/6',
-          'border border-input enabled:hover:border-muted-fg/30',
-          'outline-hidden focus:border-ring/70 focus:ring-3 focus:ring-ring/20 focus:enabled:hover:border-ring/80',
-          'invalid:border-danger-subtle-fg/70 focus:invalid:border-danger-subtle-fg/70 focus:invalid:ring-danger-subtle-fg/20 invalid:enabled:hover:border-danger-subtle-fg/80 invalid:focus:enabled:hover:border-danger-subtle-fg/80',
-          'disabled:bg-muted forced-colors:in-disabled:text-[GrayText]',
-          'in-disabled:bg-muted forced-colors:in-disabled:text-[GrayText]',
-          'dark:scheme-dark',
-          className
-        )}
-      />
-    </span>
+    <textarea
+      data-slot="textarea"
+      className={cn(
+        "flex field-sizing-content min-h-16 w-full resize-none rounded-2xl border border-transparent bg-input/50 px-2.5 py-2 text-base transition-[color,box-shadow] duration-200 outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className
+      )}
+      {...props}
+    />
   )
 }
+
+export { Textarea }

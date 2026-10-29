@@ -13,12 +13,14 @@ import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import {
-  ComboBox,
-  ComboBoxContent,
-  ComboBoxInput,
-  ComboBoxItem,
-} from '@/lib/components/ui/combo-box';
-import { Label } from '@/lib/components/ui/field';
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/lib/components/ui/combobox';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
@@ -63,6 +65,8 @@ const CURRENCY_OPTIONS = CURRENCIES.map((c) => ({
   label: `${c.code} — ${c.name}`,
   name: c.name,
 }));
+
+type CurrencyOption = (typeof CURRENCY_OPTIONS)[number];
 
 const HOW_IT_WORKS = {
   description:
@@ -257,7 +261,7 @@ function RateStatusLine({
   }
   const age = rateAgeDays(date, Date.now());
   return (
-    <p className="text-muted-fg text-xs">
+    <p className="text-muted-foreground text-xs">
       1 {from} = {formatRate(rate)} {to} · ECB {date}
       {age > 1 ? ` · ${age} days old` : ''}
     </p>
@@ -283,7 +287,7 @@ function ConversionOutput({
 }) {
   if (!hasInput) {
     return (
-      <p className="text-muted-fg text-xs">
+      <p className="text-muted-foreground text-xs">
         Enter an amount to see the conversion.
       </p>
     );
@@ -292,15 +296,17 @@ function ConversionOutput({
     return <ToolError title="Enter a valid amount" />;
   }
   if (ratesLoading) {
-    return <p className="text-muted-fg text-xs">Loading latest rates…</p>;
+    return (
+      <p className="text-muted-foreground text-xs">Loading latest rates…</p>
+    );
   }
   if (!result.isValid) {
     return (
       <div className="flex flex-col gap-2">
         <ToolError title={result.error ?? 'Invalid input'} />
         {result.loadError !== null && (
-          <Button intent="outline" onPress={onRetry} size="sm">
-            <RotateCcw className="size-4" />
+          <Button onClick={onRetry} size="sm" variant="outline">
+            <RotateCcw aria-hidden="true" className="size-4" />
             Retry
           </Button>
         )}
@@ -334,70 +340,82 @@ function CurrencySelectors({
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="currency-converter-from">From</Label>
-        <ComboBox
-          aria-label="From currency"
-          onSelectionChange={(key) => {
-            if (typeof key === 'string') {
-              onFromChange(key);
+      <Field>
+        <FieldLabel htmlFor="currency-converter-from">From</FieldLabel>
+        <Combobox
+          items={CURRENCY_OPTIONS}
+          itemToStringLabel={(option: CurrencyOption) =>
+            `${option.id} ${option.name}`
+          }
+          itemToStringValue={(option: CurrencyOption) =>
+            `${option.id} ${option.name}`
+          }
+          onValueChange={(option: CurrencyOption | null) => {
+            if (option) {
+              onFromChange(option.id);
             }
           }}
-          selectedKey={from}
+          value={CURRENCY_OPTIONS.find((option) => option.id === from) ?? null}
         >
-          <ComboBoxInput
+          <ComboboxInput
             id="currency-converter-from"
-            placeholder="Search currency..."
+            placeholder="Search currency…"
           />
-          <ComboBoxContent items={CURRENCY_OPTIONS}>
-            {(option) => (
-              <ComboBoxItem
-                id={option.id}
-                textValue={`${option.id} ${option.name}`}
-              >
-                {option.label}
-              </ComboBoxItem>
-            )}
-          </ComboBoxContent>
-        </ComboBox>
-      </div>
+          <ComboboxContent>
+            <ComboboxEmpty>No currencies found.</ComboboxEmpty>
+            <ComboboxList>
+              {(option: CurrencyOption) => (
+                <ComboboxItem key={option.id} value={option}>
+                  {option.label}
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
+      </Field>
       <div className="flex items-end justify-center pb-1">
         <Button
           aria-label="Swap currencies"
-          intent="outline"
-          onPress={onSwap}
-          size="sq-sm"
+          onClick={onSwap}
+          size="icon-sm"
+          variant="outline"
         >
-          <ArrowLeftRight className="size-4" />
+          <ArrowLeftRight aria-hidden="true" className="size-4" />
         </Button>
       </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="currency-converter-to">To</Label>
-        <ComboBox
-          aria-label="To currency"
-          onSelectionChange={(key) => {
-            if (typeof key === 'string') {
-              onToChange(key);
+      <Field>
+        <FieldLabel htmlFor="currency-converter-to">To</FieldLabel>
+        <Combobox
+          items={CURRENCY_OPTIONS}
+          itemToStringLabel={(option: CurrencyOption) =>
+            `${option.id} ${option.name}`
+          }
+          itemToStringValue={(option: CurrencyOption) =>
+            `${option.id} ${option.name}`
+          }
+          onValueChange={(option: CurrencyOption | null) => {
+            if (option) {
+              onToChange(option.id);
             }
           }}
-          selectedKey={to}
+          value={CURRENCY_OPTIONS.find((option) => option.id === to) ?? null}
         >
-          <ComboBoxInput
+          <ComboboxInput
             id="currency-converter-to"
-            placeholder="Search currency..."
+            placeholder="Search currency…"
           />
-          <ComboBoxContent items={CURRENCY_OPTIONS}>
-            {(option) => (
-              <ComboBoxItem
-                id={option.id}
-                textValue={`${option.id} ${option.name}`}
-              >
-                {option.label}
-              </ComboBoxItem>
-            )}
-          </ComboBoxContent>
-        </ComboBox>
-      </div>
+          <ComboboxContent>
+            <ComboboxEmpty>No currencies found.</ComboboxEmpty>
+            <ComboboxList>
+              {(option: CurrencyOption) => (
+                <ComboboxItem key={option.id} value={option}>
+                  {option.label}
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
+      </Field>
     </div>
   );
 }
@@ -487,7 +505,7 @@ function CurrencyConverterPage() {
   const amountValid = parseAmount(state.amount) !== null;
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <CurrencySelectors
@@ -499,7 +517,7 @@ function CurrencyConverterPage() {
           />
           <div className="flex flex-col gap-1">
             <label
-              className="text-muted-fg text-sm"
+              className="text-muted-foreground text-sm"
               htmlFor="currency-converter-amount"
             >
               Amount
@@ -509,7 +527,7 @@ function CurrencyConverterPage() {
               id="currency-converter-amount"
               inputMode="decimal"
               onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="Enter amount..."
+              placeholder="Enter amount…"
               value={state.amount}
             />
           </div>
@@ -534,9 +552,9 @@ function CurrencyConverterPage() {
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            <CopyLinkButton onPress={handleCopyLink} />
-            <Button intent="outline" onPress={handleClear} size="sm">
-              <Trash2 className="size-4" />
+            <CopyLinkButton onClick={handleCopyLink} />
+            <Button onClick={handleClear} size="sm" variant="outline">
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

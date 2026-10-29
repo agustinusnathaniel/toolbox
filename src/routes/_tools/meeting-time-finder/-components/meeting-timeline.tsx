@@ -121,7 +121,7 @@ function TimelineHeader({
             referenceZone={referenceZone}
             selectedHour={selectedHour}
           />
-          <Button intent="primary" onPress={onFindBestTime} size="sm">
+          <Button onClick={onFindBestTime} size="sm" variant="default">
             Find Best Time
           </Button>
         </div>
@@ -149,7 +149,7 @@ function TimelineHeader({
         <span className="text-muted-foreground text-xs">Score:</span>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-emerald-500 transition-all duration-200"
+            className="h-full rounded-full bg-emerald-500 transition-[width] duration-200"
             style={{ width: `${scorePercent}%` }}
           />
         </div>

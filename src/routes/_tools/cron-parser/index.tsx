@@ -102,7 +102,10 @@ function CronInput({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="cron-expression">
+      <label
+        className="text-muted-foreground text-sm"
+        htmlFor="cron-expression"
+      >
         Cron expression
       </label>
       <Input
@@ -113,7 +116,7 @@ function CronInput({
         placeholder="0 * * * *"
         value={expression}
       />
-      <p className="text-muted-fg text-xs">
+      <p className="text-muted-foreground text-xs">
         5 fields: minute hour day month weekday — e.g. 0 9 * * 1
       </p>
     </div>
@@ -126,10 +129,10 @@ function CronExamples({ onSelect }: { onSelect: (ex: string) => void }) {
       {CRON_EXAMPLES.map((example) => (
         <Button
           aria-label={`Use example ${example.expression}: ${example.description}`}
-          intent="outline"
           key={example.expression}
-          onPress={() => onSelect(example.expression)}
+          onClick={() => onSelect(example.expression)}
           size="xs"
+          variant="outline"
         >
           {example.expression}
         </Button>
@@ -164,14 +167,14 @@ function CronHumanReadable({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-muted-fg text-sm">Human readable</span>
+        <span className="text-muted-foreground text-sm">Human readable</span>
         <CopyButton
           copied={copiedKey === 'description'}
           label="Copy description"
-          onPress={onCopy}
+          onClick={onCopy}
         />
       </div>
-      <p className="rounded-lg border bg-(--card-bg)/50 p-3 text-sm">
+      <p className="rounded-lg border bg-muted/40 p-3 text-sm">
         {result.humanReadable}
       </p>
     </div>
@@ -195,31 +198,31 @@ function CronNextRuns({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-muted-fg text-sm">
+        <span className="text-muted-foreground text-sm">
           Next {result.nextRuns?.length ?? 0} runs
         </span>
         <CopyButton
           copied={copiedKey === 'runs'}
           label="Copy all run times"
-          onPress={onCopyRuns}
+          onClick={onCopyRuns}
         />
       </div>
       <ul className="flex flex-col gap-1.5">
         {(result.nextRuns ?? []).map((run, index) => (
           <li
-            className="flex items-center justify-between gap-2 rounded-lg border bg-(--card-bg)/50 px-3 py-2"
+            className="flex items-center justify-between gap-2 rounded-lg border bg-muted/40 px-3 py-2"
             key={run}
           >
             <span className="font-mono text-sm tabular-nums">
               {new Date(run).toLocaleString()}
             </span>
-            <span className="hidden font-mono text-muted-fg text-xs tabular-nums sm:inline">
+            <span className="hidden font-mono text-muted-foreground text-xs tabular-nums sm:inline">
               {run}
             </span>
             <CopyButton
               copied={copiedKey === `run-${index}`}
               label={`Copy run time ${index + 1}`}
-              onPress={() => onCopySingleRun(run, index)}
+              onClick={() => onCopySingleRun(run, index)}
             />
           </li>
         ))}
@@ -247,7 +250,7 @@ function CronParserPage() {
     trackAction
   );
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <CronInput expression={expression} setExpression={setExpression} />
@@ -255,7 +258,7 @@ function CronParserPage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton
               label="Copy shareable link"
-              onPress={handleCopyLink}
+              onClick={handleCopyLink}
             />
           </div>
           <CronError result={result} />

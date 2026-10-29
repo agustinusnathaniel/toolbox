@@ -4,12 +4,12 @@ import { Button } from '@/lib/components/ui/button';
 
 interface CopyLinkButtonProps {
   label?: string;
-  onPress: () => void;
+  onClick: () => void;
 }
 
-export const CopyLinkButton = ({ label, onPress }: CopyLinkButtonProps) => (
-  <Button aria-label={label} intent="outline" onPress={onPress} size="sm">
-    <Link className="size-4" />
+export const CopyLinkButton = ({ label, onClick }: CopyLinkButtonProps) => (
+  <Button aria-label={label} onClick={onClick} size="sm" variant="outline">
+    <Link aria-hidden="true" className="size-4" />
     Copy link
   </Button>
 );

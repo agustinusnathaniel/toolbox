@@ -8,6 +8,8 @@ import { ResultPanel } from '@/lib/components/result-panel';
 import { ToolError } from '@/lib/components/tool-error';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
+import { Input } from '@/lib/components/ui/input';
 
 export function JwtTokenInput({
   onChange,
@@ -21,7 +23,7 @@ export function JwtTokenInput({
       id="jwt-token"
       label="Token"
       onChange={(e) => onChange(e.target.value)}
-      placeholder="Paste a JWT to decode..."
+      placeholder="Paste a JWT to decode…"
       value={token}
     />
   );
@@ -36,11 +38,11 @@ export function JwtDecodeActions({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button onPress={onDecode} size="sm">
-        <ScanLine className="size-4" />
+      <Button onClick={onDecode} size="sm">
+        <ScanLine aria-hidden="true" className="size-4" />
         Decode
       </Button>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -53,27 +55,24 @@ export function JwtSecretInput({
   secret: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor="jwt-secret">
-        Shared secret (optional)
-      </label>
-      <input
-        className="w-full rounded-lg border bg-bg px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
+    <Field>
+      <FieldLabel htmlFor="jwt-secret">Shared secret (optional)</FieldLabel>
+      <Input
         id="jwt-secret"
         onChange={(e) => onChange(e.target.value)}
         placeholder="Enter a secret to verify the HMAC signature"
         type="password"
         value={secret}
       />
-    </div>
+    </Field>
   );
 }
 
 export function JwtVerifyBar({ onVerify }: { onVerify: () => void }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button onPress={onVerify} size="sm">
-        <ShieldCheck className="size-4" />
+      <Button onClick={onVerify} size="sm">
+        <ShieldCheck aria-hidden="true" className="size-4" />
         Verify signature
       </Button>
     </div>
@@ -93,7 +92,11 @@ export function JwtStatus({
     <>
       {message && (
         <p
-          className={isValid ? 'text-sm text-success' : 'text-danger text-sm'}
+          className={
+            isValid
+              ? 'text-emerald-600 text-sm dark:text-emerald-400'
+              : 'text-destructive text-sm'
+          }
           role="status"
         >
           {message}
@@ -141,7 +144,7 @@ export function JwtClaims({
       />
       <div className="overflow-hidden rounded-lg border">
         <table className="w-full text-left text-sm">
-          <thead className="bg-(--card-bg)/50 text-muted-fg">
+          <thead className="bg-muted/40 text-muted-foreground">
             <tr>
               <th className="p-3 font-medium">Claim</th>
               <th className="p-3 font-medium">Value</th>

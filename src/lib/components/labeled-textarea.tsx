@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'react';
 
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Textarea } from '@/lib/components/ui/textarea';
 
 interface LabeledTextareaProps extends ComponentProps<typeof Textarea> {
@@ -12,11 +13,9 @@ export function LabeledTextarea({
   ...props
 }: LabeledTextareaProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-muted-fg text-sm" htmlFor={props.id}>
-        {label}
-      </label>
+    <Field>
+      <FieldLabel htmlFor={props.id}>{label}</FieldLabel>
       <Textarea className={className} {...props} />
-    </div>
+    </Field>
   );
 }

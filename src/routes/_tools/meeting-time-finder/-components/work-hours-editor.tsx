@@ -3,15 +3,15 @@ import { useState } from 'react';
 import { Button } from '@/lib/components/ui/button';
 import {
   Popover,
-  PopoverBody,
   PopoverContent,
-  PopoverFooter,
+  PopoverTrigger,
 } from '@/lib/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { City } from '@/lib/tools/meeting-time-finder/adapters/cities';
 
@@ -38,13 +38,22 @@ function HourSelect({
 }) {
   return (
     <Select
-      aria-label={ariaLabel}
-      onSelectionChange={(key) => onChange(Number(key as string))}
-      selectedKey={String(value)}
+      onValueChange={(key) => onChange(Number(key as string))}
+      value={String(value)}
     >
-      <SelectTrigger className="h-7 px-2 text-xs" id={id} />
-      <SelectContent items={HOUR_OPTIONS}>
-        {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+      <SelectTrigger
+        aria-label={ariaLabel}
+        className="h-7 px-2 text-xs"
+        id={id}
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {HOUR_OPTIONS.map((option) => (
+          <SelectItem key={option.id} value={option.id}>
+            {option.label}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
@@ -61,21 +70,24 @@ export function WorkHoursEditor({ city, onUpdate }: WorkHoursEditorProps) {
   };
 
   return (
-    <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
-      <Button
-        aria-label={`Edit working hours for ${city.name}, currently ${city.workStart} to ${city.workEnd}`}
-        className="h-auto min-h-8 min-w-8 justify-start px-1 font-mono text-[11px] text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground sm:min-h-0 sm:min-w-0"
-        intent="plain"
-        onPress={() => {
-          setStart(city.workStart);
-          setEnd(city.workEnd);
-          setIsOpen(true);
-        }}
-      >
-        {city.workStart}–{city.workEnd}
-      </Button>
-      <PopoverContent placement="bottom start">
-        <PopoverBody>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
+      <PopoverTrigger
+        render={
+          <Button
+            aria-label={`Edit working hours for ${city.name}, currently ${city.workStart} to ${city.workEnd}`}
+            className="h-auto min-h-8 min-w-8 justify-start px-1 font-mono text-[11px] text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground sm:min-h-0 sm:min-w-0"
+            onClick={() => {
+              setStart(city.workStart);
+              setEnd(city.workEnd);
+            }}
+            variant="ghost"
+          >
+            {city.workStart}–{city.workEnd}
+          </Button>
+        }
+      />
+      <PopoverContent align="start" side="bottom">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center gap-1">
             <HourSelect
               ariaLabel={`Work start hour for ${city.name}`}
@@ -91,15 +103,15 @@ export function WorkHoursEditor({ city, onUpdate }: WorkHoursEditorProps) {
               value={end}
             />
           </div>
-        </PopoverBody>
-        <PopoverFooter>
-          <Button intent="primary" onPress={handleSave} size="xs">
-            Save
-          </Button>
-          <Button intent="plain" onPress={() => setIsOpen(false)} size="xs">
-            Cancel
-          </Button>
-        </PopoverFooter>
+          <div className="flex items-center gap-2">
+            <Button onClick={handleSave} size="xs" variant="default">
+              Save
+            </Button>
+            <Button onClick={() => setIsOpen(false)} size="xs" variant="ghost">
+              Cancel
+            </Button>
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );

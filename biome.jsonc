@@ -15,7 +15,7 @@
       "*.{js,ts,json,md}",
       "!src/*.gen.ts",
       "!src/lib/components/ui/**/*",
-      "!src/lib/styles/primitive.ts",
+      "!src/lib/components/reui/**/*",
       "!**/*.svg",
       "!**/*.css",
       "!node_modules",

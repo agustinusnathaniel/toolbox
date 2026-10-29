@@ -1,6 +1,5 @@
 'use client';
 
-import { parseColor as parseColorStately } from '@react-stately/color';
 import { createFileRoute, useSearch } from '@tanstack/react-router';
 import { Link } from 'lucide-react';
 import { useCallback, useState } from 'react';
@@ -8,24 +7,21 @@ import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { CopyButton } from '@/lib/components/copy-button';
+import {
+  ColorPicker,
+  ColorPickerContent,
+  ColorPickerTrigger,
+} from '@/lib/components/reui/color-picker';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { ColorArea } from '@/lib/components/ui/color-area';
-import { ColorField } from '@/lib/components/ui/color-field';
-import { ColorPicker } from '@/lib/components/ui/color-picker';
 import {
-  ColorSlider,
-  ColorSliderTrack,
-} from '@/lib/components/ui/color-slider';
-import { ColorSwatch } from '@/lib/components/ui/color-swatch';
-import { ColorThumb } from '@/lib/components/ui/color-thumb';
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
-import {
-  Popover,
-  PopoverBody,
-  PopoverContent,
-} from '@/lib/components/ui/popover';
 import { useCopyFeedback } from '@/lib/hooks/use-copy-feedback';
 import { useCopyShareableLink } from '@/lib/hooks/use-copy-shareable-link';
 import type {
@@ -94,72 +90,48 @@ function useColorActions(
 
 function ColorInputRow({
   input,
+  parsed,
   setInput,
   trackAction,
   handleCopyLink,
-  swatchColor,
 }: {
   input: string;
+  parsed: ParsedColor | null;
   setInput: (v: string) => void;
   trackAction: (a: string) => void;
   handleCopyLink: () => void;
-  swatchColor: string;
 }) {
   return (
     <div className="flex gap-4">
       <ColorPicker
-        onChange={(c) => {
-          setInput(c.toString('hex'));
+        aria-label="Select color"
+        format="hex"
+        onValueChange={(value) => {
+          setInput(value ?? '');
           trackAction('color_picker');
         }}
-        value={parseColorStately(swatchColor)}
+        value={parsed?.hex ?? null}
       >
-        <Popover>
-          <Button data-slot="control" intent="plain">
-            <ColorSwatch />
-            Select color
-          </Button>
-          <PopoverContent className="[--gutter:--spacing(1)]">
-            <PopoverBody>
-              <div className="space-y-(--gutter)">
-                <ColorArea
-                  colorSpace="hsb"
-                  xChannel="saturation"
-                  yChannel="brightness"
-                />
-                <ColorSlider channel="hue" colorSpace="hsb">
-                  <ColorSliderTrack>
-                    <ColorThumb />
-                  </ColorSliderTrack>
-                </ColorSlider>
-                <ColorField aria-label="Color">
-                  <Input />
-                </ColorField>
-              </div>
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
+        <ColorPickerTrigger />
+        <ColorPickerContent />
       </ColorPicker>
-      <div className="flex flex-1 flex-col gap-1">
-        <label className="text-muted-fg text-sm" htmlFor="color-input">
-          Enter a color value
-        </label>
-        <input
-          className="w-full rounded-lg border bg-bg px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-primary/30"
+      <Field className="flex-1">
+        <FieldLabel htmlFor="color-input">Enter a color value</FieldLabel>
+        <Input
           id="color-input"
           onChange={(e) => setInput(e.target.value)}
           placeholder="#ff0000, rgb(255, 0, 0), hsl(0, 100%, 50%), oklch(0.6278 0.2577 29.23)"
           type="text"
           value={input}
         />
-      </div>
+      </Field>
       <Button
         aria-label="Copy shareable link"
-        intent="outline"
-        onPress={handleCopyLink}
-        size="sq-sm"
+        onClick={handleCopyLink}
+        size="icon-sm"
+        variant="outline"
       >
-        <Link className="size-4" />
+        <Link aria-hidden="true" className="size-4" />
       </Button>
     </div>
   );
@@ -187,13 +159,15 @@ function ColorResults({
             key={key}
           >
             <div className="flex flex-col gap-0.5">
-              <span className="font-medium text-muted-fg text-xs">{label}</span>
+              <span className="font-medium text-muted-foreground text-xs">
+                {label}
+              </span>
               <code className="font-mono text-sm">{value}</code>
             </div>
             <CopyButton
               copied={copiedKey === key}
               label={`Copy ${label} value`}
-              onPress={() => onCopy(key)}
+              onClick={() => onCopy(key)}
             />
           </div>
         );
@@ -205,7 +179,9 @@ function ColorResults({
 function ColorPresets({ onPreset }: { onPreset: (hex: string) => void }) {
   return (
     <Card>
-      <CardHeader title="Presets" />
+      <CardHeader>
+        <CardTitle>Presets</CardTitle>
+      </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
           {PRESET_COLORS.map(({ hex, label }) => (
@@ -242,7 +218,6 @@ function ColorMainCard({
   copiedKey: string | null;
   onCopy: (f: ColorFormat) => void;
 }) {
-  const swatchColor = parsed ? parsed.hex : '#000000';
   return (
     <Card>
       <CardHeader />
@@ -250,12 +225,12 @@ function ColorMainCard({
         <ColorInputRow
           handleCopyLink={handleCopyLink}
           input={input}
+          parsed={parsed}
           setInput={setInput}
-          swatchColor={swatchColor}
           trackAction={trackAction}
         />
         {!parsed && input.trim() && (
-          <p className="text-danger text-sm" role="alert">
+          <p className="text-destructive text-sm" role="alert">
             Could not parse this color. Try a format like #ff0000, rgb(255, 0,
             0), hsl(0, 100%, 50%), or oklch(0.6278 0.2577 29.23).
           </p>

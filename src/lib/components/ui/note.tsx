@@ -1,69 +1,57 @@
 import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/24/solid'
-import { twJoin, twMerge } from 'tailwind-merge'
+  RiCheckboxCircleFill,
+  RiErrorWarningFill,
+  RiInformationFill,
+} from '@remixicon/react';
+import { cn } from 'cn';
 
 export interface NoteProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
-  intent?: 'default' | 'info' | 'warning' | 'danger' | 'success'
-  indicator?: boolean
+  intent?: 'default' | 'info' | 'warning' | 'danger' | 'success';
+  indicator?: boolean;
 }
 
-export function Note({ indicator = true, intent = 'default', className, ...props }: NoteProps) {
-  const iconMap: Record<string, React.ElementType | null> = {
-    info: InformationCircleIcon,
-    warning: ExclamationCircleIcon,
-    danger: ExclamationCircleIcon,
-    success: CheckCircleIcon,
+export function Note({
+  indicator = true,
+  intent = 'default',
+  className,
+  children,
+  ...props
+}: NoteProps) {
+  const iconMap = {
+    info: RiInformationFill,
+    warning: RiErrorWarningFill,
+    danger: RiErrorWarningFill,
+    success: RiCheckboxCircleFill,
     default: null,
-  }
+  } as const;
 
-  const IconComponent = iconMap[intent] || null
+  const IconComponent = iconMap[intent];
 
   return (
     <div
       data-slot="note"
-      className={twMerge([
-        'grid w-full grid-cols-[auto_1fr] overflow-hidden rounded-lg border border-current/15 p-4 text-base/6 backdrop-blur-2xl sm:text-sm/6',
+      className={cn(
+        'grid w-full grid-cols-[auto_1fr] overflow-hidden rounded-lg border p-4 text-base/6 backdrop-blur-2xl sm:text-sm/6',
         '*:[a]:hover:underline **:[strong]:font-medium',
-        intent === 'default' && 'bg-muted/50 text-secondary-fg',
+        intent === 'default' && 'border-border bg-muted/50 text-secondary-foreground',
         intent === 'info' &&
-          'bg-info-subtle text-info-subtle-fg **:[.text-muted-fg]:text-info-subtle-fg/70',
+          'border-primary/15 bg-primary/10 text-primary **:[.text-muted-foreground]:text-primary/70',
         intent === 'warning' &&
-          'bg-warning-subtle text-warning-subtle-fg **:[.text-muted-fg]:text-warning-subtle-fg/80',
+          'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400',
         intent === 'danger' &&
-          'bg-danger-subtle text-danger-subtle-fg **:[.text-muted-fg]:text-danger-subtle-fg/80',
+          'border-destructive/15 bg-destructive/10 text-destructive',
         intent === 'success' &&
-          'bg-success-subtle text-success-subtle-fg **:[.text-muted-fg]:text-success-subtle-fg/80',
-        className,
-      ])}
+          'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+        className
+      )}
       {...props}
     >
-      {IconComponent && indicator && (
-        <div
-          className={twJoin(
-            'me-3 grid size-8 place-content-center rounded-full border-2',
-            intent === 'warning' && 'border-warning-subtle-fg/40',
-            intent === 'success' && 'border-success-subtle-fg/40',
-            intent === 'danger' && 'border-danger-subtle-fg/40',
-            intent === 'info' && 'border-info-subtle-fg/40'
-          )}
-        >
-          <div
-            className={twJoin(
-              'grid size-6 place-content-center rounded-full border-2',
-              intent === 'warning' && 'border-warning-subtle-fg/85',
-              intent === 'success' && 'border-success-subtle-fg/85',
-              intent === 'danger' && 'border-danger-subtle-fg/85',
-              intent === 'info' && 'border-info-subtle-fg/85'
-            )}
-          >
-            <IconComponent className="size-5 shrink-0" />
-          </div>
+      {IconComponent && indicator ? (
+        <div className="me-3 grid size-8 place-content-center">
+          <IconComponent aria-hidden="true" className="size-5" />
         </div>
-      )}
-      <div className="text-pretty group-has-[svg]:col-start-2">{props.children}</div>
+      ) : null}
+      <div className="min-w-0">{children}</div>
     </div>
-  )
+  );
 }

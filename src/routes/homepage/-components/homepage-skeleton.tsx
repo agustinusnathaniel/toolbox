@@ -87,12 +87,12 @@ export function HomepageSkeleton() {
 }
 
 function Placeholder({ className }: { className: string }) {
-  return <Skeleton className={`rounded-md bg-secondary ${className}`} />;
+  return <Skeleton className={className} />;
 }
 
 function PreviewPlaceholder({ bodyClassName }: { bodyClassName: string }) {
   return (
-    <div className="flex flex-col rounded-xl bg-bg p-4">
+    <div className="flex flex-col rounded-xl bg-background p-4">
       <div className="mb-3 flex items-center gap-2">
         <Placeholder className="size-8" />
         <Placeholder className="h-4 min-w-0 flex-1" />

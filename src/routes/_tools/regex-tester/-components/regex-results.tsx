@@ -23,13 +23,14 @@ export function RegexTruncated({ result }: { result: RegexTestResult }) {
   }
   return (
     <div
-      className="rounded-lg border border-warning/30 bg-warning/5 p-3"
+      className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3"
       role="alert"
     >
-      <p className="font-medium text-sm text-warning">
-        Showing first {result.matches.length.toLocaleString()} matches
+      <p className="font-medium text-amber-600 text-sm dark:text-amber-400">
+        Showing first {result.matches.length.toLocaleString()}{' '}
+        {result.matches.length === 1 ? 'match' : 'matches'}
       </p>
-      <p className="mt-1 text-warning/80 text-xs">
+      <p className="mt-1 text-amber-600 text-xs dark:text-amber-400/80">
         The pattern produced more matches than can be shown at once. Refine the
         pattern or use a shorter input to see all matches.
       </p>
@@ -55,10 +56,13 @@ export function RegexHighlights({
     return null;
   }
   return (
-    <pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-lg border bg-(--card-bg)/50 p-3 font-mono text-sm">
+    <pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-lg border bg-muted/40 p-3 font-mono text-sm">
       {segments.map((segment) =>
         segment.matched ? (
-          <mark className="rounded bg-primary/20 text-fg" key={segment.start}>
+          <mark
+            className="rounded bg-primary/20 text-foreground"
+            key={segment.start}
+          >
             {segment.text}
           </mark>
         ) : (
@@ -76,15 +80,12 @@ export function RegexMatchList({ result }: { result: RegexTestResult }) {
   return (
     <ol className="flex max-h-80 flex-col gap-2 overflow-auto">
       {result.matches.map((match) => (
-        <li
-          className="rounded-lg border bg-(--card-bg)/50 p-3"
-          key={match.index}
-        >
+        <li className="rounded-lg border bg-muted/40 p-3" key={match.index}>
           <div className="flex items-center justify-between gap-2">
             <code className="min-w-0 truncate font-mono text-sm">
               {match.full}
             </code>
-            <span className="shrink-0 text-muted-fg text-xs">
+            <span className="shrink-0 text-muted-foreground text-xs">
               index {match.index}
             </span>
           </div>

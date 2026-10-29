@@ -17,43 +17,52 @@ export function StatusBadge({ result }: { result: ExecutionResult | null }) {
   switch (result.status) {
     case 'success':
       return (
-        <Badge intent="success" isCircle={false}>
-          <CheckCircle2 className="size-3" />
+        <Badge
+          className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+          variant="outline"
+        >
+          <CheckCircle2 aria-hidden="true" className="size-3" />
           Success
         </Badge>
       );
     case 'runtime_error':
       return (
-        <Badge intent="danger" isCircle={false}>
-          <XCircle className="size-3" />
+        <Badge variant="destructive">
+          <XCircle aria-hidden="true" className="size-3" />
           Runtime Error
         </Badge>
       );
     case 'timeout':
       return (
-        <Badge intent="warning" isCircle={false}>
-          <Clock className="size-3" />
+        <Badge
+          className="border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+          variant="outline"
+        >
+          <Clock aria-hidden="true" className="size-3" />
           Timeout
         </Badge>
       );
     case 'terminated':
       return (
-        <Badge intent="warning" isCircle={false}>
-          <ShieldAlert className="size-3" />
+        <Badge
+          className="border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+          variant="outline"
+        >
+          <ShieldAlert aria-hidden="true" className="size-3" />
           Terminated
         </Badge>
       );
     case 'worker_error':
       return (
-        <Badge intent="danger" isCircle={false}>
-          <AlertCircle className="size-3" />
+        <Badge variant="destructive">
+          <AlertCircle aria-hidden="true" className="size-3" />
           Worker Error
         </Badge>
       );
     default:
       return (
-        <Badge intent="secondary" isCircle={false}>
-          <AlertCircle className="size-3" />
+        <Badge variant="secondary">
+          <AlertCircle aria-hidden="true" className="size-3" />
           Unknown
         </Badge>
       );

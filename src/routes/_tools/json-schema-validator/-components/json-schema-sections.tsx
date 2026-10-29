@@ -60,16 +60,16 @@ export function JsonSchemaActions({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button isDisabled={computing} onPress={onValidate} size="sm">
-        <FileCheck2 className="size-4" />
+      <Button disabled={computing} onClick={onValidate} size="sm">
+        <FileCheck2 aria-hidden="true" className="size-4" />
         Validate
       </Button>
       {computing && (
-        <span aria-live="polite" className="text-muted-fg text-xs">
+        <span aria-live="polite" className="text-muted-foreground text-xs">
           Validating…
         </span>
       )}
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -83,14 +83,14 @@ export function JsonSchemaExamples({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-muted-fg text-xs">Try:</span>
+      <span className="text-muted-foreground text-xs">Try:</span>
       {examples.map((example) => (
         <Button
           aria-label={`Load ${example.label} example`}
-          intent="outline"
           key={example.label}
-          onPress={() => onSelect(example)}
+          onClick={() => onSelect(example)}
           size="xs"
+          variant="outline"
         >
           {example.label}
         </Button>
@@ -112,7 +112,7 @@ export function JsonSchemaOutput({
 }) {
   if (!hasInput) {
     return (
-      <p className="text-muted-fg text-xs">
+      <p className="text-muted-foreground text-xs">
         Paste a schema and a document, then click Validate.
       </p>
     );
@@ -129,8 +129,11 @@ export function JsonSchemaOutput({
   if (result.isValid) {
     return (
       <div>
-        <Badge intent="success" isCircle={false}>
-          <Check className="size-3" />
+        <Badge
+          className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+          variant="outline"
+        >
+          <Check aria-hidden="true" className="size-3" />
           Valid — document satisfies the schema
         </Badge>
       </div>
@@ -147,8 +150,8 @@ export function JsonSchemaOutput({
       onCopy={onCopy}
       value={value}
     >
-      <Badge intent="danger" isCircle={false}>
-        <X className="size-3" />
+      <Badge variant="destructive">
+        <X aria-hidden="true" className="size-3" />
         Invalid — {result.issues.length} issue
         {result.issues.length === 1 ? '' : 's'}
         {result.truncated ? ' shown (truncated)' : ''}

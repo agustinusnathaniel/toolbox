@@ -3,11 +3,17 @@
 import { KeyRound } from 'lucide-react';
 
 import { ResultPanel } from '@/lib/components/result-panel';
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from '@/lib/components/reui/number-field';
 import { ToolHelp } from '@/lib/components/tool-help';
 import { Button } from '@/lib/components/ui/button';
-import { Checkbox, CheckboxField } from '@/lib/components/ui/checkbox';
-import { Label } from '@/lib/components/ui/field';
-import { NumberField, NumberInput } from '@/lib/components/ui/number-field';
+import { Checkbox } from '@/lib/components/ui/checkbox';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import { strengthLabel } from '@/lib/tools/password-generator/adapters/password-generator';
 
 const CHARACTER_SET_OPTIONS = [
@@ -30,19 +36,24 @@ export function PasswordLength({
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="password-length">Length</Label>
+      <Field>
+        <FieldLabel htmlFor="password-length">Length</FieldLabel>
         <NumberField
-          maxValue={128}
-          minValue={8}
-          onChange={onLength}
+          id="password-length"
+          max={128}
+          min={8}
+          onValueChange={(value) => onLength(value ?? length)}
           value={length}
         >
-          <NumberInput id="password-length" />
+          <NumberFieldGroup>
+            <NumberFieldDecrement aria-label="Decrease length" />
+            <NumberFieldInput />
+            <NumberFieldIncrement aria-label="Increase length" />
+          </NumberFieldGroup>
         </NumberField>
-      </div>
-      <Button onPress={onGenerate} size="sm">
-        <KeyRound className="size-4" />
+      </Field>
+      <Button onClick={onGenerate} size="sm">
+        <KeyRound aria-hidden="true" className="size-4" />
         Generate
       </Button>
     </div>
@@ -60,21 +71,28 @@ export function PasswordCharset({
     <>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {CHARACTER_SET_OPTIONS.map(({ key, label }) => (
-          <CheckboxField
-            isSelected={options[key]}
-            key={key}
-            onChange={(selected) => onToggle(key, selected)}
-          >
-            <Checkbox>{label}</Checkbox>
-          </CheckboxField>
+          <Field key={key} orientation="horizontal">
+            <Checkbox
+              checked={options[key]}
+              id={`password-${key}`}
+              onCheckedChange={(selected) => onToggle(key, selected === true)}
+            />
+            <FieldLabel htmlFor={`password-${key}`}>{label}</FieldLabel>
+          </Field>
         ))}
       </div>
-      <CheckboxField
-        isSelected={options.excludeAmbiguous}
-        onChange={(selected) => onToggle('excludeAmbiguous', selected)}
-      >
-        <Checkbox>Exclude ambiguous characters (I, l, 1, O, 0, o)</Checkbox>
-      </CheckboxField>
+      <Field orientation="horizontal">
+        <Checkbox
+          checked={options.excludeAmbiguous}
+          id="password-exclude-ambiguous"
+          onCheckedChange={(selected) =>
+            onToggle('excludeAmbiguous', selected === true)
+          }
+        />
+        <FieldLabel htmlFor="password-exclude-ambiguous">
+          Exclude ambiguous characters (I, l, 1, O, 0, o)
+        </FieldLabel>
+      </Field>
     </>
   );
 }
@@ -96,7 +114,7 @@ export function PasswordOutput({
 }) {
   if (!isValid) {
     return (
-      <p className="text-danger text-sm" role="alert">
+      <p className="text-destructive text-sm" role="alert">
         {error}
       </p>
     );

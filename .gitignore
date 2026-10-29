@@ -1,3 +1,6 @@
+# Visual evidence (local-only, never commit screenshots)
+docs/ui-migration/
+
 node_modules
 .DS_Store
 dist

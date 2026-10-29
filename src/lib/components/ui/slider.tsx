@@ -1,102 +1,51 @@
-'use client'
+import { Slider as SliderPrimitive } from "@base-ui/react/slider"
+import { cn } from "cn"
 
-import type { ComponentProps } from 'react'
-import {
-  Slider as PrimitiveSlider,
-  SliderFill as PrimitiveSliderFill,
-  type SliderFillProps,
-  SliderOutput as PrimitiveSliderOutput,
-  SliderThumb as PrimitiveSliderThumb,
-  SliderTrack as PrimitiveSliderTrack,
-} from 'react-aria-components/Slider'
-import { twMerge } from 'tailwind-merge'
-import { cx } from '@/lib/styles/primitive'
-
-export function SliderGroup({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={twMerge('flex items-center gap-x-3 *:data-[slot=icon]:size-5', className)}
-      {...props}
-    />
-  )
-}
-
-export function Slider({ className, ...props }: ComponentProps<typeof PrimitiveSlider>) {
-  return (
-    <PrimitiveSlider
-      data-slot="control"
-      className={cx(
-        'group relative flex touch-none select-none flex-col disabled:opacity-50',
-        'orientation-horizontal:w-full orientation-horizontal:min-w-fit orientation-horizontal:gap-y-2',
-        'orientation-vertical:h-full orientation-vertical:min-h-fit orientation-vertical:w-1.5 orientation-vertical:items-center orientation-vertical:gap-y-2',
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export function SliderOutput({
+function Slider({
   className,
+  defaultValue,
+  value,
+  min = 0,
+  max = 100,
   ...props
-}: ComponentProps<typeof PrimitiveSliderOutput>) {
-  return (
-    <PrimitiveSliderOutput
-      className={cx('font-medium text-base/6 sm:text-sm/6', className)}
-      {...props}
-    />
-  )
-}
+}: SliderPrimitive.Root.Props) {
+  const _values = Array.isArray(value)
+    ? value
+    : Array.isArray(defaultValue)
+      ? defaultValue
+      : [min, max]
 
-export function SliderThumb({ className, ...props }: ComponentProps<typeof PrimitiveSliderThumb>) {
   return (
-    <PrimitiveSliderThumb
-      className={cx(
-        'top-[50%] left-[50%] size-5 rounded-full bg-white outline-hidden ring ring-muted-fg/30 transition-[width,height] dark:ring-white',
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export function SliderTrack({
-  className,
-  children,
-  ...props
-}: ComponentProps<typeof PrimitiveSliderTrack>) {
-  return (
-    <PrimitiveSliderTrack
-      className={cx(
-        'bg-(--slider-track-bg,var(--color-secondary))',
-        'group/track relative cursor-default rounded-full',
-        'grow group-orientation-horizontal:h-1.5 group-orientation-horizontal:w-full group-orientation-vertical:w-1.5 group-orientation-vertical:flex-1',
-        'disabled:cursor-default disabled:opacity-60',
-        className
-      )}
+    <SliderPrimitive.Root
+      className={cn("data-horizontal:w-full data-vertical:h-full", className)}
+      data-slot="slider"
+      defaultValue={defaultValue}
+      value={value}
+      min={min}
+      max={max}
+      thumbAlignment="edge"
       {...props}
     >
-      {(values) => (
-        <>
-          {typeof children === 'function'
-            ? children(values)
-            : (children ?? (
-                <>
-                  <SliderFill />
-                  <SliderThumb />
-                </>
-              ))}
-        </>
-      )}
-    </PrimitiveSliderTrack>
+      <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col">
+        <SliderPrimitive.Track
+          data-slot="slider-track"
+          className="relative grow overflow-hidden rounded-2xl bg-input/90 select-none data-horizontal:h-1 data-horizontal:w-full data-vertical:h-full data-vertical:w-1"
+        >
+          <SliderPrimitive.Indicator
+            data-slot="slider-range"
+            className="bg-primary select-none data-horizontal:h-full data-vertical:w-full"
+          />
+        </SliderPrimitive.Track>
+        {Array.from({ length: _values.length }, (_, index) => (
+          <SliderPrimitive.Thumb
+            data-slot="slider-thumb"
+            key={index}
+            className="block size-4 shrink-0 rounded-2xl bg-white shadow-md ring-1 ring-black/10 transition-[color,box-shadow] duration-200 select-none not-dark:bg-clip-padding hover:ring-4 hover:ring-ring/30 focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+          />
+        ))}
+      </SliderPrimitive.Control>
+    </SliderPrimitive.Root>
   )
 }
 
-export function SliderFill({ className, ...props }: SliderFillProps) {
-  return (
-    <PrimitiveSliderFill
-      className={cx('pointer-events-none rounded-full bg-primary disabled:opacity-60', className)}
-      {...props}
-    />
-  )
-}
+export { Slider }

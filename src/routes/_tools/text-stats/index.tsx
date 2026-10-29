@@ -56,8 +56,8 @@ const FAQ = [
 
 function StatCell({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="flex flex-col gap-1 rounded-lg border bg-(--card-bg)/50 p-3">
-      <span className="text-muted-fg text-xs">{label}</span>
+    <div className="flex flex-col gap-1 rounded-lg border bg-muted/40 p-3">
+      <span className="text-muted-foreground text-xs">{label}</span>
       <span className="font-mono font-semibold text-sm tabular-nums">
         {value}
       </span>
@@ -98,7 +98,7 @@ function TextStatsPage() {
   const hasInput = state.input.trim().length > 0;
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <LabeledTextarea
@@ -106,7 +106,7 @@ function TextStatsPage() {
             id="text-stats-input"
             label="Text input"
             onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="Paste or type text here..."
+            placeholder="Paste or type text here…"
             value={state.input}
           />
 
@@ -125,29 +125,31 @@ function TextStatsPage() {
 
           {hasInput ? (
             <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
-              <span className="text-muted-fg text-xs">{summary}</span>
+              <span className="text-muted-foreground text-xs">{summary}</span>
               <Button
                 aria-label="Copy summary"
-                intent="outline"
-                onPress={handleCopySummary}
-                size="sq-sm"
+                onClick={handleCopySummary}
+                size="icon-sm"
+                variant="outline"
               >
-                <Copy className="size-4" />
+                <Copy aria-hidden="true" className="size-4" />
               </Button>
               {copiedKey === 'summary' && (
-                <span className="text-success text-xs">Copied</span>
+                <span className="text-emerald-600 text-xs dark:text-emerald-400">
+                  Copied
+                </span>
               )}
             </div>
           ) : (
-            <p className="text-muted-fg text-xs">
+            <p className="text-muted-foreground text-xs">
               Enter text to see statistics across all metrics.
             </p>
           )}
 
           <div className="flex flex-wrap gap-2">
-            <CopyLinkButton onPress={handleCopyLink} />
-            <Button intent="outline" onPress={handleClear} size="sm">
-              <Trash2 className="size-4" />
+            <CopyLinkButton onClick={handleCopyLink} />
+            <Button onClick={handleClear} size="sm" variant="outline">
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

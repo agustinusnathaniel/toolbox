@@ -8,7 +8,9 @@ import {
 } from '@/lib/tools/zippy-img/adapters/zippy';
 
 import type { CompressedItem, ImageFile } from './use-zippy-img';
-import { MAX_FILES, MAX_SIZE_MB } from './use-zippy-img';
+
+export const MAX_FILES = 2;
+export const MAX_SIZE_MB = 15;
 
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 

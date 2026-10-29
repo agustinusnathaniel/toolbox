@@ -20,11 +20,9 @@ function ScriptEditorField({
   return (
     <div className="flex flex-col gap-2">
       <span className="font-medium text-sm">{label}</span>
-      <span className="text-muted-fg text-xs">{description}</span>
+      <span className="text-muted-foreground text-xs">{description}</span>
       <div className="overflow-hidden rounded-md border">
-        <Suspense
-          fallback={<Skeleton className="h-[100px] w-full" isLoading />}
-        >
+        <Suspense fallback={<Skeleton className="h-[100px] w-full" />}>
           <MonacoEditor
             height="100px"
             language="javascript"
@@ -65,7 +63,7 @@ export function AdvancedScriptsSection({
   return (
     <div className="mt-2">
       <button
-        className="flex items-center gap-2 text-muted-fg text-sm hover:text-fg"
+        className="flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground"
         onClick={onToggle}
         type="button"
       >

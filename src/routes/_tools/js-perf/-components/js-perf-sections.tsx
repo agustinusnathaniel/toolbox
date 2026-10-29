@@ -11,11 +11,11 @@ export function JsPerfShareButton({ onCopyLink }: { onCopyLink: () => void }) {
     <div className="flex flex-wrap gap-2">
       <Button
         aria-label="Copy shareable link"
-        intent="outline"
-        onPress={onCopyLink}
+        onClick={onCopyLink}
         size="sm"
+        variant="outline"
       >
-        <Link className="size-4" />
+        <Link aria-hidden="true" className="size-4" />
         Copy link
       </Button>
     </div>
@@ -23,7 +23,11 @@ export function JsPerfShareButton({ onCopyLink }: { onCopyLink: () => void }) {
 }
 
 export function JsPerfCopyState({ copied }: { copied: boolean }) {
-  return copied ? <Check className="size-4" /> : <Link className="size-4" />;
+  return copied ? (
+    <Check aria-hidden="true" className="size-4" />
+  ) : (
+    <Link aria-hidden="true" className="size-4" />
+  );
 }
 
 export function canRunPerf(

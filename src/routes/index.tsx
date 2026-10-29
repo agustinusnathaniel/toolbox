@@ -1,5 +1,5 @@
+import { RiStarFill, RiStarLine } from '@remixicon/react';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { Star } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { StaggerChildren } from '@/lib/components/animations/stagger-children';
@@ -54,15 +54,17 @@ function HomePage() {
   return (
     <div className="flex flex-col gap-y-8">
       <section className="space-y-3">
-        <h1 className="text-pretty font-semibold text-2xl/8 text-fg">
+        <h1 className="text-pretty font-heading font-semibold text-2xl/8 text-foreground">
           {SITE_NAME}
         </h1>
-        <p className="max-w-2xl text-muted-fg">{SITE_DESCRIPTION}</p>
+        <p className="max-w-2xl text-muted-foreground">{SITE_DESCRIPTION}</p>
       </section>
 
       {pinnedTools.length > 0 && (
         <section className="space-y-4">
-          <h2 className="font-semibold text-fg text-lg">Pinned</h2>
+          <h2 className="font-heading font-semibold text-foreground text-lg">
+            Pinned
+          </h2>
           <StaggerChildren className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {pinnedTools.map((tool) => (
               <ToolCard
@@ -105,20 +107,22 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
 
   return (
     <Link
-      className="group/card flex flex-col rounded-lg border p-6 no-underline transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="group/card flex flex-col rounded-2xl border p-6 no-underline transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       to={tool.path}
     >
-      <div className="mb-3 text-muted-fg transition-colors group-hover/card:text-primary">
+      <div className="mb-3 text-muted-foreground transition-colors group-hover/card:text-primary">
         {tool.icon}
       </div>
       <CardHeader className="gap-y-1 p-0">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="font-semibold text-base/6 text-fg">{tool.title}</h2>
+          <h2 className="font-heading font-semibold text-base/6 text-foreground">
+            {tool.title}
+          </h2>
           <div className="flex shrink-0 items-center gap-2">
             <button
               aria-label={pinned ? `Unpin ${tool.title}` : `Pin ${tool.title}`}
               aria-pressed={pinned}
-              className="cursor-pointer rounded text-muted-fg transition-colors hover:text-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="cursor-pointer rounded text-muted-foreground transition-colors hover:text-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -127,13 +131,16 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
               type="button"
             >
               {pinned ? (
-                <Star className="size-4 text-amber-500" fill="currentColor" />
+                <RiStarFill
+                  aria-hidden="true"
+                  className="size-4 text-amber-500"
+                />
               ) : (
-                <Star className="size-4" />
+                <RiStarLine aria-hidden="true" className="size-4" />
               )}
             </button>
             {shortcut !== undefined && (
-              <kbd className="inline-flex size-5 items-center justify-center rounded border bg-secondary font-mono text-[10px] text-muted-fg">
+              <kbd className="inline-flex size-5 items-center justify-center rounded-lg border bg-secondary font-mono text-[10px] text-muted-foreground">
                 {shortcut}
               </kbd>
             )}
@@ -141,7 +148,7 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <p className="text-muted-fg text-sm">{tool.description}</p>
+        <p className="text-muted-foreground text-sm">{tool.description}</p>
       </CardContent>
     </Link>
   );

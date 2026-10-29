@@ -36,14 +36,14 @@ export function JsPerfConfig({ page }: { page: Page }) {
       <div className="flex flex-wrap gap-2">
         <Button
           aria-label="Copy shareable link"
-          intent="outline"
-          onPress={page.handleCopyLink}
+          onClick={page.handleCopyLink}
           size="sm"
+          variant="outline"
         >
           {page.copiedKey === 'copy' ? (
-            <Check className="size-4" />
+            <Check aria-hidden="true" className="size-4" />
           ) : (
-            <Link className="size-4" />
+            <Link aria-hidden="true" className="size-4" />
           )}
           {page.copiedKey === 'copy' ? 'Copied!' : 'Copy link'}
         </Button>

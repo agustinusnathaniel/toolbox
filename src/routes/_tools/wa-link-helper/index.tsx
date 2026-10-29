@@ -1,12 +1,13 @@
 'use client';
 
 import { createFileRoute, useSearch } from '@tanstack/react-router';
-import { Form } from 'react-aria-components';
+import { useRef } from 'react';
 import { z } from 'zod';
 
 import { useToolTracking } from '@/lib/analytics/use-analytics';
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
+import { focusFirstInvalidField } from '@/lib/hooks/use-focus-first-error';
 import { createToolRouteMetadata } from '@/lib/utils/metadata';
 
 import { copyWaLink, useWaLinkCopy } from './-components/use-wa-link-copy';
@@ -39,20 +40,23 @@ function WALinkHelperPage() {
     text,
   });
   const { isValid } = form.formState;
+  const formRef = useRef<HTMLFormElement>(null);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-lg">
       <Card>
         <CardContent>
-          <Form
+          <form
             className="grid gap-6 text-start"
-            onSubmit={form.handleSubmit(() =>
-              copyWaLink(link, isPhoneValid, trackAction)
+            onSubmit={form.handleSubmit(
+              () => copyWaLink(link, isPhoneValid, trackAction),
+              () => focusFirstInvalidField(formRef.current)
             )}
+            ref={formRef}
           >
             <WaLinkFormFields form={form} />
             <Button type="submit">Copy Link</Button>
-          </Form>
+          </form>
           <WaLinkResult
             isValid={isValid}
             link={link}

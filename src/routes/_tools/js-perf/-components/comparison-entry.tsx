@@ -16,10 +16,23 @@ function getDurationIndicator(
   const faster = which === 'a' ? msA < msB : msB < msA;
   const slower = which === 'a' ? msA > msB : msB > msA;
   if (faster) {
-    return <BadgeCheck className="inline size-3 text-success" />;
+    return (
+      <>
+        <BadgeCheck
+          aria-hidden="true"
+          className="inline size-3 text-emerald-600 dark:text-emerald-400"
+        />
+        <span className="sr-only">faster</span>
+      </>
+    );
   }
   if (slower) {
-    return <BadgeX className="inline size-3 text-danger" />;
+    return (
+      <>
+        <BadgeX aria-hidden="true" className="inline size-3 text-destructive" />
+        <span className="sr-only">slower</span>
+      </>
+    );
   }
   return <span>≈</span>;
 }
@@ -46,7 +59,7 @@ export function ComparisonEntry({
         {formatDuration(result.durationMs)}
       </span>
       {showIndicator ? (
-        <span className="text-muted-fg text-xs">
+        <span className="text-muted-foreground text-xs">
           {getDurationIndicator(result.durationMs, other.durationMs, which)}
         </span>
       ) : null}

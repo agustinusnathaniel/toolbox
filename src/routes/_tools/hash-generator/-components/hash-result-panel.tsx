@@ -48,13 +48,16 @@ export function HashResultPanel({
       {isMatch !== null &&
         expected.trim() &&
         (isMatch ? (
-          <Badge intent="success" isCircle={false}>
-            <Check className="size-3" />
+          <Badge
+            className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+            variant="outline"
+          >
+            <Check aria-hidden="true" className="size-3" />
             Match — digest matches
           </Badge>
         ) : (
-          <Badge intent="danger" isCircle={false}>
-            <X className="size-3" />
+          <Badge variant="destructive">
+            <X aria-hidden="true" className="size-3" />
             Mismatch — does not match
           </Badge>
         ))}

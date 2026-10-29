@@ -41,7 +41,7 @@ function PasswordGeneratorPage() {
   const page = usePasswordPage(search, trackAction);
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <CardContent className="flex flex-col gap-4">
           <PasswordLength
@@ -57,7 +57,7 @@ function PasswordGeneratorPage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton
               label="Copy shareable link"
-              onPress={page.handleCopyLink}
+              onClick={page.handleCopyLink}
             />
           </div>
           <PasswordCharset

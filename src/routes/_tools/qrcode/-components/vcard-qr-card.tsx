@@ -1,8 +1,13 @@
 import { QRCodeSVG } from 'qrcode.react';
 
 import { Button } from '@/lib/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/lib/components/ui/card';
-import { Label } from '@/lib/components/ui/field';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
+import { FieldLabel } from '@/lib/components/ui/field';
 import { Textarea } from '@/lib/components/ui/textarea';
 import type { VCardState } from '@/lib/tools/qrcode/adapters/qrcode-params';
 
@@ -52,10 +57,10 @@ function VCardQRPreview({
           value={vcardString || ' '}
         />
       </div>
-      <Button intent="primary" onPress={onSaveQR}>
+      <Button onClick={onSaveQR} variant="default">
         Save QR Code
       </Button>
-      <Button intent="outline" onPress={onCopyShareableLink}>
+      <Button onClick={onCopyShareableLink} variant="outline">
         Copy Shareable Link
       </Button>
     </div>
@@ -84,14 +89,16 @@ function VCardFormFields(props: VCardQRCardProps) {
 export function VCardQRCard(props: VCardQRCardProps) {
   return (
     <Card>
-      <CardHeader title="VCard QR Code" />
+      <CardHeader>
+        <CardTitle>VCard QR Code</CardTitle>
+      </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <div className="flex flex-col gap-6 md:flex-row">
           <VCardQRPreview {...props} />
           <VCardFormFields {...props} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>VCard Preview</Label>
+          <FieldLabel>VCard Preview</FieldLabel>
           <Textarea
             className="min-h-[120px] font-mono text-xs"
             disabled

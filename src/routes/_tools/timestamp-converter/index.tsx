@@ -36,7 +36,7 @@ function TimestampConverterPage() {
   const hasInput = page.input.trim().length > 0;
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <TimestampInput
         input={page.input}
         onCopyLink={page.handleCopyLink}

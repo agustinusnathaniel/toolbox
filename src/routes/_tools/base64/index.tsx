@@ -90,7 +90,7 @@ function Base64Input({
         setInput(e.target.value);
         setResult(null);
       }}
-      placeholder="Type or paste text to encode or decode..."
+      placeholder="Type or paste text to encode or decode…"
       value={input}
     />
   );
@@ -107,14 +107,14 @@ function Base64Actions({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Button onPress={onEncode} size="sm">
-        <Binary className="size-4" />
+      <Button onClick={onEncode} size="sm">
+        <Binary aria-hidden="true" className="size-4" />
         Encode
       </Button>
-      <Button intent="outline" onPress={onDecode} size="sm">
+      <Button onClick={onDecode} size="sm" variant="outline">
         Decode
       </Button>
-      <CopyLinkButton label="Copy shareable link" onPress={onCopyLink} />
+      <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
     </div>
   );
 }
@@ -179,7 +179,7 @@ function Base64CardBody({
         onEncode={onEncode}
       />
       {hintVisible && (
-        <p className="text-muted-fg text-xs">
+        <p className="text-muted-foreground text-xs">
           Click Encode or Decode to process your text.
         </p>
       )}
@@ -215,7 +215,7 @@ function Base64Page() {
   );
   const label = activeAction === 'encode' ? 'Encoded' : 'Decoded';
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-3xl">
+    <div className="mx-auto flex w-full flex-col gap-6 md:w-[80%] md:max-w-2xl">
       <Card>
         <Base64CardBody
           copiedKey={copiedKey}

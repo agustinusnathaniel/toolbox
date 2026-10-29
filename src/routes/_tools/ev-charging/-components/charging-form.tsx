@@ -1,5 +1,3 @@
-import { Form } from 'react-aria-components';
-
 import { Button } from '@/lib/components/ui/button';
 import { Card, CardContent } from '@/lib/components/ui/card';
 import type { ChargerType } from '@/lib/tools/ev-charging/adapters/ev-charging';
@@ -26,7 +24,7 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
   return (
     <Card>
       <CardContent>
-        <Form
+        <form
           className="grid gap-4 text-start"
           onSubmit={(e) => {
             e.preventDefault();
@@ -43,10 +41,10 @@ export function ChargingForm({ onComplete, onTrack }: ChargingFormProps) {
             form={form}
             watchedChargerType={watchedValues.chargerType as ChargerType}
           />
-          <Button intent="outline" size="sm" type="submit">
+          <Button size="sm" type="submit" variant="outline">
             Copy Shareable Link
           </Button>
-        </Form>
+        </form>
 
         {result && (
           <ResultCard

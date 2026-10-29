@@ -1,12 +1,13 @@
 import { FileText, Trash2 } from 'lucide-react';
 
 import { Button } from '@/lib/components/ui/button';
-import { Label } from '@/lib/components/ui/field';
+import { Field, FieldLabel } from '@/lib/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/lib/components/ui/select';
 import type { SqlDialect } from '@/lib/tools/sql-formatter/adapters/sql-formatter';
 import type { SqlSearchAction } from '@/lib/tools/sql-formatter/adapters/sql-params';
@@ -46,43 +47,53 @@ export function SqlFormatControls({
 }: SqlFormatControlsProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="sql-dialect">Dialect</Label>
+      <Field>
+        <FieldLabel htmlFor="sql-dialect">Dialect</FieldLabel>
         <Select
-          aria-label="SQL dialect"
-          onSelectionChange={(key) => onDialectChange(key as SqlDialect)}
-          selectedKey={dialect}
+          onValueChange={(key) => onDialectChange(key as SqlDialect)}
+          value={dialect}
         >
-          <SelectTrigger id="sql-dialect" />
-          <SelectContent items={DIALECT_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DIALECT_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-      </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="sql-action">Action</Label>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="sql-action">Action</FieldLabel>
         <Select
-          aria-label="Format action"
-          onSelectionChange={(key) => onActionChange(key as SqlSearchAction)}
-          selectedKey={action}
+          onValueChange={(key) => onActionChange(key as SqlSearchAction)}
+          value={action}
         >
-          <SelectTrigger id="sql-action" />
-          <SelectContent items={ACTION_OPTIONS}>
-            {(option) => <SelectItem id={option.id}>{option.label}</SelectItem>}
+          <SelectTrigger aria-label="Select option">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ACTION_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
       <div className="flex items-center gap-2">
-        <Button intent="primary" onPress={onFormat} size="sm">
-          <FileText className="size-4" />
+        <Button onClick={onFormat} size="sm" variant="default">
+          <FileText aria-hidden="true" className="size-4" />
           {action === 'minify' ? 'Minify' : 'Format'}
         </Button>
-        <Button intent="outline" onPress={onClear} size="sm">
-          <Trash2 className="size-4" />
+        <Button onClick={onClear} size="sm" variant="outline">
+          <Trash2 aria-hidden="true" className="size-4" />
           Clear
         </Button>
         {computing && (
-          <span aria-live="polite" className="text-muted-fg text-xs">
+          <span aria-live="polite" className="text-muted-foreground text-xs">
             Formatting…
           </span>
         )}
