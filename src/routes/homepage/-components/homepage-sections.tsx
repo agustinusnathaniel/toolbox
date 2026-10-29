@@ -104,7 +104,7 @@ export function HomepageHero({
   return (
     <section className="border-border/70 border-b bg-background">
       <div className={`${sectionClass} py-12 text-center sm:py-16`}>
-        <h1 className="wrap-anywhere mx-auto max-w-5xl text-balance font-semibold text-5xl text-foreground sm:text-6xl lg:text-7xl">
+        <h1 className="wrap-anywhere mx-auto max-w-5xl text-balance font-heading font-semibold text-5xl text-foreground sm:text-6xl lg:text-7xl">
           Small tasks.
           <br />
           Consider them handled.

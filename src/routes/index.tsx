@@ -1,5 +1,5 @@
+import { RiStarFill, RiStarLine } from '@remixicon/react';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { Star } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { StaggerChildren } from '@/lib/components/animations/stagger-children';
@@ -54,7 +54,7 @@ function HomePage() {
   return (
     <div className="flex flex-col gap-y-8">
       <section className="space-y-3">
-        <h1 className="text-pretty font-semibold text-2xl/8 text-foreground">
+        <h1 className="text-pretty font-heading font-semibold text-2xl/8 text-foreground">
           {SITE_NAME}
         </h1>
         <p className="max-w-2xl text-muted-foreground">{SITE_DESCRIPTION}</p>
@@ -62,7 +62,9 @@ function HomePage() {
 
       {pinnedTools.length > 0 && (
         <section className="space-y-4">
-          <h2 className="font-semibold text-foreground text-lg">Pinned</h2>
+          <h2 className="font-heading font-semibold text-foreground text-lg">
+            Pinned
+          </h2>
           <StaggerChildren className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {pinnedTools.map((tool) => (
               <ToolCard
@@ -113,7 +115,7 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
       </div>
       <CardHeader className="gap-y-1 p-0">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="font-semibold text-base/6 text-foreground">
+          <h2 className="font-heading font-semibold text-base/6 text-foreground">
             {tool.title}
           </h2>
           <div className="flex shrink-0 items-center gap-2">
@@ -129,9 +131,12 @@ function ToolCard({ isPinned, shortcut, togglePin, tool }: ToolCardProps) {
               type="button"
             >
               {pinned ? (
-                <Star className="size-4 text-amber-500" fill="currentColor" />
+                <RiStarFill
+                  aria-hidden="true"
+                  className="size-4 text-amber-500"
+                />
               ) : (
-                <Star className="size-4" />
+                <RiStarLine aria-hidden="true" className="size-4" />
               )}
             </button>
             {shortcut !== undefined && (

@@ -201,7 +201,7 @@ function NoToolsAvailable() {
   return (
     <section className={`${sectionClass} py-12 sm:py-16`} id="tools">
       <div className="mb-8 max-w-2xl">
-        <h2 className="text-balance font-semibold text-3xl text-foreground sm:text-4xl">
+        <h2 className="text-balance font-heading font-semibold text-3xl text-foreground sm:text-4xl">
           Find the right tool.
         </h2>
         <p className="mt-3 text-pretty text-muted-foreground">
@@ -273,7 +273,7 @@ export function HomepageTools({
   return (
     <section className={`${sectionClass} py-12 sm:py-16`} id="tools">
       <div className="mb-8 max-w-2xl">
-        <h2 className="text-balance font-semibold text-3xl text-foreground sm:text-4xl">
+        <h2 className="text-balance font-heading font-semibold text-3xl text-foreground sm:text-4xl">
           Find the right tool.
         </h2>
         <p className="mt-3 text-pretty text-muted-foreground">

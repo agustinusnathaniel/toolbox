@@ -3,6 +3,7 @@ import { RiArrowDownSLine } from '@remixicon/react';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -58,18 +59,20 @@ export function StripAnchor({
         <RiArrowDownSLine aria-hidden="true" className="size-4 opacity-70" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="bottom">
-        <DropdownMenuLabel>View in timezone</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => handleSelect('UTC')}>
-          UTC
-        </DropdownMenuItem>
-        {cities.map((city) => (
-          <DropdownMenuItem
-            key={city.id}
-            onClick={() => handleSelect(city.timezone)}
-          >
-            {city.name}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>View in timezone</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => handleSelect('UTC')}>
+            UTC
           </DropdownMenuItem>
-        ))}
+          {cities.map((city) => (
+            <DropdownMenuItem
+              key={city.id}
+              onClick={() => handleSelect(city.timezone)}
+            >
+              {city.name}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => handleSelect('now')}>
           Jump to now — <span className="tabular-nums">{nowLabel}</span>
