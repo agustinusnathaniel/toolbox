@@ -22,6 +22,7 @@ import {
   KeyRound,
   Languages,
   Link2,
+  ListChecks,
   Network,
   Regex,
   Scale,
@@ -43,6 +44,7 @@ import { meta as hashGeneratorMeta } from '@/routes/_tools/hash-generator/-meta'
 import { meta as htmlEntitiesMeta } from '@/routes/_tools/html-entities/-meta';
 import { meta as jsPerfMeta } from '@/routes/_tools/js-perf/-meta';
 import { meta as jsonFormatterMeta } from '@/routes/_tools/json-formatter/-meta';
+import { meta as jsonSchemaValidatorMeta } from '@/routes/_tools/json-schema-validator/-meta';
 import { meta as jsonToTsMeta } from '@/routes/_tools/json-to-ts/-meta';
 import { meta as jwtDecoderMeta } from '@/routes/_tools/jwt-decoder/-meta';
 import { meta as loremIpsumMeta } from '@/routes/_tools/lorem-ipsum/-meta';
@@ -284,6 +286,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <Braces />,
     ...xmlFormatterMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <ListChecks />,
+    ...jsonSchemaValidatorMeta,
   },
   {
     category: 'Developer',

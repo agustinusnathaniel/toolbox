@@ -39,6 +39,8 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router": "^1.170.44",
     "@tanstack/react-start": "^1.169.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "awesome-phonenumber": "^7.8.0",
     "browser-image-compression": "^2.0.2",
     "calendar-link": "^2.11.6",

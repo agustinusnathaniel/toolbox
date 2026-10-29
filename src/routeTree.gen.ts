@@ -25,6 +25,7 @@ import { Route as ToolsHashGeneratorIndexRouteImport } from './routes/_tools/has
 import { Route as ToolsHtmlEntitiesIndexRouteImport } from './routes/_tools/html-entities/index'
 import { Route as ToolsJsPerfIndexRouteImport } from './routes/_tools/js-perf/index'
 import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/json-formatter/index'
+import { Route as ToolsJsonSchemaValidatorIndexRouteImport } from './routes/_tools/json-schema-validator/index'
 import { Route as ToolsJsonToTsIndexRouteImport } from './routes/_tools/json-to-ts/index'
 import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-decoder/index'
 import { Route as ToolsLoremIpsumIndexRouteImport } from './routes/_tools/lorem-ipsum/index'
@@ -131,6 +132,12 @@ const ToolsJsonFormatterIndexRoute = ToolsJsonFormatterIndexRouteImport.update({
   path: '/json-formatter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsJsonSchemaValidatorIndexRoute =
+  ToolsJsonSchemaValidatorIndexRouteImport.update({
+    id: '/json-schema-validator/',
+    path: '/json-schema-validator/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsJsonToTsIndexRoute = ToolsJsonToTsIndexRouteImport.update({
   id: '/json-to-ts/',
   path: '/json-to-ts/',
@@ -274,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/html-entities/': typeof ToolsHtmlEntitiesIndexRoute
   '/js-perf/': typeof ToolsJsPerfIndexRoute
   '/json-formatter/': typeof ToolsJsonFormatterIndexRoute
+  '/json-schema-validator/': typeof ToolsJsonSchemaValidatorIndexRoute
   '/json-to-ts/': typeof ToolsJsonToTsIndexRoute
   '/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
   '/lorem-ipsum/': typeof ToolsLoremIpsumIndexRoute
@@ -315,6 +323,7 @@ export interface FileRoutesByTo {
   '/html-entities': typeof ToolsHtmlEntitiesIndexRoute
   '/js-perf': typeof ToolsJsPerfIndexRoute
   '/json-formatter': typeof ToolsJsonFormatterIndexRoute
+  '/json-schema-validator': typeof ToolsJsonSchemaValidatorIndexRoute
   '/json-to-ts': typeof ToolsJsonToTsIndexRoute
   '/jwt-decoder': typeof ToolsJwtDecoderIndexRoute
   '/lorem-ipsum': typeof ToolsLoremIpsumIndexRoute
@@ -358,6 +367,7 @@ export interface FileRoutesById {
   '/_tools/html-entities/': typeof ToolsHtmlEntitiesIndexRoute
   '/_tools/js-perf/': typeof ToolsJsPerfIndexRoute
   '/_tools/json-formatter/': typeof ToolsJsonFormatterIndexRoute
+  '/_tools/json-schema-validator/': typeof ToolsJsonSchemaValidatorIndexRoute
   '/_tools/json-to-ts/': typeof ToolsJsonToTsIndexRoute
   '/_tools/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
   '/_tools/lorem-ipsum/': typeof ToolsLoremIpsumIndexRoute
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/html-entities/'
     | '/js-perf/'
     | '/json-formatter/'
+    | '/json-schema-validator/'
     | '/json-to-ts/'
     | '/jwt-decoder/'
     | '/lorem-ipsum/'
@@ -442,6 +453,7 @@ export interface FileRouteTypes {
     | '/html-entities'
     | '/js-perf'
     | '/json-formatter'
+    | '/json-schema-validator'
     | '/json-to-ts'
     | '/jwt-decoder'
     | '/lorem-ipsum'
@@ -484,6 +496,7 @@ export interface FileRouteTypes {
     | '/_tools/html-entities/'
     | '/_tools/js-perf/'
     | '/_tools/json-formatter/'
+    | '/_tools/json-schema-validator/'
     | '/_tools/json-to-ts/'
     | '/_tools/jwt-decoder/'
     | '/_tools/lorem-ipsum/'
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/json-formatter'
       fullPath: '/json-formatter/'
       preLoaderRoute: typeof ToolsJsonFormatterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/json-schema-validator/': {
+      id: '/_tools/json-schema-validator/'
+      path: '/json-schema-validator'
+      fullPath: '/json-schema-validator/'
+      preLoaderRoute: typeof ToolsJsonSchemaValidatorIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/json-to-ts/': {
@@ -815,6 +835,7 @@ interface ToolsRouteRouteChildren {
   ToolsHtmlEntitiesIndexRoute: typeof ToolsHtmlEntitiesIndexRoute
   ToolsJsPerfIndexRoute: typeof ToolsJsPerfIndexRoute
   ToolsJsonFormatterIndexRoute: typeof ToolsJsonFormatterIndexRoute
+  ToolsJsonSchemaValidatorIndexRoute: typeof ToolsJsonSchemaValidatorIndexRoute
   ToolsJsonToTsIndexRoute: typeof ToolsJsonToTsIndexRoute
   ToolsJwtDecoderIndexRoute: typeof ToolsJwtDecoderIndexRoute
   ToolsLoremIpsumIndexRoute: typeof ToolsLoremIpsumIndexRoute
@@ -854,6 +875,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsHtmlEntitiesIndexRoute: ToolsHtmlEntitiesIndexRoute,
   ToolsJsPerfIndexRoute: ToolsJsPerfIndexRoute,
   ToolsJsonFormatterIndexRoute: ToolsJsonFormatterIndexRoute,
+  ToolsJsonSchemaValidatorIndexRoute: ToolsJsonSchemaValidatorIndexRoute,
   ToolsJsonToTsIndexRoute: ToolsJsonToTsIndexRoute,
   ToolsJwtDecoderIndexRoute: ToolsJwtDecoderIndexRoute,
   ToolsLoremIpsumIndexRoute: ToolsLoremIpsumIndexRoute,
