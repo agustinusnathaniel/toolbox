@@ -82,7 +82,7 @@ export function UuidOptionsForm({
           </NumberField>
         </Field>
         <Button onClick={onGenerate} size="sm">
-          <Dices className="size-4" />
+          <Dices aria-hidden="true" className="size-4" />
           Generate
         </Button>
       </div>

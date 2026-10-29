@@ -46,7 +46,7 @@ export function FormulaExplanation({
       <CollapsibleTrigger className="font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         How is this calculated?
       </CollapsibleTrigger>
-      <CollapsibleContent>
+      <CollapsibleContent className="animated-collapse">
         <div className="space-y-3 text-muted-foreground text-sm">
           <EfficiencyInfo inputs={inputs} result={result} />
           {showSplitFormula && <SplitFormula inputs={inputs} result={result} />}

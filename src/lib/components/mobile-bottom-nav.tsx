@@ -6,7 +6,11 @@ import { getMobileNavItems } from '@/lib/navigation/tool-registry';
 
 import { SidebarTrigger } from './ui/sidebar';
 
-const homeItem = { href: '/' as const, icon: <RiGlobalLine />, label: 'Home' };
+const homeItem = {
+  href: '/' as const,
+  icon: <RiGlobalLine aria-hidden="true" />,
+  label: 'Home',
+};
 
 const MAX_MOBILE_TOOLS = 4;
 
@@ -56,7 +60,9 @@ export const MobileBottomNav = () => {
             to={href}
           >
             <span className={iconClass}>{icon}</span>
-            <span className="max-w-full truncate">{label}</span>
+            <span className="max-w-full truncate" title={label}>
+              {label}
+            </span>
           </Link>
         );
       })}

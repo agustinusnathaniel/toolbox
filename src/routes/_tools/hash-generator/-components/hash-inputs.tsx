@@ -24,7 +24,7 @@ export function HashTextInput({
         setResult(null);
         setFileName(null);
       }}
-      placeholder="Type or paste text to hash..."
+      placeholder="Type or paste text to hash…"
       value={text}
     />
   );
@@ -41,10 +41,12 @@ export function HashExpectedInput({
     <Field>
       <FieldLabel htmlFor="hash-expected">Expected hash (optional)</FieldLabel>
       <Input
+        autoComplete="off"
         className="font-mono"
         id="hash-expected"
         onChange={(e) => setExpected(e.target.value)}
         placeholder="Paste an expected hash to compare against"
+        spellCheck={false}
         value={expected}
       />
     </Field>

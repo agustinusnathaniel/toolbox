@@ -120,11 +120,15 @@ export function computeTextStats(input: string): TextStats {
   };
 }
 
+function pluralize(count: number, one: string, many: string): string {
+  return `${count} ${count === 1 ? one : many}`;
+}
+
 export function buildStatsSummary(stats: TextStats): string {
   return [
-    `${stats.words} words`,
-    `${stats.characters} characters`,
-    `${stats.lines} lines`,
+    pluralize(stats.words, 'word', 'words'),
+    pluralize(stats.characters, 'character', 'characters'),
+    pluralize(stats.lines, 'line', 'lines'),
     `${stats.readingTimeText} read`,
   ].join(' | ');
 }

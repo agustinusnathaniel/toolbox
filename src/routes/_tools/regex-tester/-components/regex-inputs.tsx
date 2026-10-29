@@ -65,7 +65,7 @@ export function RegexTestInput({
       id="regex-input"
       label="Test text"
       onChange={(e) => setInput(e.target.value)}
-      placeholder="Paste or type the text to test against..."
+      placeholder="Paste or type the text to test against…"
       value={input}
     />
   );

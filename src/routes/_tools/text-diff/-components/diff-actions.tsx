@@ -21,7 +21,7 @@ export function DiffActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button onClick={onCompare} size="sm">
-        <GitCompare className="size-4" />
+        <GitCompare aria-hidden="true" className="size-4" />
         Compare
       </Button>
       {computing && (
@@ -30,7 +30,7 @@ export function DiffActions({
         </span>
       )}
       <Button onClick={onSwap} size="sm" variant="outline">
-        <ArrowLeftRight className="size-4" />
+        <ArrowLeftRight aria-hidden="true" className="size-4" />
         Swap
       </Button>
       <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />

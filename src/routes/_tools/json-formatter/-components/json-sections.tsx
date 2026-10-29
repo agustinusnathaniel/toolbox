@@ -23,7 +23,7 @@ export function JsonInput({
       id="json-input"
       label="JSON Input"
       onChange={(e) => onInput(e.target.value)}
-      placeholder="Paste your JSON here..."
+      placeholder="Paste your JSON here…"
       value={value}
     />
   );
@@ -41,7 +41,7 @@ export function JsonActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button disabled={computing} onClick={() => onRun('format')} size="sm">
-        <FileJson className="size-4" />
+        <FileJson aria-hidden="true" className="size-4" />
         Format
       </Button>
       <Button

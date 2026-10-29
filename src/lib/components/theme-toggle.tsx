@@ -27,11 +27,11 @@ export const ThemeToggle = ({ className, size = 'icon' }: ThemeToggleProps) => {
       >
         <RiMoonLine
           aria-hidden="true"
-          className="col-start-1 row-start-1 size-4 scale-100 opacity-100 blur-none transition-all duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none dark:scale-25 dark:opacity-0 dark:blur-[4px]"
+          className="col-start-1 row-start-1 size-4 scale-100 opacity-100 blur-none transition-[transform,opacity,filter] duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none dark:scale-25 dark:opacity-0 dark:blur-[4px]"
         />
         <RiSunLine
           aria-hidden="true"
-          className="col-start-1 row-start-1 size-4 scale-25 opacity-0 blur-[4px] transition-all duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none dark:scale-100 dark:opacity-100 dark:blur-none"
+          className="col-start-1 row-start-1 size-4 scale-25 opacity-0 blur-[4px] transition-[transform,opacity,filter] duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none dark:scale-100 dark:opacity-100 dark:blur-none"
         />
       </span>
     </Button>

@@ -39,7 +39,7 @@ export function UnicodeInput({
       />
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={onClear} size="sm" variant="outline">
-          <Trash2 className="size-4" />
+          <Trash2 aria-hidden="true" className="size-4" />
           Clear
         </Button>
         <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
@@ -138,7 +138,7 @@ export function UnicodeTable({
     <Card>
       <CardContent className="flex flex-col gap-3">
         <h2 className="flex items-center gap-2 font-medium text-sm">
-          <ScanSearch className="size-4" />
+          <ScanSearch aria-hidden="true" className="size-4" />
           Characters
         </h2>
         <div className="overflow-x-auto">

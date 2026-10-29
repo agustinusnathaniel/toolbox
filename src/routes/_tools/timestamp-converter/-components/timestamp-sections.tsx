@@ -34,12 +34,12 @@ export function TimestampInput({
           id="timestamp-input"
           label="Timestamp or Date"
           onChange={(e) => onInput(e.target.value)}
-          placeholder="Paste an epoch timestamp (10 or 13 digits) or a date string..."
+          placeholder="Paste an epoch timestamp (10 or 13 digits) or a date string…"
           value={input}
         />
         <div className="flex flex-wrap gap-2">
           <Button onClick={onUseNow} size="sm" variant="outline">
-            <RotateCcw className="size-4" />
+            <RotateCcw aria-hidden="true" className="size-4" />
             Use current time
           </Button>
           <CopyLinkButton onClick={onCopyLink} />

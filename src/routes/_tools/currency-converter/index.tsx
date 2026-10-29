@@ -306,7 +306,7 @@ function ConversionOutput({
         <ToolError title={result.error ?? 'Invalid input'} />
         {result.loadError !== null && (
           <Button onClick={onRetry} size="sm" variant="outline">
-            <RotateCcw className="size-4" />
+            <RotateCcw aria-hidden="true" className="size-4" />
             Retry
           </Button>
         )}
@@ -359,7 +359,7 @@ function CurrencySelectors({
         >
           <ComboboxInput
             id="currency-converter-from"
-            placeholder="Search currency..."
+            placeholder="Search currency…"
           />
           <ComboboxContent>
             <ComboboxEmpty>No currencies found.</ComboboxEmpty>
@@ -380,7 +380,7 @@ function CurrencySelectors({
           size="icon-sm"
           variant="outline"
         >
-          <ArrowLeftRight className="size-4" />
+          <ArrowLeftRight aria-hidden="true" className="size-4" />
         </Button>
       </div>
       <Field>
@@ -402,7 +402,7 @@ function CurrencySelectors({
         >
           <ComboboxInput
             id="currency-converter-to"
-            placeholder="Search currency..."
+            placeholder="Search currency…"
           />
           <ComboboxContent>
             <ComboboxEmpty>No currencies found.</ComboboxEmpty>
@@ -527,7 +527,7 @@ function CurrencyConverterPage() {
               id="currency-converter-amount"
               inputMode="decimal"
               onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="Enter amount..."
+              placeholder="Enter amount…"
               value={state.amount}
             />
           </div>
@@ -554,7 +554,7 @@ function CurrencyConverterPage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton onClick={handleCopyLink} />
             <Button onClick={handleClear} size="sm" variant="outline">
-              <Trash2 className="size-4" />
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

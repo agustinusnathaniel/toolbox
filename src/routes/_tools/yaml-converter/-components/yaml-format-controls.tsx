@@ -53,11 +53,11 @@ export function YamlFormatControls({
       </Field>
       <div className="flex items-center gap-2">
         <Button onClick={onConvert} size="sm" variant="default">
-          <ArrowLeftRight className="size-4" />
+          <ArrowLeftRight aria-hidden="true" className="size-4" />
           Convert
         </Button>
         <Button onClick={onClear} size="sm" variant="outline">
-          <Trash2 className="size-4" />
+          <Trash2 aria-hidden="true" className="size-4" />
           Clear
         </Button>
         {computing && (

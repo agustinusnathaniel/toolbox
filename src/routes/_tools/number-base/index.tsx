@@ -248,7 +248,7 @@ function NumberBasePage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton onClick={handleCopyLink} />
             <Button onClick={handleClear} size="sm" variant="outline">
-              <Trash2 className="size-4" />
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

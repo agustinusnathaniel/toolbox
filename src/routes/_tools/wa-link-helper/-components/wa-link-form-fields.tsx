@@ -55,7 +55,7 @@ export function WaLinkFormFields({
               <ComboboxInput
                 aria-invalid={!!errors.country_code}
                 id="country_code"
-                placeholder="Search country..."
+                placeholder="Search country…"
               />
               <ComboboxContent>
                 <ComboboxEmpty>No countries found.</ComboboxEmpty>

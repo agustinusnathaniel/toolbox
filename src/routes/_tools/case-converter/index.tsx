@@ -59,7 +59,7 @@ function CaseInput({
       id="case-input"
       label="Input text"
       onChange={(e) => setInput(e.target.value)}
-      placeholder="Paste text to convert..."
+      placeholder="Paste text to convert…"
       value={input}
     />
   );

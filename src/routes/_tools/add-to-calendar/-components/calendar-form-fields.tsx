@@ -1,9 +1,11 @@
+import { useRef } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import { Field, FieldError, FieldLabel } from '@/lib/components/ui/field';
 import { Input } from '@/lib/components/ui/input';
 import { Textarea } from '@/lib/components/ui/textarea';
+import { focusFirstInvalidField } from '@/lib/hooks/use-focus-first-error';
 
 import type { CalendarFormType } from './use-calendar-form';
 
@@ -126,10 +128,14 @@ export function CalendarFormFields({
   errors,
   onSubmit,
 }: CalendarFormFieldsProps) {
+  const formRef = useRef<HTMLFormElement>(null);
   return (
     <form
       className="grid gap-6 text-start"
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit, () =>
+        focusFirstInvalidField(formRef.current)
+      )}
+      ref={formRef}
     >
       <TitleField errors={errors} form={form} />
       <DescriptionField form={form} />

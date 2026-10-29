@@ -34,7 +34,7 @@ export function UrlCodecInputs({
       id="url-codec-input"
       label="URL or text"
       onChange={(e) => onInput(e.target.value)}
-      placeholder="Paste a URL or text to encode or decode..."
+      placeholder="Paste a URL or text to encode or decode…"
       value={input}
     />
   );

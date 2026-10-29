@@ -268,12 +268,12 @@ function LoremIpsumPage() {
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={handleRegenerate} size="sm">
-              <RefreshCw className="size-4" />
+              <RefreshCw aria-hidden="true" className="size-4" />
               Generate
             </Button>
             <CopyLinkButton onClick={handleCopyLink} />
             <Button onClick={handleClear} size="sm" variant="outline">
-              <Trash2 className="size-4" />
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>
@@ -291,7 +291,7 @@ function LoremIpsumPage() {
                   size="icon-sm"
                   variant="outline"
                 >
-                  <Copy className="size-4" />
+                  <Copy aria-hidden="true" className="size-4" />
                 </Button>
                 {copiedKey === 'output' && (
                   <span className="text-emerald-600 text-xs">Copied</span>

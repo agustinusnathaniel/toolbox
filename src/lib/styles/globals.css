@@ -8,6 +8,10 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: light dark;
+}
+
+:root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -43,6 +47,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
@@ -127,6 +132,21 @@
   ::file-selector-button {
     border-color: var(--border, currentColor);
   }
+
+  /* Respect reduced motion globally: entry zoom/slide/spin animations
+     collapse to opacity fades, and looping indicators go static. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
@@ -157,6 +177,28 @@
     background: var(--border);
     border-radius: 4px;
   }
+}
+
+/* Disclosure open bridge (occasional content only, never navigation):
+ * the panel fades and settles instead of snapping in. Exit unmounts
+ * instantly (Base UI default); entry animates. transform/opacity only,
+ * no clipping wrappers, so focus rings are never cut. */
+.animated-collapse {
+  opacity: 0;
+  translate: 0 -4px;
+  transition:
+    opacity 200ms ease-out,
+    translate 200ms ease-out;
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+.animated-collapse[data-open] {
+  opacity: 1;
+  translate: none;
 }
 
 /* [START] Route Transition

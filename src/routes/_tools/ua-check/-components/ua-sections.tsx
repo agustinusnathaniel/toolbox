@@ -56,12 +56,12 @@ export function UaInput({
           id="ua-input"
           label="User Agent String"
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Paste any user agent string to parse it..."
+          placeholder="Paste any user agent string to parse it…"
           value={value}
         />
         <div className="flex flex-wrap gap-2">
           <Button onClick={onUseMine} size="sm" variant="outline">
-            <RotateCcw className="size-4" />
+            <RotateCcw aria-hidden="true" className="size-4" />
             Use my browser&apos;s UA
           </Button>
           <Button onClick={onCopyLink} size="sm" variant="outline">

@@ -17,9 +17,11 @@ import {
 import { Kbd } from '@/lib/components/ui/kbd';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { usePinnedTools } from '@/lib/hooks/use-pinned-tools';
+import {
+  getWorstCaseNavItems,
+  useWorstCaseMode,
+} from '@/lib/hooks/use-worst-case-mode';
 import { getToolNavItems } from '@/lib/navigation/tool-registry';
-
-const toolNavItems = getToolNavItems();
 
 interface GlobalCommandMenuProps {
   children: React.ReactNode;
@@ -30,6 +32,8 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { pinnedSlugs } = usePinnedTools();
+  const worstCase = useWorstCaseMode();
+  const toolNavItems = getWorstCaseNavItems(getToolNavItems(), worstCase);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -71,7 +75,7 @@ const GlobalCommandMenu = ({ children }: GlobalCommandMenuProps) => {
         open={isOpen}
       >
         <Command label="Command Menu">
-          <CommandInput placeholder="Type a command or search..." />
+          <CommandInput placeholder="Type a command or search…" />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             {pinnedNavItems.length > 0 && (

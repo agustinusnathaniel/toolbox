@@ -17,11 +17,22 @@ function getDurationIndicator(
   const slower = which === 'a' ? msA > msB : msB > msA;
   if (faster) {
     return (
-      <BadgeCheck className="inline size-3 text-emerald-600 dark:text-emerald-400" />
+      <>
+        <BadgeCheck
+          aria-hidden="true"
+          className="inline size-3 text-emerald-600 dark:text-emerald-400"
+        />
+        <span className="sr-only">faster</span>
+      </>
     );
   }
   if (slower) {
-    return <BadgeX className="inline size-3 text-destructive" />;
+    return (
+      <>
+        <BadgeX aria-hidden="true" className="inline size-3 text-destructive" />
+        <span className="sr-only">slower</span>
+      </>
+    );
   }
   return <span>≈</span>;
 }

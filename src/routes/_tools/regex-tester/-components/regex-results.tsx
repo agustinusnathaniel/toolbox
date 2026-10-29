@@ -27,7 +27,8 @@ export function RegexTruncated({ result }: { result: RegexTestResult }) {
       role="alert"
     >
       <p className="font-medium text-amber-600 text-sm dark:text-amber-400">
-        Showing first {result.matches.length.toLocaleString()} matches
+        Showing first {result.matches.length.toLocaleString()}{' '}
+        {result.matches.length === 1 ? 'match' : 'matches'}
       </p>
       <p className="mt-1 text-amber-600 text-xs dark:text-amber-400/80">
         The pattern produced more matches than can be shown at once. Refine the

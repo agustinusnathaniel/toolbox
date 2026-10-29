@@ -30,7 +30,7 @@ export const CopyButton = ({
     >
       <Copy
         aria-hidden="true"
-        className={`col-start-1 row-start-1 size-4 transition-all duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ${
+        className={`col-start-1 row-start-1 size-4 transition-[transform,opacity,filter] duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ${
           copied
             ? 'scale-25 opacity-0 blur-[4px]'
             : 'scale-100 opacity-100 blur-none'
@@ -38,7 +38,7 @@ export const CopyButton = ({
       />
       <Check
         aria-hidden="true"
-        className={`col-start-1 row-start-1 size-4 text-emerald-600 transition-all duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ${
+        className={`col-start-1 row-start-1 size-4 text-emerald-600 transition-[transform,opacity,filter] duration-200 [transition-timing-function:cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ${
           copied
             ? 'scale-100 opacity-100 blur-none'
             : 'scale-25 opacity-0 blur-[4px]'

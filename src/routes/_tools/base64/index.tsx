@@ -90,7 +90,7 @@ function Base64Input({
         setInput(e.target.value);
         setResult(null);
       }}
-      placeholder="Type or paste text to encode or decode..."
+      placeholder="Type or paste text to encode or decode…"
       value={input}
     />
   );
@@ -108,7 +108,7 @@ function Base64Actions({
   return (
     <div className="flex flex-wrap gap-2">
       <Button onClick={onEncode} size="sm">
-        <Binary className="size-4" />
+        <Binary aria-hidden="true" className="size-4" />
         Encode
       </Button>
       <Button onClick={onDecode} size="sm" variant="outline">

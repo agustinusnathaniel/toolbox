@@ -23,7 +23,7 @@ export function JwtTokenInput({
       id="jwt-token"
       label="Token"
       onChange={(e) => onChange(e.target.value)}
-      placeholder="Paste a JWT to decode..."
+      placeholder="Paste a JWT to decode…"
       value={token}
     />
   );
@@ -39,7 +39,7 @@ export function JwtDecodeActions({
   return (
     <div className="flex flex-wrap gap-2">
       <Button onClick={onDecode} size="sm">
-        <ScanLine className="size-4" />
+        <ScanLine aria-hidden="true" className="size-4" />
         Decode
       </Button>
       <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />
@@ -72,7 +72,7 @@ export function JwtVerifyBar({ onVerify }: { onVerify: () => void }) {
   return (
     <div className="flex flex-wrap gap-2">
       <Button onClick={onVerify} size="sm">
-        <ShieldCheck className="size-4" />
+        <ShieldCheck aria-hidden="true" className="size-4" />
         Verify signature
       </Button>
     </div>

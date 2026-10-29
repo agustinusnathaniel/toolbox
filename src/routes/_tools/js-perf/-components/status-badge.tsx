@@ -21,14 +21,14 @@ export function StatusBadge({ result }: { result: ExecutionResult | null }) {
           className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
           variant="outline"
         >
-          <CheckCircle2 className="size-3" />
+          <CheckCircle2 aria-hidden="true" className="size-3" />
           Success
         </Badge>
       );
     case 'runtime_error':
       return (
         <Badge variant="destructive">
-          <XCircle className="size-3" />
+          <XCircle aria-hidden="true" className="size-3" />
           Runtime Error
         </Badge>
       );
@@ -38,7 +38,7 @@ export function StatusBadge({ result }: { result: ExecutionResult | null }) {
           className="border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
           variant="outline"
         >
-          <Clock className="size-3" />
+          <Clock aria-hidden="true" className="size-3" />
           Timeout
         </Badge>
       );
@@ -48,21 +48,21 @@ export function StatusBadge({ result }: { result: ExecutionResult | null }) {
           className="border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
           variant="outline"
         >
-          <ShieldAlert className="size-3" />
+          <ShieldAlert aria-hidden="true" className="size-3" />
           Terminated
         </Badge>
       );
     case 'worker_error':
       return (
         <Badge variant="destructive">
-          <AlertCircle className="size-3" />
+          <AlertCircle aria-hidden="true" className="size-3" />
           Worker Error
         </Badge>
       );
     default:
       return (
         <Badge variant="secondary">
-          <AlertCircle className="size-3" />
+          <AlertCircle aria-hidden="true" className="size-3" />
           Unknown
         </Badge>
       );

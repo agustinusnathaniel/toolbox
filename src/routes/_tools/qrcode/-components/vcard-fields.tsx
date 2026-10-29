@@ -16,6 +16,7 @@ export function VCardNameFields({ vcardState, onUpdateVCardField }: Props) {
       <Field>
         <FieldLabel htmlFor="vcard-firstName">First Name</FieldLabel>
         <Input
+          autoComplete="given-name"
           id="vcard-firstName"
           onChange={(e) =>
             onUpdateVCardField('firstName', e.currentTarget.value)
@@ -26,6 +27,7 @@ export function VCardNameFields({ vcardState, onUpdateVCardField }: Props) {
       <Field>
         <FieldLabel htmlFor="vcard-lastName">Last Name</FieldLabel>
         <Input
+          autoComplete="family-name"
           id="vcard-lastName"
           onChange={(e) =>
             onUpdateVCardField('lastName', e.currentTarget.value)
@@ -45,6 +47,7 @@ export function VCardPhoneFields({ vcardState, onUpdateVCardField }: Props) {
           Mobile Phone Number
         </FieldLabel>
         <Input
+          autoComplete="tel"
           id="vcard-mobilePhoneNumber"
           onChange={(e) =>
             onUpdateVCardField('mobilePhoneNumber', e.currentTarget.value)
@@ -56,6 +59,7 @@ export function VCardPhoneFields({ vcardState, onUpdateVCardField }: Props) {
       <Field>
         <FieldLabel htmlFor="vcard-otherPhoneNumber">Phone Number</FieldLabel>
         <Input
+          autoComplete="tel"
           id="vcard-otherPhoneNumber"
           onChange={(e) =>
             onUpdateVCardField('otherPhoneNumber', e.currentTarget.value)
@@ -74,6 +78,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
       <Field>
         <FieldLabel htmlFor="vcard-emailAddress">Email</FieldLabel>
         <Input
+          autoComplete="email"
           id="vcard-emailAddress"
           onChange={(e) =>
             onUpdateVCardField('emailAddress', e.currentTarget.value)
@@ -85,6 +90,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
       <Field>
         <FieldLabel htmlFor="vcard-companyName">Company</FieldLabel>
         <Input
+          autoComplete="organization"
           id="vcard-companyName"
           onChange={(e) =>
             onUpdateVCardField('companyName', e.currentTarget.value)
@@ -95,6 +101,7 @@ export function VCardContactFields({ vcardState, onUpdateVCardField }: Props) {
       <Field>
         <FieldLabel htmlFor="vcard-jobTitle">Job Title</FieldLabel>
         <Input
+          autoComplete="organization-title"
           id="vcard-jobTitle"
           onChange={(e) =>
             onUpdateVCardField('jobTitle', e.currentTarget.value)
@@ -111,6 +118,7 @@ export function VCardStreetField({ vcardState, onUpdateVCardField }: Props) {
     <Field>
       <FieldLabel htmlFor="vcard-streetAddress">Street</FieldLabel>
       <Input
+        autoComplete="street-address"
         id="vcard-streetAddress"
         onChange={(e) =>
           onUpdateVCardField('streetAddress', e.currentTarget.value)
@@ -130,6 +138,7 @@ export function VCardCityStateFields({
       <Field>
         <FieldLabel htmlFor="vcard-city">City</FieldLabel>
         <Input
+          autoComplete="address-level2"
           id="vcard-city"
           onChange={(e) => onUpdateVCardField('city', e.currentTarget.value)}
           value={vcardState.city}
@@ -138,6 +147,7 @@ export function VCardCityStateFields({
       <Field>
         <FieldLabel htmlFor="vcard-state">State</FieldLabel>
         <Input
+          autoComplete="address-level1"
           id="vcard-state"
           onChange={(e) => onUpdateVCardField('state', e.currentTarget.value)}
           value={vcardState.state}

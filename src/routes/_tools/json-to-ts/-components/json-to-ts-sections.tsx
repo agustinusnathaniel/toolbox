@@ -21,7 +21,7 @@ export function JsonToTsInput({
       id="json-input"
       label="JSON Input"
       onChange={(e) => onInput(e.target.value)}
-      placeholder="Paste your JSON here..."
+      placeholder="Paste your JSON here…"
       value={value}
     />
   );
@@ -39,7 +39,7 @@ export function JsonToTsActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button onClick={onGenerate} size="sm">
-        <Braces className="size-4" />
+        <Braces aria-hidden="true" className="size-4" />
         Generate
       </Button>
       {computing && (

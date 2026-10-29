@@ -50,7 +50,7 @@ export function ZippyActions({
       </Button>
       {allDone && hasCompressed && (
         <Button onClick={onDownload} size="lg" variant="outline">
-          <Download />
+          <Download aria-hidden="true" />
           Download Outputs
         </Button>
       )}

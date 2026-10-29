@@ -143,4 +143,12 @@ describe('buildStatsSummary', () => {
     const summary = buildStatsSummary(s);
     expect(summary).toContain('0 words');
   });
+
+  test('singular forms', () => {
+    const s = computeTextStats('hello');
+    const summary = buildStatsSummary(s);
+    expect(summary).toContain('1 word');
+    expect(summary).toContain('1 line');
+    expect(summary).not.toContain('1 words');
+  });
 });

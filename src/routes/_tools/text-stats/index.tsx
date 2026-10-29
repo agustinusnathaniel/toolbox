@@ -106,7 +106,7 @@ function TextStatsPage() {
             id="text-stats-input"
             label="Text input"
             onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="Paste or type text here..."
+            placeholder="Paste or type text here…"
             value={state.input}
           />
 
@@ -132,7 +132,7 @@ function TextStatsPage() {
                 size="icon-sm"
                 variant="outline"
               >
-                <Copy className="size-4" />
+                <Copy aria-hidden="true" className="size-4" />
               </Button>
               {copiedKey === 'summary' && (
                 <span className="text-emerald-600 text-xs dark:text-emerald-400">
@@ -149,7 +149,7 @@ function TextStatsPage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton onClick={handleCopyLink} />
             <Button onClick={handleClear} size="sm" variant="outline">
-              <Trash2 className="size-4" />
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

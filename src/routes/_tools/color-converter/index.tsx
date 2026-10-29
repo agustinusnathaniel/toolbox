@@ -131,7 +131,7 @@ function ColorInputRow({
         size="icon-sm"
         variant="outline"
       >
-        <Link className="size-4" />
+        <Link aria-hidden="true" className="size-4" />
       </Button>
     </div>
   );

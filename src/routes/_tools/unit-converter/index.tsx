@@ -161,7 +161,7 @@ function UnitSelectors({
           size="icon-sm"
           variant="outline"
         >
-          <ArrowLeftRight className="size-4" />
+          <ArrowLeftRight aria-hidden="true" className="size-4" />
         </Button>
       </div>
       <Field>
@@ -305,7 +305,7 @@ function UnitConverterPage() {
               aria-label="Value"
               id="unit-converter-value"
               onChange={(e) => handleValueChange(e.target.value)}
-              placeholder="Enter value..."
+              placeholder="Enter value…"
               value={state.value}
             />
           </Field>
@@ -320,7 +320,7 @@ function UnitConverterPage() {
           <div className="flex flex-wrap gap-2">
             <CopyLinkButton onClick={handleCopyLink} />
             <Button onClick={handleClear} size="sm" variant="outline">
-              <Trash2 className="size-4" />
+              <Trash2 aria-hidden="true" className="size-4" />
               Clear
             </Button>
           </div>

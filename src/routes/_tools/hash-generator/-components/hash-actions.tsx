@@ -15,7 +15,7 @@ export function HashActions({
   return (
     <div className="flex flex-wrap gap-2">
       <Button onClick={onHashText} size="sm">
-        <Fingerprint className="size-4" />
+        <Fingerprint aria-hidden="true" className="size-4" />
         Hash text
       </Button>
       <CopyLinkButton label="Copy shareable link" onClick={onCopyLink} />

@@ -56,7 +56,7 @@ export function CsvToolbar({
       </Field>
       <div className="flex items-center gap-2">
         <Button onClick={onConvert} size="sm" variant="default">
-          <ArrowUpDown className="size-4" />
+          <ArrowUpDown aria-hidden="true" className="size-4" />
           Convert
         </Button>
         {computing && (

@@ -41,9 +41,9 @@ export function JsPerfConfig({ page }: { page: Page }) {
           variant="outline"
         >
           {page.copiedKey === 'copy' ? (
-            <Check className="size-4" />
+            <Check aria-hidden="true" className="size-4" />
           ) : (
-            <Link className="size-4" />
+            <Link aria-hidden="true" className="size-4" />
           )}
           {page.copiedKey === 'copy' ? 'Copied!' : 'Copy link'}
         </Button>

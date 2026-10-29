@@ -79,7 +79,7 @@ export function XmlActions({
       </Field>
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={() => onRun('format')} size="sm" variant="default">
-          <FileCode2 className="size-4" />
+          <FileCode2 aria-hidden="true" className="size-4" />
           Format
         </Button>
         <Button onClick={() => onRun('validate')} size="sm" variant="outline">

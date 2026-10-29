@@ -44,7 +44,7 @@ function HelpSection({
           className="size-4 shrink-0 in-data-[panel-open]:rotate-180 transition-transform"
         />
       </CollapsibleTrigger>
-      <CollapsibleContent>
+      <CollapsibleContent className="animated-collapse">
         <div className="px-2 py-2">{children}</div>
       </CollapsibleContent>
     </Collapsible>

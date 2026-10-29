@@ -44,7 +44,7 @@ export function CitySearch({ onAdd, existingIds }: CitySearchProps) {
         }}
         value={null}
       >
-        <ComboboxInput placeholder="+ Add a city..." />
+        <ComboboxInput placeholder="+ Add a city…" />
         <ComboboxContent>
           <ComboboxEmpty>No cities found.</ComboboxEmpty>
           <ComboboxList>

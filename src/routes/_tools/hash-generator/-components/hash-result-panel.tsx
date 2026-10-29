@@ -52,12 +52,12 @@ export function HashResultPanel({
             className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
             variant="outline"
           >
-            <Check className="size-3" />
+            <Check aria-hidden="true" className="size-3" />
             Match — digest matches
           </Badge>
         ) : (
           <Badge variant="destructive">
-            <X className="size-3" />
+            <X aria-hidden="true" className="size-3" />
             Mismatch — does not match
           </Badge>
         ))}

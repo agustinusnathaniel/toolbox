@@ -49,7 +49,7 @@ export function CompressionResults({
               </div>
               <div className="flex h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="rounded-full bg-emerald-500 transition-all"
+                  className="rounded-full bg-emerald-500 transition-[width] duration-200"
                   style={{ width: `${Math.max(100 - savings, 5)}%` }}
                 />
               </div>

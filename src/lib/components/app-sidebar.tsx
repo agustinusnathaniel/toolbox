@@ -26,13 +26,20 @@ import {
   useSidebar,
 } from '@/lib/components/ui/sidebar';
 import { usePrefetchRoute } from '@/lib/hooks/use-prefetch-route';
+import {
+  getWorstCaseNavCategories,
+  useWorstCaseMode,
+} from '@/lib/hooks/use-worst-case-mode';
 import { getToolNavCategories } from '@/lib/navigation/tool-registry';
-
-const navCategories = getToolNavCategories();
 
 export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   const { isMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
+  const worstCase = useWorstCaseMode();
+  const navCategories = getWorstCaseNavCategories(
+    getToolNavCategories(),
+    worstCase
+  );
   const prefetchRoute = usePrefetchRoute();
 
   const handleMobileClose = useCallback(() => {
@@ -65,7 +72,10 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
                   stays mounted and focusable, so keyboard focus never lands
                   on a removed target. */}
               <SidebarGroupLabel render={<CollapsibleTrigger />}>
-                <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
+                <span
+                  className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden"
+                  title={category}
+                >
                   {category}
                 </span>
                 <RiArrowDownSLine
@@ -87,7 +97,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
                           tooltip={item.title}
                         >
                           {item.icon}
-                          <span>{item.title}</span>
+                          <span title={item.title}>{item.title}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -110,7 +120,7 @@ export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
                   tooltip="Changelog"
                 >
                   <RiTimeLine aria-hidden="true" />
-                  <span>Changelog</span>
+                  <span title="Changelog">Changelog</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

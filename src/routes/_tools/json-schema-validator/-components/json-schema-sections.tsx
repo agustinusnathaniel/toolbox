@@ -61,7 +61,7 @@ export function JsonSchemaActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button disabled={computing} onClick={onValidate} size="sm">
-        <FileCheck2 className="size-4" />
+        <FileCheck2 aria-hidden="true" className="size-4" />
         Validate
       </Button>
       {computing && (
@@ -133,7 +133,7 @@ export function JsonSchemaOutput({
           className="border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
           variant="outline"
         >
-          <Check className="size-3" />
+          <Check aria-hidden="true" className="size-3" />
           Valid — document satisfies the schema
         </Badge>
       </div>
@@ -151,7 +151,7 @@ export function JsonSchemaOutput({
       value={value}
     >
       <Badge variant="destructive">
-        <X className="size-3" />
+        <X aria-hidden="true" className="size-3" />
         Invalid — {result.issues.length} issue
         {result.issues.length === 1 ? '' : 's'}
         {result.truncated ? ' shown (truncated)' : ''}

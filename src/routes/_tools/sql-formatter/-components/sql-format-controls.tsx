@@ -85,11 +85,11 @@ export function SqlFormatControls({
       </Field>
       <div className="flex items-center gap-2">
         <Button onClick={onFormat} size="sm" variant="default">
-          <FileText className="size-4" />
+          <FileText aria-hidden="true" className="size-4" />
           {action === 'minify' ? 'Minify' : 'Format'}
         </Button>
         <Button onClick={onClear} size="sm" variant="outline">
-          <Trash2 className="size-4" />
+          <Trash2 aria-hidden="true" className="size-4" />
           Clear
         </Button>
         {computing && (

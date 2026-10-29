@@ -9,7 +9,7 @@ interface CopyLinkButtonProps {
 
 export const CopyLinkButton = ({ label, onClick }: CopyLinkButtonProps) => (
   <Button aria-label={label} onClick={onClick} size="sm" variant="outline">
-    <Link className="size-4" />
+    <Link aria-hidden="true" className="size-4" />
     Copy link
   </Button>
 );

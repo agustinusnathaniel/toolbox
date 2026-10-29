@@ -53,7 +53,7 @@ export function PasswordLength({
         </NumberField>
       </Field>
       <Button onClick={onGenerate} size="sm">
-        <KeyRound className="size-4" />
+        <KeyRound aria-hidden="true" className="size-4" />
         Generate
       </Button>
     </div>

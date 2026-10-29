@@ -69,7 +69,7 @@ export function ComparatorConfigBar(props: ComparatorConfigBarProps) {
           size="sm"
           variant="secondary"
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw aria-hidden="true" className="size-4" />
           Reset to Preset
         </Button>
       ) : null}
