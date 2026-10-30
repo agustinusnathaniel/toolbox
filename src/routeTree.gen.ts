@@ -28,6 +28,7 @@ import { Route as ToolsJsonFormatterIndexRouteImport } from './routes/_tools/jso
 import { Route as ToolsJsonSchemaValidatorIndexRouteImport } from './routes/_tools/json-schema-validator/index'
 import { Route as ToolsJsonToTsIndexRouteImport } from './routes/_tools/json-to-ts/index'
 import { Route as ToolsJwtDecoderIndexRouteImport } from './routes/_tools/jwt-decoder/index'
+import { Route as ToolsJwtEncoderIndexRouteImport } from './routes/_tools/jwt-encoder/index'
 import { Route as ToolsLoremIpsumIndexRouteImport } from './routes/_tools/lorem-ipsum/index'
 import { Route as ToolsMarkdownPreviewIndexRouteImport } from './routes/_tools/markdown-preview/index'
 import { Route as ToolsMeetingTimeFinderIndexRouteImport } from './routes/_tools/meeting-time-finder/index'
@@ -146,6 +147,11 @@ const ToolsJsonToTsIndexRoute = ToolsJsonToTsIndexRouteImport.update({
 const ToolsJwtDecoderIndexRoute = ToolsJwtDecoderIndexRouteImport.update({
   id: '/jwt-decoder/',
   path: '/jwt-decoder/',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsJwtEncoderIndexRoute = ToolsJwtEncoderIndexRouteImport.update({
+  id: '/jwt-encoder/',
+  path: '/jwt-encoder/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
 const ToolsLoremIpsumIndexRoute = ToolsLoremIpsumIndexRouteImport.update({
@@ -284,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/json-schema-validator/': typeof ToolsJsonSchemaValidatorIndexRoute
   '/json-to-ts/': typeof ToolsJsonToTsIndexRoute
   '/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
+  '/jwt-encoder/': typeof ToolsJwtEncoderIndexRoute
   '/lorem-ipsum/': typeof ToolsLoremIpsumIndexRoute
   '/markdown-preview/': typeof ToolsMarkdownPreviewIndexRoute
   '/meeting-time-finder/': typeof ToolsMeetingTimeFinderIndexRoute
@@ -326,6 +333,7 @@ export interface FileRoutesByTo {
   '/json-schema-validator': typeof ToolsJsonSchemaValidatorIndexRoute
   '/json-to-ts': typeof ToolsJsonToTsIndexRoute
   '/jwt-decoder': typeof ToolsJwtDecoderIndexRoute
+  '/jwt-encoder': typeof ToolsJwtEncoderIndexRoute
   '/lorem-ipsum': typeof ToolsLoremIpsumIndexRoute
   '/markdown-preview': typeof ToolsMarkdownPreviewIndexRoute
   '/meeting-time-finder': typeof ToolsMeetingTimeFinderIndexRoute
@@ -370,6 +378,7 @@ export interface FileRoutesById {
   '/_tools/json-schema-validator/': typeof ToolsJsonSchemaValidatorIndexRoute
   '/_tools/json-to-ts/': typeof ToolsJsonToTsIndexRoute
   '/_tools/jwt-decoder/': typeof ToolsJwtDecoderIndexRoute
+  '/_tools/jwt-encoder/': typeof ToolsJwtEncoderIndexRoute
   '/_tools/lorem-ipsum/': typeof ToolsLoremIpsumIndexRoute
   '/_tools/markdown-preview/': typeof ToolsMarkdownPreviewIndexRoute
   '/_tools/meeting-time-finder/': typeof ToolsMeetingTimeFinderIndexRoute
@@ -414,6 +423,7 @@ export interface FileRouteTypes {
     | '/json-schema-validator/'
     | '/json-to-ts/'
     | '/jwt-decoder/'
+    | '/jwt-encoder/'
     | '/lorem-ipsum/'
     | '/markdown-preview/'
     | '/meeting-time-finder/'
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/json-schema-validator'
     | '/json-to-ts'
     | '/jwt-decoder'
+    | '/jwt-encoder'
     | '/lorem-ipsum'
     | '/markdown-preview'
     | '/meeting-time-finder'
@@ -499,6 +510,7 @@ export interface FileRouteTypes {
     | '/_tools/json-schema-validator/'
     | '/_tools/json-to-ts/'
     | '/_tools/jwt-decoder/'
+    | '/_tools/jwt-encoder/'
     | '/_tools/lorem-ipsum/'
     | '/_tools/markdown-preview/'
     | '/_tools/meeting-time-finder/'
@@ -663,6 +675,13 @@ declare module '@tanstack/react-router' {
       path: '/jwt-decoder'
       fullPath: '/jwt-decoder/'
       preLoaderRoute: typeof ToolsJwtDecoderIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/jwt-encoder/': {
+      id: '/_tools/jwt-encoder/'
+      path: '/jwt-encoder'
+      fullPath: '/jwt-encoder/'
+      preLoaderRoute: typeof ToolsJwtEncoderIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/lorem-ipsum/': {
@@ -838,6 +857,7 @@ interface ToolsRouteRouteChildren {
   ToolsJsonSchemaValidatorIndexRoute: typeof ToolsJsonSchemaValidatorIndexRoute
   ToolsJsonToTsIndexRoute: typeof ToolsJsonToTsIndexRoute
   ToolsJwtDecoderIndexRoute: typeof ToolsJwtDecoderIndexRoute
+  ToolsJwtEncoderIndexRoute: typeof ToolsJwtEncoderIndexRoute
   ToolsLoremIpsumIndexRoute: typeof ToolsLoremIpsumIndexRoute
   ToolsMarkdownPreviewIndexRoute: typeof ToolsMarkdownPreviewIndexRoute
   ToolsMeetingTimeFinderIndexRoute: typeof ToolsMeetingTimeFinderIndexRoute
@@ -878,6 +898,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsJsonSchemaValidatorIndexRoute: ToolsJsonSchemaValidatorIndexRoute,
   ToolsJsonToTsIndexRoute: ToolsJsonToTsIndexRoute,
   ToolsJwtDecoderIndexRoute: ToolsJwtDecoderIndexRoute,
+  ToolsJwtEncoderIndexRoute: ToolsJwtEncoderIndexRoute,
   ToolsLoremIpsumIndexRoute: ToolsLoremIpsumIndexRoute,
   ToolsMarkdownPreviewIndexRoute: ToolsMarkdownPreviewIndexRoute,
   ToolsMeetingTimeFinderIndexRoute: ToolsMeetingTimeFinderIndexRoute,
