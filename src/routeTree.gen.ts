@@ -16,6 +16,7 @@ import { Route as HomepageIndexRouteImport } from './routes/homepage/index'
 import { Route as ToolsAddToCalendarIndexRouteImport } from './routes/_tools/add-to-calendar/index'
 import { Route as ToolsBase64IndexRouteImport } from './routes/_tools/base64/index'
 import { Route as ToolsCaseConverterIndexRouteImport } from './routes/_tools/case-converter/index'
+import { Route as ToolsChmodCalculatorIndexRouteImport } from './routes/_tools/chmod-calculator/index'
 import { Route as ToolsColorConverterIndexRouteImport } from './routes/_tools/color-converter/index'
 import { Route as ToolsCronParserIndexRouteImport } from './routes/_tools/cron-parser/index'
 import { Route as ToolsCsvConverterIndexRouteImport } from './routes/_tools/csv-converter/index'
@@ -86,6 +87,12 @@ const ToolsCaseConverterIndexRoute = ToolsCaseConverterIndexRouteImport.update({
   path: '/case-converter/',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsChmodCalculatorIndexRoute =
+  ToolsChmodCalculatorIndexRouteImport.update({
+    id: '/chmod-calculator/',
+    path: '/chmod-calculator/',
+    getParentRoute: () => ToolsRouteRoute,
+  } as any)
 const ToolsColorConverterIndexRoute =
   ToolsColorConverterIndexRouteImport.update({
     id: '/color-converter/',
@@ -278,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/base64/': typeof ToolsBase64IndexRoute
   '/case-converter/': typeof ToolsCaseConverterIndexRoute
+  '/chmod-calculator/': typeof ToolsChmodCalculatorIndexRoute
   '/color-converter/': typeof ToolsColorConverterIndexRoute
   '/cron-parser/': typeof ToolsCronParserIndexRoute
   '/csv-converter/': typeof ToolsCsvConverterIndexRoute
@@ -321,6 +329,7 @@ export interface FileRoutesByTo {
   '/add-to-calendar': typeof ToolsAddToCalendarIndexRoute
   '/base64': typeof ToolsBase64IndexRoute
   '/case-converter': typeof ToolsCaseConverterIndexRoute
+  '/chmod-calculator': typeof ToolsChmodCalculatorIndexRoute
   '/color-converter': typeof ToolsColorConverterIndexRoute
   '/cron-parser': typeof ToolsCronParserIndexRoute
   '/csv-converter': typeof ToolsCsvConverterIndexRoute
@@ -366,6 +375,7 @@ export interface FileRoutesById {
   '/_tools/add-to-calendar/': typeof ToolsAddToCalendarIndexRoute
   '/_tools/base64/': typeof ToolsBase64IndexRoute
   '/_tools/case-converter/': typeof ToolsCaseConverterIndexRoute
+  '/_tools/chmod-calculator/': typeof ToolsChmodCalculatorIndexRoute
   '/_tools/color-converter/': typeof ToolsColorConverterIndexRoute
   '/_tools/cron-parser/': typeof ToolsCronParserIndexRoute
   '/_tools/csv-converter/': typeof ToolsCsvConverterIndexRoute
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/add-to-calendar/'
     | '/base64/'
     | '/case-converter/'
+    | '/chmod-calculator/'
     | '/color-converter/'
     | '/cron-parser/'
     | '/csv-converter/'
@@ -454,6 +465,7 @@ export interface FileRouteTypes {
     | '/add-to-calendar'
     | '/base64'
     | '/case-converter'
+    | '/chmod-calculator'
     | '/color-converter'
     | '/cron-parser'
     | '/csv-converter'
@@ -498,6 +510,7 @@ export interface FileRouteTypes {
     | '/_tools/add-to-calendar/'
     | '/_tools/base64/'
     | '/_tools/case-converter/'
+    | '/_tools/chmod-calculator/'
     | '/_tools/color-converter/'
     | '/_tools/cron-parser/'
     | '/_tools/csv-converter/'
@@ -591,6 +604,13 @@ declare module '@tanstack/react-router' {
       path: '/case-converter'
       fullPath: '/case-converter/'
       preLoaderRoute: typeof ToolsCaseConverterIndexRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/chmod-calculator/': {
+      id: '/_tools/chmod-calculator/'
+      path: '/chmod-calculator'
+      fullPath: '/chmod-calculator/'
+      preLoaderRoute: typeof ToolsChmodCalculatorIndexRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
     '/_tools/color-converter/': {
@@ -845,6 +865,7 @@ interface ToolsRouteRouteChildren {
   ToolsAddToCalendarIndexRoute: typeof ToolsAddToCalendarIndexRoute
   ToolsBase64IndexRoute: typeof ToolsBase64IndexRoute
   ToolsCaseConverterIndexRoute: typeof ToolsCaseConverterIndexRoute
+  ToolsChmodCalculatorIndexRoute: typeof ToolsChmodCalculatorIndexRoute
   ToolsColorConverterIndexRoute: typeof ToolsColorConverterIndexRoute
   ToolsCronParserIndexRoute: typeof ToolsCronParserIndexRoute
   ToolsCsvConverterIndexRoute: typeof ToolsCsvConverterIndexRoute
@@ -886,6 +907,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsAddToCalendarIndexRoute: ToolsAddToCalendarIndexRoute,
   ToolsBase64IndexRoute: ToolsBase64IndexRoute,
   ToolsCaseConverterIndexRoute: ToolsCaseConverterIndexRoute,
+  ToolsChmodCalculatorIndexRoute: ToolsChmodCalculatorIndexRoute,
   ToolsColorConverterIndexRoute: ToolsColorConverterIndexRoute,
   ToolsCronParserIndexRoute: ToolsCronParserIndexRoute,
   ToolsCsvConverterIndexRoute: ToolsCsvConverterIndexRoute,

@@ -28,6 +28,7 @@ A unified web platform for focused utility tools. Compress images, generate QR c
 - **Hash Generator** — Compute SHA-1, SHA-256, SHA-384, or SHA-512 hashes of text or files entirely in your browser
 - **JWT Decoder** — Decode JSON Web Tokens and verify HMAC signatures entirely in your browser
 - **JWT Encoder** — Create and sign JSON Web Tokens with HS256, HS384, or HS512 entirely in your browser
+- **Chmod Calculator** — Convert between octal modes, symbolic notation, and an interactive permission grid
 - **Regex Tester** — Test regular expressions with live match highlighting and flags
 - **Timestamp Converter** — Convert between Unix timestamps and human-readable dates
 - **Text Diff** — Compare two texts with inline word-level highlighting

@@ -16,6 +16,7 @@ import {
   Clock,
   Coins,
   Dices,
+  FileLock,
   FileText,
   Fingerprint,
   GitCompare,
@@ -36,6 +37,7 @@ import type { JSX } from 'react';
 import { meta as addToCalendarMeta } from '@/routes/_tools/add-to-calendar/-meta';
 import { meta as base64Meta } from '@/routes/_tools/base64/-meta';
 import { meta as caseConverterMeta } from '@/routes/_tools/case-converter/-meta';
+import { meta as chmodCalculatorMeta } from '@/routes/_tools/chmod-calculator/-meta';
 import { meta as colorConverterMeta } from '@/routes/_tools/color-converter/-meta';
 import { meta as cronParserMeta } from '@/routes/_tools/cron-parser/-meta';
 import { meta as csvConverterMeta } from '@/routes/_tools/csv-converter/-meta';
@@ -219,6 +221,11 @@ export const TOOL_DEFINITIONS: ReadonlyArray<ToolDefinition> = [
     category: 'Developer',
     icon: <PenLine aria-hidden="true" />,
     ...jwtEncoderMeta,
+  },
+  {
+    category: 'Developer',
+    icon: <FileLock aria-hidden="true" />,
+    ...chmodCalculatorMeta,
   },
   {
     category: 'Developer',
